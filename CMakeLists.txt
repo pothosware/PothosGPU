@@ -27,14 +27,14 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/Source
     ${CMAKE_CURRENT_SOURCE_DIR}/Testing
     ${JSON_HPP_INCLUDE_DIR}
-    ${ARRAYFIRE_INCLUDE_DIRS})
+    ${ArrayFire_INCLUDE_DIRS})
 
 include(PothosUtil)
 POTHOS_MODULE_UTIL(
     TARGET ArrayFireBlocks
     SOURCES
-        Source/Devices.cpp
+        Source/ArrayFireInfo.cpp
     LIBRARIES
-        ${ARRAYFIRE_LIBRARIES}
+        ${ArrayFire_CPU_LIBRARIES}
     DESTINATION arrayfire
 )
