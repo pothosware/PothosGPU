@@ -7,19 +7,24 @@
 
 #include <arrayfire.h>
 
+#include <algorithm>
+#include <iostream>
+
 using json = nlohmann::json;
 
-static std::string enumerateArrayFireDevices(void)
+static json getDevicesJSONForBackend(
+    ::af_backend backend,
+    int& rDevIndex)
 {
-    json topObject;
-
-    // TODO: lock before iterating over devices
-    // TODO: iterate over backends, catch error if no devices are available for backend,
-    // support all devices
     json devicesArray(json::array());
 
-    int deviceCount = af::getDeviceCount();
-    for(int devIndex = 0; devIndex < deviceCount; ++devIndex)
+    // TODO: lock
+    af::setBackend(backend);
+
+    int numDevices = af::getDeviceCount();
+    for(int backendDevIndex = 0;
+        backendDevIndex < numDevices;
+        ++rDevIndex, ++backendDevIndex)
     {
         static constexpr size_t bufferLen = 1024;
 
@@ -27,18 +32,53 @@ static std::string enumerateArrayFireDevices(void)
         char platform[bufferLen] = {0};
         char toolkit[bufferLen] = {0};
         char compute[bufferLen] = {0};
-        af::setDevice(devIndex);
+        af::setDevice(backendDevIndex);
         af::deviceInfo(name, platform, toolkit, compute);
 
         json topDeviceObject(json::object());
-        auto& deviceObject = topDeviceObject[std::to_string(devIndex)];
+        auto& deviceObject = topDeviceObject[std::to_string(rDevIndex)];
         deviceObject["Name"] = name;
         deviceObject["Platform"] = platform;
         deviceObject["Toolkit"] = toolkit;
         deviceObject["Compute"] = compute;
+        deviceObject["Memory Step Size"] = af::getMemStepSize();
 
         devicesArray.emplace_back(deviceObject);
     }
+
+    return devicesArray;
+}
+
+static std::string enumerateArrayFireDevices(void)
+{
+    json topObject;
+
+    int availableBackends = af::getAvailableBackends();
+    static const std::vector<::af_backend> BACKENDS =
+    {
+        ::AF_BACKEND_CPU,
+        ::AF_BACKEND_CUDA,
+        ::AF_BACKEND_OPENCL,
+    };
+
+    json devicesArray(json::array());
+    int devIndex = 0;
+
+    for(const auto& backend: BACKENDS)
+    {
+        if(availableBackends & backend)
+        {
+            auto backendDevices = getDevicesJSONForBackend(backend, devIndex);
+            if(!backendDevices.empty())
+            {
+                devicesArray.insert(
+                    std::end(devicesArray),
+                    std::begin(backendDevices),
+                    std::end(backendDevices));
+            }
+        }
+    }
+
     if(!devicesArray.empty())
     {
         topObject["ArrayFire Device"] = devicesArray;
