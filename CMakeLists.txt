@@ -34,8 +34,10 @@ POTHOS_MODULE_UTIL(
     TARGET ArrayFireBlocks
     SOURCES
         Source/ArrayFireInfo.cpp
+        Source/BufferConversions.cpp
         Source/EnumConversions.cpp
 
+        Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
     LIBRARIES
         ${ArrayFire_CPU_LIBRARIES}
