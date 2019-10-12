@@ -38,6 +38,7 @@ POTHOS_MODULE_UTIL(
         Source/BufferConversions.cpp
         Source/EnumConversions.cpp
         Source/OneToOneBlock.cpp
+        Source/Utility.cpp
 
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
+#include "Utility.hpp"
 
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
@@ -14,19 +15,62 @@
 
 using OneToOneFunc = af::array(*)(const af::array&);
 
-template <typename In, typename Out>
 class OneToOneBlock: public ArrayFireBlock
 {
     public:
-        using InType = In;
-        using OutType = Out;
+        //
+        // Factories
+        //
 
-        OneToOneBlock(const OneToOneFunc& func):
-            ArrayFireBlock(),
-            _func(func)
+        static Pothos::Block* makeFromOneType(
+            const OneToOneFunc& func,
+            const Pothos::DType& dtype,
+            const DTypeSupport& supportedTypes)
         {
-            this->setupInput(0, Pothos::DType(typeid(InType)));
-            this->setupOutput(0, Pothos::DType(typeid(OutType)));
+            validateDType(dtype, supportedTypes);
+
+            return new OneToOneBlock(func, dtype, dtype);
+        }
+
+        static Pothos::Block* makeFromTwoTypes(
+            const OneToOneFunc& func,
+            const Pothos::DType& inputDType,
+            const Pothos::DType& outputDType,
+            const DTypeSupport& supportedInputTypes,
+            const DTypeSupport& supportedOutputTypes)
+        {
+            validateDType(inputDType, supportedInputTypes);
+            validateDType(outputDType, supportedOutputTypes);
+
+            if(isDTypeComplexFloat(inputDType) && isDTypeFloat(outputDType))
+            {
+                validateComplexAndFloatTypesMatch(
+                    inputDType,
+                    outputDType);
+            }
+            else if(isDTypeFloat(inputDType) && isDTypeComplexFloat(outputDType))
+            {
+                validateComplexAndFloatTypesMatch(
+                    outputDType,
+                    inputDType);
+            }
+
+            return new OneToOneBlock(func, inputDType, outputDType);
+        }
+
+        //
+        // Class implementation
+        //
+
+        OneToOneBlock(
+            const OneToOneFunc& func,
+            const Pothos::DType& inputDType,
+            const Pothos::DType& outputDType
+        ): ArrayFireBlock(),
+           _func(func)
+        {
+            this->setupInput(0, inputDType);
+            this->setupOutput(0, outputDType);
         }
 
         virtual ~OneToOneBlock() {}
@@ -45,10 +89,27 @@ class OneToOneBlock: public ArrayFireBlock
 
             auto outputAfArray = _func(inputAfArray);
 
-            this->getInput(0)->consume(elems);
+            this->input(0)->consume(elems);
             this->postAfArray(0, outputAfArray);
         }
 
     private:
         OneToOneFunc _func;
 };
+
+//
+// af/arith.h
+//
+
+static Pothos::BlockRegistry registerAbs(
+    "/arrayfire/abs",
+    Pothos::Callable(&OneToOneBlock::makeFromOneType)
+        .bind<OneToOneFunc>(&af::abs, 0)
+        .bind<DTypeSupport>({true, false, true, true}, 2));
+
+static Pothos::BlockRegistry registerArg(
+    "/arrayfire/arg",
+    Pothos::Callable(&OneToOneBlock::makeFromTwoTypes)
+        .bind<OneToOneFunc>(&af::arg, 0)
+        .bind<DTypeSupport>({false, false, false, true}, 3)
+        .bind<DTypeSupport>({false, false, true, false}, 4));

@@ -4,10 +4,12 @@
 #pragma once
 
 #include <Pothos/Exception.hpp>
+#include <Pothos/Framework.hpp>
 
 #include <algorithm>
 #include <sstream>
 #include <unordered_map>
+#include <vector>
 
 //
 // These helper functions will be used for registering enum conversions.
@@ -53,4 +55,60 @@ static KeyType getKeyForVal(
     }
 
     return iter->first;
+}
+
+//
+// Block input validation
+//
+
+struct DTypeSupport
+{
+    bool supportInt;
+    bool supportUInt;
+    bool supportFloat;
+    bool supportComplexFloat;
+};
+
+void validateDType(
+    const Pothos::DType& dtype,
+    const DTypeSupport& supportedTypes);
+
+void validateComplexAndFloatTypesMatch(
+    const Pothos::DType& complexDType,
+    const Pothos::DType& floatDType);
+
+//
+// Misc
+//
+
+// Because std::algorithm stuff is ugly
+template <typename T>
+static bool doesVectorContainValue(
+    const std::vector<T>& vec,
+    const T& value)
+{
+    return (vec.end() != std::find(vec.begin(), vec.end(), value));
+}
+
+// Needed because isInteger() returns true for complex integral types
+static inline bool isDTypeInt(const Pothos::DType& dtype)
+{
+    return (dtype.isInteger() && dtype.isSigned() && !dtype.isComplex());
+}
+
+// Needed because isInteger() returns true for complex integral types
+static inline bool isDTypeUInt(const Pothos::DType& dtype)
+{
+    return (dtype.isInteger() && !dtype.isSigned() && !dtype.isComplex());
+}
+
+// Needed because isFloat() returns true for complex float types
+static inline bool isDTypeFloat(const Pothos::DType& dtype)
+{
+    return (dtype.isFloat() && !dtype.isComplex());
+}
+
+static inline bool isDTypeComplexFloat(const Pothos::DType& dtype)
+{
+    return (dtype.isFloat() && dtype.isComplex());
 }
