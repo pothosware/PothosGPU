@@ -33,6 +33,7 @@ include(PothosUtil)
 POTHOS_MODULE_UTIL(
     TARGET ArrayFireBlocks
     SOURCES
+        Source/ArrayFireBlock.cpp
         Source/ArrayFireInfo.cpp
         Source/BufferConversions.cpp
         Source/EnumConversions.cpp
