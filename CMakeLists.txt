@@ -37,6 +37,7 @@ POTHOS_MODULE_UTIL(
         Source/ArrayFireInfo.cpp
         Source/BufferConversions.cpp
         Source/EnumConversions.cpp
+        Source/OneToOneBlock.cpp
 
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
