@@ -18,22 +18,65 @@ ArrayFireBlock::~ArrayFireBlock()
 {
 }
 
-af::array ArrayFireBlock::getInputPortAsAfArray(size_t portNum)
+af::array ArrayFireBlock::getInputPortAsAfArray(
+    size_t portNum,
+    bool truncateToMinLength)
 {
-    return Pothos::Object(this->input(portNum)->buffer()).convert<af::array>();
+    return _getInputPortAsAfArray(portNum, truncateToMinLength);
 }
 
-af::array ArrayFireBlock::getInputPortAsAfArray(const std::string& portName)
+af::array ArrayFireBlock::getInputPortAsAfArray(
+    const std::string& portName,
+    bool truncateToMinLength)
 {
-    return Pothos::Object(this->input(portName)->buffer()).convert<af::array>();
+    return _getInputPortAsAfArray(portName, truncateToMinLength);
 }
 
-void ArrayFireBlock::postAfArray(size_t portNum, const af::array& afArray)
+void ArrayFireBlock::postAfArray(
+    size_t portNum,
+    const af::array& afArray)
 {
-    this->output(portNum)->postBuffer(Pothos::Object(afArray).convert<Pothos::BufferChunk>());
+    _postAfArray(portNum, afArray);
 }
 
-void ArrayFireBlock::postAfArray(const std::string& portName, const af::array& afArray)
+void ArrayFireBlock::postAfArray(
+    const std::string& portName,
+    const af::array& afArray)
 {
-    this->output(portName)->postBuffer(Pothos::Object(afArray).convert<Pothos::BufferChunk>());
+    _postAfArray(portName, afArray);
+}
+
+template <typename T>
+af::array ArrayFireBlock::_getInputPortAsAfArray(
+    const T& portId,
+    bool truncateToMinLength)
+{
+    auto bufferChunk = this->input(portId)->buffer();
+    const size_t minLength = this->workInfo().minAllElements;
+    assert(minLength <= bufferChunk.getBuffer().getLength());
+
+    if(truncateToMinLength && (minLength < bufferChunk.getBuffer().getLength()))
+    {
+        auto sharedBuffer = bufferChunk.getBuffer();
+
+        auto newSharedBuffer = Pothos::SharedBuffer(
+                                   sharedBuffer.getAddress(),
+                                   minLength,
+                                   sharedBuffer);
+
+        auto dtype = bufferChunk.dtype;
+        bufferChunk = Pothos::BufferChunk(newSharedBuffer);
+        bufferChunk.dtype = dtype;
+    }
+
+    return Pothos::Object(bufferChunk).convert<af::array>();
+}
+
+template <typename T>
+void ArrayFireBlock::_postAfArray(
+    const T& portId,
+    const af::array& afArray)
+{
+    auto bufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
+    this->output(portId)->postBuffer(bufferChunk);
 }

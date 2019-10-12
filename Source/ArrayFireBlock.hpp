@@ -15,9 +15,31 @@ class ArrayFireBlock: public Pothos::Block
         ArrayFireBlock();
         virtual ~ArrayFireBlock();
 
-        af::array getInputPortAsAfArray(size_t portNum);
-        af::array getInputPortAsAfArray(const std::string& portName);
+        af::array getInputPortAsAfArray(
+            size_t portNum,
+            bool truncateToMinLength = true);
 
-        void postAfArray(size_t portNum, const af::array& afArray);
-        void postAfArray(const std::string& portName, const af::array& afArray);
+        af::array getInputPortAsAfArray(
+            const std::string& portName,
+            bool truncateToMinLength = true);
+
+        void postAfArray(
+            size_t portNum,
+            const af::array& afArray);
+
+        void postAfArray(
+            const std::string& portName,
+            const af::array& afArray);
+
+    private:
+
+        template <typename T>
+        af::array _getInputPortAsAfArray(
+            const T& portId,
+            bool truncateToMinLength);
+
+        template <typename T>
+        void _postAfArray(
+            const T& portId,
+            const af::array& afArray);
 };
