@@ -36,7 +36,9 @@ POTHOS_MODULE_UTIL(
         Source/ArrayFireBlock.cpp
         Source/ArrayFireInfo.cpp
         Source/BufferConversions.cpp
+        Source/Constant.cpp
         Source/EnumConversions.cpp
+        Source/MinMax.cpp
         Source/OneToOneBlock.cpp
         Source/SingleOutputSource.cpp
         Source/Utility.cpp
