@@ -41,6 +41,7 @@ POTHOS_MODULE_UTIL(
         Source/MinMax.cpp
         Source/OneToOneBlock.cpp
         Source/SingleOutputSource.cpp
+        Source/TwoToOneBlock.cpp
         Source/Utility.cpp
 
         Testing/TestBufferConversions.cpp
