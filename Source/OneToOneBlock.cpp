@@ -326,3 +326,29 @@ static Pothos::BlockRegistry registerLGamma(
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind<OneToOneFunc>(&af::lgamma, 0)
         .bind<DTypeSupport>({false, false, true, false}, 2));
+
+//
+// af/data.h
+//
+
+static Pothos::BlockRegistry registerFlat(
+    "/arrayfire/data/flat",
+    Pothos::Callable(&OneToOneBlock::makeFromOneType)
+        .bind<OneToOneFunc>(&af::flat, 0)
+        .bind<DTypeSupport>({true, true, true, true}, 2));
+
+//
+// af/signal.h
+//
+
+static Pothos::BlockRegistry registerDFT(
+    "/arrayfire/signal/dft",
+    Pothos::Callable(&OneToOneBlock::makeFromOneType)
+        .bind<OneToOneFunc>(&af::dft, 0)
+        .bind<DTypeSupport>({false, false, false, true}, 2));
+
+static Pothos::BlockRegistry registerIDFT(
+    "/arrayfire/signal/idft",
+    Pothos::Callable(&OneToOneBlock::makeFromOneType)
+        .bind<OneToOneFunc>(&af::idft, 0)
+        .bind<DTypeSupport>({false, false, false, true}, 2));
