@@ -47,6 +47,6 @@ POTHOS_MODULE_UTIL(
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
     LIBRARIES
-        ${ArrayFire_CPU_LIBRARIES}
+        ArrayFire::af
     DESTINATION arrayfire
 )
