@@ -18,7 +18,6 @@ static json getDevicesJSONForBackend(
 {
     json devicesArray(json::array());
 
-    // TODO: lock
     af::setBackend(backend);
 
     int numDevices = af::getDeviceCount();
