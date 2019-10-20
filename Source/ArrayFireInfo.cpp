@@ -7,8 +7,11 @@
 
 #include <arrayfire.h>
 
+#include <Poco/String.h>
+
 #include <algorithm>
 #include <iostream>
+#include <set>
 
 using json = nlohmann::json;
 
@@ -48,18 +51,19 @@ static json getDevicesJSONForBackend(
     return devicesArray;
 }
 
-static std::string enumerateArrayFireDevices(void)
+static std::string _enumerateArrayFireDevices()
 {
     json topObject;
 
     int availableBackends = af::getAvailableBackends();
     static const std::vector<::af_backend> BACKENDS =
     {
-        ::AF_BACKEND_CPU,
         ::AF_BACKEND_CUDA,
         ::AF_BACKEND_OPENCL,
+        ::AF_BACKEND_CPU,
     };
 
+    std::set<std::string> backends;
     json devicesArray(json::array());
     int devIndex = 0;
 
@@ -70,6 +74,8 @@ static std::string enumerateArrayFireDevices(void)
             auto backendDevices = getDevicesJSONForBackend(backend, devIndex);
             if(!backendDevices.empty())
             {
+                backends.emplace(backendDevices[0]["Platform"].get<std::string>());
+
                 devicesArray.insert(
                     std::end(devicesArray),
                     std::begin(backendDevices),
@@ -83,10 +89,26 @@ static std::string enumerateArrayFireDevices(void)
         topObject["ArrayFire Device"] = devicesArray;
     }
 
+    auto& arrayFireInfo = topObject["ArrayFire Info"];
+    arrayFireInfo["Library Version"] = AF_VERSION;
+    arrayFireInfo["API Version"] = AF_API_VERSION_CURRENT;
+    arrayFireInfo["Available Backends"] = Poco::cat(
+                                              std::string(", "),
+                                              backends.begin(),
+                                              backends.end());
+
     return topObject.dump();
 }
 
-pothos_static_block(registerSoapySDRInfo)
+static std::string enumerateArrayFireDevices()
+{
+    // Only do this once
+    static const std::string devs = _enumerateArrayFireDevices();
+
+    return devs;
+}
+
+pothos_static_block(registerArrayFireInfo)
 {
     Pothos::PluginRegistry::addCall(
         "/devices/arrayfire/info", &enumerateArrayFireDevices);
