@@ -91,7 +91,7 @@ static std::string _enumerateArrayFireDevices()
 
     auto& arrayFireInfo = topObject["ArrayFire Info"];
     arrayFireInfo["Library Version"] = AF_VERSION;
-    arrayFireInfo["API Version"] = AF_API_VERSION_CURRENT;
+    arrayFireInfo["API Version"] = AF_API_VERSION;
     arrayFireInfo["Available Backends"] = Poco::cat(
                                               std::string(", "),
                                               backends.begin(),
