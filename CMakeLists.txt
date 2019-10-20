@@ -37,6 +37,7 @@ POTHOS_MODULE_UTIL(
         Source/ArrayFireInfo.cpp
         Source/BufferConversions.cpp
         Source/Constant.cpp
+        Source/DeviceCache.cpp
         Source/EnumConversions.cpp
         Source/MinMax.cpp
         Source/OneToOneBlock.cpp

@@ -1,6 +1,8 @@
 // Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "DeviceCache.hpp"
+
 #include <Pothos/Plugin.hpp>
 
 #include <json.hpp>
@@ -15,87 +17,47 @@
 
 using json = nlohmann::json;
 
-static json getDevicesJSONForBackend(
-    ::af_backend backend,
-    int& rDevIndex)
+static json deviceCacheEntryToJSON(const DeviceCacheEntry& entry)
 {
-    json devicesArray(json::array());
+    json deviceJSON;
+    deviceJSON["Name"] = entry.name;
+    deviceJSON["Platform"] = entry.platform;
+    deviceJSON["Toolkit"] = entry.toolkit;
+    deviceJSON["Compute"] = entry.compute;
+    deviceJSON["Memory Step Size"] = af::getMemStepSize();
 
-    af::setBackend(backend);
-
-    int numDevices = af::getDeviceCount();
-    for(int backendDevIndex = 0;
-        backendDevIndex < numDevices;
-        ++rDevIndex, ++backendDevIndex)
-    {
-        static constexpr size_t bufferLen = 1024;
-
-        char name[bufferLen] = {0};
-        char platform[bufferLen] = {0};
-        char toolkit[bufferLen] = {0};
-        char compute[bufferLen] = {0};
-        af::setDevice(backendDevIndex);
-        af::deviceInfo(name, platform, toolkit, compute);
-
-        json topDeviceObject(json::object());
-        auto& deviceObject = topDeviceObject[std::to_string(rDevIndex)];
-        deviceObject["Name"] = name;
-        deviceObject["Platform"] = platform;
-        deviceObject["Toolkit"] = toolkit;
-        deviceObject["Compute"] = compute;
-        deviceObject["Memory Step Size"] = af::getMemStepSize();
-
-        devicesArray.emplace_back(deviceObject);
-    }
-
-    return devicesArray;
+    return deviceJSON;
 }
 
 static std::string _enumerateArrayFireDevices()
 {
     json topObject;
-
-    int availableBackends = af::getAvailableBackends();
-    static const std::vector<::af_backend> BACKENDS =
-    {
-        ::AF_BACKEND_CUDA,
-        ::AF_BACKEND_OPENCL,
-        ::AF_BACKEND_CPU,
-    };
-
-    std::set<std::string> backends;
     json devicesArray(json::array());
-    int devIndex = 0;
+    std::set<std::string> supportedPlatforms;
 
-    for(const auto& backend: BACKENDS)
-    {
-        if(availableBackends & backend)
-        {
-            auto backendDevices = getDevicesJSONForBackend(backend, devIndex);
-            if(!backendDevices.empty())
-            {
-                backends.emplace(backendDevices[0]["Platform"].get<std::string>());
+    const auto& deviceCache = getDeviceCache();
+    std::transform(
+        std::begin(deviceCache),
+        std::end(deviceCache),
+        std::back_inserter(devicesArray),
+        deviceCacheEntryToJSON);
+    std::transform(
+        std::begin(deviceCache),
+        std::end(deviceCache),
+        std::inserter(
+            supportedPlatforms,
+            std::end(supportedPlatforms)),
+        [](const DeviceCacheEntry& entry){return entry.platform;});
 
-                devicesArray.insert(
-                    std::end(devicesArray),
-                    std::begin(backendDevices),
-                    std::end(backendDevices));
-            }
-        }
-    }
-
-    if(!devicesArray.empty())
-    {
-        topObject["ArrayFire Device"] = devicesArray;
-    }
+    topObject["ArrayFire Device"] = devicesArray;
 
     auto& arrayFireInfo = topObject["ArrayFire Info"];
     arrayFireInfo["Library Version"] = AF_VERSION;
     arrayFireInfo["API Version"] = AF_API_VERSION;
-    arrayFireInfo["Available Backends"] = Poco::cat(
-                                              std::string(", "),
-                                              backends.begin(),
-                                              backends.end());
+    arrayFireInfo["Supported Platforms"] = Poco::cat(
+                                               std::string(", "),
+                                               std::begin(supportedPlatforms),
+                                               std::end(supportedPlatforms));
 
     return topObject.dump();
 }
