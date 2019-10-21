@@ -8,7 +8,7 @@
 
 #include <memory>
 
-Pothos::BufferChunk afArrayToBufferChunk(const af::array& afArray)
+static Pothos::BufferChunk afArrayToBufferChunk(const af::array& afArray)
 {
     // The type is arbitrary, but there is no void* implementation, so
     // attempting to use it results in a linker error.
@@ -22,7 +22,12 @@ Pothos::BufferChunk afArrayToBufferChunk(const af::array& afArray)
     return bufferChunk;
 }
 
-af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
+static Pothos::BufferChunk afArrayProxyToBufferChunk(const af::array::array_proxy& afArrayProxy)
+{
+    return afArrayToBufferChunk(afArrayProxy);
+}
+
+static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
 {
     dim_t dim0 = static_cast<dim_t>(bufferChunk.elements());
     auto afDType = Pothos::Object(bufferChunk.dtype.name()).convert<::af_dtype>();
@@ -46,6 +51,9 @@ pothos_static_block(registerArrayFireBufferConversions)
     Pothos::PluginRegistry::add(
         "/object/convert/arrayfire/afarray_to_bufferchunk",
         Pothos::Callable(&afArrayToBufferChunk));
+    Pothos::PluginRegistry::add(
+        "/object/convert/arrayfire/afarrayproxy_to_bufferchunk",
+        Pothos::Callable(&afArrayProxyToBufferChunk));
     Pothos::PluginRegistry::add(
         "/object/convert/arrayfire/bufferchunk_to_afarray",
         Pothos::Callable(&bufferChunkToAfArray));
