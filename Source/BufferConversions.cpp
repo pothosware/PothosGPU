@@ -8,11 +8,11 @@
 
 #include <memory>
 
-static Pothos::BufferChunk afArrayToBufferChunk(const af::array& afArray)
+template <typename AfArrayType>
+static Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 {
-    // The type is arbitrary, but there is no void* implementation, so
     // attempting to use it results in a linker error.
-    size_t address = reinterpret_cast<size_t>(afArray.device<std::uint8_t>());
+    size_t address = reinterpret_cast<size_t>(afArray.template device<std::uint8_t>());
     size_t numBytes = afArray.bytes();
     auto sharedAfArray = std::shared_ptr<af::array>(new af::array(afArray));
 
@@ -20,11 +20,6 @@ static Pothos::BufferChunk afArrayToBufferChunk(const af::array& afArray)
     bufferChunk.dtype = Pothos::DType(Pothos::Object(afArray.type()).convert<std::string>());
 
     return bufferChunk;
-}
-
-static Pothos::BufferChunk afArrayProxyToBufferChunk(const af::array::array_proxy& afArrayProxy)
-{
-    return afArrayToBufferChunk(afArrayProxy);
 }
 
 static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
@@ -50,10 +45,10 @@ pothos_static_block(registerArrayFireBufferConversions)
 {
     Pothos::PluginRegistry::add(
         "/object/convert/arrayfire/afarray_to_bufferchunk",
-        Pothos::Callable(&afArrayToBufferChunk));
+        Pothos::Callable(&afArrayTypeToBufferChunk<af::array>));
     Pothos::PluginRegistry::add(
         "/object/convert/arrayfire/afarrayproxy_to_bufferchunk",
-        Pothos::Callable(&afArrayProxyToBufferChunk));
+        Pothos::Callable(&afArrayTypeToBufferChunk<af::array::array_proxy>));
     Pothos::PluginRegistry::add(
         "/object/convert/arrayfire/bufferchunk_to_afarray",
         Pothos::Callable(&bufferChunkToAfArray));
