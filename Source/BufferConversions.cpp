@@ -8,16 +8,6 @@
 
 #include <memory>
 
-static ::af_dtype pothosDTypeToAfDType(const Pothos::DType& pothosDType)
-{
-    return Pothos::Object(pothosDType.name()).convert<::af_dtype>();
-}
-
-static Pothos::DType afDTypeToPothosDType(::af_dtype afDType)
-{
-    return Pothos::DType(Pothos::Object(afDType).convert<std::string>());
-}
-
 template <typename AfArrayType>
 static Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 {
@@ -54,13 +44,6 @@ static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
 
 pothos_static_block(registerArrayFireBufferConversions)
 {
-    Pothos::PluginRegistry::add(
-        "/object/convert/arrayfire/pothos_dtype_to_af_dtype",
-        Pothos::Callable(&pothosDTypeToAfDType));
-    Pothos::PluginRegistry::add(
-        "/object/convert/arrayfire/af_dtype_to_pothos_dtype",
-        Pothos::Callable(&afDTypeToPothosDType));
-
     Pothos::PluginRegistry::add(
         "/object/convert/arrayfire/afarray_to_bufferchunk",
         Pothos::Callable(&afArrayTypeToBufferChunk<af::array>));

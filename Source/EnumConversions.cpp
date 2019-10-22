@@ -3,6 +3,7 @@
 
 #include "Utility.hpp"
 
+#include <Pothos/Framework.hpp>
 #include <Pothos/Plugin.hpp>
 
 #include <arrayfire.h>
@@ -34,6 +35,16 @@ static const std::unordered_map<std::string, ::af_dtype> DTypeEnumMap =
     {"complex_float64", ::c64},
 };
 
+static ::af_dtype pothosDTypeToAfDType(const Pothos::DType& pothosDType)
+{
+    return getValForKey(DTypeEnumMap, pothosDType.name());
+}
+
+static Pothos::DType afDTypeToPothosDType(::af_dtype afDType)
+{
+    return Pothos::DType(getKeyForVal(DTypeEnumMap, afDType));
+}
+
 template <typename KeyType, typename ValType, typename HasherType>
 static void registerEnumConversion(
     const std::unordered_map<KeyType, ValType, HasherType>& unorderedMap,
@@ -59,10 +70,14 @@ pothos_static_block(registerArrayFireEnumConversions)
 {
     registerEnumConversion(
         BackendEnumMap,
-        "string_to_af_backend",
-        "af_backend_to_string");
-    registerEnumConversion(
-        DTypeEnumMap,
-        "string_to_af_dtype",
-        "af_dtype_to_string");
+        "std_string_to_af_dtype",
+        "af_dtype_to_std_string");
+
+    // Different enough to not use helper function
+    Pothos::PluginRegistry::add(
+        "/object/convert/arrayfire/pothos_dtype_to_af_dtype",
+        Pothos::Callable(&pothosDTypeToAfDType));
+    Pothos::PluginRegistry::add(
+        "/object/convert/arrayfire/af_dtype_to_pothos_dtype",
+        Pothos::Callable(&afDTypeToPothosDType));
 }

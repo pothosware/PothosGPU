@@ -12,15 +12,15 @@
 #include <string>
 #include <typeinfo>
 
-template <typename EnumType>
+template <typename Type1, typename Type2>
 static void testTypesCanConvert()
 {
     POTHOS_TEST_TRUE(Pothos::Object::canConvert(
-                         typeid(std::string),
-                         typeid(EnumType)));
+                         typeid(Type1),
+                         typeid(Type2)));
     POTHOS_TEST_TRUE(Pothos::Object::canConvert(
-                         typeid(EnumType),
-                         typeid(std::string)));
+                         typeid(Type2),
+                         typeid(Type1)));
 }
 
 template <typename EnumType>
@@ -38,7 +38,7 @@ static void testEnumValueConversion(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_backend_conversion)
 {
-    testTypesCanConvert<::af_backend>();
+    testTypesCanConvert<std::string, ::af_backend>();
     testEnumValueConversion("CPU",    ::AF_BACKEND_CPU);
     testEnumValueConversion("CUDA",   ::AF_BACKEND_CUDA);
     testEnumValueConversion("OpenCL", ::AF_BACKEND_OPENCL);
@@ -51,15 +51,15 @@ static void testDTypeEnumUsage(
     Pothos::DType dtype(dtypeName);
     POTHOS_TEST_EQUAL(
         afDType,
-        Pothos::Object(dtype.name()).convert<::af_dtype>());
+        Pothos::Object(dtype).convert<::af_dtype>());
 
-    Pothos::DType dtypeFromAF(Pothos::Object(afDType).convert<std::string>());
+    auto dtypeFromAF = Pothos::Object(afDType).convert<Pothos::DType>();
     POTHOS_TEST_EQUAL(dtypeName, dtypeFromAF.name());
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_dtype_conversion)
 {
-    testTypesCanConvert<::af_dtype>();
+    testTypesCanConvert<Pothos::DType, ::af_dtype>();
     testDTypeEnumUsage("int16",           ::s16);
     testDTypeEnumUsage("int32",           ::s32);
     testDTypeEnumUsage("int64",           ::s64);
