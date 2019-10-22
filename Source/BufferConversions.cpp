@@ -8,6 +8,16 @@
 
 #include <memory>
 
+static ::af_dtype pothosDTypeToAfDType(const Pothos::DType& pothosDType)
+{
+    return Pothos::Object(pothosDType.name()).convert<::af_dtype>();
+}
+
+static Pothos::DType afDTypeToPothosDType(::af_dtype afDType)
+{
+    return Pothos::DType(Pothos::Object(afDType).convert<std::string>());
+}
+
 template <typename AfArrayType>
 static Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 {
@@ -18,7 +28,7 @@ static Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
     auto sharedAfArray = std::shared_ptr<af::array>(new af::array(afArray));
 
     Pothos::BufferChunk bufferChunk(Pothos::SharedBuffer(address, numBytes, sharedAfArray));
-    bufferChunk.dtype = Pothos::DType(Pothos::Object(afArray.type()).convert<std::string>());
+    bufferChunk.dtype = Pothos::Object(afArray.type()).convert<Pothos::DType>();
 
     return bufferChunk;
 }
@@ -26,7 +36,7 @@ static Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
 {
     dim_t dim0 = static_cast<dim_t>(bufferChunk.elements());
-    auto afDType = Pothos::Object(bufferChunk.dtype.name()).convert<::af_dtype>();
+    auto afDType = Pothos::Object(bufferChunk.dtype).convert<::af_dtype>();
 
     // TODO: is there a way to detect if the incoming BufferChunk references
     // device memory allocated by ArrayFire? If so, we can just return an
@@ -44,6 +54,13 @@ static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
 
 pothos_static_block(registerArrayFireBufferConversions)
 {
+    Pothos::PluginRegistry::add(
+        "/object/convert/arrayfire/pothos_dtype_to_af_dtype",
+        Pothos::Callable(&pothosDTypeToAfDType));
+    Pothos::PluginRegistry::add(
+        "/object/convert/arrayfire/af_dtype_to_pothos_dtype",
+        Pothos::Callable(&afDTypeToPothosDType));
+
     Pothos::PluginRegistry::add(
         "/object/convert/arrayfire/afarray_to_bufferchunk",
         Pothos::Callable(&afArrayTypeToBufferChunk<af::array>));
