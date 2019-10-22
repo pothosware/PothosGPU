@@ -13,16 +13,14 @@
 #include <string>
 #include <typeinfo>
 
-static constexpr dim_t ArrDim = 128;
-
 template <typename T>
 static void test1DArrayConversion(
     const std::string& dtypeName,
     ::af_dtype afDType)
 {
-    std::cout << "Testing " << dtypeName << "..." << std::endl;
-
     static constexpr dim_t ArrDim = 128;
+
+    std::cout << "Testing " << dtypeName << "..." << std::endl;
 
     auto afArray = af::randu(ArrDim, afDType);
 
@@ -49,18 +47,22 @@ static void test2DArrayConversion(
     const std::string& dtypeName,
     ::af_dtype afDType)
 {
+    static constexpr dim_t ArrDim = 32;
+
     std::cout << "Testing " << dtypeName << "..." << std::endl;
 
     auto afArray = af::randu(ArrDim, ArrDim, afDType);
     for(dim_t row = 0; row < ArrDim; ++row)
     {
-        auto bufferChunk = Pothos::Object(afArray.row(row))
+        const auto& afArrayRow = afArray.row(row);
+
+        auto bufferChunk = Pothos::Object(afArrayRow)
                                .convert<Pothos::BufferChunk>();
         POTHOS_TEST_EQUAL(ArrDim, bufferChunk.elements());
         POTHOS_TEST_EQUAL(dtypeName, bufferChunk.dtype.name());
         POTHOS_TEST_TRUE(Pothos::DType(typeid(T)) == bufferChunk.dtype);
         POTHOS_TEST_EQUALA(
-            reinterpret_cast<const T*>(afArray.device<std::uint8_t>()),
+            reinterpret_cast<const T*>(afArrayRow.device<std::uint8_t>()),
             bufferChunk.as<const T*>(),
             ArrDim);
     }
