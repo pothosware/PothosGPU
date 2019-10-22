@@ -105,20 +105,18 @@ class OneToOneBatchBlock: public ArrayFireBlock
             const auto afDType = Pothos::Object(inputs[0]->dtype()).convert<::af_dtype>();
             const size_t rowSizeBytes = inputs[0]->dtype().size() * dim1;
 
-            // There is no mechanism to copy directly into rows, so we need to
-            // manually navigate the memory.
             af::array ret(dim0, dim1, afDType);
-            uint8_t* deviceMem = ret.device<std::uint8_t>();
             for(dim_t row = 0; row < dim0; ++row)
             {
+                auto arrayRow = ret.row(row);
                 std::memcpy(
-                    deviceMem + (row * rowSizeBytes),
+                    arrayRow.device<std::uint8_t>(),
                     inputs[row]->buffer().as<const std::uint8_t*>(),
                     rowSizeBytes);
+                arrayRow.unlock();
 
                 inputs[row]->consume(dim1);
             }
-            ret.unlock();
 
             return ret;
         }
