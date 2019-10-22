@@ -11,6 +11,7 @@
 template <typename AfArrayType>
 static Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 {
+    // The type is arbitrary, but there is no void* implementation, so
     // attempting to use it results in a linker error.
     size_t address = reinterpret_cast<size_t>(afArray.template device<std::uint8_t>());
     size_t numBytes = afArray.bytes();
