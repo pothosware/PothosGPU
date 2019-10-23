@@ -41,7 +41,6 @@ POTHOS_MODULE_UTIL(
         Source/EnumConversions.cpp
         Source/MinMax.cpp
         Source/OneToOneBlock.cpp
-        Source/OneToOneBatchBlock.cpp
         Source/SingleOutputSource.cpp
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
