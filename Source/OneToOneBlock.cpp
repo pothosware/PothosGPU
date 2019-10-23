@@ -71,9 +71,10 @@ class OneToOneBlock: public ArrayFireBlock
             const Pothos::DType& outputDType,
             size_t numChans
         ): ArrayFireBlock(),
-           _func(func)
+           _func(func),
+           _nchans(numChans)
         {
-            for(size_t chan = 0; chan < numChans; ++chan)
+            for(size_t chan = 0; chan < _nchans; ++chan)
             {
                 this->setupInput(chan, inputDType);
                 this->setupOutput(chan, outputDType);
@@ -127,26 +128,46 @@ class OneToOneBlock: public ArrayFireBlock
 
         void work() override
         {
-            if(0 == this->workInfo().minElements)
+            const size_t elems = this->workInfo().minElements;
+            if(0 == elems)
             {
                 return;
             }
 
-            auto afInput = getNumberedInputPortsAs2DAfArray();
-            const auto dim0 = afInput.dims(0);
-            const auto dim1 = afInput.dims(1);
-
-            af::array afOutput(dim0, dim1, afInput.type());
-            gfor(af::seq row, dim0)
+            if(1 == _nchans)
             {
-                afOutput(row) = _func(afInput(row));
-            }
+                auto afInput = Pothos::Object(this->input(0)->buffer())
+                                   .convert<af::array>();
+                auto afOutput = _func(afInput);
 
-            post2DAfArrayToNumberedOutputPorts(afOutput);
+                this->input(0)->consume(elems);
+                this->output(0)->postBuffer(Pothos::Object(afOutput)
+                                                .convert<Pothos::BufferChunk>());
+            }
+            else
+            {
+                assert(0 != _nchans);
+
+                auto afInput = getNumberedInputPortsAs2DAfArray();
+                const auto dim0 = afInput.dims(0);
+                const auto dim1 = afInput.dims(1);
+
+                assert(_nchans == static_cast<size_t>(dim0));
+                assert(elems == static_cast<size_t>(dim1));
+
+                af::array afOutput(dim0, dim1, afInput.type());
+                gfor(af::seq row, dim0)
+                {
+                    afOutput(row) = _func(afInput(row));
+                }
+
+                post2DAfArrayToNumberedOutputPorts(afOutput);
+            }
         }
 
     private:
         OneToOneFunc _func;
+        size_t _nchans;
 };
 
 //
