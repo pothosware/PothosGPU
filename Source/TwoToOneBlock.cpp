@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "ArrayFireBlock.hpp"
+#include "TwoToOneBlock.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Framework.hpp>
@@ -13,95 +13,85 @@
 #include <string>
 #include <typeinfo>
 
-using TwoToOneFunc = af::array(*)(const af::array&, const af::array&);
+//
+// Factories
+//
 
-// Assumption: input types match
-class TwoToOneBlock: public ArrayFireBlock
+Pothos::Block* TwoToOneBlock::makeFromOneType(
+    const TwoToOneFunc& func,
+    const Pothos::DType& dtype,
+    const DTypeSupport& supportedTypes)
 {
-    public:
-        //
-        // Factories
-        //
+    validateDType(dtype, supportedTypes);
 
-        static Pothos::Block* makeFromOneType(
-            const TwoToOneFunc& func,
-            const Pothos::DType& dtype,
-            const DTypeSupport& supportedTypes)
-        {
-            validateDType(dtype, supportedTypes);
+    return new TwoToOneBlock(func, dtype, dtype);
+}
 
-            return new TwoToOneBlock(func, dtype, dtype);
-        }
+Pothos::Block* TwoToOneBlock::makeFromTwoTypes(
+    const TwoToOneFunc& func,
+    const Pothos::DType& inputDType,
+    const Pothos::DType& outputDType,
+    const DTypeSupport& supportedInputTypes,
+    const DTypeSupport& supportedOutputTypes)
+{
+    validateDType(inputDType, supportedInputTypes);
+    validateDType(outputDType, supportedOutputTypes);
 
-        static Pothos::Block* makeFromTwoTypes(
-            const TwoToOneFunc& func,
-            const Pothos::DType& inputDType,
-            const Pothos::DType& outputDType,
-            const DTypeSupport& supportedInputTypes,
-            const DTypeSupport& supportedOutputTypes)
-        {
-            validateDType(inputDType, supportedInputTypes);
-            validateDType(outputDType, supportedOutputTypes);
+    if(isDTypeComplexFloat(inputDType) && isDTypeFloat(outputDType))
+    {
+        validateComplexAndFloatTypesMatch(
+            inputDType,
+            outputDType);
+    }
+    else if(isDTypeFloat(inputDType) && isDTypeComplexFloat(outputDType))
+    {
+        validateComplexAndFloatTypesMatch(
+            outputDType,
+            inputDType);
+    }
 
-            if(isDTypeComplexFloat(inputDType) && isDTypeFloat(outputDType))
-            {
-                validateComplexAndFloatTypesMatch(
-                    inputDType,
-                    outputDType);
-            }
-            else if(isDTypeFloat(inputDType) && isDTypeComplexFloat(outputDType))
-            {
-                validateComplexAndFloatTypesMatch(
-                    outputDType,
-                    inputDType);
-            }
+    return new TwoToOneBlock(func, inputDType, outputDType);
+}
 
-            return new TwoToOneBlock(func, inputDType, outputDType);
-        }
+//
+// Class implementation
+//
 
-        //
-        // Class implementation
-        //
+TwoToOneBlock::TwoToOneBlock(
+    const TwoToOneFunc& func,
+    const Pothos::DType& inputDType,
+    const Pothos::DType& outputDType
+): ArrayFireBlock(),
+   _func(func)
+{
+    this->setupInput(0, inputDType);
+    this->setupInput(1, inputDType);
+    this->setupOutput(0, outputDType);
+}
 
-        TwoToOneBlock(
-            const TwoToOneFunc& func,
-            const Pothos::DType& inputDType,
-            const Pothos::DType& outputDType
-        ): ArrayFireBlock(),
-           _func(func)
-        {
-            this->setupInput(0, inputDType);
-            this->setupInput(1, inputDType);
-            this->setupOutput(0, outputDType);
-        }
+TwoToOneBlock::~TwoToOneBlock() {}
 
-        virtual ~TwoToOneBlock() {}
+void TwoToOneBlock::work()
+{
+    const size_t elems = this->workInfo().minAllElements;
 
-        void work() override
-        {
-            const size_t elems = this->workInfo().minAllElements;
+    if(0 == elems)
+    {
+        return;
+    }
 
-            if(0 == elems)
-            {
-                return;
-            }
+    auto inputAfArray0 = this->getInputPortAsAfArray(0);
+    auto inputAfArray1 = this->getInputPortAsAfArray(1);
 
-            auto inputAfArray0 = this->getInputPortAsAfArray(0);
-            auto inputAfArray1 = this->getInputPortAsAfArray(1);
+    assert(elems == inputAfArray0.elements());
+    assert(elems == inputAfArray1.elements());
 
-            assert(elems == inputAfArray0.elements());
-            assert(elems == inputAfArray1.elements());
+    auto outputAfArray = _func(inputAfArray0, inputAfArray1);
 
-            auto outputAfArray = _func(inputAfArray0, inputAfArray1);
-
-            this->input(0)->consume(elems);
-            this->input(1)->consume(elems);
-            this->postAfArray(0, outputAfArray);
-        }
-
-    private:
-        TwoToOneFunc _func;
-};
+    this->input(0)->consume(elems);
+    this->input(1)->consume(elems);
+    this->postAfArray(0, outputAfArray);
+}
 
 //
 // af/arith.h

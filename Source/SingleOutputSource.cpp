@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "ArrayFireBlock.hpp"
+#include "SingleOutputSource.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Framework.hpp>
@@ -13,56 +13,42 @@
 #include <string>
 #include <typeinfo>
 
-using SingleOutputFunc = af::array(*)(const dim_t, const af::dtype);
+//
+// Factories
+//
 
-class SingleOutputSource: public ArrayFireBlock
+Pothos::Block* SingleOutputSource::make(
+    const SingleOutputFunc& func,
+    const Pothos::DType& dtype,
+    const DTypeSupport& supportedTypes)
 {
-    public:
-        //
-        // Factories
-        //
+    validateDType(dtype, supportedTypes);
 
-        static Pothos::Block* make(
-            const SingleOutputFunc& func,
-            const Pothos::DType& dtype,
-            const DTypeSupport& supportedTypes)
-        {
-            validateDType(dtype, supportedTypes);
+    return new SingleOutputSource(func, dtype);
+}
 
-            return new SingleOutputSource(func, dtype);
-        }
+//
+// Class implementation
+//
 
-        //
-        // Class implementation
-        //
+SingleOutputSource::SingleOutputSource(
+    const SingleOutputFunc& func,
+    const Pothos::DType& dtype
+): ArrayFireBlock(),
+   _func(func),
+   _afDType(Pothos::Object(dtype).convert<af::dtype>())
+{
+    this->setupOutput(0, dtype);
+}
 
-        // Since we post all buffers but don't have an input size
-        // to match.
-        static constexpr dim_t OutputBufferSize = 1024;
+SingleOutputSource::~SingleOutputSource() {}
 
-        SingleOutputSource(
-            const SingleOutputFunc& func,
-            const Pothos::DType& dtype
-        ): ArrayFireBlock(),
-           _func(func),
-           _afDType(Pothos::Object(dtype).convert<af::dtype>())
-        {
-            this->setupOutput(0, dtype);
-        }
-
-        virtual ~SingleOutputSource() {}
-
-        void work() override
-        {
-            this->postAfArray(
-                0,
-                _func(OutputBufferSize, _afDType));
-        }
-
-    private:
-        SingleOutputFunc _func;
-        af::dtype _afDType;
-};
+void SingleOutputSource::work()
+{
+    this->postAfArray(
+        0,
+        _func(OutputBufferSize, _afDType));
+}
 
 //
 // af/data.h
