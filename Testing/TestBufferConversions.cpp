@@ -54,7 +54,7 @@ static void test2DArrayConversion(
     auto afArray = af::randu(ArrDim, ArrDim, afDType);
     for(dim_t row = 0; row < ArrDim; ++row)
     {
-        const auto& afArrayRow = afArray.row(row);
+        const af::array::array_proxy afArrayRow = afArray.row(row);
 
         auto bufferChunk = Pothos::Object(afArrayRow)
                                .convert<Pothos::BufferChunk>();
