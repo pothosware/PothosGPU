@@ -1,0 +1,296 @@
+OneToOneBlocks:
+        #
+        # af/arith.h
+        #
+
+        - func: abs
+          header: arith
+          supportedTypes:
+                  supportAll: true
+
+        - func: arg
+          header: arith
+          supportedInputTypes:
+                  supportComplexFloat: true
+          supportedOutputTypes:
+                  supportFloat: true
+
+        - func: round
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: trunc
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: floor
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: ceil
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: sin
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: cos
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: tan
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: asin
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: acos
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: atan
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: complex
+          header: arith
+          supportedInputTypes:
+                  supportFloat: true
+          supportedOutputTypes:
+                  supportComplexFloat: true
+
+        - func: real
+          header: arith
+          supportedInputTypes:
+                  supportComplexFloat: true
+          supportedOutputTypes:
+                  supportFloat: true
+
+        - func: imag
+          header: arith
+          supportedInputTypes:
+                  supportComplexFloat: true
+          supportedOutputTypes:
+                  supportFloat: true
+
+        - func: conjg
+          header: arith
+          supportedTypes:
+                  supportComplexFloat: true
+
+        - func: sinh
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: cosh
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: tanh
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: asinh
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: acosh
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: atanh
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: pow2
+          header: arith
+          supportedTypes:
+                  supportAll: true
+
+        - func: sigmoid
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: exp
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: expm1
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: erf
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: erfc
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: log
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: log1p
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: log10
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: log2
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: sqrt
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: cbrt
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: factorial
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: tgamma
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        - func: lgamma
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        #
+        # af/data.h
+        #
+
+        - func: flat
+          header: data
+          supportedTypes:
+                  supportAll: true
+
+        #
+        # af/signal.h
+        #
+
+        - func: dft
+          header: signal
+          supportedTypes:
+                  supportAll: true
+
+        - func: idft
+          header: signal
+          supportedTypes:
+                  supportAll: true
+
+SingleOutputSources:
+        #
+        # af/data.h
+        #
+
+        - func: randu
+          header: data
+          supportedTypes:
+                  supportAll: true
+
+        - func: randn
+          header: data
+          supportedTypes:
+                  supportAll: true
+
+        - func: identity
+          header: data
+          supportedTypes:
+                  supportAll: true
+
+TwoToOneBlocks:
+        #
+        # af/arith.h
+        #
+
+        - func: hypot
+          header: arith
+          supportedTypes:
+                  supportFloat: true
+
+        #
+        # af/data.h
+        #
+
+        - func: min
+          header: data
+          supportedTypes:
+                  supportInt: true
+                  supportUInt: true
+                  supportFloat: true
+
+        - func: max
+          header: data
+          supportedTypes:
+                  supportInt: true
+                  supportUInt: true
+                  supportFloat: true
+
+        - func: rem
+          header: data
+          supportedTypes:
+                  supportAll: true
+
+        - func: mod
+          header: data
+          supportedTypes:
+                  supportAll: true
+
+        - func: hypot
+          header: data
+          supportedTypes:
+                  supportAll: true
+
+        - func: atan2
+          header: data
+          supportedTypes:
+                  supportFloat: true
+
+# TODO: figure out second af::complex
+#        - func: complex2
+#          header: data
+#          supportedInputTypes:
+#                  supportFloat: true
+#          supportedOutputTypes:
+#                  supportComplexFloat: true

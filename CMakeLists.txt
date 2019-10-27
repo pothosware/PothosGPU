@@ -30,6 +30,26 @@ if (NOT JSON_HPP_INCLUDE_DIR)
     message(FATAL_ERROR "Pothos ArrayFire toolkit requires json.hpp")
 endif (NOT JSON_HPP_INCLUDE_DIR)
 
+########################################################################
+# Auto-generate the majority of blocks
+########################################################################
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/BlockGen)
+set(autogenDeps
+    ${CMAKE_CURRENT_SOURCE_DIR}/BlockGen/Blocks.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/BlockGen/Factory.mako.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/BlockGen/GenBlocks.py)
+set(autogenOutputs
+    ${CMAKE_CURRENT_BINARY_DIR}/BlockGen/Factory.cpp)
+add_custom_command(
+    OUTPUT ${autogenOutputs}
+    DEPENDS ${autogenDeps}
+    COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/BlockGen/GenBlocks.py" "${CMAKE_CURRENT_BINARY_DIR}/BlockGen"
+    COMMENT "Generating block factories and block execution tests")
+add_custom_target(
+    autogen_files ALL
+    DEPENDS ${autogenOutputs})
+
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Source
@@ -41,6 +61,7 @@ include(PothosUtil)
 POTHOS_MODULE_UTIL(
     TARGET ArrayFireBlocks
     SOURCES
+        ${autogenOutputs}
         Source/ArrayFireBlock.cpp
         Source/ArrayFireInfo.cpp
         Source/BufferConversions.cpp
@@ -57,5 +78,7 @@ POTHOS_MODULE_UTIL(
         Testing/TestEnumConversions.cpp
     LIBRARIES
         ArrayFire::af
+    DOC_SOURCES
+        ${autogenOutputs}
     DESTINATION arrayfire
 )

@@ -49,25 +49,3 @@ void SingleOutputSource::work()
         0,
         _func(OutputBufferSize, _afDType));
 }
-
-//
-// af/data.h
-//
-
-static Pothos::BlockRegistry registerRandU(
-    "/arrayfire/data/randu",
-    Pothos::Callable(&SingleOutputSource::make)
-        .bind<SingleOutputFunc>(&af::randu, 0)
-        .bind<DTypeSupport>({true, true, true, true}, 2));
-
-static Pothos::BlockRegistry registerRandN(
-    "/arrayfire/data/randn",
-    Pothos::Callable(&SingleOutputSource::make)
-        .bind<SingleOutputFunc>(&af::randn, 0)
-        .bind<DTypeSupport>({true, true, true, true}, 2));
-
-static Pothos::BlockRegistry registerIdentity(
-    "/arrayfire/data/identity",
-    Pothos::Callable(&SingleOutputSource::make)
-        .bind<SingleOutputFunc>(&af::identity, 0)
-        .bind<DTypeSupport>({true, true, true, true}, 2));
