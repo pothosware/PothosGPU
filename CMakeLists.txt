@@ -14,6 +14,14 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 find_package(ArrayFire REQUIRED)
 
 ########################################################################
+# Find Python modules used to implement blocks
+########################################################################
+find_package(PythonInterp REQUIRED)
+include(FindPythonModule)
+find_python_module(mako REQUIRED)
+find_python_module(yaml REQUIRED)
+
+########################################################################
 # json.hpp header
 ########################################################################
 find_path(JSON_HPP_INCLUDE_DIR NAMES json.hpp PATH_SUFFIXES nlohmann)
