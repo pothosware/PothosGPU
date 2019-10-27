@@ -195,8 +195,10 @@ template <typename T>
 static EnableIfAnyInt<T, void> testBufferChunk(
     const Pothos::BufferChunk& bufferChunk,
     const std::vector<T>& expectedOutputs,
-    T)
+    T epsilon = T(0))
 {
+    (void)epsilon;
+
     POTHOS_TEST_TRUE(bufferChunk.elements() > 0);
     auto pOut = bufferChunk.as<const T*>();
     for (size_t i = 0; i < bufferChunk.elements(); i++)

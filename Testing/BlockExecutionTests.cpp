@@ -48,7 +48,7 @@ static EnableIfFloat<T, std::vector<T>> getTestInputs()
     // To not have nice even numbers
     static constexpr size_t numInputs = 123;
 
-    auto testParams = linspace<T>(10.0f, 20.0f, numInputs);
+    auto testParams = linspace<T>(-20.0f, 20.0f, numInputs);
     std::shuffle(testParams.begin(), testParams.end(), g);
 
     return testParams;
@@ -78,8 +78,8 @@ void testOneToOneBlock(
 {
     static const Pothos::DType dtype(typeid(T));
 
-    std::cout << "Testing " << blockRegistryPath << " (" << dtype.name()
-                            << ", " << numChannels << " channels)" << std::endl;
+    std::cout << "Testing " << blockRegistryPath << " (type: " << dtype.name()
+                            << ", " << "chans: " << numChannels << ")" << std::endl;
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
@@ -148,12 +148,16 @@ void testOneToOneBlock(
             chanOutputs.elements());
         if(nullptr != verificationFunc)
         {
-            for(size_t elem = 0; elem < numInputs; ++elem)
-            {
-                testEqual(
-                    chanOutputs.as<const T*>()[elem],
-                    verificationFunc(chanInputs[elem]));
-            }
+            std::vector<T> expectedOutputs;
+            std::transform(
+                chanInputs.begin(),
+                chanInputs.end(),
+                std::back_inserter(expectedOutputs),
+                verificationFunc);
+
+            testBufferChunk<T>(
+                chanOutputs,
+                expectedOutputs);
         }
     }
 }
@@ -181,8 +185,12 @@ SPECIALIZE_TEMPLATE_TESTS(std::complex<double>)
 // TODO: auto-generate
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_block_execution)
 {
-    testOneToOneBlock<std::int32_t>(
+    testOneToOneBlock<float>(
         "/arrayfire/arith/abs",
         1,
-        std::abs<std::int32_t>);
+        [](const float& val){return std::abs(val);});
+    testOneToOneBlock<float>(
+        "/arrayfire/arith/abs",
+        3,
+        [](const float& val){return std::abs(val);});
 }
