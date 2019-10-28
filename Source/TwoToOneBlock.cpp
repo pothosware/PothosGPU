@@ -83,8 +83,8 @@ void TwoToOneBlock::work()
     auto inputAfArray0 = this->getInputPortAsAfArray(0);
     auto inputAfArray1 = this->getInputPortAsAfArray(1);
 
-    assert(elems == inputAfArray0.elements());
-    assert(elems == inputAfArray1.elements());
+    assert(elems == static_cast<size_t>(inputAfArray0.elements()));
+    assert(elems == static_cast<size_t>(inputAfArray1.elements()));
 
     auto outputAfArray = _func(inputAfArray0, inputAfArray1);
 
