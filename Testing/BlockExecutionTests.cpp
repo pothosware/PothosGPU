@@ -182,15 +182,23 @@ SPECIALIZE_TEMPLATE_TESTS(double)
 SPECIALIZE_TEMPLATE_TESTS(std::complex<float>)
 SPECIALIZE_TEMPLATE_TESTS(std::complex<double>)
 
+/*
+template <typename T>
+static T testAbs(const T& val)
+{
+    return std::abs(val);
+}
+
 // TODO: auto-generate
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_block_execution)
 {
     testOneToOneBlock<std::int16_t>(
         "/arrayfire/arith/abs",
         1,
-        [](const std::int16_t& val){return std::abs(val);});
+        &testAbs<std::int16_t>);
     testOneToOneBlock<std::int16_t>(
         "/arrayfire/arith/abs",
         3,
-        [](const std::int16_t& val){return std::abs(val);});
+        &testAbs<std::int16_t>);
 }
+*/
