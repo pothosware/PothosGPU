@@ -90,18 +90,11 @@ af::array OneToOneBlock::getNumberedInputPortsAs2DAfArray()
     const auto dim0 = static_cast<dim_t>(inputs.size());
     const auto dim1 = static_cast<dim_t>(this->workInfo().minElements);
     const auto afDType = Pothos::Object(inputs[0]->dtype()).convert<::af_dtype>();
-    const size_t rowSizeBytes = inputs[0]->dtype().size() * dim1;
 
     af::array ret(dim0, dim1, afDType);
     for(dim_t row = 0; row < dim0; ++row)
     {
-        auto arrayRow = ret.row(row);
-        std::memcpy(
-            arrayRow.device<std::uint8_t>(),
-            inputs[row]->buffer().as<const std::uint8_t*>(),
-            rowSizeBytes);
-        arrayRow.unlock();
-
+        ret.row(row) = Pothos::Object(inputs[row]->buffer()).convert<af::array>();
         inputs[row]->consume(dim1);
     }
 
