@@ -56,4 +56,7 @@ class OneToOneBlock: public ArrayFireBlock
     private:
         OneToOneFunc _func;
         size_t _nchans;
+
+        // We need to store this since ArrayFire may change the output value.
+        af::dtype _afOutputDType;
 };

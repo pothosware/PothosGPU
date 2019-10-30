@@ -67,7 +67,8 @@ OneToOneBlock::OneToOneBlock(
     size_t numChans
 ): ArrayFireBlock(),
    _func(func),
-   _nchans(numChans)
+   _nchans(numChans),
+   _afOutputDType(Pothos::Object(outputDType).convert<af::dtype>())
 {
     for(size_t chan = 0; chan < _nchans; ++chan)
     {
@@ -126,7 +127,12 @@ void OneToOneBlock::work()
     {
         auto afInput = Pothos::Object(this->input(0)->buffer())
                            .convert<af::array>();
+
         auto afOutput = _func(afInput);
+        if(afOutput.type() != _afOutputDType)
+        {
+            afOutput = afOutput.as(_afOutputDType);
+        }
 
         this->input(0)->consume(elems);
         this->output(0)->postBuffer(Pothos::Object(afOutput)
@@ -140,6 +146,12 @@ void OneToOneBlock::work()
         assert(_nchans == static_cast<size_t>(afInput.dims(0)));
         assert(elems == static_cast<size_t>(afInput.dims(1)));
 
-        post2DAfArrayToNumberedOutputPorts(_func(afInput));
+        auto afOutput = _func(afInput);
+        if(afOutput.type() != _afOutputDType)
+        {
+            afOutput = afOutput.as(_afOutputDType);
+        }
+
+        post2DAfArrayToNumberedOutputPorts(afOutput);
     }
 }

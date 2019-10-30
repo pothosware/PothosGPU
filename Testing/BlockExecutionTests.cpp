@@ -185,12 +185,12 @@ SPECIALIZE_TEMPLATE_TESTS(std::complex<double>)
 // TODO: auto-generate
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_block_execution)
 {
-    testOneToOneBlock<float>(
+    testOneToOneBlock<std::int16_t>(
         "/arrayfire/arith/abs",
         1,
-        [](const float& val){return std::abs(val);});
-    testOneToOneBlock<float>(
+        [](const std::int16_t& val){return std::abs(val);});
+    testOneToOneBlock<std::int16_t>(
         "/arrayfire/arith/abs",
         3,
-        [](const float& val){return std::abs(val);});
+        [](const std::int16_t& val){return std::abs(val);});
 }
