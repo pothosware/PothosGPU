@@ -3,8 +3,10 @@
 
 #pragma once
 
+#include "TestUtility.hpp"
+
 #include <complex>
-#include <cstdint>
+#include <cmath>
 #include <functional>
 
 template <typename T>

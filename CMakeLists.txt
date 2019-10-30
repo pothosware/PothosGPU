@@ -38,9 +38,11 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/BlockGen)
 set(autogenDeps
     ${CMAKE_CURRENT_SOURCE_DIR}/BlockGen/Blocks.yaml
     ${CMAKE_CURRENT_SOURCE_DIR}/BlockGen/Factory.mako.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/BlockGen/BlockExecutionTestAuto.mako.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/BlockGen/GenBlocks.py)
 set(autogenOutputs
-    ${CMAKE_CURRENT_BINARY_DIR}/BlockGen/Factory.cpp)
+    ${CMAKE_CURRENT_BINARY_DIR}/BlockGen/Factory.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/BlockGen/BlockExecutionTestAuto.cpp)
 add_custom_command(
     OUTPUT ${autogenOutputs}
     DEPENDS ${autogenDeps}
@@ -62,6 +64,7 @@ POTHOS_MODULE_UTIL(
     TARGET ArrayFireBlocks
     SOURCES
         ${autogenOutputs}
+
         Source/ArrayFireBlock.cpp
         Source/ArrayFireInfo.cpp
         Source/BufferConversions.cpp
@@ -79,7 +82,5 @@ POTHOS_MODULE_UTIL(
         Testing/TestEnumConversions.cpp
     LIBRARIES
         ArrayFire::af
-    DOC_SOURCES
-        ${autogenOutputs}
     DESTINATION arrayfire
 )

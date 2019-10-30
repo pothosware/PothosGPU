@@ -200,10 +200,7 @@ OneToOneBlocks:
         # af/data.h
         #
 
-        - func: flat
-          header: data
-          supportedTypes:
-                  supportAll: true
+        # TODO: flat, custom
 
         #
         # af/signal.h
@@ -212,12 +209,12 @@ OneToOneBlocks:
         - func: dft
           header: signal
           supportedTypes:
-                  supportAll: true
+                  supportComplexFloat: true
 
         - func: idft
           header: signal
           supportedTypes:
-                  supportAll: true
+                  supportComplexFloat: true
 
 SingleOutputSources:
         #

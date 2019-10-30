@@ -12,13 +12,27 @@ OutputDir = os.path.abspath(sys.argv[1])
 Now = datetime.datetime.now()
 
 FactoryTemplate = None
+BlockExecutionTestAutoTemplate = None
+
+prefix = """// Copyright (c) 2019-{0} Nicholas Corgan
+// SPDX-License-Identifier: BSD-3-Clause
+
+//
+// This file was auto-generated on {1}.
+//
+""".format(Now.year, Now)
 
 def populateTemplates():
     global FactoryTemplate
+    global BlockExecutionTestAutoTemplate
 
-    cppFactoryFunctionTemplatePath = os.path.join(ScriptDir, "Factory.mako.cpp")
-    with open(cppFactoryFunctionTemplatePath) as f:
+    factoryFunctionTemplatePath = os.path.join(ScriptDir, "Factory.mako.cpp")
+    with open(factoryFunctionTemplatePath) as f:
         FactoryTemplate = f.read()
+
+    blockExecutionTestAutoTemplatePath = os.path.join(ScriptDir, "BlockExecutionTestAuto.mako.cpp")
+    with open(blockExecutionTestAutoTemplatePath) as f:
+        BlockExecutionTestAutoTemplate = f.read()
 
 def processYAMLFile(yamlPath):
     yml = None
@@ -31,14 +45,6 @@ def processYAMLFile(yamlPath):
     return yml
 
 def generateFactory(blockYAML):
-    prefix = """// Copyright (c) 2019-{0} Nicholas Corgan
-// SPDX-License-Identifier: BSD-3-Clause
-
-//
-// This file was auto-generated on {1}.
-//
-""".format(Now.year, Now)
-
     try:
         rendered = Template(FactoryTemplate).render(
                        oneToOneBlocks=blockYAML["OneToOneBlocks"],
@@ -53,37 +59,35 @@ def generateFactory(blockYAML):
     with open(outputFilepath, 'w') as f:
         f.write(output)
 
-'''
-def generateBlockExecutionTest(expandedYAML):
+# TODO: make OneToOneBlock test support different types
+def generateBlockExecutionTest(blockYAML):
     sfinaeMap = dict(
-        Integer="int",
-        UnsignedInt="uint",
-        Float="float",
-        Complex="complex"
+        Integer="Int",
+        UnsignedInt="UInt",
+        Float="Float",
+        Complex="ComplexFloat"
     )
-    badParamsMap = dict(
-        Integer="badIntValues",
-        UnsignedInt="badUIntValues",
-        Float="badFloatValues",
-        Complex="badComplexValues"
-    )
-
-    maxNumParams = max([len(expandedYAML[block].get("funcArgs", [])) for block in expandedYAML])
-    assert(maxNumParams > 0)
 
     try:
-        output = Template(BlockExecutionTestTemplate).render(blockYAML=expandedYAML, Now=Now, sfinaeMap=sfinaeMap, maxNumParams=maxNumParams, badParamsMap=badParamsMap)
+        rendered = Template(BlockExecutionTestAutoTemplate).render(
+                       oneToOneBlocks=blockYAML["OneToOneBlocks"],
+                       singleOutputSources=blockYAML["SingleOutputSources"],
+                       twoToOneBlocks=blockYAML["TwoToOneBlocks"],
+                       sfinaeMap=sfinaeMap)
     except:
         print(mako.exceptions.text_error_template().render())
+
+    output = "{0}\n{1}".format(prefix, rendered)
 
     outputFilepath = os.path.join(OutputDir, "BlockExecutionTestAuto.cpp")
     with open(outputFilepath, 'w') as f:
         f.write(output)
-'''
 
 if __name__ == "__main__":
     populateTemplates()
 
     yamlFilepath = os.path.join(ScriptDir, "Blocks.yaml")
     blockYAML = processYAMLFile(yamlFilepath)
+
     generateFactory(blockYAML)
+    generateBlockExecutionTest(blockYAML)
