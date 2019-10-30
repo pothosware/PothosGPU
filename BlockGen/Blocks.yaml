@@ -1,3 +1,5 @@
+#TODO: custom verification functions for asin, acos, atan, asinh, acosh, atanh
+
 OneToOneBlocks:
         #
         # af/arith.h
@@ -17,36 +19,43 @@ OneToOneBlocks:
 
         - func: round
           header: arith
+          verify: std::round
           supportedTypes:
                   supportFloat: true
 
         - func: trunc
           header: arith
+          verify: std::trunc
           supportedTypes:
                   supportFloat: true
 
         - func: floor
           header: arith
+          verify: std::floor
           supportedTypes:
                   supportFloat: true
 
         - func: ceil
           header: arith
+          verify: std::ceil
           supportedTypes:
                   supportFloat: true
 
         - func: sin
           header: arith
+          verify: std::sin
           supportedTypes:
                   supportFloat: true
 
         - func: cos
           header: arith
+          verify: std::cos
           supportedTypes:
                   supportFloat: true
 
         - func: tan
           header: arith
+          verify: std::tan
           supportedTypes:
                   supportFloat: true
 
@@ -88,21 +97,25 @@ OneToOneBlocks:
 
         - func: conjg
           header: arith
+          verify: std::conj
           supportedTypes:
                   supportComplexFloat: true
 
         - func: sinh
           header: arith
+          verify: std::sinh
           supportedTypes:
                   supportFloat: true
 
         - func: cosh
           header: arith
+          verify: std::cosh
           supportedTypes:
                   supportFloat: true
 
         - func: tanh
           header: arith
+          verify: std::tanh
           supportedTypes:
                   supportFloat: true
 
@@ -123,21 +136,25 @@ OneToOneBlocks:
 
         - func: pow2
           header: arith
+          # TODO: type-specific verify functions
           supportedTypes:
                   supportAll: true
 
         - func: sigmoid
           header: arith
+          verify: testSigmoid
           supportedTypes:
                   supportFloat: true
 
         - func: exp
           header: arith
+          verify: std::exp
           supportedTypes:
                   supportFloat: true
 
         - func: expm1
           header: arith
+          verify: std::expm1
           supportedTypes:
                   supportFloat: true
 
@@ -153,31 +170,37 @@ OneToOneBlocks:
 
         - func: log
           header: arith
+          verify: std::log
           supportedTypes:
                   supportFloat: true
 
         - func: log1p
           header: arith
+          verify: std::log1p
           supportedTypes:
                   supportFloat: true
 
         - func: log10
           header: arith
+          verify: std::log10
           supportedTypes:
                   supportFloat: true
 
         - func: log2
           header: arith
+          verify: std::log2
           supportedTypes:
                   supportFloat: true
 
         - func: sqrt
           header: arith
+          verify: std::sqrt
           supportedTypes:
                   supportFloat: true
 
         - func: cbrt
           header: arith
+          verify: std::cbrt
           supportedTypes:
                   supportFloat: true
 
@@ -188,11 +211,13 @@ OneToOneBlocks:
 
         - func: tgamma
           header: arith
+          verify: std::tgamma
           supportedTypes:
                   supportFloat: true
 
         - func: lgamma
           header: arith
+          verify: std::lgamma
           supportedTypes:
                   supportFloat: true
 

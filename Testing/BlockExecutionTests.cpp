@@ -48,7 +48,7 @@ static EnableIfFloat<T, std::vector<T>> getTestInputs()
     // To not have nice even numbers
     static constexpr size_t numInputs = 123;
 
-    auto testParams = linspace<T>(-20.0f, 20.0f, numInputs);
+    auto testParams = linspace<T>(10.0f, 20.0f, numInputs);
     std::shuffle(testParams.begin(), testParams.end(), g);
 
     return testParams;

@@ -17,3 +17,9 @@ void testOneToOneBlock(
     const std::string& blockRegistryPath,
     size_t numChannels,
     const UnaryFunc<T>& verificationFunc);
+
+template <typename T>
+static inline EnableIfFloat<T, T> testSigmoid(const T& val)
+{
+    return (T(1.0) / (1.0 + std::exp(val * T(-1))));
+}
