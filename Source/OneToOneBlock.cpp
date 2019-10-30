@@ -137,18 +137,9 @@ void OneToOneBlock::work()
         assert(0 != _nchans);
 
         auto afInput = getNumberedInputPortsAs2DAfArray();
-        const auto dim0 = afInput.dims(0);
-        const auto dim1 = afInput.dims(1);
+        assert(_nchans == static_cast<size_t>(afInput.dims(0)));
+        assert(elems == static_cast<size_t>(afInput.dims(1)));
 
-        assert(_nchans == static_cast<size_t>(dim0));
-        assert(elems == static_cast<size_t>(dim1));
-
-        af::array afOutput(dim0, dim1, afInput.type());
-        gfor(af::seq row, dim0)
-        {
-            afOutput(row) = _func(afInput(row));
-        }
-
-        post2DAfArrayToNumberedOutputPorts(afOutput);
+        post2DAfArrayToNumberedOutputPorts(_func(afInput));
     }
 }
