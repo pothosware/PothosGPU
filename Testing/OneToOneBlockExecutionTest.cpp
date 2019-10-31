@@ -68,50 +68,38 @@ static EnableIfComplex<T, std::vector<T>> getTestInputs()
     return testParams;
 }
 
-using PortInfoVector = std::vector<Pothos::PortInfo>;
-
-template <typename T>
-void testOneToOneBlock(
-    const std::string& blockRegistryPath,
-    size_t numChannels,
-    const UnaryFunc<T>& verificationFunc)
+template <typename In, typename Out>
+void testOneToOneBlockCommon(
+    const Pothos::Proxy& block,
+    const UnaryFunc<In, Out>& verificationFunc)
 {
-    static const Pothos::DType dtype(typeid(T));
+    static const Pothos::DType inputDType(typeid(In));
+    static const Pothos::DType outputDType(typeid(Out));
 
-    std::cout << "Testing " << blockRegistryPath << " (type: " << dtype.name()
-                            << ", " << "chans: " << numChannels << ")" << std::endl;
+    const size_t numChannels = block.call<PortInfoVector>("inputPortInfo").size();
 
-    auto block = Pothos::BlockRegistry::make(
-                     blockRegistryPath,
-                     dtype,
-                     numChannels);
-    auto inputPortInfo = block.call<PortInfoVector>("inputPortInfo");
-    auto outputPortInfo = block.call<PortInfoVector>("outputPortInfo");
-    POTHOS_TEST_EQUAL(numChannels, inputPortInfo.size());
-    POTHOS_TEST_EQUAL(numChannels, outputPortInfo.size());
-
-    std::vector<std::vector<T>> testInputs(numChannels);
+    std::vector<std::vector<In>> testInputs(numChannels);
     std::vector<Pothos::Proxy> feederSources;
     std::vector<Pothos::Proxy> collectorSinks;
 
     for(size_t chan = 0; chan < numChannels; ++chan)
     {
-        testInputs[chan] = getTestInputs<T>();
+        testInputs[chan] = getTestInputs<In>();
 
         feederSources.emplace_back(
             Pothos::BlockRegistry::make(
                 "/blocks/feeder_source",
-                dtype));
+                inputDType));
         feederSources.back().call(
             "feedBuffer",
-            stdVectorToBufferChunk<T>(
-                dtype,
+            stdVectorToBufferChunk<In>(
+                inputDType,
                 testInputs[chan]));
 
         collectorSinks.emplace_back(
             Pothos::BlockRegistry::make(
                 "/blocks/collector_sink",
-                dtype));
+                outputDType));
     }
 
     // Execute the topology.
@@ -148,36 +136,104 @@ void testOneToOneBlock(
             chanOutputs.elements());
         if(nullptr != verificationFunc)
         {
-            std::vector<T> expectedOutputs;
+            std::vector<Out> expectedOutputs;
             std::transform(
                 chanInputs.begin(),
                 chanInputs.end(),
                 std::back_inserter(expectedOutputs),
                 verificationFunc);
 
-            testBufferChunk<T>(
+            testBufferChunk<Out>(
                 chanOutputs,
                 expectedOutputs);
         }
     }
 }
 
-#define SPECIALIZE_TEMPLATE_TESTS(T) \
+template <typename T>
+void testOneToOneBlock(
+    const std::string& blockRegistryPath,
+    size_t numChannels,
+    const UnaryFunc<T, T>& verificationFunc)
+{
+    static const Pothos::DType dtype(typeid(T));
+
+    std::cout << "Testing " << blockRegistryPath << " (type: " << dtype.name()
+                            << ", " << "chans: " << numChannels << ")" << std::endl;
+
+    auto block = Pothos::BlockRegistry::make(
+                     blockRegistryPath,
+                     dtype,
+                     numChannels);
+    auto inputPortInfo = block.call<PortInfoVector>("inputPortInfo");
+    auto outputPortInfo = block.call<PortInfoVector>("outputPortInfo");
+    POTHOS_TEST_EQUAL(numChannels, inputPortInfo.size());
+    POTHOS_TEST_EQUAL(numChannels, outputPortInfo.size());
+
+    testOneToOneBlockCommon<T, T>(
+        block,
+        verificationFunc);
+}
+
+template <typename In, typename Out>
+void testOneToOneBlock(
+    const std::string& blockRegistryPath,
+    size_t numChannels,
+    const UnaryFunc<In, Out>& verificationFunc)
+{
+    static const Pothos::DType inputDType(typeid(In));
+    static const Pothos::DType outputDType(typeid(Out));
+
+    std::cout << "Testing " << blockRegistryPath
+                            << " (types: " << inputDType.name() << " -> " << outputDType.name()
+                            << ", " << "chans: " << numChannels << ")" << std::endl;
+
+    auto block = Pothos::BlockRegistry::make(
+                     blockRegistryPath,
+                     inputDType,
+                     outputDType,
+                     numChannels);
+    auto inputPortInfo = block.call<PortInfoVector>("inputPortInfo");
+    auto outputPortInfo = block.call<PortInfoVector>("outputPortInfo");
+    POTHOS_TEST_EQUAL(numChannels, inputPortInfo.size());
+    POTHOS_TEST_EQUAL(numChannels, outputPortInfo.size());
+
+    testOneToOneBlockCommon<In, Out>(
+        block,
+        verificationFunc);
+}
+
+#define SPECIALIZE_TEMPLATE_TEST(T) \
     template \
     void testOneToOneBlock<T>( \
         const std::string& blockRegistryPath, \
         size_t numChannels, \
-        const UnaryFunc<T>& verificationFunc);
+        const UnaryFunc<T, T>& verificationFunc);
 
-SPECIALIZE_TEMPLATE_TESTS(std::int8_t)
-SPECIALIZE_TEMPLATE_TESTS(std::int16_t)
-SPECIALIZE_TEMPLATE_TESTS(std::int32_t)
-SPECIALIZE_TEMPLATE_TESTS(std::int64_t)
-SPECIALIZE_TEMPLATE_TESTS(std::uint8_t)
-SPECIALIZE_TEMPLATE_TESTS(std::uint16_t)
-SPECIALIZE_TEMPLATE_TESTS(std::uint32_t)
-SPECIALIZE_TEMPLATE_TESTS(std::uint64_t)
-SPECIALIZE_TEMPLATE_TESTS(float)
-SPECIALIZE_TEMPLATE_TESTS(double)
-SPECIALIZE_TEMPLATE_TESTS(std::complex<float>)
-SPECIALIZE_TEMPLATE_TESTS(std::complex<double>)
+#define SPECIALIZE_COMPLEX_TEMPLATE_TEST(T) \
+    template \
+    void testOneToOneBlock<T, std::complex<T>>( \
+        const std::string& blockRegistryPath, \
+        size_t numChannels, \
+        const UnaryFunc<T, std::complex<T>>& verificationFunc); \
+    template \
+    void testOneToOneBlock<std::complex<T>, T>( \
+        const std::string& blockRegistryPath, \
+        size_t numChannels, \
+        const UnaryFunc<std::complex<T>, T>& verificationFunc);
+
+SPECIALIZE_TEMPLATE_TEST(std::int8_t)
+SPECIALIZE_TEMPLATE_TEST(std::int16_t)
+SPECIALIZE_TEMPLATE_TEST(std::int32_t)
+SPECIALIZE_TEMPLATE_TEST(std::int64_t)
+SPECIALIZE_TEMPLATE_TEST(std::uint8_t)
+SPECIALIZE_TEMPLATE_TEST(std::uint16_t)
+SPECIALIZE_TEMPLATE_TEST(std::uint32_t)
+SPECIALIZE_TEMPLATE_TEST(std::uint64_t)
+SPECIALIZE_TEMPLATE_TEST(float)
+SPECIALIZE_TEMPLATE_TEST(double)
+SPECIALIZE_TEMPLATE_TEST(std::complex<float>)
+SPECIALIZE_TEMPLATE_TEST(std::complex<double>)
+
+SPECIALIZE_COMPLEX_TEMPLATE_TEST(float)
+SPECIALIZE_COMPLEX_TEMPLATE_TEST(double)
