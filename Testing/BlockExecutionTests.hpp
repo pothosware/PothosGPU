@@ -17,6 +17,9 @@ using PortInfoVector = std::vector<Pothos::PortInfo>;
 template <typename In, typename Out>
 using UnaryFunc = std::function<Out(const In&)>;
 
+template <typename In, typename Out>
+using BinaryFunc = std::function<Out(const In&, const In&)>;
+
 //
 // Templated type calls
 //
@@ -32,6 +35,16 @@ void testOneToOneBlock(
     const std::string& blockRegistryPath,
     size_t numChannels,
     const UnaryFunc<In, Out>& verificationFunc);
+
+template <typename T>
+void testTwoToOneBlock(
+    const std::string& blockRegistryPath,
+    const BinaryFunc<T, T>& verificationFunc);
+
+template <typename In, typename Out>
+void testTwoToOneBlock(
+    const std::string& blockRegistryPath,
+    const BinaryFunc<In, Out>& verificationFunc);
 
 //
 // Getting random inputs

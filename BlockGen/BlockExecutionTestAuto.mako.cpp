@@ -21,10 +21,19 @@ static inline Out verify_${block["func"]}(const In& val)
     %endif
 %endfor
 %for block in singleOutputSources:
+    %if "verify" in block:
 
+    %endif
 %endfor
 %for block in twoToOneBlocks:
+    %if "verify" in block:
 
+template <typename In, typename Out>
+static inline Out verify_${block["func"]}(const In& val0, const In& val1)
+{
+    return ${block["verify"]}(val0, val1);
+}
+    %endif
 %endfor
 %for k,v in sfinaeMap.items():
 
@@ -61,6 +70,25 @@ static EnableIf${k}<T, void> blockExecutionTest()
     testOneToOneBlock<T, std::complex<T>>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         1,
+        ${"&verify_{0}<T, std::complex<T>>".format(block["func"]) if "verify" in block else "nullptr"});
+            %endif
+        %endif
+    %endfor
+    %for block in twoToOneBlocks:
+        %if "supportedTypes" in block:
+            %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
+    testTwoToOneBlock<T>(
+        "/arrayfire/${block["header"]}/${block["func"]}",
+        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"});
+            %endif
+        %elif ("supportedInputTypes" in block) and ("support{0}".format(v) in block["supportedInputTypes"]):
+            %if v == "ComplexFloat":
+    testTwoToOneBlock<T, typename T::value_type>(
+        "/arrayfire/${block["header"]}/${block["func"]}",
+        ${"&verify_{0}<T, typename T::value_type>".format(block["func"]) if "verify" in block else "nullptr"});
+            %else:
+    testTwoToOneBlock<T, std::complex<T>>(
+        "/arrayfire/${block["header"]}/${block["func"]}",
         ${"&verify_{0}<T, std::complex<T>>".format(block["func"]) if "verify" in block else "nullptr"});
             %endif
         %endif

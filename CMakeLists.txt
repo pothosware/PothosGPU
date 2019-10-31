@@ -78,6 +78,7 @@ POTHOS_MODULE_UTIL(
         Source/Utility.cpp
 
         Testing/OneToOneBlockExecutionTest.cpp
+        Testing/TwoToOneBlockExecutionTest.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
     LIBRARIES

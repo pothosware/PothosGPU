@@ -53,18 +53,18 @@ af::array ArrayFireBlock::_getInputPortAsAfArray(
 {
     auto bufferChunk = this->input(portId)->buffer();
     const size_t minLength = this->workInfo().minAllElements;
-    assert(minLength <= bufferChunk.getBuffer().getLength());
+    assert(minLength <= bufferChunk.elements());
 
-    if(truncateToMinLength && (minLength < bufferChunk.getBuffer().getLength()))
+    if(truncateToMinLength && (minLength < bufferChunk.elements()))
     {
         auto sharedBuffer = bufferChunk.getBuffer();
+        auto dtype = bufferChunk.dtype;
 
         auto newSharedBuffer = Pothos::SharedBuffer(
                                    sharedBuffer.getAddress(),
-                                   minLength,
+                                   minLength * dtype.size(),
                                    sharedBuffer);
 
-        auto dtype = bufferChunk.dtype;
         bufferChunk = Pothos::BufferChunk(newSharedBuffer);
         bufferChunk.dtype = dtype;
     }

@@ -1,4 +1,5 @@
 #TODO: custom verification functions for asin, acos, atan, asinh, acosh, atanh
+#TODO: make sure these types are correct
 
 OneToOneBlocks:
         #
@@ -281,6 +282,7 @@ TwoToOneBlocks:
 
         - func: min
           header: data
+          verify: std::min
           supportedTypes:
                   supportInt: true
                   supportUInt: true
@@ -288,28 +290,31 @@ TwoToOneBlocks:
 
         - func: max
           header: data
+          verify: std::max
           supportedTypes:
                   supportInt: true
                   supportUInt: true
                   supportFloat: true
 
-        - func: rem
-          header: data
-          supportedTypes:
-                  supportAll: true
-
-        - func: mod
-          header: data
-          supportedTypes:
-                  supportAll: true
+# TODO: custom block to prevent zeros? CPU backend results in floating-point exception
+#        - func: rem
+#          header: data
+#          supportedTypes:
+#                  supportAll: true
+#
+#        - func: mod
+#          header: data
+#          supportedTypes:
+#                  supportAll: true
 
         - func: hypot
           header: data
           supportedTypes:
-                  supportAll: true
+                  supportFloat: true
 
         - func: atan2
           header: data
+          verify: std::atan2
           supportedTypes:
                   supportFloat: true
 
