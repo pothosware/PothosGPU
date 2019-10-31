@@ -57,7 +57,7 @@ void validateComplexAndFloatTypesMatch(
     assert(!floatDType.isInteger());
     assert(!floatDType.isComplex());
 
-    static constexpr size_t subStringStart = 7; // Length of "complex_"
+    static constexpr size_t subStringStart = 8; // Cut off "complex_"
 
     auto complexDTypeSubtype = complexDType.name().substr(subStringStart);
     auto floatType = floatDType.name();

@@ -12,6 +12,7 @@ OneToOneBlocks:
 
         - func: arg
           header: arith
+          verify: std::arg
           supportedInputTypes:
                   supportComplexFloat: true
           supportedOutputTypes:
@@ -83,6 +84,7 @@ OneToOneBlocks:
 
         - func: real
           header: arith
+          verify: testReal
           supportedInputTypes:
                   supportComplexFloat: true
           supportedOutputTypes:
@@ -90,6 +92,7 @@ OneToOneBlocks:
 
         - func: imag
           header: arith
+          verify: testImag
           supportedInputTypes:
                   supportComplexFloat: true
           supportedOutputTypes:
@@ -206,6 +209,7 @@ OneToOneBlocks:
 
         - func: factorial
           header: arith
+          verify: testFactorial
           supportedTypes:
                   supportFloat: true
 

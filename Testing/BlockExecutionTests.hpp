@@ -33,7 +33,25 @@ void testOneToOneBlock(
 //
 
 template <typename T>
+static inline EnableIfComplex<T, typename T::value_type> testReal(const T& val)
+{
+    return val.real();
+}
+
+template <typename T>
+static inline EnableIfComplex<T, typename T::value_type> testImag(const T& val)
+{
+    return val.imag();
+}
+
+template <typename T>
 static inline EnableIfFloat<T, T> testSigmoid(const T& val)
 {
     return (T(1.0) / (1.0 + std::exp(val * T(-1))));
+}
+
+template <typename T>
+static inline EnableIfFloat<T, T> testFactorial(const T& val)
+{
+    return std::tgamma(val + T(1.0));
 }
