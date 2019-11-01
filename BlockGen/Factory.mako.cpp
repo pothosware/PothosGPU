@@ -74,6 +74,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
                 ${"true" if block["supportedOutputTypes"].get("supportFloat", block["supportedOutputTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedOutputTypes"].get("supportComplexFloat", block["supportedOutputTypes"].get("supportAll", False)) else "false"},
             }, 4)
+            .bind<bool>(${"true" if block.get("allowZeroInBuffer1", True) else "false"}, 5)
     %else:
         Pothos::Callable(&TwoToOneBlock::makeFromOneType)
             .bind<TwoToOneFunc>(&af::${block["func"]}, 0)
@@ -83,6 +84,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
                 ${"true" if block["supportedTypes"].get("supportFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportComplexFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
             }, 2)
+            .bind<bool>(${"true" if block.get("allowZeroInBuffer1", True) else "false"}, 3)
     %endif
     ),
 %endfor

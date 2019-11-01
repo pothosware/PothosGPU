@@ -23,14 +23,16 @@ class TwoToOneBlock: public ArrayFireBlock
         static Pothos::Block* makeFromOneType(
             const TwoToOneFunc& func,
             const Pothos::DType& dtype,
-            const DTypeSupport& supportedTypes);
+            const DTypeSupport& supportedTypes,
+            bool allowZeroInBuffer1);
 
         static Pothos::Block* makeFromTwoTypes(
             const TwoToOneFunc& func,
             const Pothos::DType& inputDType,
             const Pothos::DType& outputDType,
             const DTypeSupport& supportedInputTypes,
-            const DTypeSupport& supportedOutputTypes);
+            const DTypeSupport& supportedOutputTypes,
+            bool allowZeroInBuffer1);
 
         //
         // Class implementation
@@ -39,7 +41,8 @@ class TwoToOneBlock: public ArrayFireBlock
         TwoToOneBlock(
             const TwoToOneFunc& func,
             const Pothos::DType& inputDType,
-            const Pothos::DType& outputDType);
+            const Pothos::DType& outputDType,
+            bool allowZeroInBuffer1);
 
         virtual ~TwoToOneBlock();
 
@@ -47,4 +50,5 @@ class TwoToOneBlock: public ArrayFireBlock
 
     private:
         TwoToOneFunc _func;
+        bool _allowZeroInBuffer1;
 };

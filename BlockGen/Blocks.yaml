@@ -296,16 +296,17 @@ TwoToOneBlocks:
                   supportUInt: true
                   supportFloat: true
 
-# TODO: custom block to prevent zeros? CPU backend results in floating-point exception
-#        - func: rem
-#          header: data
-#          supportedTypes:
-#                  supportAll: true
-#
-#        - func: mod
-#          header: data
-#          supportedTypes:
-#                  supportAll: true
+        - func: rem
+          header: data
+          allowZeroInBuffer1: false
+          supportedTypes:
+                  supportAll: true
+
+        - func: mod
+          header: data
+          allowZeroInBuffer1: false
+          supportedTypes:
+                  supportAll: true
 
         - func: hypot
           header: data

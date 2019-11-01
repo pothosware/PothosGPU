@@ -4,6 +4,7 @@
 #include "TwoToOneBlock.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Exception.hpp>
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
@@ -20,11 +21,16 @@
 Pothos::Block* TwoToOneBlock::makeFromOneType(
     const TwoToOneFunc& func,
     const Pothos::DType& dtype,
-    const DTypeSupport& supportedTypes)
+    const DTypeSupport& supportedTypes,
+    bool allowZeroInBuffer1)
 {
     validateDType(dtype, supportedTypes);
 
-    return new TwoToOneBlock(func, dtype, dtype);
+    return new TwoToOneBlock(
+                   func,
+                   dtype,
+                   dtype,
+                   allowZeroInBuffer1);
 }
 
 Pothos::Block* TwoToOneBlock::makeFromTwoTypes(
@@ -32,7 +38,8 @@ Pothos::Block* TwoToOneBlock::makeFromTwoTypes(
     const Pothos::DType& inputDType,
     const Pothos::DType& outputDType,
     const DTypeSupport& supportedInputTypes,
-    const DTypeSupport& supportedOutputTypes)
+    const DTypeSupport& supportedOutputTypes,
+    bool allowZeroInBuffer1)
 {
     validateDType(inputDType, supportedInputTypes);
     validateDType(outputDType, supportedOutputTypes);
@@ -50,7 +57,11 @@ Pothos::Block* TwoToOneBlock::makeFromTwoTypes(
             inputDType);
     }
 
-    return new TwoToOneBlock(func, inputDType, outputDType);
+    return new TwoToOneBlock(
+                   func,
+                   inputDType,
+                   outputDType,
+                   allowZeroInBuffer1);
 }
 
 //
@@ -60,9 +71,11 @@ Pothos::Block* TwoToOneBlock::makeFromTwoTypes(
 TwoToOneBlock::TwoToOneBlock(
     const TwoToOneFunc& func,
     const Pothos::DType& inputDType,
-    const Pothos::DType& outputDType
+    const Pothos::DType& outputDType,
+    bool allowZeroInBuffer1
 ): ArrayFireBlock(),
-   _func(func)
+   _func(func),
+   _allowZeroInBuffer1(allowZeroInBuffer1)
 {
     this->setupInput(0, inputDType);
     this->setupInput(1, inputDType);
@@ -85,6 +98,11 @@ void TwoToOneBlock::work()
 
     assert(elems == static_cast<size_t>(inputAfArray0.elements()));
     assert(elems == static_cast<size_t>(inputAfArray1.elements()));
+
+    if(!_allowZeroInBuffer1 && (elems != static_cast<size_t>(inputAfArray1.nonzeros())))
+    {
+        throw Pothos::InvalidArgumentException("Denominator cannot contain zeros.");
+    }
 
     auto outputAfArray = _func(inputAfArray0, inputAfArray1);
     assert(elems == static_cast<size_t>(outputAfArray.elements()));
