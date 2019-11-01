@@ -74,22 +74,26 @@ static EnableIf${k}<T, void> blockExecutionTest()
             %endif
         %endif
     %endfor
+
     %for block in twoToOneBlocks:
         %if "supportedTypes" in block:
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
     testTwoToOneBlock<T>(
         "/arrayfire/${block["header"]}/${block["func"]}",
-        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"},
+        ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
             %endif
         %elif ("supportedInputTypes" in block) and ("support{0}".format(v) in block["supportedInputTypes"]):
             %if v == "ComplexFloat":
     testTwoToOneBlock<T, typename T::value_type>(
         "/arrayfire/${block["header"]}/${block["func"]}",
-        ${"&verify_{0}<T, typename T::value_type>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}<T, typename T::value_type>".format(block["func"]) if "verify" in block else "nullptr"},
+        ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
             %else:
     testTwoToOneBlock<T, std::complex<T>>(
         "/arrayfire/${block["header"]}/${block["func"]}",
-        ${"&verify_{0}<T, std::complex<T>>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}<T, std::complex<T>>".format(block["func"]) if "verify" in block else "nullptr"},
+        ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
             %endif
         %endif
     %endfor

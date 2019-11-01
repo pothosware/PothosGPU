@@ -300,13 +300,17 @@ TwoToOneBlocks:
           header: data
           allowZeroInBuffer1: false
           supportedTypes:
-                  supportAll: true
+                  supportInt: true
+                  supportUInt: true
+                  supportFloat: true
 
         - func: mod
           header: data
           allowZeroInBuffer1: false
           supportedTypes:
-                  supportAll: true
+                  supportInt: true
+                  supportUInt: true
+                  supportFloat: true
 
         - func: hypot
           header: data

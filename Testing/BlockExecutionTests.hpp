@@ -39,12 +39,14 @@ void testOneToOneBlock(
 template <typename T>
 void testTwoToOneBlock(
     const std::string& blockRegistryPath,
-    const BinaryFunc<T, T>& verificationFunc);
+    const BinaryFunc<T, T>& verificationFunc,
+    bool removeZerosInBuffer1);
 
 template <typename In, typename Out>
 void testTwoToOneBlock(
     const std::string& blockRegistryPath,
-    const BinaryFunc<In, Out>& verificationFunc);
+    const BinaryFunc<In, Out>& verificationFunc,
+    bool removeZerosInBuffer1);
 
 //
 // Getting random inputs

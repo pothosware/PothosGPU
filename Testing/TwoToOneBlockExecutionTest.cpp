@@ -35,7 +35,8 @@ static std::vector<Out> getExpectedOutputs(
 template <typename In, typename Out>
 void testTwoToOneBlockCommon(
     const Pothos::Proxy& block,
-    const BinaryFunc<In, Out>& verificationFunc)
+    const BinaryFunc<In, Out>& verificationFunc,
+    bool removeZerosInBuffer1)
 {
     static const Pothos::DType inputDType(typeid(In));
     static const Pothos::DType outputDType(typeid(Out));
@@ -53,6 +54,31 @@ void testTwoToOneBlockCommon(
         feederSources[chan] = Pothos::BlockRegistry::make(
                                   "/blocks/feeder_source",
                                   inputDType);
+    }
+
+    // If specified, remove any zeros from the second buffer, which
+    // ends up being a denominator. Resize the numerator to match.
+    if(removeZerosInBuffer1)
+    {
+        static const In Zero(0);
+
+        auto& denom = testInputs[1];
+        if(denom.end() != std::find(std::begin(denom), std::end(denom), Zero))
+        {
+            testInputs[1].erase(
+                std::remove(
+                    std::begin(denom),
+                    std::end(denom),
+                    Zero));
+            testInputs[0].resize(denom.size());
+        }
+    }
+
+    POTHOS_TEST_TRUE(!testInputs[0].empty());
+    POTHOS_TEST_EQUAL(testInputs[0].size(), testInputs[1].size());
+
+    for(size_t chan = 0; chan < numInputChannels; ++chan)
+    {
         feederSources[chan].call(
             "feedBuffer",
             stdVectorToBufferChunk<In>(
@@ -107,7 +133,8 @@ void testTwoToOneBlockCommon(
 template <typename T>
 void testTwoToOneBlock(
     const std::string& blockRegistryPath,
-    const BinaryFunc<T, T>& verificationFunc)
+    const BinaryFunc<T, T>& verificationFunc,
+    bool removeZerosInBuffer1)
 {
     static const Pothos::DType dtype(typeid(T));
 
@@ -123,13 +150,15 @@ void testTwoToOneBlock(
 
     testTwoToOneBlockCommon<T, T>(
         block,
-        verificationFunc);
+        verificationFunc,
+        removeZerosInBuffer1);
 }
 
 template <typename In, typename Out>
 void testTwoToOneBlock(
     const std::string& blockRegistryPath,
-    const BinaryFunc<In, Out>& verificationFunc)
+    const BinaryFunc<In, Out>& verificationFunc,
+    bool removeZerosInBuffer1)
 {
     static const Pothos::DType inputDType(typeid(In));
     static const Pothos::DType outputDType(typeid(Out));
@@ -148,14 +177,16 @@ void testTwoToOneBlock(
 
     testTwoToOneBlockCommon<In, Out>(
         block,
-        verificationFunc);
+        verificationFunc,
+        removeZerosInBuffer1);
 }
 
 #define SPECIALIZE_TEMPLATE_TEST(T) \
     template \
     void testTwoToOneBlock<T>( \
         const std::string& blockRegistryPath, \
-        const BinaryFunc<T, T>& verificationFunc);
+        const BinaryFunc<T, T>& verificationFunc, \
+        bool removeZerosInBuffer1);
 
 /*
 #define SPECIALIZE_COMPLEX_TEMPLATE_TEST(T) \
