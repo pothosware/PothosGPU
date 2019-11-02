@@ -22,7 +22,9 @@ void testOneToOneBlockCommon(
     static const Pothos::DType inputDType(typeid(In));
     static const Pothos::DType outputDType(typeid(Out));
 
-    const size_t numChannels = block.call<PortInfoVector>("inputPortInfo").size();
+    POTHOS_TEST_TRUE(!block.call<bool>("getBlockAssumesArrayFireInputs"));
+
+    const size_t numChannels = block.call<InputPortVector>("inputs").size();
 
     std::vector<std::vector<In>> testInputs(numChannels);
     std::vector<Pothos::Proxy> feederSources;
@@ -111,10 +113,10 @@ void testOneToOneBlock(
                      blockRegistryPath,
                      dtype,
                      numChannels);
-    auto inputPortInfo = block.call<PortInfoVector>("inputPortInfo");
-    auto outputPortInfo = block.call<PortInfoVector>("outputPortInfo");
-    POTHOS_TEST_EQUAL(numChannels, inputPortInfo.size());
-    POTHOS_TEST_EQUAL(numChannels, outputPortInfo.size());
+    auto inputs = block.call<InputPortVector>("inputs");
+    auto outputs = block.call<OutputPortVector>("outputs");
+    POTHOS_TEST_EQUAL(numChannels, inputs.size());
+    POTHOS_TEST_EQUAL(numChannels, outputs.size());
 
     testOneToOneBlockCommon<T, T>(
         block,
@@ -139,10 +141,10 @@ void testOneToOneBlock(
                      inputDType,
                      outputDType,
                      numChannels);
-    auto inputPortInfo = block.call<PortInfoVector>("inputPortInfo");
-    auto outputPortInfo = block.call<PortInfoVector>("outputPortInfo");
-    POTHOS_TEST_EQUAL(numChannels, inputPortInfo.size());
-    POTHOS_TEST_EQUAL(numChannels, outputPortInfo.size());
+    auto inputs = block.call<InputPortVector>("inputs");
+    auto outputs = block.call<OutputPortVector>("outputs");
+    POTHOS_TEST_EQUAL(numChannels, inputs.size());
+    POTHOS_TEST_EQUAL(numChannels, outputs.size());
 
     testOneToOneBlockCommon<In, Out>(
         block,

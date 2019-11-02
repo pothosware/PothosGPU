@@ -12,6 +12,8 @@
 #include <functional>
 #include <random>
 
+using InputPortVector = std::vector<Pothos::InputPort*>;
+using OutputPortVector = std::vector<Pothos::OutputPort*>;
 using PortInfoVector = std::vector<Pothos::PortInfo>;
 
 template <typename In, typename Out>

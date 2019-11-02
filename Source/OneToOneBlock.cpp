@@ -95,7 +95,9 @@ af::array OneToOneBlock::getNumberedInputPortsAs2DAfArray()
     af::array ret(dim0, dim1, afDType);
     for(dim_t row = 0; row < dim0; ++row)
     {
-        ret.row(row) = Pothos::Object(inputs[row]->buffer()).convert<af::array>();
+        ret.row(row) = this->getInputPortAsAfArray(row);
+        assert(ret.row(row).elements() == dim1);
+
         inputs[row]->consume(dim1);
     }
 
@@ -125,8 +127,8 @@ void OneToOneBlock::work()
 
     if(1 == _nchans)
     {
-        auto afInput = Pothos::Object(this->input(0)->buffer())
-                           .convert<af::array>();
+        auto afInput = this->getInputPortAsAfArray(0, false);
+        assert(elems == static_cast<size_t>(afInput.elements()));
 
         auto afOutput = _func(afInput);
         if(afOutput.type() != _afOutputDType)

@@ -10,12 +10,26 @@
 
 #include <string>
 
-ArrayFireBlock::ArrayFireBlock(): Pothos::Block()
+ArrayFireBlock::ArrayFireBlock():
+    Pothos::Block(),
+    _assumeArrayFireInputs(false)
 {
+    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getBlockAssumesArrayFireInputs));
+    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, setBlockAssumesArrayFireInputs));
 }
 
 ArrayFireBlock::~ArrayFireBlock()
 {
+}
+
+bool ArrayFireBlock::getBlockAssumesArrayFireInputs() const
+{
+    return _assumeArrayFireInputs;
+}
+
+void ArrayFireBlock::setBlockAssumesArrayFireInputs(bool value)
+{
+    _assumeArrayFireInputs = value;
 }
 
 af::array ArrayFireBlock::getInputPortAsAfArray(
@@ -55,21 +69,43 @@ af::array ArrayFireBlock::_getInputPortAsAfArray(
     const size_t minLength = this->workInfo().minAllElements;
     assert(minLength <= bufferChunk.elements());
 
-    if(truncateToMinLength && (minLength < bufferChunk.elements()))
+    af::array ret;
+
+    if(_assumeArrayFireInputs)
     {
         auto sharedBuffer = bufferChunk.getBuffer();
-        auto dtype = bufferChunk.dtype;
+        auto* pInputAfArray = reinterpret_cast<af::array*>(sharedBuffer.getContainer().get());
+        assert(nullptr != pInputAfArray);
 
-        auto newSharedBuffer = Pothos::SharedBuffer(
-                                   sharedBuffer.getAddress(),
-                                   minLength * dtype.size(),
-                                   sharedBuffer);
+        if(truncateToMinLength && (minLength < bufferChunk.elements()))
+        {
+            ret = pInputAfArray->slice(static_cast<int>(minLength));
+        }
+        else
+        {
+            ret = *pInputAfArray;
+        }
+    }
+    else
+    {
+        if(truncateToMinLength && (minLength < bufferChunk.elements()))
+        {
+            auto sharedBuffer = bufferChunk.getBuffer();
+            auto dtype = bufferChunk.dtype;
 
-        bufferChunk = Pothos::BufferChunk(newSharedBuffer);
-        bufferChunk.dtype = dtype;
+            auto newSharedBuffer = Pothos::SharedBuffer(
+                                       sharedBuffer.getAddress(),
+                                       minLength * dtype.size(),
+                                       sharedBuffer);
+
+            bufferChunk = Pothos::BufferChunk(newSharedBuffer);
+            bufferChunk.dtype = dtype;
+        }
+
+        ret = Pothos::Object(bufferChunk).convert<af::array>();
     }
 
-    return Pothos::Object(bufferChunk).convert<af::array>();
+    return ret;
 }
 
 template <typename T>

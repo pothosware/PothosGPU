@@ -81,6 +81,7 @@ POTHOS_MODULE_UTIL(
         Testing/TwoToOneBlockExecutionTest.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
+        Testing/TestInputArrayOptimization.cpp
     LIBRARIES
         ArrayFire::af
     DESTINATION arrayfire
