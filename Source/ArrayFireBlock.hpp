@@ -17,6 +17,10 @@ class ArrayFireBlock: public Pothos::Block
 
     protected:
 
+        std::string getArrayFireBackend() const;
+
+        void setArrayFireBackend(const std::string& backend);
+
         bool getBlockAssumesArrayFireInputs() const;
 
         void setBlockAssumesArrayFireInputs(bool value);
@@ -38,6 +42,8 @@ class ArrayFireBlock: public Pothos::Block
             const af::array& afArray);
 
         bool _assumeArrayFireInputs;
+
+        ::af_backend _afBackend;
 
     private:
 

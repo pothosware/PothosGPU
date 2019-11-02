@@ -12,14 +12,29 @@
 
 ArrayFireBlock::ArrayFireBlock():
     Pothos::Block(),
-    _assumeArrayFireInputs(false)
+    _assumeArrayFireInputs(false),
+    _afBackend(af::getActiveBackend())
 {
+    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getArrayFireBackend));
+    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, setArrayFireBackend));
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getBlockAssumesArrayFireInputs));
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, setBlockAssumesArrayFireInputs));
 }
 
 ArrayFireBlock::~ArrayFireBlock()
 {
+}
+
+std::string ArrayFireBlock::getArrayFireBackend() const
+{
+    assert(_afBackend == af::getActiveBackend());
+    return Pothos::Object(_afBackend).convert<std::string>();
+}
+
+void ArrayFireBlock::setArrayFireBackend(const std::string& backend)
+{
+    _afBackend = Pothos::Object(backend).convert<::af_backend>();
+    af::setBackend(_afBackend);
 }
 
 bool ArrayFireBlock::getBlockAssumesArrayFireInputs() const
