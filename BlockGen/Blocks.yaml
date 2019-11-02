@@ -7,11 +7,13 @@ OneToOneBlocks:
         #
 
         - func: abs
+          niceName: Absolute Value
           header: arith
           supportedTypes:
                   supportAll: true
 
         - func: arg
+          niceName: Phase of Complex Number
           header: arith
           verify: std::arg
           supportedInputTypes:
@@ -26,6 +28,7 @@ OneToOneBlocks:
                   supportFloat: true
 
         - func: trunc
+          niceName: Truncate
           header: arith
           verify: std::trunc
           supportedTypes:
@@ -44,39 +47,46 @@ OneToOneBlocks:
                   supportFloat: true
 
         - func: sin
+          niceName: Sine
           header: arith
           verify: std::sin
           supportedTypes:
                   supportFloat: true
 
         - func: cos
+          niceName: Cosine
           header: arith
           verify: std::cos
           supportedTypes:
                   supportFloat: true
 
         - func: tan
+          niceName: Tangent
           header: arith
           verify: std::tan
           supportedTypes:
                   supportFloat: true
 
         - func: asin
+          niceName: Arc Sine
           header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: acos
+          niceName: Arc Cosine
           header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: atan
+          niceName: Arc Tangent
           header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: complex
+          niceName: Float to Complex
           header: arith
           supportedInputTypes:
                   supportFloat: true
@@ -84,6 +94,7 @@ OneToOneBlocks:
                   supportComplexFloat: true
 
         - func: real
+          niceName: Complex to Real
           header: arith
           verify: testReal
           supportedInputTypes:
@@ -92,6 +103,7 @@ OneToOneBlocks:
                   supportFloat: true
 
         - func: imag
+          niceName: Complex to Imaginary
           header: arith
           verify: testImag
           supportedInputTypes:
@@ -100,109 +112,128 @@ OneToOneBlocks:
                   supportFloat: true
 
         - func: conjg
+          niceName: Complex Conjugate
           header: arith
           verify: std::conj
           supportedTypes:
                   supportComplexFloat: true
 
         - func: sinh
+          niceName: Hyperbolic Sine
           header: arith
           verify: std::sinh
           supportedTypes:
                   supportFloat: true
 
         - func: cosh
+          niceName: Hyperbolic Cosine
           header: arith
           verify: std::cosh
           supportedTypes:
                   supportFloat: true
 
         - func: tanh
+          niceName: Hyperbolic Tangent
           header: arith
           verify: std::tanh
           supportedTypes:
                   supportFloat: true
 
         - func: asinh
+          niceName: Hyperbolic Arc Sine
           header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: acosh
+          niceName: Hyperbolic Arc Cosine
           header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: atanh
+          niceName: Hyperbolic Arc Tangent
           header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: pow2
+          niceName: Square
           header: arith
           # TODO: type-specific verify functions
           supportedTypes:
                   supportAll: true
 
         - func: sigmoid
+          niceName: Sigmoid
           header: arith
           verify: testSigmoid
           supportedTypes:
                   supportFloat: true
 
         - func: exp
+          niceName: Exponential
           header: arith
           verify: std::exp
           supportedTypes:
                   supportFloat: true
 
         - func: expm1
+          niceName: exp(x) - 1
           header: arith
           verify: std::expm1
           supportedTypes:
                   supportFloat: true
 
         - func: erf
+          niceName: Error Function
           header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: erfc
+          niceName: Complementary Error Function
           header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: log
+          niceName: Logarithm
           header: arith
           verify: std::log
           supportedTypes:
                   supportFloat: true
 
         - func: log1p
+          niceName: log(1 + x)
           header: arith
           verify: std::log1p
           supportedTypes:
                   supportFloat: true
 
         - func: log10
+          niceName: Log Base-10
           header: arith
           verify: std::log10
           supportedTypes:
                   supportFloat: true
 
         - func: log2
+          niceName: Log Base-2
           header: arith
           verify: std::log2
           supportedTypes:
                   supportFloat: true
 
         - func: sqrt
+          niceName: Square Root
           header: arith
           verify: std::sqrt
           supportedTypes:
                   supportFloat: true
 
         - func: cbrt
+          niceName: Cube Root
           header: arith
           verify: std::cbrt
           supportedTypes:
@@ -215,12 +246,14 @@ OneToOneBlocks:
                   supportFloat: true
 
         - func: tgamma
+          niceName: Gamma
           header: arith
           verify: std::tgamma
           supportedTypes:
                   supportFloat: true
 
         - func: lgamma
+          niceName: Log Gamma
           header: arith
           verify: std::lgamma
           supportedTypes:
@@ -237,11 +270,13 @@ OneToOneBlocks:
         #
 
         - func: dft
+          niceName: DFT
           header: signal
           supportedTypes:
                   supportComplexFloat: true
 
         - func: idft
+          niceName: Inverse DFT
           header: signal
           supportedTypes:
                   supportComplexFloat: true

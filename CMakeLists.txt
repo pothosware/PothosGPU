@@ -84,5 +84,6 @@ POTHOS_MODULE_UTIL(
         Testing/TestInputArrayOptimization.cpp
     LIBRARIES
         ArrayFire::af
+    ENABLE_DOCS ON
     DESTINATION arrayfire
 )

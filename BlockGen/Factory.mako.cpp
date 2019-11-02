@@ -14,6 +14,46 @@
 static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 {
 %for block in oneToOneBlocks:
+    /*
+     * |PothosDoc ${block.get("niceName", block["func"].title())}
+     *
+     * Calls <b>af::${block["func"]}</b> on all inputs. This block computes all
+     * outputs in parallel, using one of the following implementations by priority
+     * (based on availability of hardware and underlying libraries).
+     * <ol>
+     * <li>CUDA (if GPU present)</li>
+     * <li>OpenCL (if GPU present)</li>
+     * <li>Standard C++ (if no GPU present)</li>
+     * </ol>
+     *
+     * |category /ArrayFire/${block["header"].title()}
+     * |keywords ${block["header"]} ${block["func"]}
+    %if "supportedTypes" in block:
+     * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype,numChannels)
+     *
+     * |param dtype(Data Type) The block data type.
+     * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
+     * |default "${block["supportedTypes"]["defaultType"]}"
+     * |preview enable
+    %else:
+     * |factory /arrayfire/${block["header"]}/${block["func"]}(inputDType,outputDType,numChannels)
+     *
+     * |param inputDType(Input Data Type) The input data type.
+     * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
+     * |default "${block["supportedInputTypes"]["defaultType"]}"
+     * |preview enable
+     *
+     * |param outputDType(Output Data Type) The output data type.
+     * |widget DTypeChooser(${block["supportedOutputTypes"]["dtypeString"]})
+     * |default "${block["supportedOutputTypes"]["defaultType"]}"
+     * |preview enable
+    %endif
+     *
+     * |param numChannels[Num Channels] The number of channels.
+     * |default 1
+     * |widget SpinBox(minimum=1)
+     * |preview disable
+     */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["func"]}",
     %if "supportedInputTypes" in block:
@@ -44,6 +84,27 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
     ),
 %endfor
 %for block in singleOutputSources:
+    /*
+     * |PothosDoc ${block.get("niceName", block["func"].title())}
+     *
+     * Calls <b>af::${block["func"]}</b> to generate outputs. This block uses
+     * one ofthe following implementations by priority (based on availability
+     * of hardware and underlying libraries).
+     * <ol>
+     * <li>CUDA (if GPU present)</li>
+     * <li>OpenCL (if GPU present)</li>
+     * <li>Standard C++ (if no GPU present)</li>
+     * </ol>
+     *
+     * |category /ArrayFire/${block["header"].title()}
+     * |keywords ${block["header"]} ${block["func"]}
+     * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype)
+     *
+     * |param dtype(Data Type) The block data type.
+     * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
+     * |default "${block["supportedTypes"]["defaultType"]}"
+     * |preview enable
+     */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["func"]}",
         Pothos::Callable(&SingleOutputSource::make)
@@ -57,6 +118,41 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
     ),
 %endfor
 %for block in twoToOneBlocks:
+    /*
+     * |PothosDoc ${block.get("niceName", block["func"].title())}
+     *
+     * Calls <b>af::${block["func"]}</b> on all inputs. This block uses one of
+     * the following implementations by priority (based on availability of
+     * hardware and underlying libraries).
+     * <ol>
+     * <li>CUDA (if GPU present)</li>
+     * <li>OpenCL (if GPU present)</li>
+     * <li>Standard C++ (if no GPU present)</li>
+     * </ol>
+     *
+     * |category /ArrayFire/${block["header"].title()}
+     * |keywords ${block["header"]} ${block["func"]}
+    %if "supportedTypes" in block:
+     * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype)
+     *
+     * |param dtype(Data Type) The block data type.
+     * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
+     * |default "${block["supportedTypes"]["defaultType"]}"
+     * |preview enable
+    %else:
+     * |factory /arrayfire/${block["header"]}/${block["func"]}(inputDType,outputDType)
+     *
+     * |param inputDType(Input Data Type) The input data type.
+     * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
+     * |default "${block["supportedInputTypes"]["defaultType"]}"
+     * |preview enable
+     *
+     * |param outputDType(Output Data Type) The output data type.
+     * |widget DTypeChooser(${block["supportedOutputTypes"]["dtypeString"]})
+     * |default "${block["supportedOutputTypes"]["defaultType"]}"
+     * |preview enable
+    %endif
+     */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["func"]}",
     %if "supportedInputTypes" in block:

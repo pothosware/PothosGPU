@@ -44,7 +44,31 @@ def processYAMLFile(yamlPath):
 
     return yml
 
+DICT_ENTRY_KEYS = dict(
+    supportInt="int=1",
+    supportUInt="uint=1",
+    supportFloat="float=1",
+    supportComplexFloat="cfloat=1"
+)
+
+# Operates in-place
+def generateDTypeDictEntries(supportedTypes):
+    if "supportAll" in supportedTypes:
+        supportedTypes["dtypeString"] = "int=1,uint=1,float=1,cfloat=1"
+        supportedTypes["defaultType"] = "float64"
+    else:
+        supportedTypes["dtypeString"] = ",".join([DICT_ENTRY_KEYS[key] for key in DICT_ENTRY_KEYS if key in supportedTypes])
+        supportedTypes["defaultType"] = "float64" if ("float=1" in supportedTypes["dtypeString"] and "cfloat=1" not in supportedTypes["dtypeString"]) else "{0}64".format(supportedTypes["dtypeString"].split("=")[0].split(",")[0]).replace("cfloat64", "complex_float64")
+
 def generateFactory(blockYAML):
+    # Generate the type support strings here (easier to do than in the Mako
+    # template files).
+    for category,blocks in blockYAML.items():
+        for block in blocks:
+            for key in ["supportedTypes", "supportedInputTypes", "supportedOutputTypes"]:
+                if key in block:
+                    generateDTypeDictEntries(block[key])
+
     try:
         rendered = Template(FactoryTemplate).render(
                        oneToOneBlocks=blockYAML["OneToOneBlocks"],
