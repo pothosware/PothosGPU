@@ -92,13 +92,51 @@ af::array ArrayFireBlock::_getInputPortAsAfArray(
         auto* pInputAfArray = reinterpret_cast<af::array*>(sharedBuffer.getContainer().get());
         assert(nullptr != pInputAfArray);
 
-        if(truncateToMinLength && (minLength < bufferChunk.elements()))
+        // If the given array is from a different ArrayFire backend, copy
+        // the contents into a new array. Otherwise, ArrayFire will throw an
+        // error when performing operations on an array from a different
+        // backend.
+        if(af::getBackendId(*pInputAfArray) == _afBackend)
         {
-            ret = pInputAfArray->slice(static_cast<int>(minLength));
+            if(truncateToMinLength && (minLength < bufferChunk.elements()))
+            {
+                ret = pInputAfArray->slice(static_cast<int>(minLength));
+            }
+            else
+            {
+                ret = *pInputAfArray;
+            }
         }
         else
         {
-            ret = *pInputAfArray;
+            // In all supported versions of ArrayFire, the active backend is
+            // thread-specific, so we can pull the memory out of the previous block's
+            // backend and put it in the new one without affecting other blocks.
+            af::setBackend(af::getBackendId(*pInputAfArray));
+
+            // It doesn't matter what the actual underlying type is. There is
+            // no void* implementation, so we need this to avoid a linker
+            // error.
+            std::vector<std::uint8_t> arrayCopy(pInputAfArray->bytes());
+            pInputAfArray->host(arrayCopy.data());
+
+            size_t elementSize = 0;
+            auto afDType = pInputAfArray->type();
+            ::af_get_size_of(&elementSize, afDType);
+            assert(elementSize > 0);
+
+            if(truncateToMinLength && (minLength < static_cast<size_t>(pInputAfArray->elements())))
+            {
+                arrayCopy.resize(minLength * elementSize);
+            }
+            const size_t numElements = arrayCopy.size() / elementSize;
+
+            af::setBackend(_afBackend);
+
+            ret = af::array(static_cast<dim_t>(numElements), afDType);
+            ret.write<std::uint8_t>(
+                arrayCopy.data(),
+                numElements);
         }
     }
     else
