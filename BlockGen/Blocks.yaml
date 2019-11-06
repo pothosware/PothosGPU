@@ -287,11 +287,13 @@ SingleOutputSources:
         #
 
         - func: randu
+          niceName: Random (Uniform Distribution)
           header: data
           supportedTypes:
                   supportAll: true
 
         - func: randn
+          niceName: Random (Normal Distribution)
           header: data
           supportedTypes:
                   supportAll: true
@@ -307,6 +309,7 @@ TwoToOneBlocks:
         #
 
         - func: hypot
+          niceName: Hypotenuse
           header: arith
           supportedTypes:
                   supportFloat: true
@@ -332,6 +335,7 @@ TwoToOneBlocks:
                   supportFloat: true
 
         - func: rem
+          niceName: Remainder
           header: data
           allowZeroInBuffer1: false
           supportedTypes:
@@ -340,6 +344,7 @@ TwoToOneBlocks:
                   supportFloat: true
 
         - func: mod
+          niceName: Modulus
           header: data
           allowZeroInBuffer1: false
           supportedTypes:
@@ -347,12 +352,8 @@ TwoToOneBlocks:
                   supportUInt: true
                   supportFloat: true
 
-        - func: hypot
-          header: data
-          supportedTypes:
-                  supportFloat: true
-
         - func: atan2
+          niceName: Arc Tangent
           header: data
           verify: std::atan2
           supportedTypes:
