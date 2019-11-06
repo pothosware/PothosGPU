@@ -72,6 +72,7 @@ POTHOS_MODULE_UTIL(
         Source/DeviceCache.cpp
         Source/EnumConversions.cpp
         Source/MinMax.cpp
+        Source/NumericConversions.cpp
         Source/OneToOneBlock.cpp
         Source/SingleOutputSource.cpp
         Source/TwoToOneBlock.cpp
@@ -81,6 +82,7 @@ POTHOS_MODULE_UTIL(
         Testing/TwoToOneBlockExecutionTest.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
+        Testing/TestNumericConversions.cpp
         Testing/TestInputArrayOptimization.cpp
     LIBRARIES
         ArrayFire::af
