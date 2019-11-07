@@ -33,6 +33,8 @@ class ArrayFireBlock: public Pothos::Block
             const std::string& portName,
             bool truncateToMinLength = true);
 
+        af::array getNumberedInputPortsAs2DAfArray();
+
         void postAfArray(
             size_t portNum,
             const af::array& afArray);

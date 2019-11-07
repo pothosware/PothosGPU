@@ -79,31 +79,6 @@ OneToOneBlock::OneToOneBlock(
 
 OneToOneBlock::~OneToOneBlock() {}
 
-af::array OneToOneBlock::getNumberedInputPortsAs2DAfArray()
-{
-    // Assumptions:
-    //  * We've already checked that all buffers are non-empty.
-    //  * We only have numbered ports.
-    //  * All DTypes are the same.
-    const auto& inputs = this->inputs();
-    assert(!inputs.empty());
-
-    const auto dim0 = static_cast<dim_t>(inputs.size());
-    const auto dim1 = static_cast<dim_t>(this->workInfo().minElements);
-    const auto afDType = Pothos::Object(inputs[0]->dtype()).convert<::af_dtype>();
-
-    af::array ret(dim0, dim1, afDType);
-    for(dim_t row = 0; row < dim0; ++row)
-    {
-        ret.row(row) = this->getInputPortAsAfArray(row);
-        assert(ret.row(row).elements() == dim1);
-
-        inputs[row]->consume(dim1);
-    }
-
-    return ret;
-}
-
 void OneToOneBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray)
 {
     const auto& outputs = this->outputs();

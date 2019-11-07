@@ -49,8 +49,6 @@ class OneToOneBlock: public ArrayFireBlock
 
     protected:
 
-        af::array getNumberedInputPortsAs2DAfArray();
-
         void post2DAfArrayToNumberedOutputPorts(const af::array& afArray);
 
     private:
