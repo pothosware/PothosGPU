@@ -25,6 +25,10 @@ class ArrayFireBlock: public Pothos::Block
 
         void setBlockAssumesArrayFireInputs(bool value);
 
+        //
+        // Input port API
+        //
+
         af::array getInputPortAsAfArray(
             size_t portNum,
             bool truncateToMinLength = true);
@@ -35,6 +39,10 @@ class ArrayFireBlock: public Pothos::Block
 
         af::array getNumberedInputPortsAs2DAfArray();
 
+        //
+        // Output port API
+        //
+
         void postAfArray(
             size_t portNum,
             const af::array& afArray);
@@ -43,19 +51,25 @@ class ArrayFireBlock: public Pothos::Block
             const std::string& portName,
             const af::array& afArray);
 
+        void post2DAfArrayToNumberedOutputPorts(const af::array& afArray);
+
+        //
+        // Member variables
+        //
+
         bool _assumeArrayFireInputs;
 
         ::af_backend _afBackend;
 
     private:
 
-        template <typename T>
+        template <typename PortIdType>
         af::array _getInputPortAsAfArray(
-            const T& portId,
+            const PortIdType& portId,
             bool truncateToMinLength);
 
-        template <typename T>
+        template <typename PortIdType, typename AfArrayType>
         void _postAfArray(
-            const T& portId,
-            const af::array& afArray);
+            const PortIdType& portId,
+            const AfArrayType& afArray);
 };

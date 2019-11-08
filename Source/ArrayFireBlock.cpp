@@ -47,6 +47,10 @@ void ArrayFireBlock::setBlockAssumesArrayFireInputs(bool value)
     _assumeArrayFireInputs = value;
 }
 
+//
+// Input port API
+//
+
 af::array ArrayFireBlock::getInputPortAsAfArray(
     size_t portNum,
     bool truncateToMinLength)
@@ -86,6 +90,10 @@ af::array ArrayFireBlock::getNumberedInputPortsAs2DAfArray()
     return ret;
 }
 
+//
+// Output port API
+//
+
 void ArrayFireBlock::postAfArray(
     size_t portNum,
     const af::array& afArray)
@@ -100,9 +108,25 @@ void ArrayFireBlock::postAfArray(
     _postAfArray(portName, afArray);
 }
 
-template <typename T>
+void ArrayFireBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray)
+{
+    const size_t numOutputs = this->outputs().size();
+    assert(numOutputs == static_cast<size_t>(afArray.dims(0)));
+
+    for(size_t portIndex = 0; portIndex < numOutputs; ++portIndex)
+    {
+        this->postAfArray(portIndex, afArray.row(portIndex));
+    }
+}
+
+//
+// The underlying implementation for moving buffers back and forth between
+// Pothos and ArrayFire.
+//
+
+template <typename PortIdType>
 af::array ArrayFireBlock::_getInputPortAsAfArray(
-    const T& portId,
+    const PortIdType& portId,
     bool truncateToMinLength)
 {
     auto bufferChunk = this->input(portId)->buffer();
@@ -186,10 +210,10 @@ af::array ArrayFireBlock::_getInputPortAsAfArray(
     return ret;
 }
 
-template <typename T>
+template <typename PortIdType, typename AfArrayType>
 void ArrayFireBlock::_postAfArray(
-    const T& portId,
-    const af::array& afArray)
+    const PortIdType& portId,
+    const AfArrayType& afArray)
 {
     auto bufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
     this->output(portId)->postBuffer(bufferChunk);

@@ -118,19 +118,6 @@ af::array OneToOneBlock::getInputsAsAfArray()
     return afInput;
 }
 
-void OneToOneBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray)
-{
-    const auto& outputs = this->outputs();
-    assert(outputs.size() == static_cast<size_t>(afArray.dims(0)));
-
-    for(size_t portIndex = 0; portIndex < outputs.size(); ++portIndex)
-    {
-        auto outputBuffer = Pothos::Object(afArray.row(portIndex))
-                                .convert<Pothos::BufferChunk>();
-        outputs[portIndex]->postBuffer(std::move(outputBuffer));
-    }
-}
-
 void OneToOneBlock::work(const af::array& afInput)
 {
     const size_t elems = this->workInfo().minElements;

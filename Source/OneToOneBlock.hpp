@@ -60,8 +60,6 @@ class OneToOneBlock: public ArrayFireBlock
 
         void work(const af::array& afInput);
 
-        void post2DAfArrayToNumberedOutputPorts(const af::array& afArray);
-
         Pothos::Callable _func;
 
     private:
