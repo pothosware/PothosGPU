@@ -92,6 +92,32 @@ OneToOneBlock::OneToOneBlock(
 
 OneToOneBlock::~OneToOneBlock() {}
 
+af::array OneToOneBlock::getInputsAsAfArray()
+{
+// This variable is only used in debug.
+#ifndef NDEBUG
+    const size_t elems = this->workInfo().minElements;
+#endif
+    assert(this->workInfo().minElements > 0);
+
+    af::array afInput;
+    if(1 == _nchans)
+    {
+        afInput = this->getInputPortAsAfArray(0, false);
+        assert(elems == static_cast<size_t>(afInput.elements()));
+    }
+    else
+    {
+        assert(0 != _nchans);
+
+        afInput = getNumberedInputPortsAs2DAfArray();
+        assert(_nchans == static_cast<size_t>(afInput.dims(0)));
+        assert(elems == static_cast<size_t>(afInput.dims(1)));
+    }
+
+    return afInput;
+}
+
 void OneToOneBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray)
 {
     const auto& outputs = this->outputs();
@@ -105,19 +131,13 @@ void OneToOneBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray)
     }
 }
 
-void OneToOneBlock::work()
+void OneToOneBlock::work(const af::array& afInput)
 {
     const size_t elems = this->workInfo().minElements;
-    if(0 == elems)
-    {
-        return;
-    }
+    assert(elems > 0);
 
     if(1 == _nchans)
     {
-        auto afInput = this->getInputPortAsAfArray(0, false);
-        assert(elems == static_cast<size_t>(afInput.elements()));
-
         auto afOutput = _func.call(afInput).extract<af::array>();
         if(afOutput.type() != _afOutputDType)
         {
@@ -131,8 +151,6 @@ void OneToOneBlock::work()
     else
     {
         assert(0 != _nchans);
-
-        auto afInput = getNumberedInputPortsAs2DAfArray();
         assert(_nchans == static_cast<size_t>(afInput.dims(0)));
         assert(elems == static_cast<size_t>(afInput.dims(1)));
 
@@ -144,4 +162,16 @@ void OneToOneBlock::work()
 
         post2DAfArrayToNumberedOutputPorts(afOutput);
     }
+}
+
+// Default behavior, can be overridden
+void OneToOneBlock::work()
+{
+    const size_t elems = this->workInfo().minElements;
+    if(0 == elems)
+    {
+        return;
+    }
+
+    work(getInputsAsAfArray());
 }
