@@ -74,6 +74,7 @@ POTHOS_MODULE_UTIL(
         Source/MinMax.cpp
         Source/NumericConversions.cpp
         Source/OneToOneBlock.cpp
+        Source/ScalarOpBlock.cpp
         Source/SingleOutputSource.cpp
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp

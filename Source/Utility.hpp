@@ -4,10 +4,15 @@
 #pragma once
 
 #include <Pothos/Exception.hpp>
+#include <Pothos/Object.hpp>
 #include <Pothos/Framework.hpp>
 
+#include <arrayfire.h>
+
 #include <algorithm>
+#include <complex>
 #include <sstream>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -76,6 +81,58 @@ void validateDType(
 void validateComplexAndFloatTypesMatch(
     const Pothos::DType& complexDType,
     const Pothos::DType& floatDType);
+
+//
+// Pothos <-> ArrayFire type conversion
+//
+
+template <typename T>
+struct PothosToAF
+{
+    using type = T;
+
+    static inline T from(const T& in)
+    {
+        return in;
+    };
+
+    static inline type to(const T& in)
+    {
+        return in;
+    };
+};
+
+template <>
+struct PothosToAF<std::complex<float>>
+{
+    using type = af::cfloat;
+
+    static inline std::complex<float> from(const type& in)
+    {
+        return Pothos::Object(in).convert<std::complex<float>>();
+    }
+
+    static inline type to(const std::complex<float>& in)
+    {
+        return Pothos::Object(in).convert<type>();
+    }
+};
+
+template <>
+struct PothosToAF<std::complex<double>>
+{
+    using type = af::cdouble;
+
+    static inline std::complex<double> from(const type& in)
+    {
+        return Pothos::Object(in).convert<std::complex<double>>();
+    }
+
+    static inline type to(const std::complex<double>& in)
+    {
+        return Pothos::Object(in).convert<type>();
+    }
+};
 
 //
 // Misc

@@ -62,8 +62,9 @@ class OneToOneBlock: public ArrayFireBlock
 
         void post2DAfArrayToNumberedOutputPorts(const af::array& afArray);
 
-    private:
         Pothos::Callable _func;
+
+    private:
         size_t _nchans;
 
         // We need to store this since ArrayFire may change the output value.
