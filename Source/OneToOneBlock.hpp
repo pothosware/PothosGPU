@@ -6,6 +6,7 @@
 #include "ArrayFireBlock.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Callable.hpp>
 #include <Pothos/Framework.hpp>
 
 #include <arrayfire.h>
@@ -43,6 +44,12 @@ class OneToOneBlock: public ArrayFireBlock
             const Pothos::DType& outputDType,
             size_t numChans);
 
+        OneToOneBlock(
+            const Pothos::Callable& func,
+            const Pothos::DType& inputDType,
+            const Pothos::DType& outputDType,
+            size_t numChans);
+
         virtual ~OneToOneBlock();
 
         void work() override;
@@ -52,7 +59,7 @@ class OneToOneBlock: public ArrayFireBlock
         void post2DAfArrayToNumberedOutputPorts(const af::array& afArray);
 
     private:
-        OneToOneFunc _func;
+        Pothos::Callable _func;
         size_t _nchans;
 
         // We need to store this since ArrayFire may change the output value.

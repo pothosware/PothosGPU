@@ -65,6 +65,19 @@ OneToOneBlock::OneToOneBlock(
     const Pothos::DType& inputDType,
     const Pothos::DType& outputDType,
     size_t numChans
+): OneToOneBlock(
+       Pothos::Callable(func),
+       inputDType,
+       outputDType,
+       numChans)
+{
+}
+
+OneToOneBlock::OneToOneBlock(
+    const Pothos::Callable& func,
+    const Pothos::DType& inputDType,
+    const Pothos::DType& outputDType,
+    size_t numChans
 ): ArrayFireBlock(),
    _func(func),
    _nchans(numChans),
@@ -105,7 +118,7 @@ void OneToOneBlock::work()
         auto afInput = this->getInputPortAsAfArray(0, false);
         assert(elems == static_cast<size_t>(afInput.elements()));
 
-        auto afOutput = _func(afInput);
+        auto afOutput = _func.call(afInput).extract<af::array>();
         if(afOutput.type() != _afOutputDType)
         {
             afOutput = afOutput.as(_afOutputDType);
@@ -123,7 +136,7 @@ void OneToOneBlock::work()
         assert(_nchans == static_cast<size_t>(afInput.dims(0)));
         assert(elems == static_cast<size_t>(afInput.dims(1)));
 
-        auto afOutput = _func(afInput);
+        auto afOutput = _func.call(afInput).extract<af::array>();
         if(afOutput.type() != _afOutputDType)
         {
             afOutput = afOutput.as(_afOutputDType);
