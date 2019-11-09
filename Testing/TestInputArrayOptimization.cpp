@@ -17,28 +17,28 @@
 #include <string>
 #include <typeinfo>
 
-static float mean(const std::vector<size_t>& inputVec)
+static double mean(const std::vector<double>& inputVec)
 {
-    return static_cast<float>(std::accumulate(
+    return std::accumulate(
                inputVec.begin(),
                inputVec.end(),
-               0.0f))
-           / static_cast<float>(inputVec.size());
+               0.0)
+           / inputVec.size();
 }
 
-static float collectorSinksMean(const std::vector<Pothos::Proxy>& collectorSinks)
+static double rateMonitorsMean(const std::vector<Pothos::Proxy>& rateMonitors)
 {
-    std::vector<size_t> outputSizes;
+    std::vector<double> rates;
     std::transform(
-        collectorSinks.begin(),
-        collectorSinks.end(),
-        std::back_inserter(outputSizes),
-        [](const Pothos::Proxy& collectorSink)
+        rateMonitors.begin(),
+        rateMonitors.end(),
+        std::back_inserter(rates),
+        [](const Pothos::Proxy& rateMonitor)
         {
-            return collectorSink.call<Pothos::BufferChunk>("getBuffer").elements();
+            return rateMonitor.call<double>("rate");
         });
 
-    return mean(outputSizes);
+    return mean(rates);
 }
 
 static void testOptimizedOneToOneBlock(
@@ -122,19 +122,15 @@ static void testOptimizedOneToOneBlock(
     POTHOS_TEST_TRUE(block2Opt.call<bool>("getBlockAssumesArrayFireInputs"));
 
     std::vector<Pothos::Proxy> noiseSources(numChannels);
-    std::vector<Pothos::Proxy> collectorSinks(numChannels);
-    std::vector<Pothos::Proxy> collectorSinksOpt(numChannels);
+    std::vector<Pothos::Proxy> rateMonitors(numChannels);
+    std::vector<Pothos::Proxy> rateMonitorsOpt(numChannels);
     for(size_t chan = 0; chan < numChannels; ++chan)
     {
         noiseSources[chan] = Pothos::BlockRegistry::make(
                                  "/comms/noise_source",
                                  dtype);
-        collectorSinks[chan] = Pothos::BlockRegistry::make(
-                                   "/blocks/collector_sink",
-                                   dtype);
-        collectorSinksOpt[chan] = Pothos::BlockRegistry::make(
-                                      "/blocks/collector_sink",
-                                      dtype);
+        rateMonitors[chan] = Pothos::BlockRegistry::make("/blocks/rate_monitor");
+        rateMonitorsOpt[chan] = Pothos::BlockRegistry::make("/blocks/rate_monitor");
     }
 
     std::cout << "Testing with " << numChannels << " channels..." << std::endl;
@@ -172,7 +168,7 @@ static void testOptimizedOneToOneBlock(
                 topology.connect(
                     block2,
                     chan,
-                    collectorSinks[chan],
+                    rateMonitors[chan],
                     0);
 
                 topology.connect(
@@ -188,7 +184,7 @@ static void testOptimizedOneToOneBlock(
                 topology.connect(
                     block2Opt,
                     chan,
-                    collectorSinksOpt[chan],
+                    rateMonitorsOpt[chan],
                     0);
             }
 
@@ -198,8 +194,8 @@ static void testOptimizedOneToOneBlock(
             Poco::Thread::sleep(1000);
         }
 
-        unoptimizedAverage = collectorSinksMean(collectorSinks);
-        optimizedAverage = collectorSinksMean(collectorSinksOpt);
+        unoptimizedAverage = static_cast<size_t>(rateMonitorsMean(rateMonitors));
+        optimizedAverage = static_cast<size_t>(rateMonitorsMean(rateMonitorsOpt));
     } while((0 == unoptimizedAverage) || (0 == optimizedAverage));
 
     std::cout << unoptimizedAverage << " vs " << optimizedAverage << std::endl;
@@ -255,16 +251,12 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_optimized_two_to_one_block)
     auto arrayFireHypot = Pothos::BlockRegistry::make(
                               "/arrayfire/arith/hypot",
                               dtype);
-    auto collectorSink = Pothos::BlockRegistry::make(
-                             "/blocks/collector_sink",
-                             dtype);
+    auto rateMonitor = Pothos::BlockRegistry::make("/blocks/rate_monitor");
 
     auto arrayFireHypotOpt = Pothos::BlockRegistry::make(
                                  "/arrayfire/arith/hypot",
                                  dtype);
-    auto collectorSinkOpt = Pothos::BlockRegistry::make(
-                                "/blocks/collector_sink",
-                                dtype);
+    auto rateMonitorOpt = Pothos::BlockRegistry::make("/blocks/rate_monitor");
 
     arrayFireHypotOpt.call("setBlockAssumesArrayFireInputs", true);
     POTHOS_TEST_TRUE(arrayFireHypotOpt.call<bool>("getBlockAssumesArrayFireInputs"));
@@ -275,9 +267,6 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_optimized_two_to_one_block)
     {
         // Execute the topology.
         {
-            collectorSink.call("clear");
-            collectorSinkOpt.call("clear");
-
             Pothos::Topology topology;
 
             for(size_t chan = 0; chan < 2; ++chan)
@@ -318,12 +307,12 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_optimized_two_to_one_block)
             topology.connect(
                 arrayFireHypot,
                 0,
-                collectorSink,
+                rateMonitor,
                 0);
             topology.connect(
                 arrayFireHypotOpt,
                 0,
-                collectorSinkOpt,
+                rateMonitorOpt,
                 0);
 
             // When this block exits, the flowgraph will stop.
@@ -332,8 +321,8 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_optimized_two_to_one_block)
             Poco::Thread::sleep(2000);
         }
 
-        unoptimized = collectorSink.call("getBuffer").call<size_t>("elements");
-        optimized = collectorSinkOpt.call("getBuffer").call<size_t>("elements");
+        unoptimized = rateMonitor.call<size_t>("rate");
+        optimized = rateMonitorOpt.call<size_t>("rate");
     } while ((0 == unoptimized) || (0 == optimized));
 
     std::cout << unoptimized << " vs " << optimized << std::endl;
