@@ -109,6 +109,7 @@ static EnableIf${k}<T, void> blockExecutionTest()
     %endfor
 
     %for block in scalarOpBlocks:
+        %if (not block.get("intOnly", False)) or ("Int" in k):
     testScalarOpBlock<T>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         1,
@@ -119,6 +120,7 @@ static EnableIf${k}<T, void> blockExecutionTest()
         3,
         ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"},
         ${"true" if block.get("allowZeroScalar", True) else "false"});
+        %endif
     %endfor
 }
 %endfor

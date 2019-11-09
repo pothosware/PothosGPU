@@ -394,17 +394,23 @@ ScalarOpBlocks:
           operator: "/"
           verify: std::divides<In>()
 
-#        - func: bitwise_or
-#          niceName: Bitwise-Or Scalar
-#          header: scalar
-#          operator: "|"
-#
-#        - func: bitwise_and
-#          niceName: Bitwise-And Scalar
-#          header: scalar
-#          operator: "&"
-#
-#        - func: bitwise_xor
-#          niceName: Bitwise-XOR Scalar
-#          header: scalar
-#          operator: "^"
+        - func: bitwise_or
+          niceName: Bitwise-Or Scalar
+          header: scalar
+          operator: "|"
+          intOnly: true
+          verify: std::bit_or<In>()
+
+        - func: bitwise_and
+          niceName: Bitwise-And Scalar
+          header: scalar
+          operator: "&"
+          intOnly: true
+          verify: std::bit_and<In>()
+
+        - func: bitwise_xor
+          niceName: Bitwise-XOR Scalar
+          header: scalar
+          operator: "^"
+          intOnly: true
+          verify: std::bit_xor<In>()

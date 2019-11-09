@@ -58,7 +58,7 @@ class ScalarOpBlock: public OneToOneBlock
                        numChans, \
                        allowZeroOperand);
 
-#define ScalarOpBlockFactory(opName, op, allowZeroOperand) \
+#define ScalarOpBlockFactory(opName, op, allowZeroOperand, intOnly) \
     static Pothos::Block* scalarFactory_ ## opName ( \
         const Pothos::DType& dtype, \
         Pothos::Object scalarObject, \
@@ -71,10 +71,13 @@ class ScalarOpBlock: public OneToOneBlock
         ScalarOpIfTypeDeclareFactory(std::uint16_t, op, allowZeroOperand) \
         ScalarOpIfTypeDeclareFactory(std::uint32_t, op, allowZeroOperand) \
         ScalarOpIfTypeDeclareFactory(std::uint64_t, op, allowZeroOperand) \
-        ScalarOpIfTypeDeclareFactory(float, op, allowZeroOperand) \
-        ScalarOpIfTypeDeclareFactory(double, op, allowZeroOperand) \
-        ScalarOpIfTypeDeclareFactory(std::complex<float>, op, allowZeroOperand) \
-        ScalarOpIfTypeDeclareFactory(std::complex<double>, op, allowZeroOperand) \
+        if(!intOnly) \
+        { \
+            ScalarOpIfTypeDeclareFactory(float, op, allowZeroOperand) \
+            ScalarOpIfTypeDeclareFactory(double, op, allowZeroOperand) \
+            ScalarOpIfTypeDeclareFactory(std::complex<float>, op, allowZeroOperand) \
+            ScalarOpIfTypeDeclareFactory(std::complex<double>, op, allowZeroOperand) \
+        } \
      \
         throw Pothos::InvalidArgumentException( \
                   "Unsupported type", \

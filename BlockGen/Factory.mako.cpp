@@ -30,19 +30,19 @@
  * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype,scalar,numChannels)
  *
  * |param dtype(Data Type) The block data type.
- * |widget DTypeChooser(int=1,uint=1,float=1,cfloat=1)
- * |default "float64"
+ * |widget DTypeChooser(${"int=1,uint=1" if block.get("intOnly", False) else "int=1,uint=1,float=1,cfloat=1"})
+ * |default ${"\"uint64\"" if block.get("intOnly", False) else "\"float64\""}
  * |preview enable
  *
  * |param scalar(Scalar Value) The scalar value to apply to the array.
- * |default 0
+ * |default ${"0" if block.get("allowZeroScalar", True) else "1"}
  *
  * |param numChannels[Num Channels] The number of channels.
  * |default 1
  * |widget SpinBox(minimum=1)
  * |preview disable
  */
-ScalarOpBlockFactory(${block["func"]}, ${block["operator"]}, ${"true" if block.get("allowZeroScalar", True) else "false"})
+ScalarOpBlockFactory(${block["func"]}, ${block["operator"]}, ${"true" if block.get("allowZeroScalar", True) else "false"}, ${"true" if block.get("intOnly", False) else "false"})
 
 %endfor
 static const std::vector<Pothos::BlockRegistry> BlockRegistries =
