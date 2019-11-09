@@ -35,6 +35,16 @@ static inline Out verify_${block["func"]}(const In& val0, const In& val1)
 }
     %endif
 %endfor
+%for block in scalarOpBlocks:
+    %if "verify" in block:
+
+template <typename In, typename Out>
+static inline Out verify_${block["func"]}(const In& val0, const In& val1)
+{
+    return ${block["verify"]}(val0, val1);
+}
+    %endif
+%endfor
 %for k,v in sfinaeMap.items():
 
 template <typename T>
@@ -96,6 +106,17 @@ static EnableIf${k}<T, void> blockExecutionTest()
         ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
             %endif
         %endif
+    %endfor
+
+    %for block in scalarOpBlocks:
+    testScalarOpBlock<T>(
+        "/arrayfire/${block["header"]}/${block["func"]}",
+        1,
+        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"});
+    testScalarOpBlock<T>(
+        "/arrayfire/${block["header"]}/${block["func"]}",
+        3,
+        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"});
     %endfor
 }
 %endfor

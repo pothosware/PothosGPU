@@ -16,11 +16,23 @@ using InputPortVector = std::vector<Pothos::InputPort*>;
 using OutputPortVector = std::vector<Pothos::OutputPort*>;
 using PortInfoVector = std::vector<Pothos::PortInfo>;
 
+//
+// Verification function types
+//
+
 template <typename In, typename Out>
 using UnaryFunc = std::function<Out(const In&)>;
 
 template <typename In, typename Out>
 using BinaryFunc = std::function<Out(const In&, const In&)>;
+
+template <typename T>
+static UnaryFunc<T, T> binaryFuncToUnary(
+    const BinaryFunc<T, T>& binaryFunc,
+    const T& operand)
+{
+    return std::bind(binaryFunc, std::placeholders::_1, operand);
+}
 
 //
 // Templated type calls
@@ -49,6 +61,12 @@ void testTwoToOneBlock(
     const std::string& blockRegistryPath,
     const BinaryFunc<In, Out>& verificationFunc,
     bool removeZerosInBuffer1);
+
+template <typename T>
+void testScalarOpBlock(
+    const std::string& blockRegistryPath,
+    size_t numChannels,
+    const BinaryFunc<T, T>& verificationFunc);
 
 //
 // Getting random inputs
@@ -114,6 +132,12 @@ static EnableIfComplex<T, std::vector<T>> getTestInputs()
     std::shuffle(testParams.begin(), testParams.end(), g);
 
     return testParams;
+}
+
+template <typename T>
+static inline T getSingleTestInput()
+{
+    return getTestInputs<T>()[0];
 }
 
 //

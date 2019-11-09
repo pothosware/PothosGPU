@@ -15,7 +15,7 @@
 #include <typeinfo>
 
 template <typename In, typename Out>
-void testOneToOneBlockCommon(
+static void testOneToOneBlockCommon(
     const Pothos::Proxy& block,
     const UnaryFunc<In, Out>& verificationFunc)
 {
@@ -151,14 +151,46 @@ void testOneToOneBlock(
         verificationFunc);
 }
 
+template <typename T>
+void testScalarOpBlock(
+    const std::string& blockRegistryPath,
+    size_t numChannels,
+    const BinaryFunc<T, T>& verificationFunc)
+{
+    static const Pothos::DType dtype(typeid(T));
+
+    std::cout << "Testing " << blockRegistryPath << " (type: " << dtype.name()
+                            << ", " << "chans: " << numChannels << ")" << std::endl;
+
+    const T scalar = getSingleTestInput<T>();
+
+    auto block = Pothos::BlockRegistry::make(
+                     blockRegistryPath,
+                     dtype,
+                     scalar,
+                     numChannels);
+    testEqual(scalar, block.template call<T>("getScalar"));
+
+    auto unaryVerificationFunc = binaryFuncToUnary(verificationFunc, scalar);
+
+    testOneToOneBlockCommon<T, T>(
+        block,
+        unaryVerificationFunc);
+}
+
 #define SPECIALIZE_TEMPLATE_TEST(T) \
     template \
     void testOneToOneBlock<T>( \
         const std::string& blockRegistryPath, \
         size_t numChannels, \
-        const UnaryFunc<T, T>& verificationFunc);
+        const UnaryFunc<T, T>& verificationFunc); \
+    template \
+    void testScalarOpBlock<T>( \
+        const std::string& blockRegistryPath, \
+        size_t numChannels, \
+        const BinaryFunc<T, T>& verificationFunc);
 
-#define SPECIALIZE_COMPLEX_TEMPLATE_TEST(T) \
+#define SPECIALIZE_COMPLEX_1TO1_TEMPLATE_TEST(T) \
     template \
     void testOneToOneBlock<T, std::complex<T>>( \
         const std::string& blockRegistryPath, \
@@ -183,5 +215,5 @@ SPECIALIZE_TEMPLATE_TEST(double)
 SPECIALIZE_TEMPLATE_TEST(std::complex<float>)
 SPECIALIZE_TEMPLATE_TEST(std::complex<double>)
 
-SPECIALIZE_COMPLEX_TEMPLATE_TEST(float)
-SPECIALIZE_COMPLEX_TEMPLATE_TEST(double)
+SPECIALIZE_COMPLEX_1TO1_TEMPLATE_TEST(float)
+SPECIALIZE_COMPLEX_1TO1_TEMPLATE_TEST(double)
