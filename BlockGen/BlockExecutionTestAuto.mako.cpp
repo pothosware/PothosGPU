@@ -60,7 +60,7 @@ static EnableIf${k}<T, void> blockExecutionTest()
         ${"&verify_{0}<T, typename T::value_type>".format(block["func"]) if "verify" in block else "nullptr"});
     testOneToOneBlock<T, typename T::value_type>(
         "/arrayfire/${block["header"]}/${block["func"]}",
-        1,
+        3,
         ${"&verify_{0}<T, typename T::value_type>".format(block["func"]) if "verify" in block else "nullptr"});
             %else:
     testOneToOneBlock<T, std::complex<T>>(
@@ -69,7 +69,7 @@ static EnableIf${k}<T, void> blockExecutionTest()
         ${"&verify_{0}<T, std::complex<T>>".format(block["func"]) if "verify" in block else "nullptr"});
     testOneToOneBlock<T, std::complex<T>>(
         "/arrayfire/${block["header"]}/${block["func"]}",
-        1,
+        3,
         ${"&verify_{0}<T, std::complex<T>>".format(block["func"]) if "verify" in block else "nullptr"});
             %endif
         %endif
