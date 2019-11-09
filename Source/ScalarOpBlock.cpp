@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "OneToOneBlock.hpp"
+#include "ScalarOpBlock.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Framework.hpp>
@@ -15,58 +15,47 @@
 #include <typeinfo>
 
 template <typename T>
-using AfArrayScalarOp = af::array(*)(
-                            const af::array&,
-                            const typename PothosToAF<T>::type&);
+ScalarOpBlock<T>::ScalarOpBlock(
+    const AfArrayScalarOp<T>& func,
+    const Pothos::DType& dtype,
+    T scalar,
+    size_t numChans
+): OneToOneBlock(
+       Pothos::Callable(func),
+       dtype,
+       dtype,
+       numChans)
+{
+    setScalar(scalar);
+
+    this->registerCall(this, POTHOS_FCN_TUPLE(Class, getScalar));
+    this->registerCall(this, POTHOS_FCN_TUPLE(Class, setScalar));
+}
 
 template <typename T>
-class ScalarOpBlock: public OneToOneBlock
+ScalarOpBlock<T>::~ScalarOpBlock() {};
+
+template <typename T>
+T ScalarOpBlock<T>::getScalar() const
 {
-    public:
+    return PothosToAF<T>::from(_scalar);
+}
 
-        using Class = ScalarOpBlock<T>;
+template <typename T>
+void ScalarOpBlock<T>::setScalar(const T& scalar)
+{
+    _scalar = PothosToAF<T>::to(scalar);
+    _func.bind(_scalar, 1);
+}
 
-        ScalarOpBlock(
-            const AfArrayScalarOp<T>& func,
-            const Pothos::DType& dtype,
-            T scalar,
-            size_t numChans
-        ): OneToOneBlock(
-               Pothos::Callable(func),
-               dtype,
-               dtype,
-               numChans)
-        {
-            setScalar(scalar);
+template <typename T>
+void ScalarOpBlock<T>::work()
+{
+    auto afInput = this->getInputsAsAfArray();
+    _func.bind(afInput, 0);
 
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getScalar));
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, setScalar));
-        }
-
-        virtual ~ScalarOpBlock() {};
-
-        T getScalar() const
-        {
-            return PothosToAF<T>::from(_scalar);
-        }
-
-        void setScalar(const T& scalar)
-        {
-            _scalar = PothosToAF<T>::to(scalar);
-            _func.bind(_scalar, 1);
-        }
-
-        void work() override
-        {
-            auto afInput = this->getInputsAsAfArray();
-            _func.bind(afInput, 0);
-
-            OneToOneBlock::work(afInput);
-        }
-
-    private:
-        typename PothosToAF<T>::type _scalar;
-};
+    OneToOneBlock::work(afInput);
+}
 
 //
 // Since the operators are so overloaded, we need to enter macro hell to
