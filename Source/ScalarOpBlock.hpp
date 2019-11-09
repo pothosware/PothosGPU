@@ -39,3 +39,37 @@ class ScalarOpBlock: public OneToOneBlock
     private:
         typename PothosToAF<T>::type _scalar;
 };
+
+//
+// Since the operators are so overloaded, we need to enter macro hell to
+// do all of this.
+//
+
+#define ScalarOpIfTypeDeclareFactory(T, op) \
+    if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
+        return new ScalarOpBlock<T>(&af::operator op, dtype, T(0), numChans);
+
+#define ScalarOpBlockFactory(opName, op) \
+    static Pothos::Block* scalarFactory_ ## opName ( \
+        const Pothos::DType& dtype, \
+        size_t numChans) \
+    { \
+        ScalarOpIfTypeDeclareFactory(std::int16_t, op) \
+        ScalarOpIfTypeDeclareFactory(std::int32_t, op) \
+        ScalarOpIfTypeDeclareFactory(std::int64_t, op) \
+        ScalarOpIfTypeDeclareFactory(std::uint8_t, op) \
+        ScalarOpIfTypeDeclareFactory(std::uint16_t, op) \
+        ScalarOpIfTypeDeclareFactory(std::uint32_t, op) \
+        ScalarOpIfTypeDeclareFactory(std::uint64_t, op) \
+        ScalarOpIfTypeDeclareFactory(float, op) \
+        ScalarOpIfTypeDeclareFactory(double, op) \
+        ScalarOpIfTypeDeclareFactory(std::complex<float>, op) \
+        ScalarOpIfTypeDeclareFactory(std::complex<double>, op) \
+     \
+        throw Pothos::InvalidArgumentException( \
+                  "Unsupported type", \
+                  dtype.name()); \
+    } \
+    static Pothos::BlockRegistry register_ ## opName ( \
+        "/arrayfire/scalar/" #opName, \
+        Pothos::Callable(scalarFactory_ ## opName));

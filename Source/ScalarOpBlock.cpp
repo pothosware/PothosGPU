@@ -57,46 +57,16 @@ void ScalarOpBlock<T>::work()
     OneToOneBlock::work(afInput);
 }
 
-//
-// Since the operators are so overloaded, we need to enter macro hell to
-// do all of this.
-//
-
-#define ifTypeDeclareFactory(T, op) \
-    if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-        return new ScalarOpBlock<T>(&af::operator op, dtype, T(0), numChans);
-
-#define ScalarOpBlock(opName, op) \
-    static Pothos::Block* scalarFactory_ ## opName ( \
-        const Pothos::DType& dtype, \
-        size_t numChans) \
-    { \
-        ifTypeDeclareFactory(std::int16_t, op) \
-        ifTypeDeclareFactory(std::int32_t, op) \
-        ifTypeDeclareFactory(std::int64_t, op) \
-        ifTypeDeclareFactory(std::uint8_t, op) \
-        ifTypeDeclareFactory(std::uint16_t, op) \
-        ifTypeDeclareFactory(std::uint32_t, op) \
-        ifTypeDeclareFactory(std::uint64_t, op) \
-        ifTypeDeclareFactory(float, op) \
-        ifTypeDeclareFactory(double, op) \
-        ifTypeDeclareFactory(std::complex<float>, op) \
-        ifTypeDeclareFactory(std::complex<double>, op) \
-     \
-        throw Pothos::InvalidArgumentException( \
-                  "Unsupported type", \
-                  dtype.name()); \
-    } \
-    static Pothos::BlockRegistry register_ ## opName ( \
-        "/arrayfire/scalar/" #opName, \
-        Pothos::Callable(scalarFactory_ ## opName));
-
-// TODO: shift left,right, scalar is integral
-
-ScalarOpBlock(add, +)
-ScalarOpBlock(sub, -)
-ScalarOpBlock(mult, *)
-ScalarOpBlock(div, /)
-ScalarOpBlock(bitwise_or, |)
-ScalarOpBlock(bitwise_and, &)
-ScalarOpBlock(bitwise_xor, ^)
+// ArrayFire does not support std::int8_t.
+template class ScalarOpBlock<std::int16_t>;
+template class ScalarOpBlock<std::int32_t>;
+template class ScalarOpBlock<std::int64_t>;
+template class ScalarOpBlock<std::uint8_t>;
+template class ScalarOpBlock<std::uint16_t>;
+template class ScalarOpBlock<std::uint32_t>;
+template class ScalarOpBlock<std::uint64_t>;
+template class ScalarOpBlock<float>;
+template class ScalarOpBlock<double>;
+// ArrayFire does not support any integral complex type.
+template class ScalarOpBlock<std::complex<float>>;
+template class ScalarOpBlock<std::complex<double>>;

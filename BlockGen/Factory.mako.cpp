@@ -1,4 +1,5 @@
 #include "OneToOneBlock.hpp"
+#include "ScalarOpBlock.hpp"
 #include "SingleOutputSource.hpp"
 #include "TwoToOneBlock.hpp"
 #include "Utility.hpp"
@@ -11,6 +12,36 @@
 
 #include <vector>
 
+%for block in scalarOpBlocks:
+/*
+ * |PothosDoc ${block.get("niceName", block["func"].title())}
+ *
+ * Applies the <b>${block["operator"]}</b> operator to all inputs. This block
+ * computes all outputs in parallel, using one of the following implementations
+ * by priority (based on availability of hardware and underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/${block["header"].title()}
+ * |keywords ${block["header"]} ${block["func"]}
+ * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype,numChannels)
+ *
+ * |param dtype(Data Type) The block data type.
+ * |widget DTypeChooser(int=1,uint=1,float=1,cfloat=1)
+ * |default "float64"
+ * |preview enable
+ *
+ * |param numChannels[Num Channels] The number of channels.
+ * |default 1
+ * |widget SpinBox(minimum=1)
+ * |preview disable
+ */
+ScalarOpBlockFactory(${block["func"]}, ${block["operator"]})
+
+%endfor
 static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 {
 %for block in oneToOneBlocks:
