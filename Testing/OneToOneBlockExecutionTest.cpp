@@ -177,11 +177,13 @@ void testScalarOpBlock(
                      numChannels);
     testEqual(scalar, block.template call<T>("getScalar"));
 
-    auto unaryVerificationFunc = binaryFuncToUnary(verificationFunc, scalar);
+    // Test explicit getter+setter.
+    block.template call("setScalar", scalar);
+    testEqual(scalar, block.template call<T>("getScalar"));
 
     testOneToOneBlockCommon<T, T>(
         block,
-        unaryVerificationFunc);
+        binaryFuncToUnary(verificationFunc, scalar));
 }
 
 #define SPECIALIZE_TEMPLATE_TEST(T) \

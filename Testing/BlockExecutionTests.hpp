@@ -31,7 +31,10 @@ static UnaryFunc<T, T> binaryFuncToUnary(
     const BinaryFunc<T, T>& binaryFunc,
     const T& operand)
 {
-    return std::bind(binaryFunc, std::placeholders::_1, operand);
+    UnaryFunc<T, T> ret = (nullptr == binaryFunc)
+                        ? UnaryFunc<T, T>(nullptr)
+                        : std::bind(binaryFunc, std::placeholders::_1, operand);
+    return ret;
 }
 
 //
