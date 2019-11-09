@@ -41,39 +41,85 @@ static float collectorSinksMean(const std::vector<Pothos::Proxy>& collectorSinks
     return mean(outputSizes);
 }
 
-static void testOptimizedOneToOneBlock(size_t numChannels)
+static void testOptimizedOneToOneBlock(
+    size_t numChannels,
+    const std::string& block0Path,
+    const std::string& block1Path,
+    const std::string& block2Path,
+    bool isScalar)
 {
     static const Pothos::DType dtype(typeid(float));
 
-    auto arrayFireSin0 = Pothos::BlockRegistry::make(
-                             "/arrayfire/arith/sin",
-                             dtype,
-                             numChannels);
-    auto arrayFireSin1 = Pothos::BlockRegistry::make(
-                             "/arrayfire/arith/sin",
-                             dtype,
-                             numChannels);
-    auto arrayFireAbs = Pothos::BlockRegistry::make(
-                            "/arrayfire/arith/abs",
-                            dtype,
-                            numChannels);
-    auto arrayFireAbsOpt = Pothos::BlockRegistry::make(
-                               "/arrayfire/arith/abs",
-                               dtype,
-                               numChannels);
-    auto arrayFireCos = Pothos::BlockRegistry::make(
-                            "/arrayfire/arith/cos",
-                            dtype,
-                            numChannels);
-    auto arrayFireCosOpt = Pothos::BlockRegistry::make(
-                               "/arrayfire/arith/cos",
-                               dtype,
-                               numChannels);
+    Pothos::Proxy block00, block01, block1, block1Opt, block2, block2Opt;
+    if(isScalar)
+    {
+        static const float scalar0 = 1.0;
+        static const float scalar1 = 2.0;
+        static const float scalar2 = 3.0;
 
-    arrayFireAbsOpt.call("setBlockAssumesArrayFireInputs", true);
-    POTHOS_TEST_TRUE(arrayFireAbsOpt.call<bool>("getBlockAssumesArrayFireInputs"));
-    arrayFireCosOpt.call("setBlockAssumesArrayFireInputs", true);
-    POTHOS_TEST_TRUE(arrayFireCosOpt.call<bool>("getBlockAssumesArrayFireInputs"));
+        block00 = Pothos::BlockRegistry::make(
+                      block0Path,
+                      dtype,
+                      scalar0,
+                      numChannels);
+        block01 = Pothos::BlockRegistry::make(
+                      block0Path,
+                      dtype,
+                      scalar0,
+                      numChannels);
+        block1 = Pothos::BlockRegistry::make(
+                      block1Path,
+                      dtype,
+                      scalar1,
+                      numChannels);
+        block1Opt = Pothos::BlockRegistry::make(
+                      block1Path,
+                      dtype,
+                      scalar1,
+                      numChannels);
+        block2 = Pothos::BlockRegistry::make(
+                      block2Path,
+                      dtype,
+                      scalar2,
+                      numChannels);
+        block2Opt = Pothos::BlockRegistry::make(
+                      block2Path,
+                      dtype,
+                      scalar2,
+                      numChannels);
+    }
+    else
+    {
+        block00 = Pothos::BlockRegistry::make(
+                      block0Path,
+                      dtype,
+                      numChannels);
+        block01 = Pothos::BlockRegistry::make(
+                      block0Path,
+                      dtype,
+                      numChannels);
+        block1 = Pothos::BlockRegistry::make(
+                      block1Path,
+                      dtype,
+                      numChannels);
+        block1Opt = Pothos::BlockRegistry::make(
+                      block1Path,
+                      dtype,
+                      numChannels);
+        block2 = Pothos::BlockRegistry::make(
+                      block2Path,
+                      dtype,
+                      numChannels);
+        block2Opt = Pothos::BlockRegistry::make(
+                      block2Path,
+                      dtype,
+                      numChannels);
+    }
+
+    block1Opt.call("setBlockAssumesArrayFireInputs", true);
+    POTHOS_TEST_TRUE(block1Opt.call<bool>("getBlockAssumesArrayFireInputs"));
+    block2Opt.call("setBlockAssumesArrayFireInputs", true);
+    POTHOS_TEST_TRUE(block2Opt.call<bool>("getBlockAssumesArrayFireInputs"));
 
     std::vector<Pothos::Proxy> noiseSources(numChannels);
     std::vector<Pothos::Proxy> collectorSinks(numChannels);
@@ -105,42 +151,42 @@ static void testOptimizedOneToOneBlock(size_t numChannels)
                 topology.connect(
                     noiseSources[chan],
                     0,
-                    arrayFireSin0,
+                    block00,
                     chan);
                 topology.connect(
                     noiseSources[chan],
                     0,
-                    arrayFireSin1,
+                    block01,
                     chan);
 
                 topology.connect(
-                    arrayFireSin0,
+                    block00,
                     chan,
-                    arrayFireAbs,
+                    block1,
                     chan);
                 topology.connect(
-                    arrayFireAbs,
+                    block1,
                     chan,
-                    arrayFireCos,
+                    block2,
                     chan);
                 topology.connect(
-                    arrayFireCos,
+                    block2,
                     chan,
                     collectorSinks[chan],
                     0);
 
                 topology.connect(
-                    arrayFireSin1,
+                    block01,
                     chan,
-                    arrayFireAbsOpt,
+                    block1Opt,
                     chan);
                 topology.connect(
-                    arrayFireAbsOpt,
+                    block1Opt,
                     chan,
-                    arrayFireCosOpt,
+                    block2Opt,
                     chan);
                 topology.connect(
-                    arrayFireCosOpt,
+                    block2Opt,
                     chan,
                     collectorSinksOpt[chan],
                     0);
@@ -165,11 +211,28 @@ static void testOptimizedOneToOneBlock(size_t numChannels)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_optimized_one_to_one_block)
 {
-    testOptimizedOneToOneBlock(2);
-    testOptimizedOneToOneBlock(4);
-    testOptimizedOneToOneBlock(6);
-    testOptimizedOneToOneBlock(8);
-    testOptimizedOneToOneBlock(10);
+    const std::string block0Path = "/arrayfire/arith/sin";
+    const std::string block1Path = "/arrayfire/arith/abs";
+    const std::string block2Path = "/arrayfire/arith/cos";
+
+    testOptimizedOneToOneBlock(2, block0Path, block1Path, block2Path, false /*isScalar*/);
+    testOptimizedOneToOneBlock(4, block0Path, block1Path, block2Path, false /*isScalar*/);
+    testOptimizedOneToOneBlock(6, block0Path, block1Path, block2Path, false /*isScalar*/);
+    testOptimizedOneToOneBlock(8, block0Path, block1Path, block2Path, false /*isScalar*/);
+    testOptimizedOneToOneBlock(10, block0Path, block1Path, block2Path, false /*isScalar*/);
+}
+
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_optimized_scalar_op_block)
+{
+    const std::string block0Path = "/arrayfire/scalar/add";
+    const std::string block1Path = "/arrayfire/scalar/subtract";
+    const std::string block2Path = "/arrayfire/scalar/multiply";
+
+    testOptimizedOneToOneBlock(2, block0Path, block1Path, block2Path, true /*isScalar*/);
+    testOptimizedOneToOneBlock(4, block0Path, block1Path, block2Path, true /*isScalar*/);
+    testOptimizedOneToOneBlock(6, block0Path, block1Path, block2Path, true /*isScalar*/);
+    testOptimizedOneToOneBlock(8, block0Path, block1Path, block2Path, true /*isScalar*/);
+    testOptimizedOneToOneBlock(10, block0Path, block1Path, block2Path, true /*isScalar*/);
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_optimized_two_to_one_block)
