@@ -7,6 +7,7 @@
 #include "Utility.hpp"
 
 #include <Pothos/Framework.hpp>
+#include <Pothos/Object.hpp>
 
 #include <arrayfire.h>
 
@@ -47,11 +48,12 @@ class ScalarOpBlock: public OneToOneBlock
 
 #define ScalarOpIfTypeDeclareFactory(T, op) \
     if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-        return new ScalarOpBlock<T>(&af::operator op, dtype, T(0), numChans);
+        return new ScalarOpBlock<T>(&af::operator op, dtype, scalarObject.convert<T>(), numChans);
 
 #define ScalarOpBlockFactory(opName, op) \
     static Pothos::Block* scalarFactory_ ## opName ( \
         const Pothos::DType& dtype, \
+        Pothos::Object scalarObject, \
         size_t numChans) \
     { \
         ScalarOpIfTypeDeclareFactory(std::int16_t, op) \

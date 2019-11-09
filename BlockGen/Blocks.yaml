@@ -375,7 +375,7 @@ ScalarOpBlocks:
           operator: "+"
 
         - func: subtract
-          niceName: Subtrace Scalar
+          niceName: Subtract Scalar
           header: scalar
           operator: "-"
 

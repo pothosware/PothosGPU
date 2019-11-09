@@ -27,12 +27,15 @@
  *
  * |category /ArrayFire/${block["header"].title()}
  * |keywords ${block["header"]} ${block["func"]}
- * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype,scalar,numChannels)
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int=1,uint=1,float=1,cfloat=1)
  * |default "float64"
  * |preview enable
+ *
+ * |param scalar(Scalar Value) The scalar value to apply to the array.
+ * |default 0
  *
  * |param numChannels[Num Channels] The number of channels.
  * |default 1
