@@ -27,7 +27,8 @@ class ScalarOpBlock: public OneToOneBlock
             const AfArrayScalarOp<T>& func,
             const Pothos::DType& dtype,
             T scalar,
-            size_t numChans);
+            size_t numChans,
+            bool allowZeroOperand);
 
         virtual ~ScalarOpBlock();
 
@@ -39,6 +40,8 @@ class ScalarOpBlock: public OneToOneBlock
 
     private:
         typename PothosToAF<T>::type _scalar;
+
+        bool _allowZeroOperand;
 };
 
 //
@@ -46,27 +49,32 @@ class ScalarOpBlock: public OneToOneBlock
 // do all of this.
 //
 
-#define ScalarOpIfTypeDeclareFactory(T, op) \
+#define ScalarOpIfTypeDeclareFactory(T, op, allowZeroOperand) \
     if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-        return new ScalarOpBlock<T>(&af::operator op, dtype, scalarObject.convert<T>(), numChans);
+        return new ScalarOpBlock<T>( \
+                       &af::operator op, \
+                       dtype, \
+                       scalarObject.convert<T>(), \
+                       numChans, \
+                       allowZeroOperand);
 
-#define ScalarOpBlockFactory(opName, op) \
+#define ScalarOpBlockFactory(opName, op, allowZeroOperand) \
     static Pothos::Block* scalarFactory_ ## opName ( \
         const Pothos::DType& dtype, \
         Pothos::Object scalarObject, \
         size_t numChans) \
     { \
-        ScalarOpIfTypeDeclareFactory(std::int16_t, op) \
-        ScalarOpIfTypeDeclareFactory(std::int32_t, op) \
-        ScalarOpIfTypeDeclareFactory(std::int64_t, op) \
-        ScalarOpIfTypeDeclareFactory(std::uint8_t, op) \
-        ScalarOpIfTypeDeclareFactory(std::uint16_t, op) \
-        ScalarOpIfTypeDeclareFactory(std::uint32_t, op) \
-        ScalarOpIfTypeDeclareFactory(std::uint64_t, op) \
-        ScalarOpIfTypeDeclareFactory(float, op) \
-        ScalarOpIfTypeDeclareFactory(double, op) \
-        ScalarOpIfTypeDeclareFactory(std::complex<float>, op) \
-        ScalarOpIfTypeDeclareFactory(std::complex<double>, op) \
+        ScalarOpIfTypeDeclareFactory(std::int16_t, op, allowZeroOperand) \
+        ScalarOpIfTypeDeclareFactory(std::int32_t, op, allowZeroOperand) \
+        ScalarOpIfTypeDeclareFactory(std::int64_t, op, allowZeroOperand) \
+        ScalarOpIfTypeDeclareFactory(std::uint8_t, op, allowZeroOperand) \
+        ScalarOpIfTypeDeclareFactory(std::uint16_t, op, allowZeroOperand) \
+        ScalarOpIfTypeDeclareFactory(std::uint32_t, op, allowZeroOperand) \
+        ScalarOpIfTypeDeclareFactory(std::uint64_t, op, allowZeroOperand) \
+        ScalarOpIfTypeDeclareFactory(float, op, allowZeroOperand) \
+        ScalarOpIfTypeDeclareFactory(double, op, allowZeroOperand) \
+        ScalarOpIfTypeDeclareFactory(std::complex<float>, op, allowZeroOperand) \
+        ScalarOpIfTypeDeclareFactory(std::complex<double>, op, allowZeroOperand) \
      \
         throw Pothos::InvalidArgumentException( \
                   "Unsupported type", \

@@ -387,19 +387,20 @@ ScalarOpBlocks:
         - func: divide
           niceName: Divide Scalar
           header: scalar
+          allowZeroScalar: false
           operator: "/"
 
-        - func: bitwise_or
-          niceName: Bitwise-Or Scalar
-          header: scalar
-          operator: "|"
-
-        - func: bitwise_and
-          niceName: Bitwise-And Scalar
-          header: scalar
-          operator: "&"
-
-        - func: bitwise_xor
-          niceName: Bitwise-XOR Scalar
-          header: scalar
-          operator: "^"
+#        - func: bitwise_or
+#          niceName: Bitwise-Or Scalar
+#          header: scalar
+#          operator: "|"
+#
+#        - func: bitwise_and
+#          niceName: Bitwise-And Scalar
+#          header: scalar
+#          operator: "&"
+#
+#        - func: bitwise_xor
+#          niceName: Bitwise-XOR Scalar
+#          header: scalar
+#          operator: "^"

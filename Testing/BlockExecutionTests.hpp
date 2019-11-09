@@ -66,7 +66,8 @@ template <typename T>
 void testScalarOpBlock(
     const std::string& blockRegistryPath,
     size_t numChannels,
-    const BinaryFunc<T, T>& verificationFunc);
+    const BinaryFunc<T, T>& verificationFunc,
+    bool allowZeroScalar);
 
 //
 // Getting random inputs

@@ -155,14 +155,20 @@ template <typename T>
 void testScalarOpBlock(
     const std::string& blockRegistryPath,
     size_t numChannels,
-    const BinaryFunc<T, T>& verificationFunc)
+    const BinaryFunc<T, T>& verificationFunc,
+    bool allowZeroScalar)
 {
     static const Pothos::DType dtype(typeid(T));
+    static const T zero(0);
 
     std::cout << "Testing " << blockRegistryPath << " (type: " << dtype.name()
                             << ", " << "chans: " << numChannels << ")" << std::endl;
 
-    const T scalar = getSingleTestInput<T>();
+    T scalar;
+    do
+    {
+        scalar = getSingleTestInput<T>();
+    } while(!allowZeroScalar && (scalar == zero));
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
@@ -188,7 +194,8 @@ void testScalarOpBlock(
     void testScalarOpBlock<T>( \
         const std::string& blockRegistryPath, \
         size_t numChannels, \
-        const BinaryFunc<T, T>& verificationFunc);
+        const BinaryFunc<T, T>& verificationFunc, \
+        bool allowZeroScalar);
 
 #define SPECIALIZE_COMPLEX_1TO1_TEMPLATE_TEST(T) \
     template \

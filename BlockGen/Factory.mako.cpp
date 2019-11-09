@@ -42,7 +42,7 @@
  * |widget SpinBox(minimum=1)
  * |preview disable
  */
-ScalarOpBlockFactory(${block["func"]}, ${block["operator"]})
+ScalarOpBlockFactory(${block["func"]}, ${block["operator"]}, ${"true" if block.get("allowZeroScalar", True) else "false"})
 
 %endfor
 static const std::vector<Pothos::BlockRegistry> BlockRegistries =

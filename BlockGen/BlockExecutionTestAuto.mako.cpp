@@ -112,11 +112,13 @@ static EnableIf${k}<T, void> blockExecutionTest()
     testScalarOpBlock<T>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         1,
-        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"},
+        ${"true" if block.get("allowZeroScalar", True) else "false"});
     testScalarOpBlock<T>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         3,
-        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"},
+        ${"true" if block.get("allowZeroScalar", True) else "false"});
     %endfor
 }
 %endfor

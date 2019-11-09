@@ -19,12 +19,14 @@ ScalarOpBlock<T>::ScalarOpBlock(
     const AfArrayScalarOp<T>& func,
     const Pothos::DType& dtype,
     T scalar,
-    size_t numChans
+    size_t numChans,
+    bool allowZeroOperand
 ): OneToOneBlock(
        Pothos::Callable(func),
        dtype,
        dtype,
-       numChans)
+       numChans),
+   _allowZeroOperand(allowZeroOperand)
 {
     setScalar(scalar);
 
@@ -44,6 +46,13 @@ T ScalarOpBlock<T>::getScalar() const
 template <typename T>
 void ScalarOpBlock<T>::setScalar(const T& scalar)
 {
+    static const T Zero(0);
+
+    if(!_allowZeroOperand && (scalar == Zero))
+    {
+        throw Pothos::InvalidArgumentException("Scalar cannot be zero.");
+    }
+
     _scalar = PothosToAF<T>::to(scalar);
     _func.bind(_scalar, 1);
 }
@@ -51,6 +60,11 @@ void ScalarOpBlock<T>::setScalar(const T& scalar)
 template <typename T>
 void ScalarOpBlock<T>::work()
 {
+    if(0 == this->workInfo().minElements)
+    {
+        return;
+    }
+
     auto afInput = this->getInputsAsAfArray();
     _func.bind(afInput, 0);
 
