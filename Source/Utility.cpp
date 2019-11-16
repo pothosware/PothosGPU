@@ -3,6 +3,8 @@
 
 #include "Utility.hpp"
 
+#include <Pothos/Exception.hpp>
+
 #include <cassert>
 
 void validateDType(
@@ -68,4 +70,36 @@ void validateComplexAndFloatTypesMatch(
                   "Incompatible types",
                   (complexDTypeSubtype + ", " + floatType));
     }
+}
+
+Pothos::Object getArrayIndexOfUnknownType(
+    const af::array& afArray,
+    dim_t index)
+{
+    const auto& arrIndex = afArray(index);
+    Pothos::Object ret;
+
+    #define SwitchCase(afDType, ctype) \
+        case afDType: \
+            ret = Pothos::Object(arrIndex.scalar<PothosToAF<ctype>::type>()).convert(typeid(ctype)); \
+            break;
+
+    switch(afArray.type())
+    {
+        SwitchCase(::s16, std::int16_t)
+        SwitchCase(::s32, std::int32_t)
+        SwitchCase(::u8, std::uint8_t)
+        SwitchCase(::u16, std::uint16_t)
+        SwitchCase(::u32, std::uint32_t)
+        SwitchCase(::f32, float)
+        SwitchCase(::f64, double)
+        SwitchCase(::c32, std::complex<float>)
+        SwitchCase(::c64, std::complex<double>)
+
+        default:
+            throw Pothos::AssertionViolationException("Invalid dtype");
+            break;
+    }
+
+    return ret;
 }

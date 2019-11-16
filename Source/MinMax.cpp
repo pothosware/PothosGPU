@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
+#include "Utility.hpp"
 
 #include <Pothos/Exception.hpp>
 #include <Pothos/Framework.hpp>
@@ -12,29 +13,32 @@
 #include <cstdint>
 #include <typeinfo>
 
-template <typename T>
-using MinMaxFunction = void(*)(T*, unsigned*, const af::array&);
+using MinMaxFunction = void(*)(af::array&, af::array&, const af::array&, const int);
 
-// TODO: parallelism
-template <typename T>
 class MinMax: public ArrayFireBlock
 {
     public:
 
+        using Class = MinMax;
+
         MinMax(
-            const MinMaxFunction<T>& func,
-            const std::string& labelName
+            const MinMaxFunction& func,
+            const Pothos::DType& dtype,
+            const std::string& labelName,
+            size_t nchans
         ):
             ArrayFireBlock(),
+            _dtype(dtype),
+            _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _func(func),
-            _labelName(labelName)
+            _labelName(labelName),
+            _nchans(nchans)
         {
-            using Class = MinMax<T>;
-
-            this->setupInput(0, MinMax<T>::dtype);
-
-            // Unique domain because of buffer forwarding
-            this->setupOutput(0, MinMax<T>::dtype, this->uid());
+            for(size_t chan = 0; chan < nchans; ++chan)
+            {
+                this->setupInput(chan, _dtype);
+                this->setupOutput(chan, _dtype);
+            }
         }
 
         virtual ~MinMax() {}
@@ -47,48 +51,49 @@ class MinMax: public ArrayFireBlock
                 return;
             }
 
-            auto input = this->input(0);
-            auto output = this->output(0);
+            const auto dim_nchans = static_cast<dim_t>(_nchans);
+            af::array val(dim_nchans, _afDType);
+            af::array idx(dim_nchans, af::dtype_traits<dim_t>::af_type);
 
-            auto buffer = input->takeBuffer();
+            auto afInput = this->getNumberedInputPortsAs2DAfArray();
+            _func(val, idx, afInput, -1);
 
-            T val(0);
-            unsigned idx(0);
-            _func(
-                &val,
-                &idx,
-                Pothos::Object(buffer).convert<af::array>());
+            const dim_t* idxPtr = idx.device<dim_t>();
 
-            output->postLabel(
-                _labelName,
-                val,
-                idx);
-
-            input->consume(elems);
-            output->postBuffer(std::move(buffer));
+            for(dim_t chan = 0; chan < static_cast<dim_t>(_nchans); ++chan)
+            {
+                this->output(chan)->postLabel(
+                    _labelName,
+                    getArrayIndexOfUnknownType(val, chan),
+                    idxPtr[chan]);
+            }
+            this->post2DAfArrayToNumberedOutputPorts(afInput);
         }
 
     private:
 
-        static const Pothos::DType dtype;
+        Pothos::DType _dtype;
+        af::dtype _afDType;
 
-        MinMaxFunction<T> _func;
+        MinMaxFunction _func;
         std::string _labelName;
+        size_t _nchans;
 };
 
-template <typename T>
-const Pothos::DType MinMax<T>::dtype(typeid(T));
-
 template <bool isMin>
-static Pothos::Block* minMaxFactory(const Pothos::DType& dtype)
+static Pothos::Block* minMaxFactory(
+    const Pothos::DType& dtype,
+    size_t nchans)
 {
     static constexpr const char* labelName = isMin ? "MIN" : "MAX";
 
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new MinMax<T>( \
-                           (isMin ? (MinMaxFunction<T>)af::min<T> : (MinMaxFunction<T>)af::max<T>), \
-                           labelName);
+            return new MinMax( \
+                           (isMin ? (MinMaxFunction)af::min : (MinMaxFunction)af::max), \
+                           dtype, \
+                           labelName, \
+                           nchans);
 
     // ArrayFire has no implementation for int8_t, int64_t, or uint64_t.
     ifTypeDeclareFactory(std::int16_t)
@@ -107,8 +112,8 @@ static Pothos::Block* minMaxFactory(const Pothos::DType& dtype)
 /*
  * |PothosDoc Buffer Minimum
  *
- * Calls <b>af::min</b> on all inputs. This block computes all
- * outputs in parallel, using one of the following implementations by priority
+ * Calls <b>af::min</b> on all inputs. This block computes all outputs
+ * in parallel, using one of the following implementations by priority
  * (based on availability of hardware and underlying libraries).
  * <ol>
  * <li>CUDA (if GPU present)</li>
@@ -116,17 +121,22 @@ static Pothos::Block* minMaxFactory(const Pothos::DType& dtype)
  * <li>Standard C++ (if no GPU present)</li>
  * </ol>
  *
- * For each output, this block posts a label called "MIN", whose position
+ * For each output, this block posts a <b>"MIN"</b> label, whose position
  * and value match the element of the minimum value.
  *
  * |category /ArrayFire/Algorithm
  * |keywords algorithm min
- * |factory /arrayfire/algorithm/min(dtype)
+ * |factory /arrayfire/algorithm/min(dtype,nchans)
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int=1,uint=1,float=1)
  * |default "float64"
  * |preview enable
+ *
+ * |param nchans[Num Channels] The number of channels.
+ * |default 1
+ * |widget SpinBox(minimum=1)
+ * |preview disable
  */
 static Pothos::BlockRegistry registerMin(
     "/arrayfire/algorithm/min",
@@ -135,8 +145,8 @@ static Pothos::BlockRegistry registerMin(
 /*
  * |PothosDoc Buffer Maximum
  *
- * Calls <b>af::max</b> on all inputs. This block computes all
- * outputs in parallel, using one of the following implementations by priority
+ * Calls <b>af::max</b> on all inputs. This block computes all outputs
+ * in parallel, using one of the following implementations by priority
  * (based on availability of hardware and underlying libraries).
  * <ol>
  * <li>CUDA (if GPU present)</li>
@@ -144,17 +154,22 @@ static Pothos::BlockRegistry registerMin(
  * <li>Standard C++ (if no GPU present)</li>
  * </ol>
  *
- * For each output, this block posts a label called "MAX", whose position
+ * For each output, this block posts a <b>"MAX"</b> label, whose position
  * and value match the element of the maximum value.
  *
  * |category /ArrayFire/Algorithm
  * |keywords algorithm max
- * |factory /arrayfire/algorithm/max(dtype)
+ * |factory /arrayfire/algorithm/max(dtype,nchans)
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int=1,uint=1,float=1)
  * |default "float64"
  * |preview enable
+ *
+ * |param nchans[Num Channels] The number of channels.
+ * |default 1
+ * |widget SpinBox(minimum=1)
+ * |preview disable
  */
 static Pothos::BlockRegistry registerMax(
     "/arrayfire/algorithm/max",
