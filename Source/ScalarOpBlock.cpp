@@ -28,10 +28,12 @@ ScalarOpBlock<T>::ScalarOpBlock(
        numChans),
    _allowZeroOperand(allowZeroOperand)
 {
-    setScalar(scalar);
-
     this->registerCall(this, POTHOS_FCN_TUPLE(Class, getScalar));
     this->registerCall(this, POTHOS_FCN_TUPLE(Class, setScalar));
+
+    this->registerProbe("scalar", "scalarChanged", "setScalar");
+
+    setScalar(scalar);
 }
 
 template <typename T>
@@ -55,6 +57,8 @@ void ScalarOpBlock<T>::setScalar(const T& scalar)
 
     _scalar = PothosToAF<T>::to(scalar);
     _func.bind(_scalar, 1);
+
+    this->emitSignal("scalarChanged", scalar);
 }
 
 template <typename T>

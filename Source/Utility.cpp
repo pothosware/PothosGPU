@@ -88,7 +88,7 @@ Pothos::Object getArrayIndexOfUnknownType(
     {
         SwitchCase(::s16, std::int16_t)
         SwitchCase(::s32, std::int32_t)
-        SwitchCase(::u8, std::uint8_t)
+        SwitchCase(::u8,  std::uint8_t)
         SwitchCase(::u16, std::uint16_t)
         SwitchCase(::u32, std::uint32_t)
         SwitchCase(::f32, float)
