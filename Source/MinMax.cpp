@@ -15,6 +15,7 @@
 template <typename T>
 using MinMaxFunction = void(*)(T*, unsigned*, const af::array&);
 
+// TODO: parallelism
 template <typename T>
 class MinMax: public ArrayFireBlock
 {
@@ -103,10 +104,58 @@ static Pothos::Block* minMaxFactory(const Pothos::DType& dtype)
               dtype.name());
 }
 
+/*
+ * |PothosDoc Buffer Minimum
+ *
+ * Calls <b>af::min</b> on all inputs. This block computes all
+ * outputs in parallel, using one of the following implementations by priority
+ * (based on availability of hardware and underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * For each output, this block posts a label called "MIN", whose position
+ * and value match the element of the minimum value.
+ *
+ * |category /ArrayFire/Algorithm
+ * |keywords algorithm min
+ * |factory /arrayfire/algorithm/min(dtype)
+ *
+ * |param dtype(Data Type) The block data type.
+ * |widget DTypeChooser(int=1,uint=1,float=1)
+ * |default "float64"
+ * |preview enable
+ */
 static Pothos::BlockRegistry registerMin(
     "/arrayfire/algorithm/min",
     Pothos::Callable(&minMaxFactory<true>));
 
+/*
+ * |PothosDoc Buffer Maximum
+ *
+ * Calls <b>af::max</b> on all inputs. This block computes all
+ * outputs in parallel, using one of the following implementations by priority
+ * (based on availability of hardware and underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * For each output, this block posts a label called "MAX", whose position
+ * and value match the element of the maximum value.
+ *
+ * |category /ArrayFire/Algorithm
+ * |keywords algorithm max
+ * |factory /arrayfire/algorithm/max(dtype)
+ *
+ * |param dtype(Data Type) The block data type.
+ * |widget DTypeChooser(int=1,uint=1,float=1)
+ * |default "float64"
+ * |preview enable
+ */
 static Pothos::BlockRegistry registerMax(
     "/arrayfire/algorithm/max",
     Pothos::Callable(&minMaxFactory<false>));
