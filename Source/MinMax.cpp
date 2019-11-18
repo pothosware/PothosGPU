@@ -19,8 +19,6 @@ class MinMax: public ArrayFireBlock
 {
     public:
 
-        using Class = MinMax;
-
         MinMax(
             const MinMaxFunction& func,
             const Pothos::DType& dtype,
