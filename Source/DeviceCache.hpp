@@ -16,7 +16,7 @@ struct DeviceCacheEntry
     std::string compute;
     size_t memoryStepSize;
 
-    ::af_backend afBackendEnum;
+    af::Backend afBackendEnum;
     int afDeviceIndex;
 };
 

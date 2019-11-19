@@ -38,7 +38,7 @@ static void testEnumValueConversion(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_backend_conversion)
 {
-    testTypesCanConvert<std::string, ::af_backend>();
+    testTypesCanConvert<std::string, af::Backend>();
     testEnumValueConversion("CPU",    ::AF_BACKEND_CPU);
     testEnumValueConversion("CUDA",   ::AF_BACKEND_CUDA);
     testEnumValueConversion("OpenCL", ::AF_BACKEND_OPENCL);
@@ -46,12 +46,12 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_backend_conversion)
 
 static void testDTypeEnumUsage(
     const std::string& dtypeName,
-    ::af_dtype afDType)
+    af::dtype afDType)
 {
     Pothos::DType dtype(dtypeName);
     POTHOS_TEST_EQUAL(
         afDType,
-        Pothos::Object(dtype).convert<::af_dtype>());
+        Pothos::Object(dtype).convert<af::dtype>());
 
     auto dtypeFromAF = Pothos::Object(afDType).convert<Pothos::DType>();
     POTHOS_TEST_EQUAL(dtypeName, dtypeFromAF.name());
@@ -59,7 +59,7 @@ static void testDTypeEnumUsage(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_dtype_conversion)
 {
-    testTypesCanConvert<Pothos::DType, ::af_dtype>();
+    testTypesCanConvert<Pothos::DType, af::dtype>();
     testDTypeEnumUsage("int16",           ::s16);
     testDTypeEnumUsage("int32",           ::s32);
     testDTypeEnumUsage("int64",           ::s64);

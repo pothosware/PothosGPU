@@ -11,14 +11,14 @@
 #include <string>
 #include <unordered_map>
 
-static const std::unordered_map<std::string, ::af_backend> BackendEnumMap =
+static const std::unordered_map<std::string, af::Backend> BackendEnumMap =
 {
     {"CPU",    ::AF_BACKEND_CPU},
     {"CUDA",   ::AF_BACKEND_CUDA},
     {"OpenCL", ::AF_BACKEND_OPENCL},
 };
 
-static const std::unordered_map<std::string, ::af_dtype> DTypeEnumMap =
+static const std::unordered_map<std::string, af::dtype> DTypeEnumMap =
 {
     // No int8 support
     {"int16",           ::s16},
@@ -35,12 +35,12 @@ static const std::unordered_map<std::string, ::af_dtype> DTypeEnumMap =
     {"complex_float64", ::c64},
 };
 
-static ::af_dtype pothosDTypeToAfDType(const Pothos::DType& pothosDType)
+static af::dtype pothosDTypeToAfDType(const Pothos::DType& pothosDType)
 {
     return getValForKey(DTypeEnumMap, pothosDType.name());
 }
 
-static Pothos::DType afDTypeToPothosDType(::af_dtype afDType)
+static Pothos::DType afDTypeToPothosDType(af::dtype afDType)
 {
     return Pothos::DType(getKeyForVal(DTypeEnumMap, afDType));
 }

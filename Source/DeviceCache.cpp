@@ -8,7 +8,7 @@ std::vector<DeviceCacheEntry> _getDeviceCache()
     std::vector<DeviceCacheEntry> deviceCache;
 
     int availableBackends = af::getAvailableBackends();
-    const std::vector<::af_backend> BACKENDS =
+    const std::vector<af::Backend> BACKENDS =
     {
         ::AF_BACKEND_CUDA,
         ::AF_BACKEND_OPENCL,

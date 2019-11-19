@@ -33,7 +33,7 @@ std::string ArrayFireBlock::getArrayFireBackend() const
 
 void ArrayFireBlock::setArrayFireBackend(const std::string& backend)
 {
-    _afBackend = Pothos::Object(backend).convert<::af_backend>();
+    _afBackend = Pothos::Object(backend).convert<af::Backend>();
     af::setBackend(_afBackend);
 }
 
@@ -76,7 +76,7 @@ af::array ArrayFireBlock::getNumberedInputPortsAs2DAfArray()
 
     const auto dim0 = static_cast<dim_t>(inputs.size());
     const auto dim1 = static_cast<dim_t>(this->workInfo().minElements);
-    const auto afDType = Pothos::Object(inputs[0]->dtype()).convert<::af_dtype>();
+    const auto afDType = Pothos::Object(inputs[0]->dtype()).convert<af::dtype>();
 
     af::array ret(dim0, dim1, afDType);
     for(dim_t row = 0; row < dim0; ++row)

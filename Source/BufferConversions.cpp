@@ -26,7 +26,7 @@ static Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
 {
     dim_t dim0 = static_cast<dim_t>(bufferChunk.elements());
-    auto afDType = Pothos::Object(bufferChunk.dtype).convert<::af_dtype>();
+    auto afDType = Pothos::Object(bufferChunk.dtype).convert<af::dtype>();
 
     // The type is arbitrary, but there is no void* implementation, so
     // attempting to use it results in a linker error.

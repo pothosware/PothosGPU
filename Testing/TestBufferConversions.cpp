@@ -16,7 +16,7 @@
 template <typename T>
 static void test1DArrayConversion(
     const std::string& dtypeName,
-    ::af_dtype afDType)
+    af::dtype afDType)
 {
     static constexpr dim_t ArrDim = 128;
 
@@ -45,7 +45,7 @@ static void test1DArrayConversion(
 template <typename T>
 static void test2DArrayConversion(
     const std::string& dtypeName,
-    ::af_dtype afDType)
+    af::dtype afDType)
 {
     static constexpr dim_t ArrDim = 32;
 

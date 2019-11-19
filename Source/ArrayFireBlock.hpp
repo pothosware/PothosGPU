@@ -59,7 +59,7 @@ class ArrayFireBlock: public Pothos::Block
 
         bool _assumeArrayFireInputs;
 
-        ::af_backend _afBackend;
+        af::Backend _afBackend;
 
     private:
 
