@@ -31,7 +31,7 @@ ScalarOpBlock<T>::ScalarOpBlock(
     this->registerCall(this, POTHOS_FCN_TUPLE(Class, getScalar));
     this->registerCall(this, POTHOS_FCN_TUPLE(Class, setScalar));
 
-    this->registerProbe("scalar", "scalarChanged", "setScalar");
+    this->registerProbe("getScalar", "scalarChanged", "setScalar");
 
     setScalar(scalar);
 }
