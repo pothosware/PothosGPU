@@ -286,20 +286,24 @@ SingleOutputSources:
         # af/data.h
         #
 
+        - func: identity
+          header: data
+          supportedTypes:
+                  supportAll: true
+
+        #
+        # af/random.h
+        #
+
         - func: randu
           niceName: Random (Uniform Distribution)
-          header: data
+          header: random
           supportedTypes:
                   supportAll: true
 
         - func: randn
           niceName: Random (Normal Distribution)
-          header: data
-          supportedTypes:
-                  supportAll: true
-
-        - func: identity
-          header: data
+          header: random
           supportedTypes:
                   supportAll: true
 
@@ -314,12 +318,8 @@ TwoToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        #
-        # af/data.h
-        #
-
         - func: min
-          header: data
+          header: arith
           verify: std::min
           supportedTypes:
                   supportInt: true
@@ -327,7 +327,7 @@ TwoToOneBlocks:
                   supportFloat: true
 
         - func: max
-          header: data
+          header: arith
           verify: std::max
           supportedTypes:
                   supportInt: true
@@ -336,7 +336,7 @@ TwoToOneBlocks:
 
         - func: rem
           niceName: Remainder
-          header: data
+          header: arith
           allowZeroInBuffer1: false
           supportedTypes:
                   supportInt: true
@@ -345,7 +345,7 @@ TwoToOneBlocks:
 
         - func: mod
           niceName: Modulus
-          header: data
+          header: arith
           allowZeroInBuffer1: false
           supportedTypes:
                   supportInt: true
@@ -354,7 +354,7 @@ TwoToOneBlocks:
 
         - func: atan2
           niceName: Arc Tangent
-          header: data
+          header: arith
           verify: std::atan2
           supportedTypes:
                   supportFloat: true
