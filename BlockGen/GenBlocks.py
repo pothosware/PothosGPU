@@ -45,7 +45,7 @@ def processYAMLFile(yamlPath):
     return yml
 
 DICT_ENTRY_KEYS = dict(
-    supportInt="int=1",
+    supportInt="int16=1,int32=1,int64=1",
     supportUInt="uint=1",
     supportFloat="float=1",
     supportComplexFloat="cfloat=1"
@@ -54,7 +54,7 @@ DICT_ENTRY_KEYS = dict(
 # Operates in-place
 def generateDTypeDictEntries(supportedTypes):
     if "supportAll" in supportedTypes:
-        supportedTypes["dtypeString"] = "int=1,uint=1,float=1,cfloat=1"
+        supportedTypes["dtypeString"] = ",".join([DICT_ENTRY_KEYS[key] for key in DICT_ENTRY_KEYS])
         supportedTypes["defaultType"] = "float64"
     else:
         supportedTypes["dtypeString"] = ",".join([DICT_ENTRY_KEYS[key] for key in DICT_ENTRY_KEYS if key in supportedTypes])

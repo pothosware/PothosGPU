@@ -30,7 +30,7 @@
  * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype,scalar,numChannels)
  *
  * |param dtype(Data Type) The block data type.
- * |widget DTypeChooser(${"int=1,uint=1" if block.get("intOnly", False) else "int=1,uint=1,float=1,cfloat=1"})
+ * |widget DTypeChooser(${"int16=1,int32=1,int64=1,uint=1" if block.get("intOnly", False) else "int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1"})
  * |default ${"\"uint64\"" if block.get("intOnly", False) else "\"float64\""}
  * |preview enable
  *
