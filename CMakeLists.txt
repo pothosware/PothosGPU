@@ -84,6 +84,7 @@ POTHOS_MODULE_UTIL(
         Testing/TwoToOneBlockExecutionTest.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
+        Testing/TestLabels.cpp
         Testing/TestNumericConversions.cpp
         Testing/TestInputArrayOptimization.cpp
     LIBRARIES
