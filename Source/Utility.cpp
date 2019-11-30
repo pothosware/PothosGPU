@@ -79,6 +79,8 @@ Pothos::Object getArrayIndexOfUnknownType(
     const auto& arrIndex = afArray(index);
     Pothos::Object ret;
 
+    assert(arrIndex.elements() == 1);
+
     #define SwitchCase(afDType, ctype) \
         case afDType: \
             ret = Pothos::Object(arrIndex.scalar<PothosToAF<ctype>::type>()).convert(typeid(ctype)); \
@@ -88,9 +90,11 @@ Pothos::Object getArrayIndexOfUnknownType(
     {
         SwitchCase(::s16, std::int16_t)
         SwitchCase(::s32, std::int32_t)
+        SwitchCase(::s64, long long)
         SwitchCase(::u8,  std::uint8_t)
         SwitchCase(::u16, std::uint16_t)
         SwitchCase(::u32, std::uint32_t)
+        SwitchCase(::u64, unsigned long long)
         SwitchCase(::f32, float)
         SwitchCase(::f64, double)
         SwitchCase(::c32, std::complex<float>)
