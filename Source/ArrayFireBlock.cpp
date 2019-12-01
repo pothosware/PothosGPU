@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
+#include "Utility.hpp"
 
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
@@ -10,6 +11,7 @@
 
 #include <string>
 
+// TODO: make sure device supports double
 ArrayFireBlock::ArrayFireBlock():
     Pothos::Block(),
     _assumeArrayFireInputs(false),
@@ -33,8 +35,17 @@ std::string ArrayFireBlock::getArrayFireBackend() const
 
 void ArrayFireBlock::setArrayFireBackend(const std::string& backend)
 {
-    _afBackend = Pothos::Object(backend).convert<af::Backend>();
-    af::setBackend(_afBackend);
+    if(!this->isActive())
+    {
+        auto afBackend = Pothos::Object(backend).convert<af::Backend>();
+        setThreadAFBackend(afBackend);
+
+        _afBackend = afBackend;
+    }
+    else
+    {
+        throw Pothos::RuntimeException("Cannot change a block's backend while the block is active.");
+    }
 }
 
 bool ArrayFireBlock::getBlockAssumesArrayFireInputs() const

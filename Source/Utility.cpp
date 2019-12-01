@@ -1,11 +1,80 @@
 // Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "DeviceCache.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Exception.hpp>
+#include <Pothos/Object.hpp>
 
-#include <cassert>
+#include <Poco/Format.h>
+
+#include <algorithm>
+
+void setThreadAFBackend(af::Backend backend)
+{
+    // This check is constexpr, so in theory, the compiler should be able
+    // able to optimize away the invalid case.
+    if(isAFConfigPerThread())
+    {
+        af::setBackend(backend);
+        assert(backend == af::getActiveBackend());
+    }
+    else
+    {
+        throw Pothos::RuntimeException(
+                  Poco::format(
+                      "This build of PothosArrayFire was built against ArrayFire %s, "
+                      "which only supports a single global backend. To enable setting "
+                      "different backends per block, rebuild this module against "
+                      "ArrayFire 3.5+.",
+                      std::string(AF_VERSION)));
+    }
+}
+
+void setThreadAFDevice(const std::string& device)
+{
+    // This check is constexpr, so in theory, the compiler should be able
+    // able to optimize away the invalid case.
+    if(isAFConfigPerThread())
+    {
+        const auto backend = af::getActiveBackend();
+        const auto& deviceCache = getDeviceCache();
+
+        // Search for the given device name in our current backend.
+        auto deviceIter = std::find_if(
+                              deviceCache.begin(),
+                              deviceCache.end(),
+                              [&backend, &device](const DeviceCacheEntry& entry)
+                              {
+                                  return (entry.afBackendEnum == backend) &&
+                                         (entry.name == device);
+                              });
+        if(deviceIter != deviceCache.end())
+        {
+            af::setDevice(deviceIter->afDeviceIndex);
+            assert(deviceIter->afDeviceIndex == af::getDevice());
+        }
+        else
+        {
+            throw Pothos::NotFoundException(
+                      Poco::format(
+                          "Could not find device with backend %s and name %s.",
+                          Pothos::Object(backend).convert<std::string>(),
+                          device));
+        }
+    }
+    else
+    {
+        throw Pothos::RuntimeException(
+                  Poco::format(
+                      "This build of PothosArrayFire was built against ArrayFire %s, "
+                      "which only supports a single global device. To enable setting "
+                      "different devices per block, rebuild this module against "
+                      "ArrayFire 3.5+.",
+                      std::string(AF_VERSION)));
+    }
+}
 
 void validateDType(
     const Pothos::DType& dtype,
