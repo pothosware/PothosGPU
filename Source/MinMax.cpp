@@ -49,14 +49,14 @@ class MinMax: public ArrayFireBlock
                 return;
             }
 
-            const auto dim_nchans = static_cast<dim_t>(_nchans);
-            af::array val(dim_nchans, _afDType);
-            af::array idx(dim_nchans, af::dtype_traits<dim_t>::af_type);
+            af::array val, idx;
 
             auto afInput = this->getNumberedInputPortsAs2DAfArray();
             _func(val, idx, afInput, -1);
+            assert(_nchans == static_cast<size_t>(val.elements()));
+            assert(_nchans == static_cast<size_t>(idx.elements()));
 
-            const dim_t* idxPtr = idx.device<dim_t>();
+            const auto* idxPtr = idx.device<std::uint32_t>();
 
             for(dim_t chan = 0; chan < static_cast<dim_t>(_nchans); ++chan)
             {

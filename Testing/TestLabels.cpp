@@ -54,9 +54,16 @@ static T median(const std::vector<T>& inputs, size_t* pPosition)
     std::vector<T> sortedInputs(inputs);
     std::sort(sortedInputs.begin(), sortedInputs.end());
 
-    *pPosition = size_t(std::floor(inputs[inputs.size()/2]));
+    auto sortedIndex = size_t(std::floor(inputs.size()/2));
+    auto unsortedIter = std::find(
+                            inputs.begin(),
+                            inputs.end(),
+                            sortedInputs[sortedIndex]);
+    POTHOS_TEST_TRUE(unsortedIter != inputs.end());
 
-    return sortedInputs[*pPosition];
+    *pPosition = std::distance(inputs.begin(), unsortedIter);
+
+    return sortedInputs[sortedIndex];
 }
 */
 
@@ -145,29 +152,31 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
         Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", dtype, 1),
         Pothos::BlockRegistry::make("/arrayfire/statistics/var", dtype, false, 1),
     };
+    const size_t numBlocks = arrayFireBlocks.size();
 
-    auto collectorSink = Pothos::BlockRegistry::make(
-                             "/blocks/collector_sink",
-                             dtype);
+    std::vector<Pothos::Proxy> collectorSinks;
+    for(size_t blockIndex = 0; blockIndex < numBlocks; ++blockIndex)
+    {
+        collectorSinks.emplace_back(Pothos::BlockRegistry::make(
+                                        "/blocks/collector_sink",
+                                        dtype));
+    }
 
     // Execute the topology.
     {
         auto topology = Pothos::Topology::make();
 
-        for(const auto& block: arrayFireBlocks)
+        for(size_t blockIndex = 0; blockIndex < numBlocks; ++blockIndex)
         {
             topology->connect(
                 vectorSource,
                 0,
-                block,
+                arrayFireBlocks[blockIndex],
                 0);
-        }
-        for(const auto& block: arrayFireBlocks)
-        {
             topology->connect(
-                block,
+                arrayFireBlocks[blockIndex],
                 0,
-                collectorSink,
+                collectorSinks[blockIndex],
                 0);
         }
 
@@ -176,27 +185,31 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
     }
 
     auto expectedLabels = getExpectedLabels(inputs);
-    const auto collectorSinkLabels = collectorSink.call<std::vector<Pothos::Label>>("getLabels");
-    POTHOS_TEST_EQUAL(expectedLabels.size(), collectorSinkLabels.size());
+    POTHOS_TEST_EQUAL(expectedLabels.size(), numBlocks);
 
-    // TODO: use separate collector sinks to check expected indices
-    for(const auto& expectedLabel: expectedLabels)
+    for(size_t labelIndex = 0; labelIndex < numBlocks; ++labelIndex)
     {
-        auto collectorSinkLabelIter = std::find_if(
-            collectorSinkLabels.begin(),
-            collectorSinkLabels.end(),
-            [&expectedLabel](const Pothos::Label& collectorSinkLabel)
-            {
-                return (expectedLabel.id == collectorSinkLabel.id);
-            });
-        std::cout << "Testing label " << expectedLabel.id << std::endl;
-        POTHOS_TEST_TRUE(collectorSinkLabels.end() != collectorSinkLabelIter);
+        const auto& expectedLabel = expectedLabels[labelIndex];
+        const bool isStdOrVar = ("VAR" == expectedLabel.id) || ("STDDEV" == expectedLabel.id);
 
-        // Allow greater variance due to floating-point precision issues
-        // propagating over many operations.
+        auto blockLabels = collectorSinks[labelIndex].call<std::vector<Pothos::Label>>("getLabels");
+        POTHOS_TEST_EQUAL(1, blockLabels.size());
+        const auto& blockLabel = blockLabels[0];
+
+        std::cout << "Testing label " << expectedLabel.id << std::endl;
+
+        std::cout << " * ID..." << std::endl;
+        POTHOS_TEST_EQUAL(
+            expectedLabel.id,
+            blockLabel.id);
+        std::cout << " * Index..." << std::endl;
+        testEqual(
+            expectedLabel.index,
+            blockLabel.index);
+        std::cout << " * Data..." << std::endl;
         POTHOS_TEST_CLOSE(
-            expectedLabel.data.extract<double>(),
-            collectorSinkLabelIter->data.extract<double>(),
-            0.1);
+            expectedLabel.data.convert<double>(),
+            blockLabel.data.convert<double>(),
+            isStdOrVar ? 1.0 : 1e-6);
     }
 }
