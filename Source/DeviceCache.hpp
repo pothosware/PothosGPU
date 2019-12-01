@@ -15,6 +15,7 @@ struct DeviceCacheEntry
     std::string toolkit;
     std::string compute;
     size_t memoryStepSize;
+    bool supportsDouble;
 
     af::Backend afBackendEnum;
     int afDeviceIndex;

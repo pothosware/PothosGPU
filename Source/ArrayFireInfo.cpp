@@ -24,7 +24,8 @@ static json deviceCacheEntryToJSON(const DeviceCacheEntry& entry)
     deviceJSON["Platform"] = entry.platform;
     deviceJSON["Toolkit"] = entry.toolkit;
     deviceJSON["Compute"] = entry.compute;
-    deviceJSON["Memory Step Size"] = af::getMemStepSize();
+    deviceJSON["Memory Step Size"] = entry.memoryStepSize;
+    deviceJSON["Float64 supported?"] = entry.supportsDouble;
 
     return deviceJSON;
 }

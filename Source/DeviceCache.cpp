@@ -40,6 +40,7 @@ std::vector<DeviceCacheEntry> _getDeviceCache()
                     toolkit,
                     compute,
                     af::getMemStepSize(),
+                    af::isDoubleAvailable(devIndex),
 
                     backend,
                     devIndex
