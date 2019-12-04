@@ -13,9 +13,9 @@
 
 void setThreadAFBackend(af::Backend backend)
 {
-    // This check is constexpr, so in theory, the compiler should be able
-    // able to optimize away the invalid case.
-    if(isAFConfigPerThread())
+    // Since the preprocessor makes this a literal, the compiler should
+    // optimize away the inapplicable case.
+    if(IS_AF_CONFIG_PER_THREAD)
     {
         af::setBackend(backend);
         assert(backend == af::getActiveBackend());
@@ -34,9 +34,9 @@ void setThreadAFBackend(af::Backend backend)
 
 void setThreadAFDevice(const std::string& device)
 {
-    // This check is constexpr, so in theory, the compiler should be able
-    // able to optimize away the invalid case.
-    if(isAFConfigPerThread())
+    // Since the preprocessor makes this a literal, the compiler should
+    // optimize away the inapplicable case.
+    if(IS_AF_CONFIG_PER_THREAD)
     {
         const auto backend = af::getActiveBackend();
         const auto& deviceCache = getDeviceCache();

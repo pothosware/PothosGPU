@@ -22,10 +22,7 @@
 // different backends per block, so we check for it here.
 //
 
-static constexpr bool isAFConfigPerThread()
-{
-    return (AF_API_VERSION_CURRENT >= 35);
-}
+#define IS_AF_CONFIG_PER_THREAD (AF_API_VERSION_CURRENT >= 35)
 
 void setThreadAFBackend(af::Backend backend);
 
