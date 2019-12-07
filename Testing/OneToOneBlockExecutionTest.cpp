@@ -22,8 +22,6 @@ static void testOneToOneBlockCommon(
     static const Pothos::DType inputDType(typeid(In));
     static const Pothos::DType outputDType(typeid(Out));
 
-    POTHOS_TEST_TRUE(!block.call<bool>("getBlockAssumesArrayFireInputs"));
-
     const size_t numChannels = block.call<InputPortVector>("inputs").size();
 
     std::vector<std::vector<In>> testInputs(numChannels);

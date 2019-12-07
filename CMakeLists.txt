@@ -88,7 +88,6 @@ POTHOS_MODULE_UTIL(
         Testing/TestEnumConversions.cpp
         Testing/TestLabels.cpp
         Testing/TestNumericConversions.cpp
-        Testing/TestInputArrayOptimization.cpp
     LIBRARIES
         ArrayFire::af
     ENABLE_DOCS ON

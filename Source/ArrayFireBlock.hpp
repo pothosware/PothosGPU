@@ -61,8 +61,6 @@ class ArrayFireBlock: public Pothos::Block
         // Member variables
         //
 
-        bool _assumeArrayFireInputs;
-
         af::Backend _afBackend;
         int _afDevice;
 
