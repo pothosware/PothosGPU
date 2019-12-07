@@ -58,11 +58,10 @@ class OneToOneBlock: public ArrayFireBlock
 
         af::array getInputsAsAfArray();
 
-        void work(const af::array& afInput);
+        virtual void work(const af::array& afInput);
 
         Pothos::Callable _func;
 
-    private:
         size_t _nchans;
 
         // We need to store this since ArrayFire may change the output value.
