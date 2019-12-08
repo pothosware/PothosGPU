@@ -106,6 +106,8 @@ class FileSourceBlock: public ArrayFireBlock
             }
 
             this->post2DAfArrayToNumberedOutputPorts(_fileContents);
+
+            _hasPosted = true;
         }
 
     private:
