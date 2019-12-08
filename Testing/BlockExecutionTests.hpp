@@ -78,6 +78,10 @@ void testCastBlockForType(const std::string& inputType);
 // Getting random inputs
 //
 
+// Templateless for the case where templates would make the binary size
+// explode
+Pothos::BufferChunk getTestInputs(const std::string& type);
+
 template <typename T>
 static EnableIfInteger<T, std::vector<T>> getTestInputs()
 {

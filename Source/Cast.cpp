@@ -7,12 +7,36 @@
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
+#include <Poco/Logger.h>
+
 #include <arrayfire.h>
 
 #include <cassert>
 #include <cstring>
 #include <string>
 #include <typeinfo>
+
+static void validateCastTypes(
+    const Pothos::DType& inputDType,
+    const Pothos::DType& outputDType)
+{
+    if(isDTypeComplexFloat(inputDType) && isDTypeFloat(outputDType))
+    {
+        throw Pothos::InvalidArgumentException(
+                  "This block cannot perform cfloat -> float conversions.");
+    }
+    else if(isDTypeComplexFloat(inputDType) && isDTypeAnyInt(outputDType))
+    {
+        auto& logger = Poco::Logger::get("/arrayfire/stream/cast");
+
+        poco_warning_f2(
+            logger,
+            "ArrayFire technically supports casting %s to %s, "
+            "so we support it here, but this is not recommended.",
+            inputDType.name(),
+            outputDType.name());
+    }
+}
 
 // TODO:
 //  * See if different backends have different casting support.
@@ -28,6 +52,9 @@ class CastBlock: public OneToOneBlock
             const Pothos::DType& outputDType,
             size_t nchans)
         {
+            // Validate here to avoid the ArrayFireBlock overhead.
+            validateCastTypes(inputDType, outputDType);
+
             return new CastBlock(inputDType, outputDType, nchans);
         }
 

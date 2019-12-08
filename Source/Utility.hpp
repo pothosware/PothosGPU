@@ -175,6 +175,12 @@ static inline bool isDTypeUInt(const Pothos::DType& dtype)
     return (dtype.isInteger() && !dtype.isSigned() && !dtype.isComplex());
 }
 
+// Convenience
+static inline bool isDTypeAnyInt(const Pothos::DType& dtype)
+{
+    return (dtype.isInteger() && !dtype.isComplex());
+}
+
 // Needed because isFloat() returns true for complex float types
 static inline bool isDTypeFloat(const Pothos::DType& dtype)
 {

@@ -1,0 +1,29 @@
+// Copyright (c) 2019 Nicholas Corgan
+// SPDX-License-Identifier: BSD-3-Clause
+
+#include "BlockExecutionTests.hpp"
+#include "TestUtility.hpp"
+
+#define RETURN_BUFFERCHUNK(typeStr, cType) \
+    if(type == typeStr) \
+        return stdVectorToBufferChunk(Pothos::DType(typeStr), getTestInputs<cType>());
+
+Pothos::BufferChunk getTestInputs(const std::string& type)
+{
+    // ArrayFire doesn't support int8
+    RETURN_BUFFERCHUNK("int16", std::int16_t)
+    RETURN_BUFFERCHUNK("int32", std::int32_t)
+    RETURN_BUFFERCHUNK("int64", std::int64_t)
+    RETURN_BUFFERCHUNK("uint8", std::uint8_t)
+    RETURN_BUFFERCHUNK("uint16", std::uint16_t)
+    RETURN_BUFFERCHUNK("uint32", std::uint32_t)
+    RETURN_BUFFERCHUNK("uint64", std::uint64_t)
+    RETURN_BUFFERCHUNK("float32", float)
+    RETURN_BUFFERCHUNK("float64", double)
+    // ArrayFire doesn't support any integral complex type
+    RETURN_BUFFERCHUNK("complex_float32", std::complex<float>)
+    RETURN_BUFFERCHUNK("complex_float64", std::complex<double>)
+
+    // Should never happen
+    return Pothos::BufferChunk();
+}
