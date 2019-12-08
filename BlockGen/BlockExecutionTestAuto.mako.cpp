@@ -122,6 +122,8 @@ static EnableIf${k}<T, void> blockExecutionTest()
         ${"true" if block.get("allowZeroScalar", True) else "false"});
         %endif
     %endfor
+
+    testCastBlockForType(Pothos::DType(typeid(T)).name());
 }
 %endfor
 

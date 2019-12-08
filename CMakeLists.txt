@@ -81,6 +81,7 @@ POTHOS_MODULE_UTIL(
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
 
+        Testing/CastBlockTest.cpp
         Testing/OneToOneBlockExecutionTest.cpp
         Testing/TwoToOneBlockExecutionTest.cpp
         Testing/TestArrayFireConfig.cpp

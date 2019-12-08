@@ -72,6 +72,8 @@ void testScalarOpBlock(
     const BinaryFunc<T, T>& verificationFunc,
     bool allowZeroScalar);
 
+void testCastBlockForType(const std::string& inputType);
+
 //
 // Getting random inputs
 //
