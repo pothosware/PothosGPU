@@ -21,6 +21,14 @@
 class FileSourceBlock: public ArrayFireBlock
 {
     public:
+        static Pothos::Block* make(
+            const std::string& filepath,
+            const std::string& key,
+            bool repeat)
+        {
+            return new FileSourceBlock(filepath, key, repeat);
+        }
+
         FileSourceBlock(
             const std::string& filepath,
             const std::string& key,
@@ -31,7 +39,8 @@ class FileSourceBlock: public ArrayFireBlock
             _key(key),
             _repeat(repeat),
             _hasPosted(false),
-            _fileContents()
+            _fileContents(),
+            _numDims(0)
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, getFilepath));
             this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, getKey));
@@ -52,8 +61,8 @@ class FileSourceBlock: public ArrayFireBlock
             }
 
             auto fileContents = af::readArray(_filepath.c_str(), _key.c_str());
-            const auto numDims = fileContents.numdims();
-            if((1 != numDims) && (2 != numDims))
+            _numDims = fileContents.numdims();
+            if((1 != _numDims) && (2 != _numDims))
             {
                 throw Pothos::InvalidArgumentException(
                           "Only arrays of 1-2 dimensions are supported.");
@@ -64,16 +73,16 @@ class FileSourceBlock: public ArrayFireBlock
             _fileContents = std::move(fileContents);
             const auto dtype = Pothos::Object(_fileContents.type()).convert<Pothos::DType>();
 
-            if(1 == numDims)
+            if(1 == _numDims)
             {
-                this->setupInput(0, dtype);
+                this->setupOutput(0, dtype);
             }
             else
             {
                 const size_t nchans = static_cast<size_t>(_fileContents.dims(0));
                 for(size_t chan = 0; chan < nchans; ++chan)
                 {
-                    this->setupInput(chan, dtype);
+                    this->setupOutput(chan, dtype);
                 }
             }
         }
@@ -105,7 +114,14 @@ class FileSourceBlock: public ArrayFireBlock
                 return;
             }
 
-            this->post2DAfArrayToNumberedOutputPorts(_fileContents);
+            if(1 == _numDims)
+            {
+                this->postAfArray(0, _fileContents);
+            }
+            else
+            {
+                this->post2DAfArrayToNumberedOutputPorts(_fileContents);
+            }
 
             _hasPosted = true;
         }
@@ -117,45 +133,9 @@ class FileSourceBlock: public ArrayFireBlock
         bool _hasPosted;
 
         af::array _fileContents;
+        size_t _numDims;
 };
 
-/*
-
-//
-// Factories
-//
-
-Pothos::Block* SingleOutputSource::make(
-    const SingleOutputFunc& func,
-    const Pothos::DType& dtype,
-    const DTypeSupport& supportedTypes)
-{
-    validateDType(dtype, supportedTypes);
-
-    return new SingleOutputSource(func, dtype);
-}
-
-//
-// Class implementation
-//
-
-SingleOutputSource::SingleOutputSource(
-    const SingleOutputFunc& func,
-    const Pothos::DType& dtype
-): ArrayFireBlock(),
-   _func(func),
-   _afDType(Pothos::Object(dtype).convert<af::dtype>())
-{
-    this->setupOutput(0, dtype);
-}
-
-SingleOutputSource::~SingleOutputSource() {}
-
-void SingleOutputSource::work()
-{
-    this->postAfArray(
-        0,
-        _func(OutputBufferSize, _afDType));
-}
-
-*/
+static Pothos::BlockRegistry registerFileSource(
+    "/arrayfire/stream/file_source",
+    Pothos::Callable(&FileSourceBlock::make));

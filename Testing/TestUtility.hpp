@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include <Pothos/Framework/BufferChunk.hpp>
-#include <Pothos/Framework/DType.hpp>
+#include <Pothos/Framework.hpp>
 #include <Pothos/Plugin.hpp>
 #include <Pothos/Proxy.hpp>
 #include <Pothos/Testing.hpp>
@@ -20,6 +19,9 @@
 //
 // Useful typedefs
 //
+
+using InputPortVector = std::vector<Pothos::InputPort*>;
+using OutputPortVector = std::vector<Pothos::OutputPort*>;
 
 template <typename T>
 struct IsComplex : std::false_type {};
