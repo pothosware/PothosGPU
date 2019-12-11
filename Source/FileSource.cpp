@@ -64,7 +64,7 @@ class FileSourceBlock: public ArrayFireBlock
             _numDims = fileContents.numdims();
             if((1 != _numDims) && (2 != _numDims))
             {
-                throw Pothos::InvalidArgumentException(
+                throw Pothos::DataFormatException(
                           "Only arrays of 1-2 dimensions are supported.");
             }
 
