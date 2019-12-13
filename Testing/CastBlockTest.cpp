@@ -30,7 +30,7 @@ static void testCastBlock(
     Pothos::DType inputDType(type1);
     Pothos::DType outputDType(type2);
 
-    if(isDTypeComplexFloat(inputDType) && isDTypeFloat(outputDType))
+    if(isDTypeComplexFloat(inputDType) && !outputDType.isComplex())
     {
         POTHOS_TEST_THROWS(
             Pothos::BlockRegistry::make(
