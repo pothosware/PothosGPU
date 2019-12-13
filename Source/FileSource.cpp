@@ -136,6 +136,42 @@ class FileSourceBlock: public ArrayFireBlock
         size_t _numDims;
 };
 
+/*
+ * |PothosDoc ArrayFire File Source
+ *
+ * Calls <b>af::readArray</b> to load an array from an ArrayFire binary file.
+ * These binary files can store multiple arrays, so a key parameter is given
+ * to select a specific array.
+ *
+ * This block supports any 1D or 2D array. 2D arrays are posted per row in
+ * a given channel. The DType of each OutputPort is determined by the type
+ * of the given array.
+ *
+ * This is potentially accelerated using one of the following implementations
+ * by priority (based on availability of hardware and underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/Stream
+ * |keywords stream file source
+ * |factory /arrayfire/stream/file_source(filepath,key,repeat)
+ *
+ * |param filepath(Filepath) The path of the ArrayFire binary file.
+ * |widget FileEntry(mode=open)
+ * |preview enable
+ *
+ * |param key(Key) The key of the array stored in the ArrayFire binary file.
+ * |widget StringEntry()
+ * |preview enable
+ *
+ * |param repeat(Repeat) Whether to continuously post the file contents or once.
+ * |widget ToggleSwitch()
+ * |preview enable
+ * |default true
+ */
 static Pothos::BlockRegistry registerFileSource(
     "/arrayfire/stream/file_source",
     Pothos::Callable(&FileSourceBlock::make));
