@@ -26,7 +26,6 @@ static void test1DArrayConversion(
 
     auto bufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
     POTHOS_TEST_EQUAL(ArrDim, bufferChunk.elements());
-    POTHOS_TEST_EQUAL(dtypeName, bufferChunk.dtype.name());
     POTHOS_TEST_TRUE(Pothos::DType(typeid(T)) == bufferChunk.dtype);
     POTHOS_TEST_EQUALA(
         reinterpret_cast<const T*>(afArray.device<std::uint8_t>()),
@@ -59,7 +58,6 @@ static void test2DArrayConversion(
         auto bufferChunk = Pothos::Object(afArrayRow)
                                .convert<Pothos::BufferChunk>();
         POTHOS_TEST_EQUAL(ArrDim, bufferChunk.elements());
-        POTHOS_TEST_EQUAL(dtypeName, bufferChunk.dtype.name());
         POTHOS_TEST_TRUE(Pothos::DType(typeid(T)) == bufferChunk.dtype);
         POTHOS_TEST_EQUALA(
             reinterpret_cast<const T*>(afArrayRow.device<std::uint8_t>()),
