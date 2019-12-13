@@ -34,7 +34,6 @@ static std::string _enumerateArrayFireDevices()
 {
     json topObject;
     json devicesArray(json::array());
-    std::set<std::string> supportedPlatforms;
 
     const auto& deviceCache = getDeviceCache();
     std::transform(
@@ -42,23 +41,25 @@ static std::string _enumerateArrayFireDevices()
         std::end(deviceCache),
         std::back_inserter(devicesArray),
         deviceCacheEntryToJSON);
+
+    const auto& afAvailableBackends = getAvailableBackends();
+    std::vector<std::string> availableBackends;
     std::transform(
-        std::begin(deviceCache),
-        std::end(deviceCache),
-        std::inserter(
-            supportedPlatforms,
-            std::end(supportedPlatforms)),
-        [](const DeviceCacheEntry& entry){return entry.platform;});
+        std::begin(afAvailableBackends),
+        std::end(afAvailableBackends),
+        std::back_inserter(availableBackends),
+        [](af::Backend backend)
+        {return Pothos::Object(backend).convert<std::string>();});
 
     topObject["ArrayFire Device"] = devicesArray;
 
     auto& arrayFireInfo = topObject["ArrayFire Info"];
     arrayFireInfo["Library Version"] = AF_VERSION;
     arrayFireInfo["API Version"] = AF_API_VERSION;
-    arrayFireInfo["Supported Platforms"] = Poco::cat(
-                                               std::string(", "),
-                                               std::begin(supportedPlatforms),
-                                               std::end(supportedPlatforms));
+    arrayFireInfo["Available Backends"] = Poco::cat(
+                                              std::string(", "),
+                                              std::begin(availableBackends),
+                                              std::end(availableBackends));
 
     return topObject.dump();
 }

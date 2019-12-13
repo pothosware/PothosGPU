@@ -2,56 +2,82 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "DeviceCache.hpp"
+#include "Utility.hpp"
 
-std::vector<DeviceCacheEntry> _getDeviceCache()
+#include <Pothos/Plugin/Static.hpp>
+
+#include <algorithm>
+
+static std::vector<af::Backend> _getAvailableBackends()
 {
-    std::vector<DeviceCacheEntry> deviceCache;
-
-    int availableBackends = af::getAvailableBackends();
-    const std::vector<af::Backend> BACKENDS =
+    const std::vector<af::Backend> AllBackends =
     {
         ::AF_BACKEND_CUDA,
         ::AF_BACKEND_OPENCL,
         ::AF_BACKEND_CPU,
     };
-    for(const auto& backend: BACKENDS)
-    {
-        if(availableBackends & backend)
+    const int afAvailableBackends = af::getAvailableBackends();
+
+    std::vector<af::Backend> availableBackends;
+    std::copy_if(
+        AllBackends.begin(),
+        AllBackends.end(),
+        std::back_inserter(availableBackends),
+        [&afAvailableBackends](af::Backend backend)
         {
-            af::setBackend(backend);
+            return (afAvailableBackends & backend);
+        });
 
-            // For current backend
-            const int numDevices = af::getDeviceCount();
-            for(int devIndex = 0; devIndex < numDevices; ++devIndex)
+    return availableBackends;
+}
+
+static std::vector<DeviceCacheEntry> _getDeviceCache()
+{
+    std::vector<DeviceCacheEntry> deviceCache;
+
+    for(const auto& backend: getAvailableBackends())
+    {
+        af::setBackend(backend);
+
+        // For current backend
+        const int numDevices = af::getDeviceCount();
+        for(int devIndex = 0; devIndex < numDevices; ++devIndex)
+        {
+            static constexpr size_t bufferLen = 1024;
+
+            char name[bufferLen] = {0};
+            char platform[bufferLen] = {0};
+            char toolkit[bufferLen] = {0};
+            char compute[bufferLen] = {0};
+            af::setDevice(devIndex);
+            af::deviceInfo(name, platform, toolkit, compute);
+
+            DeviceCacheEntry deviceCacheEntry =
             {
-                static constexpr size_t bufferLen = 1024;
+                name,
+                platform,
+                toolkit,
+                compute,
+                af::getMemStepSize(),
+                af::isDoubleAvailable(devIndex),
 
-                char name[bufferLen] = {0};
-                char platform[bufferLen] = {0};
-                char toolkit[bufferLen] = {0};
-                char compute[bufferLen] = {0};
-                af::setDevice(devIndex);
-                af::deviceInfo(name, platform, toolkit, compute);
+                backend,
+                devIndex
+            };
 
-                DeviceCacheEntry deviceCacheEntry =
-                {
-                    name,
-                    platform,
-                    toolkit,
-                    compute,
-                    af::getMemStepSize(),
-                    af::isDoubleAvailable(devIndex),
-
-                    backend,
-                    devIndex
-                };
-
-                deviceCache.emplace_back(std::move(deviceCacheEntry));
-            }
+            deviceCache.emplace_back(std::move(deviceCacheEntry));
         }
     }
 
     return deviceCache;
+}
+
+const std::vector<af::Backend>& getAvailableBackends()
+{
+    // Only do this once
+    static const std::vector<af::Backend> availableBackends = _getAvailableBackends();
+
+    return availableBackends;
 }
 
 const std::vector<DeviceCacheEntry>& getDeviceCache()
@@ -60,4 +86,19 @@ const std::vector<DeviceCacheEntry>& getDeviceCache()
     static const std::vector<DeviceCacheEntry> deviceCache = _getDeviceCache();
 
     return deviceCache;
+}
+
+// Force device caching on init
+pothos_static_block(arrayFireCacheDevices)
+{
+    (void)getAvailableBackends();
+    (void)getDeviceCache();
+
+#if !IS_AF_CONFIG_PER_THREAD
+    const auto& availableBackends = getAvailableBackends();
+
+    // Set the global backend and device on init
+    af::setBackend(getAvailableBackends()[0]);
+    af::setDevice(0);
+#endif
 }

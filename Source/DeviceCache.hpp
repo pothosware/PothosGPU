@@ -21,4 +21,6 @@ struct DeviceCacheEntry
     int afDeviceIndex;
 };
 
+const std::vector<af::Backend>& getAvailableBackends();
+
 const std::vector<DeviceCacheEntry>& getDeviceCache();

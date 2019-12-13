@@ -193,16 +193,7 @@ af::array ArrayFireBlock::_getInputPortAsAfArray(
 
     if(truncateToMinLength && (minLength < bufferChunk.elements()))
     {
-        auto sharedBuffer = bufferChunk.getBuffer();
-        auto dtype = bufferChunk.dtype;
-
-        auto newSharedBuffer = Pothos::SharedBuffer(
-                                   sharedBuffer.getAddress(),
-                                   minLength * dtype.size(),
-                                   sharedBuffer);
-
-        bufferChunk = Pothos::BufferChunk(newSharedBuffer);
-        bufferChunk.dtype = dtype;
+        bufferChunk.length = minLength * bufferChunk.dtype.elemSize();
     }
 
     return Pothos::Object(bufferChunk).convert<af::array>();
@@ -214,5 +205,5 @@ void ArrayFireBlock::_postAfArray(
     const AfArrayType& afArray)
 {
     auto bufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
-    this->output(portId)->postBuffer(bufferChunk);
+    this->output(portId)->postBuffer(std::move(bufferChunk));
 }

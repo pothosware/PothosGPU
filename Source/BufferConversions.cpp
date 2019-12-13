@@ -11,25 +11,19 @@
 template <typename AfArrayType>
 static Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 {
-    // The type is arbitrary, but there is no void* implementation, so
-    // attempting to use it results in a linker error.
-    auto sharedAfArray = std::shared_ptr<af::array>(new af::array(afArray));
-    size_t address = reinterpret_cast<size_t>(sharedAfArray->template device<std::uint8_t>());
-    size_t numBytes = sharedAfArray->bytes();
+    const auto dtype = Pothos::Object(afArray.type()).convert<Pothos::DType>();
+    const auto elements = afArray.elements();
 
-    Pothos::BufferChunk bufferChunk(Pothos::SharedBuffer(address, numBytes, sharedAfArray));
-    bufferChunk.dtype = Pothos::Object(afArray.type()).convert<Pothos::DType>();
-
+    Pothos::BufferChunk bufferChunk(dtype, elements);
+    afArray.host(reinterpret_cast<void*>(bufferChunk.address));
     return bufferChunk;
 }
 
 static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
 {
-    dim_t dim0 = static_cast<dim_t>(bufferChunk.elements());
-    auto afDType = Pothos::Object(bufferChunk.dtype).convert<af::dtype>();
+    const auto dim0 = static_cast<dim_t>(bufferChunk.elements());
+    const auto afDType = Pothos::Object(bufferChunk.dtype).convert<af::dtype>();
 
-    // The type is arbitrary, but there is no void* implementation, so
-    // attempting to use it results in a linker error.
     af::array afArray(dim0, afDType);
     afArray.write<std::uint8_t>(
         bufferChunk.as<const std::uint8_t*>(),
