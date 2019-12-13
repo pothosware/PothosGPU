@@ -14,7 +14,7 @@
     %if "verify" in block:
 
 template <typename In, typename Out>
-static inline Out verify_${block["func"]}(const In& val)
+static inline Out verify_${block["header"]}_${block["func"]}(const In& val)
 {
     return ${block["verify"]}(val);
 }
@@ -29,7 +29,7 @@ static inline Out verify_${block["func"]}(const In& val)
     %if "verify" in block:
 
 template <typename In, typename Out>
-static inline Out verify_${block["func"]}(const In& val0, const In& val1)
+static inline Out verify_${block["header"]}_${block["func"]}(const In& val0, const In& val1)
 {
     return ${block["verify"]}(val0, val1);
 }
@@ -39,7 +39,17 @@ static inline Out verify_${block["func"]}(const In& val0, const In& val1)
     %if "verify" in block:
 
 template <typename In, typename Out>
-static inline Out verify_${block["func"]}(const In& val0, const In& val1)
+static inline Out verify_${block["header"]}_${block["func"]}(const In& val0, const In& val1)
+{
+    return ${block["verify"]}(val0, val1);
+}
+    %endif
+%endfor
+%for block in NToOneBlocks:
+    %if "verify" in block:
+
+template <typename In, typename Out>
+static inline Out verify_${block["header"]}_${block["func"]}(const In& val0, const In& val1)
 {
     return ${block["verify"]}(val0, val1);
 }
@@ -56,31 +66,31 @@ static EnableIf${k}<T, void> blockExecutionTest()
     testOneToOneBlock<T>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         1,
-        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["func"]) if "verify" in block else "nullptr"});
     testOneToOneBlock<T>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         3,
-        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["func"]) if "verify" in block else "nullptr"});
             %endif
         %elif ("supportedInputTypes" in block) and ("support{0}".format(v) in block["supportedInputTypes"]):
             %if v == "ComplexFloat":
     testOneToOneBlock<T, typename T::value_type>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         1,
-        ${"&verify_{0}<T, typename T::value_type>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}_{1}<T, typename T::value_type>".format(block["header"], block["func"]) if "verify" in block else "nullptr"});
     testOneToOneBlock<T, typename T::value_type>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         3,
-        ${"&verify_{0}<T, typename T::value_type>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}_{1}<T, typename T::value_type>".format(block["header"], block["func"]) if "verify" in block else "nullptr"});
             %else:
     testOneToOneBlock<T, std::complex<T>>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         1,
-        ${"&verify_{0}<T, std::complex<T>>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["func"]) if "verify" in block else "nullptr"});
     testOneToOneBlock<T, std::complex<T>>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         3,
-        ${"&verify_{0}<T, std::complex<T>>".format(block["func"]) if "verify" in block else "nullptr"});
+        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["func"]) if "verify" in block else "nullptr"});
             %endif
         %endif
     %endfor
@@ -90,35 +100,52 @@ static EnableIf${k}<T, void> blockExecutionTest()
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
     testTwoToOneBlock<T>(
         "/arrayfire/${block["header"]}/${block["func"]}",
-        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"},
+        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["func"]) if "verify" in block else "nullptr"},
         ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
             %endif
         %elif ("supportedInputTypes" in block) and ("support{0}".format(v) in block["supportedInputTypes"]):
             %if v == "ComplexFloat":
     testTwoToOneBlock<T, typename T::value_type>(
         "/arrayfire/${block["header"]}/${block["func"]}",
-        ${"&verify_{0}<T, typename T::value_type>".format(block["func"]) if "verify" in block else "nullptr"},
+        ${"&verify_{0}_{1}<T, typename T::value_type>".format(block["header"], block["func"]) if "verify" in block else "nullptr"},
         ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
             %else:
     testTwoToOneBlock<T, std::complex<T>>(
         "/arrayfire/${block["header"]}/${block["func"]}",
-        ${"&verify_{0}<T, std::complex<T>>".format(block["func"]) if "verify" in block else "nullptr"},
+        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["func"]) if "verify" in block else "nullptr"},
         ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
             %endif
         %endif
     %endfor
+
+    /*
+    %for block in NToOneBlocks:
+        %if "supportedTypes" in block:
+            %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
+    testNToOneBlock<T>(
+        "/arrayfire/${block["header"]}/${block["func"]}",
+        2,
+        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["func"]) if "verify" in block else "nullptr"});
+    testNToOneBlock<T>(
+        "/arrayfire/${block["header"]}/${block["func"]}",
+        5,
+        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["func"]) if "verify" in block else "nullptr"});
+            %endif
+        %endif
+    %endfor
+    */
 
     %for block in scalarOpBlocks:
         %if (not block.get("intOnly", False)) or ("Int" in k):
     testScalarOpBlock<T>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         1,
-        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"},
+        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["func"]) if "verify" in block else "nullptr"},
         ${"true" if block.get("allowZeroScalar", True) else "false"});
     testScalarOpBlock<T>(
         "/arrayfire/${block["header"]}/${block["func"]}",
         3,
-        ${"&verify_{0}<T,T>".format(block["func"]) if "verify" in block else "nullptr"},
+        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["func"]) if "verify" in block else "nullptr"},
         ${"true" if block.get("allowZeroScalar", True) else "false"});
         %endif
     %endfor

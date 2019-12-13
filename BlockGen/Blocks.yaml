@@ -367,6 +367,24 @@ TwoToOneBlocks:
 #          supportedOutputTypes:
 #                  supportComplexFloat: true
 
+NToOneBlocks:
+
+        - func: add
+          niceName: Add
+          header: arith
+          operator: "+"
+          verify: std::plus<In>()
+          supportedTypes:
+                  supportAll: true
+
+        - func: multiply
+          niceName: Multiply
+          header: arith
+          operator: "*"
+          verify: std::multiplies<In>()
+          supportedTypes:
+                  supportAll: true
+
 ScalarOpBlocks:
 
         - func: add

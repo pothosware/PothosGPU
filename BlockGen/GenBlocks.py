@@ -74,7 +74,8 @@ def generateFactory(blockYAML):
                        oneToOneBlocks=blockYAML["OneToOneBlocks"],
                        scalarOpBlocks=blockYAML["ScalarOpBlocks"],
                        singleOutputSources=blockYAML["SingleOutputSources"],
-                       twoToOneBlocks=blockYAML["TwoToOneBlocks"])
+                       twoToOneBlocks=blockYAML["TwoToOneBlocks"],
+                       NToOneBlocks=blockYAML["NToOneBlocks"])
     except:
         print(mako.exceptions.text_error_template().render())
 
@@ -99,6 +100,7 @@ def generateBlockExecutionTest(blockYAML):
                        scalarOpBlocks=blockYAML["ScalarOpBlocks"],
                        singleOutputSources=blockYAML["SingleOutputSources"],
                        twoToOneBlocks=blockYAML["TwoToOneBlocks"],
+                       NToOneBlocks=blockYAML["NToOneBlocks"],
                        sfinaeMap=sfinaeMap)
     except:
         print(mako.exceptions.text_error_template().render())

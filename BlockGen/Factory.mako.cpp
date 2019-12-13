@@ -1,4 +1,5 @@
 #include "OneToOneBlock.hpp"
+#include "NToOneBlock.hpp"
 #include "ScalarOpBlock.hpp"
 #include "SingleOutputSource.hpp"
 #include "TwoToOneBlock.hpp"
@@ -16,9 +17,10 @@
 /*
  * |PothosDoc ${block.get("niceName", block["func"].title())}
  *
- * Applies the <b>${block["operator"]}</b> operator to all inputs. This block
- * computes all outputs in parallel, using one of the following implementations
- * by priority (based on availability of hardware and underlying libraries).
+ * Applies the <b>${block["operator"]}</b> operator to all inputs, with a given
+ * scalar value. This block computes all outputs in parallel, using one of the
+ * following implementations by priority (based on availability of hardware
+ * and underlying libraries).
  * <ol>
  * <li>CUDA (if GPU present)</li>
  * <li>OpenCL (if GPU present)</li>
@@ -216,6 +218,46 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
             }, 2)
             .bind<bool>(${"true" if block.get("allowZeroInBuffer1", True) else "false"}, 3)
     %endif
+    ),
+%endfor
+%for block in NToOneBlocks:
+/*
+ * |PothosDoc ${block.get("niceName", block["func"].title())}
+ *
+ * Applies the <b>${block["operator"]}</b> operator to all inputs, resulting
+ * in a single output. This block computes all outputs in parallel, using one
+ * of the following implementations by priority (based on availability of
+ * hardware and underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/${block["header"].title()}
+ * |keywords ${block["header"]} ${block["func"]}
+ * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype,numChannels)
+ *
+ * |param dtype(Data Type) The block data type.
+ * |widget DTypeChooser(${"int16=1,int32=1,int64=1,uint=1" if block.get("intOnly", False) else "int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1"})
+ * |default ${"\"uint64\"" if block.get("intOnly", False) else "\"float64\""}
+ * |preview enable
+ *
+ * |param numChannels[Num Channels] The number of channels.
+ * |default 2
+ * |widget SpinBox(minimum=2)
+ * |preview disable
+ */
+    Pothos::BlockRegistry(
+        "/arrayfire/${block["header"]}/${block["func"]}",
+        Pothos::Callable(&NToOneBlock::make)
+            .bind<NToOneFunc>(AF_ARRAY_OP_N_TO_ONE_FUNC(${block["operator"]}), 0)
+            .bind<DTypeSupport>({
+                ${"true" if block["supportedTypes"].get("supportInt", block["supportedTypes"].get("supportAll", False)) else "false"},
+                ${"true" if block["supportedTypes"].get("supportUInt", block["supportedTypes"].get("supportAll", False)) else "false"},
+                ${"true" if block["supportedTypes"].get("supportFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
+                ${"true" if block["supportedTypes"].get("supportComplexFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
+            }, 3)
     ),
 %endfor
 };
