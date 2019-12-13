@@ -118,7 +118,6 @@ static EnableIf${k}<T, void> blockExecutionTest()
         %endif
     %endfor
 
-    /*
     %for block in NToOneBlocks:
         %if "supportedTypes" in block:
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
@@ -133,7 +132,6 @@ static EnableIf${k}<T, void> blockExecutionTest()
             %endif
         %endif
     %endfor
-    */
 
     %for block in scalarOpBlocks:
         %if (not block.get("intOnly", False)) or ("Int" in k):

@@ -72,12 +72,10 @@ void NToOneBlock::work()
 
     auto afArray = this->getNumberedInputPortsAs2DAfArray();
     af::array outputAfArray(afArray.row(0));
-    this->input(0)->consume(elems);
 
     for(size_t chan = 1; chan < _nchans; ++chan)
     {
         outputAfArray = _func(outputAfArray, afArray.row(chan));
-        this->input(chan)->consume(elems);
     }
     this->postAfArray(0, outputAfArray);
 }

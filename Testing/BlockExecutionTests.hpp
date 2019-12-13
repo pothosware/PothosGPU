@@ -64,6 +64,12 @@ void testTwoToOneBlock(
     bool removeZerosInBuffer1);
 
 template <typename T>
+void testNToOneBlock(
+    const std::string& blockRegistryPath,
+    size_t numChannels,
+    const BinaryFunc<T, T>& verificationFunc);
+
+template <typename T>
 void testScalarOpBlock(
     const std::string& blockRegistryPath,
     size_t numChannels,
