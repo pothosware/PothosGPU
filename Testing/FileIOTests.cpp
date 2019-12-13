@@ -107,11 +107,15 @@ static void testFileSource1D(
         POTHOS_TEST_TRUE(topology.waitInactive(0.05));
     }
 
-    // TODO: test contents
+    // TODO: utility function for BufferChunk vs. af::array comparison
     const auto bufferChunk = collectorSink.call<Pothos::BufferChunk>("getBuffer");
     POTHOS_TEST_EQUAL(
         static_cast<size_t>(testData.oneDimArray.elements()),
         bufferChunk.elements());
+    POTHOS_TEST_EQUALA(
+        bufferChunk.as<std::uint8_t*>(),
+        testData.oneDimArray.device<std::uint8_t>(),
+        bufferChunk.length);
 }
 
 static void testFileSource2D(
@@ -174,6 +178,10 @@ static void testFileSource2D(
         POTHOS_TEST_EQUAL(
             static_cast<size_t>(testData.twoDimArray.dims(1)),
             bufferChunk.elements());
+        POTHOS_TEST_EQUALA(
+            bufferChunk.as<std::uint8_t*>(),
+            testData.twoDimArray.row(chan).device<std::uint8_t>(),
+            bufferChunk.length);
     }
 }
 
