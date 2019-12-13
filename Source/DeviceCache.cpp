@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "DeviceCache.hpp"
+#include "Utility.hpp"
 
 #include <Pothos/Plugin/Static.hpp>
 
@@ -92,4 +93,12 @@ pothos_static_block(arrayFireCacheDevices)
 {
     (void)getAvailableBackends();
     (void)getDeviceCache();
+
+#if !IS_AF_CONFIG_PER_THREAD
+    const auto& availableBackends = getAvailableBackends();
+
+    // Set the global backend and device on init
+    af::setBackend(getAvailableBackends()[0]);
+    af::setDevice(0);
+#endif
 }
