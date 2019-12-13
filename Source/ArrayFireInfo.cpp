@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "DeviceCache.hpp"
+#include "Utility.hpp"
 
 #include <Pothos/Plugin.hpp>
 
@@ -33,16 +34,23 @@ static json deviceCacheEntryToJSON(const DeviceCacheEntry& entry)
 static std::string _enumerateArrayFireDevices()
 {
     json topObject;
-    json devicesArray(json::array());
+    auto& arrayFireInfo = topObject["ArrayFire Info"];
+    arrayFireInfo["Library Version"] = AF_VERSION;
+    arrayFireInfo["API Version"] = AF_API_VERSION;
+    arrayFireInfo["Per-thread backend?"] = bool(IS_AF_CONFIG_PER_THREAD);
 
     const auto& deviceCache = getDeviceCache();
+    const auto& afAvailableBackends = getAvailableBackends();
+
+#if IS_AF_CONFIG_PER_THREAD
+    json devicesJSON(json::array());
     std::transform(
         std::begin(deviceCache),
         std::end(deviceCache),
-        std::back_inserter(devicesArray),
+        std::back_inserter(devicesJSON),
         deviceCacheEntryToJSON);
+    topObject["ArrayFire Device"] = devicesJSON;
 
-    const auto& afAvailableBackends = getAvailableBackends();
     std::vector<std::string> availableBackends;
     std::transform(
         std::begin(afAvailableBackends),
@@ -51,15 +59,14 @@ static std::string _enumerateArrayFireDevices()
         [](af::Backend backend)
         {return Pothos::Object(backend).convert<std::string>();});
 
-    topObject["ArrayFire Device"] = devicesArray;
-
-    auto& arrayFireInfo = topObject["ArrayFire Info"];
-    arrayFireInfo["Library Version"] = AF_VERSION;
-    arrayFireInfo["API Version"] = AF_API_VERSION;
     arrayFireInfo["Available Backends"] = Poco::cat(
                                               std::string(", "),
                                               std::begin(availableBackends),
                                               std::end(availableBackends));
+#else
+    topObject["ArrayFire Device"] = deviceCacheEntryToJSON(deviceCache[0]);
+    arrayFireInfo["AvailableBackends"] = afAvailableBackends[0];
+#endif
 
     return topObject.dump();
 }

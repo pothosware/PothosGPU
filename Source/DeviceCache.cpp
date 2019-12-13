@@ -95,8 +95,6 @@ pothos_static_block(arrayFireCacheDevices)
     (void)getDeviceCache();
 
 #if !IS_AF_CONFIG_PER_THREAD
-    const auto& availableBackends = getAvailableBackends();
-
     // Set the global backend and device on init
     af::setBackend(getAvailableBackends()[0]);
     af::setDevice(0);
