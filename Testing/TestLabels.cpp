@@ -47,7 +47,6 @@ static T mean(const std::vector<T>& inputs)
                T(0)) / static_cast<T>(inputs.size());
 }
 
-/*
 template <typename T>
 static T median(const std::vector<T>& inputs, size_t* pPosition)
 {
@@ -65,7 +64,6 @@ static T median(const std::vector<T>& inputs, size_t* pPosition)
 
     return sortedInputs[sortedIndex];
 }
-*/
 
 template <typename T>
 static T stddev(const std::vector<T>& inputs)
@@ -105,12 +103,12 @@ static std::vector<Pothos::Label> getExpectedLabels(const std::vector<double>& i
 {
     size_t expectedMaxPosition = 0;
     size_t expectedMinPosition = 0;
-    //size_t expectedMedianPosition = 0;
+    size_t expectedMedianPosition = 0;
 
     const auto expectedMax = max(inputs, &expectedMaxPosition);
     const auto expectedMin = min(inputs, &expectedMinPosition);
     const auto expectedMean = mean(inputs);
-    //const auto expectedMedian = median(inputs, &expectedMedianPosition);
+    const auto expectedMedian = median(inputs, &expectedMedianPosition);
     const auto expectedStdDev = stddev(inputs);
     const auto expectedVariance = variance(inputs);
 
@@ -119,7 +117,7 @@ static std::vector<Pothos::Label> getExpectedLabels(const std::vector<double>& i
         Pothos::Label("MAX", expectedMax, expectedMaxPosition),
         Pothos::Label("MIN", expectedMin, expectedMinPosition),
         Pothos::Label("MEAN", expectedMean, 0),
-        //Pothos::Label("MEDIAN", expectedMedian, expectedMedianPosition),
+        Pothos::Label("MEDIAN", expectedMedian, expectedMedianPosition),
         Pothos::Label("STDDEV", expectedStdDev, 0),
         Pothos::Label("VAR", expectedVariance, 0),
     });
@@ -148,7 +146,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
         Pothos::BlockRegistry::make("/arrayfire/algorithm/max", dtype, 1),
         Pothos::BlockRegistry::make("/arrayfire/algorithm/min", dtype, 1),
         Pothos::BlockRegistry::make("/arrayfire/statistics/mean", dtype, 1),
-        //Pothos::BlockRegistry::make("/arrayfire/statistics/median", dtype, 1),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/median", dtype, 1),
         Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", dtype, 1),
         Pothos::BlockRegistry::make("/arrayfire/statistics/var", dtype, false, 1),
     };

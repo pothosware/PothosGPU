@@ -62,7 +62,7 @@ class MinMax: public ArrayFireBlock
             {
                 this->output(chan)->postLabel(
                     _labelName,
-                    getArrayIndexOfUnknownType(val, chan),
+                    getArrayValueOfUnknownTypeAtIndex(val, chan),
                     idxPtr[chan]);
             }
             this->post2DAfArrayToNumberedOutputPorts(afInput);

@@ -5,11 +5,13 @@
 #include "Utility.hpp"
 
 #include <Pothos/Exception.hpp>
+#include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
 #include <Poco/Format.h>
 
 #include <algorithm>
+#include <vector>
 
 void setThreadAFBackend(af::Backend backend)
 {
@@ -141,7 +143,7 @@ void validateComplexAndFloatTypesMatch(
     }
 }
 
-Pothos::Object getArrayIndexOfUnknownType(
+Pothos::Object getArrayValueOfUnknownTypeAtIndex(
     const af::array& afArray,
     dim_t index)
 {
@@ -173,6 +175,51 @@ Pothos::Object getArrayIndexOfUnknownType(
             throw Pothos::AssertionViolationException("Invalid dtype");
             break;
     }
+    #undef SwitchCase
 
     return ret;
+}
+
+// TODO: does ArrayFire have a way to do this without reading the array to
+// the host.
+ssize_t findValueOfUnknownTypeInArray(
+    const af::array& afArray,
+    const Pothos::Object& value)
+{
+    assert(1 == afArray.numdims());
+
+    #define SwitchCase(afDType, ctype) \
+        case afDType: \
+        { \
+            std::vector<ctype> vec(static_cast<size_t>(afArray.elements())); \
+            afArray.host(vec.data()); \
+            auto iter = std::find(vec.begin(), vec.end(), value.extract<ctype>()); \
+            if(iter != vec.end()) \
+            { \
+                return static_cast<ssize_t>(std::distance(vec.begin(), iter)); \
+            } \
+            break; \
+        }
+
+    switch(afArray.type())
+    {
+        SwitchCase(::s16, std::int16_t)
+        SwitchCase(::s32, std::int32_t)
+        SwitchCase(::s64, long long)
+        SwitchCase(::u8,  std::uint8_t)
+        SwitchCase(::u16, std::uint16_t)
+        SwitchCase(::u32, std::uint32_t)
+        SwitchCase(::u64, unsigned long long)
+        SwitchCase(::f32, float)
+        SwitchCase(::f64, double)
+        SwitchCase(::c32, std::complex<float>)
+        SwitchCase(::c64, std::complex<double>)
+
+        default:
+            throw Pothos::AssertionViolationException("Invalid dtype");
+            break;
+    }
+    #undef SwitchCase
+
+    return -1;
 }

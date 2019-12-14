@@ -146,9 +146,13 @@ struct PothosToAF<std::complex<double>>
     }
 };
 
-Pothos::Object getArrayIndexOfUnknownType(
+Pothos::Object getArrayValueOfUnknownTypeAtIndex(
     const af::array& afArray,
     dim_t index);
+
+ssize_t findValueOfUnknownTypeInArray(
+    const af::array& afArray,
+    const Pothos::Object& value);
 
 //
 // Misc

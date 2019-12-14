@@ -8,9 +8,13 @@
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
+#include <Poco/Format.h>
+#include <Poco/String.h>
+
 #include <arrayfire.h>
 
 #include <functional>
+#include <iostream>
 #include <typeinfo>
 #include <vector>
 
@@ -40,27 +44,31 @@ class OneArrayStatsBlock: public ArrayFireBlock
             OneArrayStatsFuncPtr func,
             const Pothos::DType& dtype,
             const std::string& labelName,
-            size_t nchans)
+            size_t nchans,
+            bool searchForIndex)
         {
             return new OneArrayStatsBlock(
                            func,
                            dtype,
                            labelName,
-                           nchans);
+                           nchans,
+                           searchForIndex);
         }
 
         OneArrayStatsBlock(
             OneArrayStatsFunction func,
             const Pothos::DType& dtype,
             const std::string& labelName,
-            size_t nchans
+            size_t nchans,
+            bool searchForIndex
         ):
             ArrayFireBlock(),
             _func(std::move(func)),
             _dtype(dtype),
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _labelName(labelName),
-            _nchans(nchans)
+            _nchans(nchans),
+            _searchForIndex(searchForIndex)
         {
             validateDType(dtype, floatOnlyDTypeSupport);
 
@@ -77,13 +85,15 @@ class OneArrayStatsBlock: public ArrayFireBlock
             OneArrayStatsFuncPtr func,
             const Pothos::DType& dtype,
             const std::string& labelName,
-            size_t nchans
+            size_t nchans,
+            bool searchForIndex
         ):
             OneArrayStatsBlock(
                 OneArrayStatsFunction(func),
                 dtype,
                 labelName,
-                nchans)
+                nchans,
+                searchForIndex)
         {}
 
         void work() override
@@ -103,10 +113,31 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 auto* input = this->input(chan);
                 auto* output = this->output(chan);
 
+                auto labelVal = getArrayValueOfUnknownTypeAtIndex(afLabelValues, chan);
+
+                size_t index = 0;
+                if(_searchForIndex)
+                {
+                    //index = getArrayValueOfUnknownTypeAtIndex(afInput.row(chan), labelVal).convert<size_t>();
+                    ssize_t sIndex = findValueOfUnknownTypeInArray(
+                                         afInput.row(chan),
+                                         labelVal);
+                    if(0 > sIndex)
+                    {
+                        throw Pothos::AssertionViolationException(
+                                  Poco::format(
+                                      "We couldn't find the %s in the array, "
+                                      "but by definition, it should be present.",
+                                      Poco::toLower(_labelName)));
+                    }
+
+                    index = static_cast<size_t>(sIndex);
+                }
+
                 output->postLabel(
                     _labelName,
-                    getArrayIndexOfUnknownType(afLabelValues, chan),
-                    0 /*index*/);
+                    std::move(labelVal),
+                    index);
                 output->postBuffer(std::move(input->takeBuffer()));
             }
         }
@@ -118,6 +149,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
         af::dtype _afDType;
         std::string _labelName;
         size_t _nchans;
+        bool _searchForIndex;
 };
 
 class VarianceBlock: public OneArrayStatsBlock
@@ -141,7 +173,8 @@ class VarianceBlock: public OneArrayStatsBlock
                 getAfVarBoundFunction(isBiased),
                 dtype,
                 "VAR",
-                nchans),
+                nchans,
+                false /*searchForIndex*/),
             _isBiased(isBiased)
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(VarianceBlock, getIsBiased));
@@ -179,7 +212,8 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
         "/arrayfire/statistics/mean",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&af::mean, 0)
-            .bind<std::string>("MEAN", 2)),
+            .bind<std::string>("MEAN", 2)
+            .bind<bool>(false /*searchForIndex*/, 4)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/var",
         Pothos::Callable(&VarianceBlock::make)),
@@ -187,10 +221,12 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
         "/arrayfire/statistics/stdev",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&af::stdev, 0)
-            .bind<std::string>("STDDEV", 2)),
+            .bind<std::string>("STDDEV", 2)
+            .bind<bool>(false /*searchForIndex*/, 4)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/median",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&af::median, 0)
-            .bind<std::string>("MEDIAN", 2)),
+            .bind<std::string>("MEDIAN", 2)
+            .bind<bool>(true /*searchForIndex*/, 4)),
 };
