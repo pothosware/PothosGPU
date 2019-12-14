@@ -67,7 +67,9 @@ class OneArrayStatsBlock: public ArrayFireBlock
             for(size_t chan = 0; chan < _nchans; ++chan)
             {
                 this->setupInput(chan, _dtype);
-                this->setupOutput(chan, _dtype);
+
+                // Custom domain because of buffer forwarding
+                this->setupOutput(chan, _dtype, this->uid());
             }
         }
 
@@ -98,13 +100,15 @@ class OneArrayStatsBlock: public ArrayFireBlock
 
             for(dim_t chan = 0; chan < static_cast<dim_t>(_nchans); ++chan)
             {
-                this->output(chan)->postLabel(
+                auto* input = this->input(chan);
+                auto* output = this->output(chan);
+
+                output->postLabel(
                     _labelName,
                     getArrayIndexOfUnknownType(afLabelValues, chan),
                     0 /*index*/);
+                output->postBuffer(std::move(input->takeBuffer()));
             }
-
-            this->post2DAfArrayToNumberedOutputPorts(afInput);
         }
 
     protected:

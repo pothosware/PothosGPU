@@ -198,6 +198,10 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
 
         std::cout << "Testing label " << expectedLabel.id << std::endl;
 
+        std::cout << " * Buffer..." << std::endl;
+        testBufferChunk<double>(
+            collectorSinks[labelIndex].call<Pothos::BufferChunk>("getBuffer"),
+            inputs);
         std::cout << " * ID..." << std::endl;
         POTHOS_TEST_EQUAL(
             expectedLabel.id,
