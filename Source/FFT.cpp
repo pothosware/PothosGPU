@@ -47,6 +47,7 @@ class FFTBaseBlock: public ArrayFireBlock
     public:
         using InType = In;
         using OutType = Out;
+        using Class = FFTBaseBlock<In, Out>;
 
         FFTBaseBlock(
             size_t numBins,
@@ -83,6 +84,9 @@ class FFTBaseBlock: public ArrayFireBlock
                 "setNormalizationFactor");
 
             this->setNormalizationFactor(norm);
+
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getNormalizationFactor));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, setNormalizationFactor));
         }
 
         virtual ~FFTBaseBlock() = default;
