@@ -72,6 +72,7 @@ POTHOS_MODULE_UTIL(
         Source/Constant.cpp
         Source/DeviceCache.cpp
         Source/EnumConversions.cpp
+        Source/FFT.cpp
         Source/FileSink.cpp
         Source/FileSource.cpp
         Source/MinMax.cpp

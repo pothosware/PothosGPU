@@ -92,6 +92,7 @@ OneToOneBlock::OneToOneBlock(
 
 OneToOneBlock::~OneToOneBlock() {}
 
+// TODO: move to ArrayFireBlock
 af::array OneToOneBlock::getInputsAsAfArray()
 {
 // This variable is only used in debug.
