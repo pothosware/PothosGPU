@@ -44,6 +44,21 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_backend_conversion)
     testEnumValueConversion("OpenCL", ::AF_BACKEND_OPENCL);
 }
 
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_convmode_conversion)
+{
+    testTypesCanConvert<std::string, af::convMode>();
+    testEnumValueConversion("Default", ::AF_CONV_DEFAULT);
+    testEnumValueConversion("Expand",  ::AF_CONV_EXPAND);
+}
+
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_convdomain_conversion)
+{
+    testTypesCanConvert<std::string, af::convDomain>();
+    testEnumValueConversion("Auto",    ::AF_CONV_AUTO);
+    testEnumValueConversion("Spatial", ::AF_CONV_SPATIAL);
+    testEnumValueConversion("Freq",    ::AF_CONV_FREQ);
+}
+
 static void testDTypeEnumUsage(
     const std::string& dtypeName,
     af::dtype afDType)

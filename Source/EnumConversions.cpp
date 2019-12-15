@@ -18,6 +18,19 @@ static const std::unordered_map<std::string, af::Backend> BackendEnumMap =
     {"OpenCL", ::AF_BACKEND_OPENCL},
 };
 
+static const std::unordered_map<std::string, af::convMode> ConvModeEnumMap =
+{
+    {"Default", ::AF_CONV_DEFAULT},
+    {"Expand",  ::AF_CONV_EXPAND},
+};
+
+static const std::unordered_map<std::string, af::convDomain> ConvDomainEnumMap =
+{
+    {"Auto",    ::AF_CONV_AUTO},
+    {"Spatial", ::AF_CONV_SPATIAL},
+    {"Freq",    ::AF_CONV_FREQ}
+};
+
 static const std::unordered_map<std::string, af::dtype> DTypeEnumMap =
 {
     // No int8 support
@@ -70,8 +83,16 @@ pothos_static_block(registerArrayFireEnumConversions)
 {
     registerEnumConversion(
         BackendEnumMap,
-        "std_string_to_af_dtype",
-        "af_dtype_to_std_string");
+        "std_string_to_af_backend",
+        "af_backend_to_std_string");
+    registerEnumConversion(
+        ConvModeEnumMap,
+        "std_string_to_af_convmode",
+        "af_convmode_to_std_string");
+    registerEnumConversion(
+        ConvDomainEnumMap,
+        "std_string_to_af_convdomain",
+        "af_convdomain_to_std_string");
 
     // Different enough to not use helper function
     Pothos::PluginRegistry::add(
