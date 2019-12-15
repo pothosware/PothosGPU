@@ -94,8 +94,8 @@ class CastBlock: public OneToOneBlock
  * </ol>
  *
  * |category /ArrayFire/Stream
- * |keywords stream cast
- * |factory /arrayfire/stream/cast(inputDType,outputDType,numChannels)
+ * |keywords array cast
+ * |factory /arrayfire/array/cast(inputDType,outputDType,numChannels)
  *
  * |param inputDType(Input Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
@@ -113,5 +113,5 @@ class CastBlock: public OneToOneBlock
  * |preview disable
  */
 static Pothos::BlockRegistry registerCast(
-    "/arrayfire/stream/cast",
+    "/arrayfire/array/cast",
     Pothos::Callable(&CastBlock::make));

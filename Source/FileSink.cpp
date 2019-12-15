@@ -205,5 +205,5 @@ class FileSinkBlock: public ArrayFireBlock
 };
 
 static Pothos::BlockRegistry registerFileSink(
-    "/arrayfire/stream/file_sink",
+    "/arrayfire/array/file_sink",
     Pothos::Callable(&FileSinkBlock::make));

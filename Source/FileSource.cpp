@@ -156,8 +156,8 @@ class FileSourceBlock: public ArrayFireBlock
  * </ol>
  *
  * |category /ArrayFire/Stream
- * |keywords stream file source
- * |factory /arrayfire/stream/file_source(filepath,key,repeat)
+ * |keywords array file source
+ * |factory /arrayfire/array/file_source(filepath,key,repeat)
  *
  * |param filepath(Filepath) The path of the ArrayFire binary file.
  * |widget FileEntry(mode=open)
@@ -173,5 +173,5 @@ class FileSourceBlock: public ArrayFireBlock
  * |default true
  */
 static Pothos::BlockRegistry registerFileSource(
-    "/arrayfire/stream/file_source",
+    "/arrayfire/array/file_source",
     Pothos::Callable(&FileSourceBlock::make));

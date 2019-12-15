@@ -21,7 +21,7 @@ static void testCastBlock(
     const std::string& type2,
     size_t numChannels)
 {
-    static constexpr const char* blockRegistryPath = "/arrayfire/stream/cast";
+    static constexpr const char* blockRegistryPath = "/arrayfire/array/cast";
 
     std::cout << "Testing " << blockRegistryPath
               << " (types: " << type1 << " -> " << type2

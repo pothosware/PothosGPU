@@ -71,7 +71,7 @@ static void testFileSource1D(
               << " (chans: 1)..." << std::endl;
 
     auto oneDimBlock = Pothos::BlockRegistry::make(
-                           "/arrayfire/stream/file_source",
+                           "/arrayfire/array/file_source",
                            filepath,
                            testData.oneDimKey,
                            false /*repeat*/);
@@ -128,7 +128,7 @@ static void testFileSource2D(
               << " (chans: " << nchans << ")..." << std::endl;
 
     auto twoDimBlock = Pothos::BlockRegistry::make(
-                           "/arrayfire/stream/file_source",
+                           "/arrayfire/array/file_source",
                            filepath,
                            testData.twoDimKey,
                            false /*repeat*/);
