@@ -70,6 +70,7 @@ POTHOS_MODULE_UTIL(
         Source/BufferConversions.cpp
         Source/Cast.cpp
         Source/Constant.cpp
+        Source/Convolve.cpp
         Source/DeviceCache.cpp
         Source/EnumConversions.cpp
         Source/FFT.cpp
