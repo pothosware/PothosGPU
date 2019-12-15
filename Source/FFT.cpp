@@ -7,10 +7,29 @@
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
+#include <Poco/Logger.h>
+
 #include <arrayfire.h>
 
+#include <cmath>
 #include <string>
 #include <typeinfo>
+
+//
+// Misc
+//
+
+static bool isPowerOfTwo(size_t num)
+{
+    if(0 == num)
+    {
+        return false;
+    }
+
+    return (std::ceil(std::log2(num)) == std::floor(std::log2(num)));
+}
+
+static const std::string fftBlockPath = "/arrayfire/signal/fft";
 
 //
 // Block classes
@@ -34,6 +53,15 @@ class FFTInPlaceBlock: public ArrayFireBlock
             _norm(0.0), // Set with class setter
             _nchans(numChans)
         {
+            if(!isPowerOfTwo(numBins))
+            {
+                auto& logger = Poco::Logger::get(fftBlockPath);
+                poco_warning(
+                    logger,
+                    "This block is most efficient when "
+                    "numBins is a power of 2.");
+            }
+
             static const Pothos::DType dtype(typeid(T));
             for(size_t chan = 0; chan < numChans; ++chan)
             {
@@ -139,5 +167,5 @@ static Pothos::Block* makeFFT(
 //
 
 static Pothos::BlockRegistry registerFFT(
-    "/arrayfire/signal/fft",
+    fftBlockPath,
     Pothos::Callable(&makeFFT));
