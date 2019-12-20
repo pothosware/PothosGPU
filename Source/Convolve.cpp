@@ -20,7 +20,7 @@ using FFTConvolveFuncPtr = af::array(*)(
                                const af::convMode);
 
 //
-// Test classes
+// Block classes
 //
 
 template <typename T>
