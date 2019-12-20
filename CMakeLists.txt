@@ -76,6 +76,7 @@ POTHOS_MODULE_UTIL(
         Source/FFT.cpp
         Source/FileSink.cpp
         Source/FileSource.cpp
+        Source/Filter.cpp
         Source/MinMax.cpp
         Source/NToOneBlock.cpp
         Source/NumericConversions.cpp

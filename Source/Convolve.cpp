@@ -20,34 +20,6 @@ using FFTConvolveFuncPtr = af::array(*)(
                                const af::convMode);
 
 //
-// ArrayFire requires taps to be specific types for different inputs.
-//
-
-template <typename T>
-struct Tap
-{
-    using Type = float;
-};
-
-template <>
-struct Tap<double>
-{
-    using Type = double;
-};
-
-template <>
-struct Tap<std::complex<float>>
-{
-    using Type = std::complex<float>;
-};
-
-template <>
-struct Tap<std::complex<double>>
-{
-    using Type = std::complex<double>;
-};
-
-//
 // Test classes
 //
 
