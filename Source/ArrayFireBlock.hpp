@@ -25,10 +25,6 @@ class ArrayFireBlock: public Pothos::Block
 
         void setArrayFireDevice(const std::string& device);
 
-        bool getBlockAssumesArrayFireInputs() const;
-
-        void setBlockAssumesArrayFireInputs(bool value);
-
         //
         // Input port API
         //
