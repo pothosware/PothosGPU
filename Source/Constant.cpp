@@ -110,7 +110,7 @@ static Pothos::Block* constantFactory(
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
  * |default "float64"
- * |preview enable
+ * |preview disable
  *
  * |param constant(Constant) Which constant to fill the buffer with.
  * |widget LineEdit()

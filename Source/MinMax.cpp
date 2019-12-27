@@ -129,7 +129,7 @@ static Pothos::Block* minMaxFactory(
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1)
  * |default "float64"
- * |preview enable
+ * |preview disable
  *
  * |param nchans[Num Channels] The number of channels.
  * |default 1
@@ -162,7 +162,7 @@ static Pothos::BlockRegistry registerMin(
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1)
  * |default "float64"
- * |preview enable
+ * |preview disable
  *
  * |param nchans[Num Channels] The number of channels.
  * |default 1

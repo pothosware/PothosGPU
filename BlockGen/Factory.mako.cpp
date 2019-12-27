@@ -34,7 +34,7 @@
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(${"int16=1,int32=1,int64=1,uint=1" if block.get("intOnly", False) else "int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1"})
  * |default ${"\"uint64\"" if block.get("intOnly", False) else "\"float64\""}
- * |preview enable
+ * |preview disable
  *
  * |param scalar(Scalar Value) The scalar value to apply to the array.
  * |default ${"0" if block.get("allowZeroScalar", True) else "1"}
@@ -70,19 +70,19 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      * |param dtype(Data Type) The block data type.
      * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
      * |default "${block["supportedTypes"]["defaultType"]}"
-     * |preview enable
+     * |preview disable
     %else:
      * |factory /arrayfire/${block["header"]}/${block["func"]}(inputDType,outputDType,numChannels)
      *
      * |param inputDType(Input Data Type) The input data type.
      * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
      * |default "${block["supportedInputTypes"]["defaultType"]}"
-     * |preview enable
+     * |preview disable
      *
      * |param outputDType(Output Data Type) The output data type.
      * |widget DTypeChooser(${block["supportedOutputTypes"]["dtypeString"]})
      * |default "${block["supportedOutputTypes"]["defaultType"]}"
-     * |preview enable
+     * |preview disable
     %endif
      *
      * |param numChannels[Num Channels] The number of channels.
@@ -139,7 +139,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      * |param dtype(Data Type) The block data type.
      * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
      * |default "${block["supportedTypes"]["defaultType"]}"
-     * |preview enable
+     * |preview disable
      */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["func"]}",
@@ -174,19 +174,19 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      * |param dtype(Data Type) The block data type.
      * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
      * |default "${block["supportedTypes"]["defaultType"]}"
-     * |preview enable
+     * |preview disable
     %else:
      * |factory /arrayfire/${block["header"]}/${block["func"]}(inputDType,outputDType)
      *
      * |param inputDType(Input Data Type) The input data type.
      * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
      * |default "${block["supportedInputTypes"]["defaultType"]}"
-     * |preview enable
+     * |preview disable
      *
      * |param outputDType(Output Data Type) The output data type.
      * |widget DTypeChooser(${block["supportedOutputTypes"]["dtypeString"]})
      * |default "${block["supportedOutputTypes"]["defaultType"]}"
-     * |preview enable
+     * |preview disable
     %endif
      */
     Pothos::BlockRegistry(
@@ -241,7 +241,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(${"int16=1,int32=1,int64=1,uint=1" if block.get("intOnly", False) else "int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1"})
  * |default ${"\"uint64\"" if block.get("intOnly", False) else "\"float64\""}
- * |preview enable
+ * |preview disable
  *
  * |param numChannels[Num Channels] The number of channels.
  * |default 2
