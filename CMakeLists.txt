@@ -46,7 +46,7 @@ set(autogenOutputs
 add_custom_command(
     OUTPUT ${autogenOutputs}
     DEPENDS ${autogenDeps}
-    COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/BlockGen/GenBlocks.py" "${CMAKE_CURRENT_BINARY_DIR}/BlockGen"
+    COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/BlockGen/GenBlocks.py" "${CMAKE_CURRENT_BINARY_DIR}/BlockGen" "${ArrayFire_VERSION}"
     COMMENT "Generating block factories and block execution tests")
 add_custom_target(
     autogen_files ALL

@@ -9,6 +9,7 @@ import yaml
 
 ScriptDir = os.path.dirname(__file__)
 OutputDir = os.path.abspath(sys.argv[1])
+ArrayFireVersion = sys.argv[2]
 Now = datetime.datetime.now()
 
 FactoryTemplate = None
@@ -22,6 +23,12 @@ prefix = """// Copyright (c) 2019-{0} Nicholas Corgan
 //
 """.format(Now.year, Now)
 
+def afVersionToAPI(version):
+    versionComps = version.split(".")
+    assert(len(versionComps) == 3)
+
+    return int("{0}{1}".format(versionComps[0], versionComps[1]))
+
 def populateTemplates():
     global FactoryTemplate
     global BlockExecutionTestAutoTemplate
@@ -34,6 +41,17 @@ def populateTemplates():
     with open(blockExecutionTestAutoTemplatePath) as f:
         BlockExecutionTestAutoTemplate = f.read()
 
+def filterBlockYAML(blockTypeYAML, printSkippedBlocks=False):
+    apiVersion = afVersionToAPI(ArrayFireVersion)
+    filteredYAML = [entry for entry in blockTypeYAML if entry.get("minAPIVersion", 0) <= apiVersion]
+
+    if (len(filteredYAML) != blockTypeYAML) and printSkippedBlocks:
+        for block in blockTypeYAML:
+            if block.get("minAPIVersion", 0) > apiVersion:
+                print("Skipping /arrayfire/{0}/{1}, requires API {2} > {3}".format(block["header"], block["func"], block["minAPIVersion"], apiVersion))
+
+    return filteredYAML
+
 def processYAMLFile(yamlPath):
     yml = None
     with open(yamlPath) as f:
@@ -41,6 +59,9 @@ def processYAMLFile(yamlPath):
 
     if not yml:
         raise RuntimeError("No YAML found in {0}".format(yamlPath))
+
+    # Remove blocks unsupported by the version of ArrayFire we're building
+    # against.
 
     return yml
 
@@ -71,11 +92,11 @@ def generateFactory(blockYAML):
 
     try:
         rendered = Template(FactoryTemplate).render(
-                       oneToOneBlocks=blockYAML["OneToOneBlocks"],
-                       scalarOpBlocks=blockYAML["ScalarOpBlocks"],
-                       singleOutputSources=blockYAML["SingleOutputSources"],
-                       twoToOneBlocks=blockYAML["TwoToOneBlocks"],
-                       NToOneBlocks=blockYAML["NToOneBlocks"])
+                       oneToOneBlocks=filterBlockYAML(blockYAML["OneToOneBlocks"]),
+                       scalarOpBlocks=filterBlockYAML(blockYAML["ScalarOpBlocks"]),
+                       singleOutputSources=filterBlockYAML(blockYAML["SingleOutputSources"]),
+                       twoToOneBlocks=filterBlockYAML(blockYAML["TwoToOneBlocks"]),
+                       NToOneBlocks=filterBlockYAML(blockYAML["NToOneBlocks"]),)
     except:
         print(mako.exceptions.text_error_template().render())
 
@@ -96,11 +117,11 @@ def generateBlockExecutionTest(blockYAML):
 
     try:
         rendered = Template(BlockExecutionTestAutoTemplate).render(
-                       oneToOneBlocks=blockYAML["OneToOneBlocks"],
-                       scalarOpBlocks=blockYAML["ScalarOpBlocks"],
-                       singleOutputSources=blockYAML["SingleOutputSources"],
-                       twoToOneBlocks=blockYAML["TwoToOneBlocks"],
-                       NToOneBlocks=blockYAML["NToOneBlocks"],
+                       oneToOneBlocks=filterBlockYAML(blockYAML["OneToOneBlocks"], True),
+                       scalarOpBlocks=filterBlockYAML(blockYAML["ScalarOpBlocks"], True),
+                       singleOutputSources=filterBlockYAML(blockYAML["SingleOutputSources"], True),
+                       twoToOneBlocks=filterBlockYAML(blockYAML["TwoToOneBlocks"], True),
+                       NToOneBlocks=filterBlockYAML(blockYAML["NToOneBlocks"], True),
                        sfinaeMap=sfinaeMap)
     except:
         print(mako.exceptions.text_error_template().render())

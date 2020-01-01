@@ -1,8 +1,2 @@
-Add logic to only generate blocks if API version supports it
-
-Add check for:
- * randu (34)
- * randn (34)
-
 New blocks:
  * clamp (34)

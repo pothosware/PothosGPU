@@ -298,12 +298,14 @@ SingleOutputSources:
         - func: randu
           niceName: Random (Uniform Distribution)
           header: random
+          minAPIVersion: 34
           supportedTypes:
                   supportAll: true
 
         - func: randn
           niceName: Random (Normal Distribution)
           header: random
+          minAPIVersion: 34
           supportedTypes:
                   supportAll: true
 
