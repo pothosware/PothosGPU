@@ -1,1 +1,8 @@
-Check API versions required for each block, figure out what to do if not supported
+Add logic to only generate blocks if API version supports it
+
+Add check for:
+ * randu (34)
+ * randn (34)
+
+New blocks:
+ * clamp (34)
