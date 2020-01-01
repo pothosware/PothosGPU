@@ -78,6 +78,8 @@ void testScalarOpBlock(
 
 void testCastBlockForType(const std::string& inputType);
 
+void testClampBlockForType(const std::string& inputType);
+
 //
 // Getting random inputs
 //
@@ -87,7 +89,7 @@ void testCastBlockForType(const std::string& inputType);
 Pothos::BufferChunk getTestInputs(const std::string& type);
 
 template <typename T>
-static EnableIfInteger<T, std::vector<T>> getTestInputs()
+static EnableIfInteger<T, std::vector<T>> getTestInputs(bool shuffle = true)
 {
     static std::random_device rd;
     static std::mt19937 g(rd());
@@ -96,13 +98,16 @@ static EnableIfInteger<T, std::vector<T>> getTestInputs()
     static constexpr size_t numInputs = std::is_same<T, std::int8_t>::value ? 11 : 51;
 
     auto testParams = getIntTestParams<T>(minValue, T(1), numInputs);
-    std::shuffle(testParams.begin(), testParams.end(), g);
+    if(shuffle)
+    {
+        std::shuffle(testParams.begin(), testParams.end(), g);
+    }
 
     return testParams;
 }
 
 template <typename T>
-static EnableIfUnsignedInt<T, std::vector<T>> getTestInputs()
+static EnableIfUnsignedInt<T, std::vector<T>> getTestInputs(bool shuffle = true)
 {
     static std::random_device rd;
     static std::mt19937 g(rd());
@@ -111,13 +116,16 @@ static EnableIfUnsignedInt<T, std::vector<T>> getTestInputs()
     static constexpr size_t numInputs = std::is_same<T, std::uint8_t>::value ? 9 : 76;
 
     auto testParams = getIntTestParams<T>(minValue, T(1), numInputs);
-    std::shuffle(testParams.begin(), testParams.end(), g);
+    if(shuffle)
+    {
+        std::shuffle(testParams.begin(), testParams.end(), g);
+    }
 
     return testParams;
 }
 
 template <typename T>
-static EnableIfFloat<T, std::vector<T>> getTestInputs()
+static EnableIfFloat<T, std::vector<T>> getTestInputs(bool shuffle = true)
 {
     static std::random_device rd;
     static std::mt19937 g(rd());
@@ -126,13 +134,16 @@ static EnableIfFloat<T, std::vector<T>> getTestInputs()
     static constexpr size_t numInputs = 123;
 
     auto testParams = linspace<T>(10.0f, 20.0f, numInputs);
-    std::shuffle(testParams.begin(), testParams.end(), g);
+    if(shuffle)
+    {
+        std::shuffle(testParams.begin(), testParams.end(), g);
+    }
 
     return testParams;
 }
 
 template <typename T>
-static EnableIfComplex<T, std::vector<T>> getTestInputs()
+static EnableIfComplex<T, std::vector<T>> getTestInputs(bool shuffle = true)
 {
     using Scalar = typename T::value_type;
 
@@ -143,7 +154,10 @@ static EnableIfComplex<T, std::vector<T>> getTestInputs()
     static constexpr size_t numInputs = 246;
 
     auto testParams = toComplexVector(linspace<Scalar>(10.0f, 20.0f, numInputs));
-    std::shuffle(testParams.begin(), testParams.end(), g);
+    if(shuffle)
+    {
+        std::shuffle(testParams.begin(), testParams.end(), g);
+    }
 
     return testParams;
 }

@@ -69,6 +69,7 @@ POTHOS_MODULE_UTIL(
         Source/ArrayFireInfo.cpp
         Source/BufferConversions.cpp
         Source/Cast.cpp
+        Source/Clamp.cpp
         Source/Constant.cpp
         Source/Convolve.cpp
         Source/DeviceCache.cpp
@@ -89,6 +90,7 @@ POTHOS_MODULE_UTIL(
 
         Testing/BlockExecutionTests.cpp
         Testing/CastBlockTest.cpp
+        Testing/ClampBlockTest.cpp
         Testing/FileIOTests.cpp
         Testing/NToOneBlockExecutionTest.cpp
         Testing/OneToOneBlockExecutionTest.cpp

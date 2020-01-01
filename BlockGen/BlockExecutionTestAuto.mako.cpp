@@ -148,7 +148,10 @@ static EnableIf${k}<T, void> blockExecutionTest()
         %endif
     %endfor
 
-    testCastBlockForType(Pothos::DType(typeid(T)).name());
+    const std::string dtypeName = Pothos::DType(typeid(T)).name();
+
+    testCastBlockForType(dtypeName);
+    testClampBlockForType(dtypeName);
 }
 %endfor
 
