@@ -153,15 +153,25 @@ void testClampBlockForType(const std::string& type)
 
 #else
 
+// TODO: consolidate tests for non-existent blocks into single location
+
 // If this build of ArrayFire doesn't have af::clamp, the block shouldn't be
 // included in the build.
 void testClampBlockForType(const std::string&)
 {
-    std::cout << "Testing that " << blockRegistryPath << " doesn't exist." << std::endl;
+    // This is safe, this will only be called by a single thread.
+    static bool hasExecuted = false;
 
-    POTHOS_TEST_THROWS(
-        (void)Pothos::PluginRegistry::get(pluginPath);
-    , Pothos::PluginRegistryError);
+    if(!hasExecuted)
+    {
+        std::cout << "Testing that " << blockRegistryPath << " doesn't exist." << std::endl;
+
+        POTHOS_TEST_THROWS(
+            (void)Pothos::PluginRegistry::get(pluginPath);
+        , Pothos::PluginRegistryError);
+
+        hasExecuted = true;
+    }
 }
 
 #endif
