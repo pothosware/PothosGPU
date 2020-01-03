@@ -139,7 +139,7 @@ void validateComplexAndFloatTypesMatch(
     {
         throw Pothos::InvalidArgumentException(
                   "Incompatible types",
-                  (complexDTypeSubtype + ", " + floatType));
+                  (floatType + ", " + complexDType.name()));
     }
 }
 
