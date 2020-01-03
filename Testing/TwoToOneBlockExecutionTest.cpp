@@ -188,17 +188,17 @@ void testTwoToOneBlock(
         const BinaryFunc<T, T>& verificationFunc, \
         bool removeZerosInBuffer1);
 
-/*
 #define SPECIALIZE_COMPLEX_TEMPLATE_TEST(T) \
     template \
     void testTwoToOneBlock<T, std::complex<T>>( \
         const std::string& blockRegistryPath, \
-        const BinaryFunc<T, std::complex<T>>& verificationFunc); \
+        const BinaryFunc<T, std::complex<T>>& verificationFunc, \
+        bool removeZerosInBuffer1); \
     template \
     void testTwoToOneBlock<std::complex<T>, T>( \
         const std::string& blockRegistryPath, \
-        const BinaryFunc<std::complex<T>, T>& verificationFunc);
-*/
+        const BinaryFunc<std::complex<T>, T>& verificationFunc, \
+        bool removeZerosInBuffer1);
 
 SPECIALIZE_TEMPLATE_TEST(std::int8_t)
 SPECIALIZE_TEMPLATE_TEST(std::int16_t)
@@ -213,5 +213,5 @@ SPECIALIZE_TEMPLATE_TEST(double)
 SPECIALIZE_TEMPLATE_TEST(std::complex<float>)
 SPECIALIZE_TEMPLATE_TEST(std::complex<double>)
 
-//SPECIALIZE_COMPLEX_TEMPLATE_TEST(float)
-//SPECIALIZE_COMPLEX_TEMPLATE_TEST(double)
+SPECIALIZE_COMPLEX_TEMPLATE_TEST(float)
+SPECIALIZE_COMPLEX_TEMPLATE_TEST(double)

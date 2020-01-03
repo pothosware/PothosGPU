@@ -361,13 +361,15 @@ TwoToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-# TODO: figure out second af::complex
-#        - func: complex2
-#          header: data
-#          supportedInputTypes:
-#                  supportFloat: true
-#          supportedOutputTypes:
-#                  supportComplexFloat: true
+        - blockName: complex2
+          niceName: Real+Imag to Complex
+          func: complex
+          header: arith
+          verify: Out # std::complex constructor
+          supportedInputTypes:
+                  supportFloat: true
+          supportedOutputTypes:
+                  supportComplexFloat: true
 
 NToOneBlocks:
 

@@ -41,6 +41,14 @@ def populateTemplates():
     with open(blockExecutionTestAutoTemplatePath) as f:
         BlockExecutionTestAutoTemplate = f.read()
 
+# In place
+def setBlockNames(blockTypeYAML):
+    # If a specific block registry path node name is not provided, use the
+    # function name.
+    for block in blockTypeYAML:
+        if "blockName" not in block:
+            block["blockName"] = block["func"]
+
 def filterBlockYAML(blockTypeYAML, printSkippedBlocks=False):
     apiVersion = afVersionToAPI(ArrayFireVersion)
     filteredYAML = [entry for entry in blockTypeYAML if entry.get("minAPIVersion", 0) <= apiVersion]
@@ -60,8 +68,8 @@ def processYAMLFile(yamlPath):
     if not yml:
         raise RuntimeError("No YAML found in {0}".format(yamlPath))
 
-    # Remove blocks unsupported by the version of ArrayFire we're building
-    # against.
+    for _,v in yml.items():
+        setBlockNames(v)
 
     return yml
 

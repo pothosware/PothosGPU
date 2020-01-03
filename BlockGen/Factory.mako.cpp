@@ -15,7 +15,7 @@
 
 %for block in scalarOpBlocks:
 /*
- * |PothosDoc ${block.get("niceName", block["func"].title())}
+ * |PothosDoc ${block.get("niceName", block["blockName"].title())}
  *
  * Applies the <b>${block["operator"]}</b> operator to all inputs, with a given
  * scalar value. This block computes all outputs in parallel, using one of the
@@ -28,8 +28,8 @@
  * </ol>
  *
  * |category /ArrayFire/${block["header"].title()}
- * |keywords ${block["header"]} ${block["func"]}
- * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype,scalar,numChannels)
+ * |keywords ${block["header"]} ${block["blockName"]}
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype,scalar,numChannels)
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(${"int16=1,int32=1,int64=1,uint=1" if block.get("intOnly", False) else "int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1"})
@@ -44,14 +44,14 @@
  * |widget SpinBox(minimum=1)
  * |preview disable
  */
-ScalarOpBlockFactory(${block["func"]}, ${block["operator"]}, ${"true" if block.get("allowZeroScalar", True) else "false"}, ${"true" if block.get("intOnly", False) else "false"})
+ScalarOpBlockFactory(${block["blockName"]}, ${block["operator"]}, ${"true" if block.get("allowZeroScalar", True) else "false"}, ${"true" if block.get("intOnly", False) else "false"})
 
 %endfor
 static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 {
 %for block in oneToOneBlocks:
     /*
-     * |PothosDoc ${block.get("niceName", block["func"].title())}
+     * |PothosDoc ${block.get("niceName", block["blockName"].title())}
      *
      * Calls <b>af::${block["func"]}</b> on all inputs. This block computes all
      * outputs in parallel, using one of the following implementations by priority
@@ -63,16 +63,16 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      * </ol>
      *
      * |category /ArrayFire/${block["header"].title()}
-     * |keywords ${block["header"]} ${block["func"]}
+     * |keywords ${block["header"]} ${block["blockName"]}
     %if "supportedTypes" in block:
-     * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype,numChannels)
+     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype,numChannels)
      *
      * |param dtype(Data Type) The block data type.
      * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
      * |default "${block["supportedTypes"]["defaultType"]}"
      * |preview disable
     %else:
-     * |factory /arrayfire/${block["header"]}/${block["func"]}(inputDType,outputDType,numChannels)
+     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(inputDType,outputDType,numChannels)
      *
      * |param inputDType(Input Data Type) The input data type.
      * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
@@ -91,7 +91,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      * |preview disable
      */
     Pothos::BlockRegistry(
-        "/arrayfire/${block["header"]}/${block["func"]}",
+        "/arrayfire/${block["header"]}/${block["blockName"]}",
     %if "supportedInputTypes" in block:
         Pothos::Callable(&OneToOneBlock::makeFromTwoTypes)
             .bind<OneToOneFunc>(&af::${block["func"]}, 0)
@@ -121,7 +121,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 %endfor
 %for block in singleOutputSources:
     /*
-     * |PothosDoc ${block.get("niceName", block["func"].title())}
+     * |PothosDoc ${block.get("niceName", block["blockName"].title())}
      *
      * Calls <b>af::${block["func"]}</b> to generate outputs. This block uses
      * one ofthe following implementations by priority (based on availability
@@ -133,8 +133,8 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      * </ol>
      *
      * |category /ArrayFire/${block["header"].title()}
-     * |keywords ${block["header"]} ${block["func"]}
-     * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype)
+     * |keywords ${block["header"]} ${block["blockName"]}
+     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype)
      *
      * |param dtype(Data Type) The block data type.
      * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
@@ -142,7 +142,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      * |preview disable
      */
     Pothos::BlockRegistry(
-        "/arrayfire/${block["header"]}/${block["func"]}",
+        "/arrayfire/${block["header"]}/${block["blockName"]}",
         Pothos::Callable(&SingleOutputSource::make)
             .bind<SingleOutputFunc>(&af::${block["func"]}, 0)
             .bind<DTypeSupport>({
@@ -155,7 +155,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 %endfor
 %for block in twoToOneBlocks:
     /*
-     * |PothosDoc ${block.get("niceName", block["func"].title())}
+     * |PothosDoc ${block.get("niceName", block["blockName"].title())}
      *
      * Calls <b>af::${block["func"]}</b> on all inputs. This block uses one of
      * the following implementations by priority (based on availability of
@@ -167,16 +167,16 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      * </ol>
      *
      * |category /ArrayFire/${block["header"].title()}
-     * |keywords ${block["header"]} ${block["func"]}
+     * |keywords ${block["header"]} ${block["blockName"]}
     %if "supportedTypes" in block:
-     * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype)
+     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype)
      *
      * |param dtype(Data Type) The block data type.
      * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
      * |default "${block["supportedTypes"]["defaultType"]}"
      * |preview disable
     %else:
-     * |factory /arrayfire/${block["header"]}/${block["func"]}(inputDType,outputDType)
+     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(inputDType,outputDType)
      *
      * |param inputDType(Input Data Type) The input data type.
      * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
@@ -190,7 +190,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
     %endif
      */
     Pothos::BlockRegistry(
-        "/arrayfire/${block["header"]}/${block["func"]}",
+        "/arrayfire/${block["header"]}/${block["blockName"]}",
     %if "supportedInputTypes" in block:
         Pothos::Callable(&TwoToOneBlock::makeFromTwoTypes)
             .bind<TwoToOneFunc>(&af::${block["func"]}, 0)
@@ -209,7 +209,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
             .bind<bool>(${"true" if block.get("allowZeroInBuffer1", True) else "false"}, 5)
     %else:
         Pothos::Callable(&TwoToOneBlock::makeFromOneType)
-            .bind<TwoToOneFunc>(&af::${block["func"]}, 0)
+            .bind<TwoToOneFunc>(&af::${block["blockName"]}, 0)
             .bind<DTypeSupport>({
                 ${"true" if block["supportedTypes"].get("supportInt", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportUInt", block["supportedTypes"].get("supportAll", False)) else "false"},
@@ -222,7 +222,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 %endfor
 %for block in NToOneBlocks:
 /*
- * |PothosDoc ${block.get("niceName", block["func"].title())}
+ * |PothosDoc ${block.get("niceName", block["blockName"].title())}
  *
  * Applies the <b>${block["operator"]}</b> operator to all inputs, resulting
  * in a single output. This block computes all outputs in parallel, using one
@@ -235,8 +235,8 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
  * </ol>
  *
  * |category /ArrayFire/${block["header"].title()}
- * |keywords ${block["header"]} ${block["func"]}
- * |factory /arrayfire/${block["header"]}/${block["func"]}(dtype,numChannels)
+ * |keywords ${block["header"]} ${block["blockName"]}
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype,numChannels)
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(${"int16=1,int32=1,int64=1,uint=1" if block.get("intOnly", False) else "int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1"})
@@ -249,7 +249,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
  * |preview disable
  */
     Pothos::BlockRegistry(
-        "/arrayfire/${block["header"]}/${block["func"]}",
+        "/arrayfire/${block["header"]}/${block["blockName"]}",
         Pothos::Callable(&NToOneBlock::make)
             .bind<NToOneFunc>(AF_ARRAY_OP_N_TO_ONE_FUNC(${block["operator"]}), 0)
             .bind<DTypeSupport>({
