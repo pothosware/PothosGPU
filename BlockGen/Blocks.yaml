@@ -15,11 +15,8 @@ OneToOneBlocks:
         - func: arg
           niceName: Phase of Complex Number
           header: arith
-          verify: std::arg
-          supportedInputTypes:
-                  supportComplexFloat: true
-          supportedOutputTypes:
-                  supportFloat: true
+          #verify: std::arg
+          pattern: ComplexToFloat
 
         - func: round
           header: arith
@@ -88,28 +85,19 @@ OneToOneBlocks:
         - func: complex
           niceName: Float to Complex
           header: arith
-          supportedInputTypes:
-                  supportFloat: true
-          supportedOutputTypes:
-                  supportComplexFloat: true
+          pattern: FloatToComplex
 
         - func: real
           niceName: Complex to Real
           header: arith
           verify: testReal
-          supportedInputTypes:
-                  supportComplexFloat: true
-          supportedOutputTypes:
-                  supportFloat: true
+          pattern: ComplexToFloat
 
         - func: imag
           niceName: Complex to Imaginary
           header: arith
           verify: testImag
-          supportedInputTypes:
-                  supportComplexFloat: true
-          supportedOutputTypes:
-                  supportFloat: true
+          pattern: ComplexToFloat
 
         - func: conjg
           niceName: Complex Conjugate
@@ -366,10 +354,7 @@ TwoToOneBlocks:
           func: complex
           header: arith
           verify: Out # std::complex constructor
-          supportedInputTypes:
-                  supportFloat: true
-          supportedOutputTypes:
-                  supportComplexFloat: true
+          pattern: FloatToComplex
 
 NToOneBlocks:
 

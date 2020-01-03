@@ -121,28 +121,6 @@ void validateDType(
     }
 }
 
-void validateComplexAndFloatTypesMatch(
-    const Pothos::DType& complexDType,
-    const Pothos::DType& floatDType)
-{
-    assert(!complexDType.isInteger());
-    assert(complexDType.isComplex());
-    assert(!floatDType.isInteger());
-    assert(!floatDType.isComplex());
-
-    static constexpr size_t subStringStart = 8; // Cut off "complex_"
-
-    auto complexDTypeSubtype = complexDType.name().substr(subStringStart);
-    auto floatType = floatDType.name();
-
-    if(complexDTypeSubtype != floatType)
-    {
-        throw Pothos::InvalidArgumentException(
-                  "Incompatible types",
-                  (floatType + ", " + complexDType.name()));
-    }
-}
-
 Pothos::Object getArrayValueOfUnknownTypeAtIndex(
     const af::array& afArray,
     dim_t index)

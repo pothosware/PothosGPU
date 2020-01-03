@@ -60,8 +60,30 @@ static inline Out verify_${block["header"]}_${block["blockName"]}(const In& val0
 template <typename T>
 static EnableIf${k}<T, void> blockExecutionTest()
 {
+    %if k == "Complex":
+    using Scalar = typename T::value_type;
+    %endif
+
     %for block in oneToOneBlocks:
-        %if "supportedTypes" in block:
+        %if (block.get("pattern", "") == "FloatToComplex") and (k == "Float"):
+    testOneToOneBlockF2C<T>(
+        "/arrayfire/${block["header"]}/${block["blockName"]}",
+        1,
+        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
+    testOneToOneBlockF2C<T>(
+        "/arrayfire/${block["header"]}/${block["blockName"]}",
+        3,
+        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
+        %elif (block.get("pattern", "") == "ComplexToFloat") and (k == "Complex"):
+    testOneToOneBlockC2F<Scalar>(
+        "/arrayfire/${block["header"]}/${block["blockName"]}",
+        1,
+        ${"&verify_{0}_{1}<T, Scalar>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
+    testOneToOneBlockC2F<Scalar>(
+        "/arrayfire/${block["header"]}/${block["blockName"]}",
+        3,
+        ${"&verify_{0}_{1}<T, Scalar>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
+        %elif "supportedTypes" in block:
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
     testOneToOneBlock<T>(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
@@ -71,48 +93,21 @@ static EnableIf${k}<T, void> blockExecutionTest()
         "/arrayfire/${block["header"]}/${block["blockName"]}",
         3,
         ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-            %endif
-        %elif ("supportedInputTypes" in block) and ("support{0}".format(v) in block["supportedInputTypes"]):
-            %if v == "ComplexFloat":
-    testOneToOneBlock<T, typename T::value_type>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        1,
-        ${"&verify_{0}_{1}<T, typename T::value_type>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-    testOneToOneBlock<T, typename T::value_type>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        3,
-        ${"&verify_{0}_{1}<T, typename T::value_type>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-            %else:
-    testOneToOneBlock<T, std::complex<T>>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        1,
-        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-    testOneToOneBlock<T, std::complex<T>>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        3,
-        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
             %endif
         %endif
     %endfor
 
     %for block in twoToOneBlocks:
-        %if "supportedTypes" in block:
+        %if (block.get("pattern", "") == "FloatToComplex") and (k == "Float"):
+    testTwoToOneBlockF2C<T>(
+        "/arrayfire/${block["header"]}/${block["blockName"]}",
+        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"},
+        ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
+        %elif "supportedTypes" in block:
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
     testTwoToOneBlock<T>(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
         ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"},
-        ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
-            %endif
-        %elif ("supportedInputTypes" in block) and ("support{0}".format(v) in block["supportedInputTypes"]):
-            %if v == "ComplexFloat":
-    testTwoToOneBlock<T, typename T::value_type>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        ${"&verify_{0}_{1}<T, typename T::value_type>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"},
-        ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
-            %else:
-    testTwoToOneBlock<T, std::complex<T>>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"},
         ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
             %endif
         %endif

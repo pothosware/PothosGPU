@@ -90,10 +90,6 @@ void validateDType(
     const Pothos::DType& dtype,
     const DTypeSupport& supportedTypes);
 
-void validateComplexAndFloatTypesMatch(
-    const Pothos::DType& complexDType,
-    const Pothos::DType& floatDType);
-
 //
 // Pothos <-> ArrayFire type conversion
 //

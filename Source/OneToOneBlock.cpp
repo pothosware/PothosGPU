@@ -29,31 +29,46 @@ Pothos::Block* OneToOneBlock::makeFromOneType(
     return new OneToOneBlock(func, dtype, dtype, numChans);
 }
 
-Pothos::Block* OneToOneBlock::makeFromTwoTypes(
+Pothos::Block* OneToOneBlock::makeFloatToComplex(
     const OneToOneFunc& func,
-    const Pothos::DType& inputDType,
-    const Pothos::DType& outputDType,
-    const DTypeSupport& supportedInputTypes,
-    const DTypeSupport& supportedOutputTypes,
+    const Pothos::DType& floatType,
     size_t numChans)
 {
-    validateDType(inputDType, supportedInputTypes);
-    validateDType(outputDType, supportedOutputTypes);
-
-    if(isDTypeComplexFloat(inputDType) && isDTypeFloat(outputDType))
+    if(!isDTypeFloat(floatType))
     {
-        validateComplexAndFloatTypesMatch(
-            inputDType,
-            outputDType);
-    }
-    else if(isDTypeFloat(inputDType) && isDTypeComplexFloat(outputDType))
-    {
-        validateComplexAndFloatTypesMatch(
-            outputDType,
-            inputDType);
+        throw Pothos::InvalidArgumentException(
+                  "This block must take a float type.",
+                  "Given: " + floatType.name());
     }
 
-    return new OneToOneBlock(func, inputDType, outputDType, numChans);
+    Pothos::DType complexDType("complex_"+floatType.name());
+
+    return new OneToOneBlock(
+                   func,
+                   floatType,
+                   complexDType,
+                   numChans);
+}
+
+Pothos::Block* OneToOneBlock::makeComplexToFloat(
+    const OneToOneFunc& func,
+    const Pothos::DType& floatType,
+    size_t numChans)
+{
+    if(!isDTypeFloat(floatType))
+    {
+        throw Pothos::InvalidArgumentException(
+                  "This block must take a float type.",
+                  "Given: " + floatType.name());
+    }
+
+    Pothos::DType complexDType("complex_"+floatType.name());
+
+    return new OneToOneBlock(
+                   func,
+                   complexDType,
+                   floatType,
+                   numChans);
 }
 
 //

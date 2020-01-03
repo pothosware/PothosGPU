@@ -33,34 +33,24 @@ Pothos::Block* TwoToOneBlock::makeFromOneType(
                    allowZeroInBuffer1);
 }
 
-Pothos::Block* TwoToOneBlock::makeFromTwoTypes(
+Pothos::Block* TwoToOneBlock::makeFloatToComplex(
     const TwoToOneFunc& func,
-    const Pothos::DType& inputDType,
-    const Pothos::DType& outputDType,
-    const DTypeSupport& supportedInputTypes,
-    const DTypeSupport& supportedOutputTypes,
+    const Pothos::DType& floatType,
     bool allowZeroInBuffer1)
 {
-    validateDType(inputDType, supportedInputTypes);
-    validateDType(outputDType, supportedOutputTypes);
+    if(!isDTypeFloat(floatType))
+    {
+        throw Pothos::InvalidArgumentException(
+                  "This block must take a float type.",
+                  "Given: " + floatType.name());
+    }
 
-    if(isDTypeComplexFloat(inputDType) && isDTypeFloat(outputDType))
-    {
-        validateComplexAndFloatTypesMatch(
-            inputDType,
-            outputDType);
-    }
-    else if(isDTypeFloat(inputDType) && isDTypeComplexFloat(outputDType))
-    {
-        validateComplexAndFloatTypesMatch(
-            outputDType,
-            inputDType);
-    }
+    Pothos::DType complexDType("complex_"+floatType.name());
 
     return new TwoToOneBlock(
                    func,
-                   inputDType,
-                   outputDType,
+                   floatType,
+                   complexDType,
                    allowZeroInBuffer1);
 }
 

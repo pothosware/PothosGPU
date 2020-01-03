@@ -64,7 +64,21 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      *
      * |category /ArrayFire/${block["header"].title()}
      * |keywords ${block["header"]} ${block["blockName"]}
-    %if "supportedTypes" in block:
+    %if block.get("pattern", "") == "FloatToComplex":
+     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType,numChannels)
+     *
+     * |param floatDType(Data Type) The float type for the scalar input and complex output.
+     * |widget DTypeChooser(float=1)
+     * |default "float64"
+     * |preview disable
+    %elif block.get("pattern", "") == "ComplexToFloat":
+     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType,numChannels)
+     *
+     * |param floatDType(Data Type) The float type for the complex input and scalar output.
+     * |widget DTypeChooser(float=1)
+     * |default "float64"
+     * |preview disable
+    %elif "supportedTypes" in block:
      * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype,numChannels)
      *
      * |param dtype(Data Type) The block data type.
@@ -92,7 +106,13 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
-    %if "supportedInputTypes" in block:
+    %if block.get("pattern", "") == "FloatToComplex":
+        Pothos::Callable(&OneToOneBlock::makeFloatToComplex)
+            .bind<OneToOneFunc>(&af::${block["func"]}, 0)
+    %elif block.get("pattern", "") == "ComplexToFloat":
+        Pothos::Callable(&OneToOneBlock::makeComplexToFloat)
+            .bind<OneToOneFunc>(&af::${block["func"]}, 0)
+    %elif "supportedInputTypes" in block:
         Pothos::Callable(&OneToOneBlock::makeFromTwoTypes)
             .bind<OneToOneFunc>(&af::${block["func"]}, 0)
             .bind<DTypeSupport>({
@@ -168,7 +188,14 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      *
      * |category /ArrayFire/${block["header"].title()}
      * |keywords ${block["header"]} ${block["blockName"]}
-    %if "supportedTypes" in block:
+    %if block.get("pattern", "") == "FloatToComplex":
+     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType)
+     *
+     * |param floatDType(Data Type) The float type for the scalar input and complex output.
+     * |widget DTypeChooser(float=1)
+     * |default "float64"
+     * |preview disable
+    %elif "supportedTypes" in block:
      * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype)
      *
      * |param dtype(Data Type) The block data type.
@@ -191,7 +218,11 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
      */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
-    %if "supportedInputTypes" in block:
+    %if block.get("pattern", "") == "FloatToComplex":
+        Pothos::Callable(&TwoToOneBlock::makeFloatToComplex)
+            .bind<TwoToOneFunc>(&af::${block["func"]}, 0)
+            .bind<bool>(${"true" if block.get("allowZeroInBuffer1", True) else "false"}, 2)
+    %elif "supportedInputTypes" in block:
         Pothos::Callable(&TwoToOneBlock::makeFromTwoTypes)
             .bind<TwoToOneFunc>(&af::${block["func"]}, 0)
             .bind<DTypeSupport>({

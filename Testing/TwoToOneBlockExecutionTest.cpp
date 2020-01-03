@@ -154,28 +154,27 @@ void testTwoToOneBlock(
         removeZerosInBuffer1);
 }
 
-template <typename In, typename Out>
-void testTwoToOneBlock(
+template <typename T>
+void testTwoToOneBlockF2C(
     const std::string& blockRegistryPath,
-    const BinaryFunc<In, Out>& verificationFunc,
+    const BinaryFunc<T, std::complex<T>>& verificationFunc,
     bool removeZerosInBuffer1)
 {
-    static const Pothos::DType inputDType(typeid(In));
-    static const Pothos::DType outputDType(typeid(Out));
+    static const Pothos::DType floatDType(typeid(T));
+    static const Pothos::DType complexDType(typeid(std::complex<T>));
 
     std::cout << "Testing " << blockRegistryPath
-                            << " (types: " << inputDType.name() << " -> " << outputDType.name() << std::endl;
+                            << " (types: " << floatDType.name() << " -> " << complexDType.name() << std::endl;
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
-                     inputDType,
-                     outputDType);
+                     floatDType);
     auto inputs = block.call<InputPortVector>("inputs");
     auto outputs = block.call<OutputPortVector>("outputs");
     POTHOS_TEST_EQUAL(2, inputs.size());
     POTHOS_TEST_EQUAL(1, outputs.size());
 
-    testTwoToOneBlockCommon<In, Out>(
+    testTwoToOneBlockCommon<T, std::complex<T>>(
         block,
         verificationFunc,
         removeZerosInBuffer1);
@@ -188,16 +187,11 @@ void testTwoToOneBlock(
         const BinaryFunc<T, T>& verificationFunc, \
         bool removeZerosInBuffer1);
 
-#define SPECIALIZE_COMPLEX_TEMPLATE_TEST(T) \
+#define SPECIALIZE_F2C_TEMPLATE_TEST(T) \
     template \
-    void testTwoToOneBlock<T, std::complex<T>>( \
+    void testTwoToOneBlockF2C<T>( \
         const std::string& blockRegistryPath, \
         const BinaryFunc<T, std::complex<T>>& verificationFunc, \
-        bool removeZerosInBuffer1); \
-    template \
-    void testTwoToOneBlock<std::complex<T>, T>( \
-        const std::string& blockRegistryPath, \
-        const BinaryFunc<std::complex<T>, T>& verificationFunc, \
         bool removeZerosInBuffer1);
 
 SPECIALIZE_TEMPLATE_TEST(std::int8_t)
@@ -213,5 +207,5 @@ SPECIALIZE_TEMPLATE_TEST(double)
 SPECIALIZE_TEMPLATE_TEST(std::complex<float>)
 SPECIALIZE_TEMPLATE_TEST(std::complex<double>)
 
-SPECIALIZE_COMPLEX_TEMPLATE_TEST(float)
-SPECIALIZE_COMPLEX_TEMPLATE_TEST(double)
+SPECIALIZE_F2C_TEMPLATE_TEST(float)
+SPECIALIZE_F2C_TEMPLATE_TEST(double)

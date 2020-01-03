@@ -26,12 +26,9 @@ class TwoToOneBlock: public ArrayFireBlock
             const DTypeSupport& supportedTypes,
             bool allowZeroInBuffer1);
 
-        static Pothos::Block* makeFromTwoTypes(
+        static Pothos::Block* makeFloatToComplex(
             const TwoToOneFunc& func,
-            const Pothos::DType& inputDType,
-            const Pothos::DType& outputDType,
-            const DTypeSupport& supportedInputTypes,
-            const DTypeSupport& supportedOutputTypes,
+            const Pothos::DType& floatType,
             bool allowZeroInBuffer1);
 
         //

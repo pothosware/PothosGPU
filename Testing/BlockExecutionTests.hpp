@@ -45,11 +45,17 @@ void testOneToOneBlock(
     size_t numChannels,
     const UnaryFunc<T, T>& verificationFunc);
 
-template <typename In, typename Out>
-void testOneToOneBlock(
+template <typename T>
+void testOneToOneBlockF2C(
     const std::string& blockRegistryPath,
     size_t numChannels,
-    const UnaryFunc<In, Out>& verificationFunc);
+    const UnaryFunc<T, std::complex<T>>& verificationFunc);
+
+template <typename T>
+void testOneToOneBlockC2F(
+    const std::string& blockRegistryPath,
+    size_t numChannels,
+    const UnaryFunc<std::complex<T>, T>& verificationFunc);
 
 template <typename T>
 void testTwoToOneBlock(
@@ -57,10 +63,10 @@ void testTwoToOneBlock(
     const BinaryFunc<T, T>& verificationFunc,
     bool removeZerosInBuffer1);
 
-template <typename In, typename Out>
-void testTwoToOneBlock(
+template <typename T>
+void testTwoToOneBlockF2C(
     const std::string& blockRegistryPath,
-    const BinaryFunc<In, Out>& verificationFunc,
+    const BinaryFunc<T, std::complex<T>>& verificationFunc,
     bool removeZerosInBuffer1);
 
 template <typename T>
