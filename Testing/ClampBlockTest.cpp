@@ -3,11 +3,10 @@
 
 #include <arrayfire.h>
 
+#include <Pothos/Exception.hpp>
 #include <Pothos/Framework.hpp>
 #include <Pothos/Proxy.hpp>
 #include <Pothos/Testing.hpp>
-
-#if AF_API_VERSION_CURRENT >= 34
 
 #include "BlockExecutionTests.hpp"
 #include "TestUtility.hpp"
@@ -19,6 +18,11 @@
 #include <string>
 #include <typeinfo>
 #include <vector>
+
+static constexpr const char* blockRegistryPath = "/arrayfire/arith/clamp";
+static constexpr const char* pluginPath = "/blocks/arrayfire/arith/clamp";
+
+#if AF_API_VERSION_CURRENT >= 34
 
 #define GET_MINMAX_OBJECTS(typeStr, cType) \
     if(type == typeStr) \
@@ -55,8 +59,6 @@ static void testClampBlock(
     const std::string& type,
     size_t numChannels)
 {
-    static constexpr const char* blockRegistryPath = "/arrayfire/arith/clamp";
-
     std::cout << "Testing " << blockRegistryPath
               << " (type: " << type
               << ", chans: " << numChannels << ")" << std::endl;
@@ -150,5 +152,16 @@ void testClampBlockForType(const std::string& type)
 }
 
 #else
-// TODO: make sure block isn't in registry
+
+// If this build of ArrayFire doesn't have af::clamp, the block shouldn't be
+// included in the build.
+void testClampBlockForType(const std::string&)
+{
+    std::cout << "Testing that " << blockRegistryPath << " doesn't exist." << std::endl;
+
+    POTHOS_TEST_THROWS(
+        (void)Pothos::PluginRegistry::get(pluginPath);
+    , Pothos::PluginRegistryError);
+}
+
 #endif
