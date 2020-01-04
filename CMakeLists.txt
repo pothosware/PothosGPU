@@ -84,6 +84,7 @@ POTHOS_MODULE_UTIL(
         Source/OneToOneBlock.cpp
         Source/ScalarOpBlock.cpp
         Source/SingleOutputSource.cpp
+        Source/SplitComplex.cpp
         Source/Statistics.cpp
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
@@ -91,6 +92,7 @@ POTHOS_MODULE_UTIL(
         Testing/BlockExecutionTests.cpp
         Testing/CastBlockTest.cpp
         Testing/ClampBlockTest.cpp
+        Testing/SplitComplexBlockTest.cpp
         Testing/FileIOTests.cpp
         Testing/NToOneBlockExecutionTest.cpp
         Testing/OneToOneBlockExecutionTest.cpp

@@ -147,6 +147,7 @@ static EnableIf${k}<T, void> blockExecutionTest()
 
     testCastBlockForType(dtypeName);
     testClampBlockForType(dtypeName);
+    testSplitComplexBlockForType(dtypeName);
 }
 %endfor
 

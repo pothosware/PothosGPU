@@ -86,6 +86,8 @@ void testCastBlockForType(const std::string& inputType);
 
 void testClampBlockForType(const std::string& inputType);
 
+void testSplitComplexBlockForType(const std::string& floatType);
+
 //
 // Getting random inputs
 //

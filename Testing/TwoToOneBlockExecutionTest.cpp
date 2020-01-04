@@ -164,7 +164,7 @@ void testTwoToOneBlockF2C(
     static const Pothos::DType complexDType(typeid(std::complex<T>));
 
     std::cout << "Testing " << blockRegistryPath
-                            << " (types: " << floatDType.name() << " -> " << complexDType.name() << std::endl;
+                            << " (types: " << floatDType.name() << " -> " << complexDType.name() << ")" << std::endl;
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
