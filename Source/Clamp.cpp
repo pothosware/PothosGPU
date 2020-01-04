@@ -144,8 +144,6 @@ void Clamp<T>::work(const af::array& afInput)
 template <>
 void Clamp<double>::work(const af::array& afInput)
 {
-    static const af::dtype afDType = Pothos::Object(dtype).convert<af::dtype>();
-
     const size_t elems = this->workInfo().minElements;
     assert(0 < elems);
 
@@ -163,25 +161,7 @@ void Clamp<double>::work(const af::array& afInput)
         assert(_nchans == static_cast<size_t>(afInput.dims(0)));
         assert(elems == static_cast<size_t>(afInput.dims(1)));
 
-        af::array afOutput(afInput.dims(0), afInput.dims(1), afDType);
-
-        /*
-         * Before ArrayFire 3.6, gfor was not thread-safe, as some
-         * internal bookkeeping was stored globally. As of ArrayFire 3.6,
-         * all of this stuff is thread-local, so we can take advantage of
-         * it.
-         */
-        #if AF_CONFIG_PER_THREAD
-        gfor(size_t chan, this->_nchans)
-        #else
-        for(size_t chan = 0; chan < this->_nchans; ++chan)
-        #endif
-        {
-            afOutput.row(chan) = af::clamp(
-                                     afInput.row(chan),
-                                     _afMinValue,
-                                     _afMaxValue);
-        }
+        auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
 
         this->post2DAfArrayToNumberedOutputPorts(afOutput);
     }
