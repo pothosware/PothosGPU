@@ -36,6 +36,7 @@ static std::string _enumerateArrayFireDevices()
     json topObject;
     auto& arrayFireInfo = topObject["ArrayFire Info"];
     arrayFireInfo["Library Version"] = AF_VERSION;
+    arrayFireInfo["Revision"] = af_get_revision();
     arrayFireInfo["API Version"] = AF_API_VERSION;
     arrayFireInfo["Per-thread backend?"] = bool(IS_AF_CONFIG_PER_THREAD);
 
