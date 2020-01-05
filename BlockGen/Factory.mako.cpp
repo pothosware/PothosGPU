@@ -16,6 +16,10 @@
 %for block in scalarOpBlocks:
 /*
  * |PothosDoc ${block.get("niceName", block["blockName"].title())}
+    %if "description" in block:
+ *
+${block["description"]}
+    %endif
  *
  * Applies the <b>${block["operator"]}</b> operator to all inputs, with a given
  * scalar value. This block computes all outputs in parallel, using one of the
@@ -50,60 +54,64 @@ ScalarOpBlockFactory(${block["blockName"]}, ${block["operator"]}, ${"true" if bl
 static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 {
 %for block in oneToOneBlocks:
-    /*
-     * |PothosDoc ${block.get("niceName", block["blockName"].title())}
-     *
-     * Calls <b>af::${block["func"]}</b> on all inputs. This block computes all
-     * outputs in parallel, using one of the following implementations by priority
-     * (based on availability of hardware and underlying libraries).
-     * <ol>
-     * <li>CUDA (if GPU present)</li>
-     * <li>OpenCL (if GPU present)</li>
-     * <li>Standard C++ (if no GPU present)</li>
-     * </ol>
-     *
-     * |category /ArrayFire/${block["header"].title()}
-     * |keywords ${block["header"]} ${block["blockName"]}
-    %if block.get("pattern", "") == "FloatToComplex":
-     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType,numChannels)
-     *
-     * |param floatDType(Data Type) The float type for the scalar input and complex output.
-     * |widget DTypeChooser(float=1)
-     * |default "float64"
-     * |preview disable
-    %elif block.get("pattern", "") == "ComplexToFloat":
-     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType,numChannels)
-     *
-     * |param floatDType(Data Type) The float type for the complex input and scalar output.
-     * |widget DTypeChooser(float=1)
-     * |default "float64"
-     * |preview disable
-    %elif "supportedTypes" in block:
-     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype,numChannels)
-     *
-     * |param dtype(Data Type) The block data type.
-     * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
-     * |default "${block["supportedTypes"]["defaultType"]}"
-     * |preview disable
-    %else:
-     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(inputDType,outputDType,numChannels)
-     *
-     * |param inputDType(Input Data Type) The input data type.
-     * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
-     * |default "${block["supportedInputTypes"]["defaultType"]}"
-     * |preview disable
-     *
-     * |param outputDType(Output Data Type) The output data type.
-     * |widget DTypeChooser(${block["supportedOutputTypes"]["dtypeString"]})
-     * |default "${block["supportedOutputTypes"]["defaultType"]}"
-     * |preview disable
-    %endif
-     *
-     * |param numChannels[Num Channels] The number of channels.
-     * |default 1
-     * |widget SpinBox(minimum=1)
-     * |preview disable
-     */
+/*
+ * |PothosDoc ${block.get("niceName", block["blockName"].title())}
+%if "description" in block:
+ *
+${block["description"]}
+%endif
+ *
+ * Calls <b>af::${block["func"]}</b> on all inputs. This block computes all
+ * outputs in parallel, using one of the following implementations by priority
+ * (based on availability of hardware and underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/${block["header"].title()}
+ * |keywords ${block["header"]} ${block["blockName"]}
+%if block.get("pattern", "") == "FloatToComplex":
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType,numChannels)
+ *
+ * |param floatDType(Data Type) The float type for the scalar input and complex output.
+ * |widget DTypeChooser(float=1)
+ * |default "float64"
+ * |preview disable
+%elif block.get("pattern", "") == "ComplexToFloat":
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType,numChannels)
+ *
+ * |param floatDType(Data Type) The float type for the complex input and scalar output.
+ * |widget DTypeChooser(float=1)
+ * |default "float64"
+ * |preview disable
+%elif "supportedTypes" in block:
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype,numChannels)
+ *
+ * |param dtype(Data Type) The block data type.
+ * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
+ * |default "${block["supportedTypes"]["defaultType"]}"
+ * |preview disable
+%else:
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(inputDType,outputDType,numChannels)
+ *
+ * |param inputDType(Input Data Type) The input data type.
+ * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
+ * |default "${block["supportedInputTypes"]["defaultType"]}"
+ * |preview disable
+ *
+ * |param outputDType(Output Data Type) The output data type.
+ * |widget DTypeChooser(${block["supportedOutputTypes"]["dtypeString"]})
+ * |default "${block["supportedOutputTypes"]["defaultType"]}"
+ * |preview disable
+%endif
+ *
+ * |param numChannels[Num Channels] The number of channels.
+ * |default 1
+ * |widget SpinBox(minimum=1)
+ * |preview disable
+ */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
     %if block.get("pattern", "") == "FloatToComplex":
@@ -140,27 +148,31 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
     ),
 %endfor
 %for block in singleOutputSources:
-    /*
-     * |PothosDoc ${block.get("niceName", block["blockName"].title())}
-     *
-     * Calls <b>af::${block["func"]}</b> to generate outputs. This block uses
-     * one ofthe following implementations by priority (based on availability
-     * of hardware and underlying libraries).
-     * <ol>
-     * <li>CUDA (if GPU present)</li>
-     * <li>OpenCL (if GPU present)</li>
-     * <li>Standard C++ (if no GPU present)</li>
-     * </ol>
-     *
-     * |category /ArrayFire/${block["header"].title()}
-     * |keywords ${block["header"]} ${block["blockName"]}
-     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype)
-     *
-     * |param dtype(Data Type) The block data type.
-     * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
-     * |default "${block["supportedTypes"]["defaultType"]}"
-     * |preview disable
-     */
+/*
+ * |PothosDoc ${block.get("niceName", block["blockName"].title())}
+%if "description" in block:
+ *
+${block["description"]}
+%endif
+ *
+ * Calls <b>af::${block["func"]}</b> to generate outputs. This block uses
+ * one ofthe following implementations by priority (based on availability
+ * of hardware and underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/${block["header"].title()}
+ * |keywords ${block["header"]} ${block["blockName"]}
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype)
+ *
+ * |param dtype(Data Type) The block data type.
+ * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
+ * |default "${block["supportedTypes"]["defaultType"]}"
+ * |preview disable
+ */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
         Pothos::Callable(&SingleOutputSource::make)
@@ -174,48 +186,52 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
     ),
 %endfor
 %for block in twoToOneBlocks:
-    /*
-     * |PothosDoc ${block.get("niceName", block["blockName"].title())}
-     *
-     * Calls <b>af::${block["func"]}</b> on all inputs. This block uses one of
-     * the following implementations by priority (based on availability of
-     * hardware and underlying libraries).
-     * <ol>
-     * <li>CUDA (if GPU present)</li>
-     * <li>OpenCL (if GPU present)</li>
-     * <li>Standard C++ (if no GPU present)</li>
-     * </ol>
-     *
-     * |category /ArrayFire/${block["header"].title()}
-     * |keywords ${block["header"]} ${block["blockName"]}
-    %if block.get("pattern", "") == "FloatToComplex":
-     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType)
-     *
-     * |param floatDType(Data Type) The float type for the scalar input and complex output.
-     * |widget DTypeChooser(float=1)
-     * |default "float64"
-     * |preview disable
-    %elif "supportedTypes" in block:
-     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype)
-     *
-     * |param dtype(Data Type) The block data type.
-     * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
-     * |default "${block["supportedTypes"]["defaultType"]}"
-     * |preview disable
-    %else:
-     * |factory /arrayfire/${block["header"]}/${block["blockName"]}(inputDType,outputDType)
-     *
-     * |param inputDType(Input Data Type) The input data type.
-     * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
-     * |default "${block["supportedInputTypes"]["defaultType"]}"
-     * |preview disable
-     *
-     * |param outputDType(Output Data Type) The output data type.
-     * |widget DTypeChooser(${block["supportedOutputTypes"]["dtypeString"]})
-     * |default "${block["supportedOutputTypes"]["defaultType"]}"
-     * |preview disable
-    %endif
-     */
+/*
+ * |PothosDoc ${block.get("niceName", block["blockName"].title())}
+%if "description" in block:
+ *
+${block["description"]}
+%endif
+ *
+ * Calls <b>af::${block["func"]}</b> on all inputs. This block uses one of
+ * the following implementations by priority (based on availability of
+ * hardware and underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/${block["header"].title()}
+ * |keywords ${block["header"]} ${block["blockName"]}
+%if block.get("pattern", "") == "FloatToComplex":
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType)
+ *
+ * |param floatDType(Data Type) The float type for the scalar input and complex output.
+ * |widget DTypeChooser(float=1)
+ * |default "float64"
+ * |preview disable
+%elif "supportedTypes" in block:
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype)
+ *
+ * |param dtype(Data Type) The block data type.
+ * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
+ * |default "${block["supportedTypes"]["defaultType"]}"
+ * |preview disable
+%else:
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(inputDType,outputDType)
+ *
+ * |param inputDType(Input Data Type) The input data type.
+ * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
+ * |default "${block["supportedInputTypes"]["defaultType"]}"
+ * |preview disable
+ *
+ * |param outputDType(Output Data Type) The output data type.
+ * |widget DTypeChooser(${block["supportedOutputTypes"]["dtypeString"]})
+ * |default "${block["supportedOutputTypes"]["defaultType"]}"
+ * |preview disable
+%endif
+ */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
     %if block.get("pattern", "") == "FloatToComplex":
@@ -254,6 +270,10 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 %for block in NToOneBlocks:
 /*
  * |PothosDoc ${block.get("niceName", block["blockName"].title())}
+    %if "description" in block:
+ *
+${block["description"]}
+    %endif
  *
  * Applies the <b>${block["operator"]}</b> operator to all inputs, resulting
  * in a single output. This block computes all outputs in parallel, using one

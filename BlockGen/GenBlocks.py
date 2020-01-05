@@ -49,6 +49,12 @@ def setBlockNames(blockTypeYAML):
         if "blockName" not in block:
             block["blockName"] = block["func"]
 
+# In place
+def commentizeBlockDescriptions(blockTypeYAML):
+    for block in blockTypeYAML:
+        if "description" in block:
+            block["description"] = " * {0}".format(block["description"])
+
 def filterBlockYAML(blockTypeYAML, printSkippedBlocks=False):
     apiVersion = afVersionToAPI(ArrayFireVersion)
     filteredYAML = [entry for entry in blockTypeYAML if entry.get("minAPIVersion", 0) <= apiVersion]
@@ -70,6 +76,7 @@ def processYAMLFile(yamlPath):
 
     for _,v in yml.items():
         setBlockNames(v)
+        commentizeBlockDescriptions(v)
 
     return yml
 

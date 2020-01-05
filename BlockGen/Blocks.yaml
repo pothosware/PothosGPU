@@ -15,11 +15,13 @@ OneToOneBlocks:
         - func: arg
           niceName: Phase of Complex Number
           header: arith
+          description: Phase of a number in the complex plane.
           #verify: std::arg
           pattern: ComplexToFloat
 
         - func: round
           header: arith
+          description: Round to nearest integer.
           verify: std::round
           supportedTypes:
                   supportFloat: true
@@ -27,6 +29,7 @@ OneToOneBlocks:
         - func: trunc
           niceName: Truncate
           header: arith
+          description: Truncate to nearest integer.
           verify: std::trunc
           supportedTypes:
                   supportFloat: true
@@ -84,6 +87,7 @@ OneToOneBlocks:
 
         - func: complex
           niceName: Float to Complex
+          description: Converts real inputs to complex outputs.
           header: arith
           pattern: FloatToComplex
 
@@ -242,6 +246,7 @@ OneToOneBlocks:
 
         - func: lgamma
           niceName: Log Gamma
+          description: Logarithm of absolute values of Gamma function.
           header: arith
           verify: std::lgamma
           supportedTypes:
@@ -253,38 +258,14 @@ OneToOneBlocks:
 
         # TODO: flat, custom
 
-        #
-        # af/signal.h
-        #
-
-        - func: dft
-          niceName: DFT
-          header: signal
-          supportedTypes:
-                  supportComplexFloat: true
-
-        - func: idft
-          niceName: Inverse DFT
-          header: signal
-          supportedTypes:
-                  supportComplexFloat: true
-
 SingleOutputSources:
         #
-        # af/data.h
-        #
-
-        - func: identity
-          header: data
-          supportedTypes:
-                  supportAll: true
-
-        #
-        # af/random.h
+        # af/random.h (TODO: custom class that allows setting random engine)
         #
 
         - func: randu
           niceName: Random (Uniform Distribution)
+          description: Create a random array sampled from uniform distribution. The data is uniformly distributed between <b>[0, 1]</b>.
           header: random
           minAPIVersion: 34
           supportedTypes:
@@ -292,6 +273,7 @@ SingleOutputSources:
 
         - func: randn
           niceName: Random (Normal Distribution)
+          description: Create a random array sampled from normal distribution. The data is centered around 0.
           header: random
           minAPIVersion: 34
           supportedTypes:
@@ -308,6 +290,7 @@ TwoToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
+        # TODO: N to one
         - func: min
           header: arith
           verify: std::min
@@ -316,6 +299,7 @@ TwoToOneBlocks:
                   supportUInt: true
                   supportFloat: true
 
+        # TODO: N to one
         - func: max
           header: arith
           verify: std::max
@@ -352,6 +336,7 @@ TwoToOneBlocks:
         - blockName: complex2
           niceName: Real+Imag to Complex
           func: complex
+          description: Combine real and imaginary inputs into complex outputs.
           header: arith
           verify: Out # std::complex constructor
           pattern: FloatToComplex
