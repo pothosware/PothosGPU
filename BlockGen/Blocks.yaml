@@ -258,27 +258,6 @@ OneToOneBlocks:
 
         # TODO: flat, custom
 
-SingleOutputSources:
-        #
-        # af/random.h (TODO: custom class that allows setting random engine)
-        #
-
-        - func: randu
-          niceName: Random (Uniform Distribution)
-          description: Create a random array sampled from uniform distribution. The data is uniformly distributed between <b>[0, 1]</b>.
-          header: random
-          minAPIVersion: 34
-          supportedTypes:
-                  supportAll: true
-
-        - func: randn
-          niceName: Random (Normal Distribution)
-          description: Create a random array sampled from normal distribution. The data is centered around 0.
-          header: random
-          minAPIVersion: 34
-          supportedTypes:
-                  supportAll: true
-
 TwoToOneBlocks:
         #
         # af/arith.h

@@ -48,6 +48,15 @@ static const std::unordered_map<std::string, af::dtype> DTypeEnumMap =
     {"complex_float64", ::c64},
 };
 
+#if AF_API_VERSION_CURRENT >= 34
+static const std::unordered_map<std::string, af::randomEngineType> RandomEngineTypeEnumMap =
+{
+    {"Philox",   ::AF_RANDOM_ENGINE_PHILOX},
+    {"Threefry", ::AF_RANDOM_ENGINE_THREEFRY},
+    {"Mersenne", ::AF_RANDOM_ENGINE_MERSENNE},
+};
+#endif
+
 static af::dtype pothosDTypeToAfDType(const Pothos::DType& pothosDType)
 {
     return getValForKey(DTypeEnumMap, pothosDType.name());
@@ -93,6 +102,12 @@ pothos_static_block(registerArrayFireEnumConversions)
         ConvDomainEnumMap,
         "std_string_to_af_convdomain",
         "af_convdomain_to_std_string");
+#if AF_API_VERSION_CURRENT >= 34
+    registerEnumConversion(
+        RandomEngineTypeEnumMap,
+        "std_string_to_af_randomenginetype",
+        "af_randomenginetype_to_std_string");
+#endif
 
     // Different enough to not use helper function
     Pothos::PluginRegistry::add(

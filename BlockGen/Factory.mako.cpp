@@ -1,7 +1,6 @@
 #include "OneToOneBlock.hpp"
 #include "NToOneBlock.hpp"
 #include "ScalarOpBlock.hpp"
-#include "SingleOutputSource.hpp"
 #include "TwoToOneBlock.hpp"
 #include "Utility.hpp"
 

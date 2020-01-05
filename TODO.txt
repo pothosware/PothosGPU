@@ -1,1 +1,5 @@
-Looks like we can't use underlying buffers, so analyze topology and generate single JIT block with corresponding ArrayFire calls?
+Short-term:
+ * Consistency in if strings are all upper-case or title-case
+
+Long-term:
+ * Looks like we can't use underlying buffers, so analyze topology and generate single JIT block with corresponding ArrayFire calls?

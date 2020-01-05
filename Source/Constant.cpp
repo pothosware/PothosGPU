@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <typeinfo>
 
+// TODO: probe for constant
 template <typename T>
 class Constant: public ArrayFireBlock
 {

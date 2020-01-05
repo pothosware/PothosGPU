@@ -59,6 +59,16 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_convdomain_conversion)
     testEnumValueConversion("Freq",    ::AF_CONV_FREQ);
 }
 
+#if AF_API_VERSION_CURRENT >= 34
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_randomenginetype_conversion)
+{
+    testTypesCanConvert<std::string, af::randomEngineType>();
+    testEnumValueConversion("Philox",   ::AF_RANDOM_ENGINE_PHILOX);
+    testEnumValueConversion("Threefry", ::AF_RANDOM_ENGINE_THREEFRY);
+    testEnumValueConversion("Mersenne", ::AF_RANDOM_ENGINE_MERSENNE);
+}
+#endif
+
 static void testDTypeEnumUsage(
     const std::string& dtypeName,
     af::dtype afDType)
