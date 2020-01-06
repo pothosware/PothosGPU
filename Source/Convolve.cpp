@@ -13,6 +13,10 @@
 #include <string>
 #include <vector>
 
+// TODO: base on comms IIRFilter
+//  * add waitTaps parameter
+//  * Don't take everything in factory
+
 // Resolve overloads
 using FFTConvolveFuncPtr = af::array(*)(
                                const af::array&,

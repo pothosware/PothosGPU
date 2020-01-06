@@ -204,6 +204,60 @@ class FileSinkBlock: public ArrayFireBlock
         std::vector<Pothos::BufferChunk> _buffers;
 };
 
+/*
+ * |PothosDoc ArrayFire File Sink
+ *
+ * Calls <b>af::writeArray</b> to write an array to an ArrayFire binary file.
+ * These binary files can store multiple arrays, so a key parameter is given
+ * to select a specific array. This block supports:
+ * <ol>
+ * <li>Creating a new file</li>
+ * <li>Adding an array to an existing file</li>
+ * <li>Replacing an array in an existing file</li>
+ * <li>Appending to an array in an existing file</li>
+ * </ol>
+ *
+ * This is potentially accelerated using one of the following implementations
+ * by priority (based on availability of hardware and underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/File IO
+ * |keywords array file sink io
+ * |factory /arrayfire/array/file_sink(filepath,key,dtype,numChannels,append)
+ *
+ * |param filepath[Filepath] The path of the ArrayFire binary file.
+ * |widget FileEntry(mode=save)
+ * |default ""
+ * |preview enable
+ *
+ * |param key[Key] The key of the array stored in the ArrayFire binary file.
+ * |widget StringEntry()
+ * |default "key"
+ * |preview enable
+ *
+ * |param dtype[Data Type] The output's data type.
+ * If appending to an existing array, this value must match the type of the
+ * existing array.
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
+ * |default "float64"
+ * |preview disable
+ *
+ * |param numChannels[Num Channels] The number of channels.
+ * If appending to an existing array, this value must match the dimensions of
+ * the existing array.
+ * |widget SpinBox(minimum=1)
+ * |default 1
+ * |preview disable
+ *
+ * |param append[Append?]
+ * |default false
+ * |widget ToggleSwitch()
+ * |preview enable
+ */
 static Pothos::BlockRegistry registerFileSink(
     "/arrayfire/array/file_sink",
     Pothos::Callable(&FileSinkBlock::make));

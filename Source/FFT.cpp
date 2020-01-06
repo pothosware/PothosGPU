@@ -287,10 +287,108 @@ static Pothos::Block* makeRFFT(
 // Block registries
 //
 
+/*
+ * |PothosDoc FFT
+ *
+ * Calculates the 1-dimensional FFT of all input streams.
+ *
+ * Calls <b>af::fftInPlace</b> or <b>af::ifftInPlace</b> on all inputs.
+ * This block computes all outputs in parallel, using one of the following
+ * implementations by priority (based on availability of hardware and
+ * underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/Signal
+ * |keywords array signal fft ifft fourier
+ * |factory /arrayfire/signal/fft(dtype,numBins,norm,numChannels,inverse)
+ * |setter setNormalizationFactor(norm)
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(cfloat=1)
+ * |default "complex_float64"
+ * |preview disable
+ *
+ * |param numBins[Num FFT Bins] The number of bins per FFT.
+ * |default 1024
+ * |option 512
+ * |option 1024
+ * |option 2048
+ * |option 4096
+ * |widget ComboBox(editable=true)
+ * |preview enable
+ *
+ * |param norm[Normalization Factor]
+ * |widget DoubleSpinBox(minimum=0.0)
+ * |default 1.0
+ * |preview enable
+ *
+ * |param numChannels[Num Channels] The number of channels.
+ * |widget SpinBox(minimum=1)
+ * |default 1
+ * |preview disable
+ *
+ * |param inverse[Inverse?]
+ * |widget ToggleSwitch()
+ * |preview enable
+ * |default false
+ */
 static Pothos::BlockRegistry registerFFT(
     fftBlockPath,
     Pothos::Callable(&makeFFT));
 
+/*
+ * |PothosDoc Real FFT
+ *
+ * Calculates the 1-dimensional real FFT of all input streams.
+ *
+ * Calls <b>af::fftR2C\<1\></b> or <b>af::fftC2R\<1\></b> on all inputs.
+ * This block computes all outputs in parallel, using one of the following
+ * implementations by priority (based on availability of hardware and
+ * underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/Signal
+ * |keywords array signal fft ifft rfft fourier
+ * |factory /arrayfire/signal/rfft(dtype,numBins,norm,numChannels,inverse)
+ * |setter setNormalizationFactor(norm)
+ *
+ * |param dtype[Data Type] The floating-type underlying the input types.
+ * |widget DTypeChooser(float=1)
+ * |default "float64"
+ * |preview disable
+ *
+ * |param numBins[Num FFT Bins] The number of bins per FFT.
+ * |default 1024
+ * |option 512
+ * |option 1024
+ * |option 2048
+ * |option 4096
+ * |widget ComboBox(editable=true)
+ * |preview enable
+ *
+ * |param norm[Normalization Factor]
+ * |widget DoubleSpinBox(minimum=0.0)
+ * |default 1.0
+ * |preview enable
+ *
+ * |param numChannels[Num Channels] The number of channels.
+ * |widget SpinBox(minimum=1)
+ * |default 1
+ * |preview disable
+ *
+ * |param inverse[Inverse?]
+ * |widget ToggleSwitch()
+ * |preview enable
+ * |default false
+ */
 static Pothos::BlockRegistry registerRFFT(
     rfftBlockPath,
     Pothos::Callable(&makeRFFT));

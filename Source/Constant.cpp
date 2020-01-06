@@ -107,6 +107,7 @@ static Pothos::Block* constantFactory(
  * |category /ArrayFire/Data
  * |keywords data constant
  * |factory /arrayfire/data/constant(dtype,constant)
+ * |setter setConstant(constant)
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)

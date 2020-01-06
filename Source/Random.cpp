@@ -45,23 +45,20 @@ class RandomBlock: public ArrayFireBlock
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _afRandomEngine()
         {
-            this->setDistribution(distribution);
-
-            this->reseedRandomEngineWithTime();
-
-            for(size_t chan = 0; chan < numOutputs; ++chan)
-            {
-                this->setupOutput(chan, dtype);
-            }
-
             this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, getDistribution));
-            this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, getDistribution));
-            this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, setRandomEngineType));
+            this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, setDistribution));
+            this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, getRandomEngineType));
             this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, setRandomEngineType));
 
             // This call is overloaded, so no macro for us.
-            this->registerCall(this, "reseedRandomEngine", &RandomBlock::reseedRandomEngineWithTime);
-            this->registerCall(this, "reseedRandomEngine", &RandomBlock::reseedRandomEngine);
+            this->registerCall(
+                this,
+                "reseedRandomEngine",
+                &RandomBlock::reseedRandomEngineWithTime);
+            this->registerCall(
+                this,
+                "reseedRandomEngine",
+                &RandomBlock::reseedRandomEngine);
 
             this->registerProbe(
                 "getDistribution",
@@ -71,6 +68,14 @@ class RandomBlock: public ArrayFireBlock
                 "getRandomEngineType",
                 "randomEngineTypeChanged",
                 "setRandomEngineType");
+
+            for(size_t chan = 0; chan < numOutputs; ++chan)
+            {
+                this->setupOutput(chan, dtype);
+            }
+
+            this->setDistribution(distribution);
+            this->reseedRandomEngineWithTime();
         }
 
         std::string getDistribution() const
@@ -142,6 +147,51 @@ class RandomBlock: public ArrayFireBlock
         mutable af::randomEngine _afRandomEngine;
 };
 
+/*
+ * |PothosDoc Random Source
+ *
+ * Calls <b>af::randn</b> or <b>af::randu</b> to generate random values of
+ * the requested type.
+ *
+ * This is potentially accelerated using one of the following implementations
+ * by priority (based on availability of hardware and underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/Random
+ * |keywords array random uniform normal philox threefry mersenne source
+ * |factory /arrayfire/random/source(dtype,distribution,numOutputs)
+ * |setter setDistribution(distribution)
+ * |setter setRandomEngineType(randomEngineType)
+ *
+ * |param dtype(Data Type) The output's data type.
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
+ * |default "float64"
+ * |preview disable
+ *
+ * |param distribution(Distribution)
+ * |widget ComboBox(editable=False)
+ * |option [Normal] "NORMAL"
+ * |option [Uniform] "UNIFORM"
+ * |default "NORMAL"
+ * |preview enable
+ *
+ * |param numOutputs(Num Outputs) The number of output channels.
+ * |widget SpinBox(minimum=1)
+ * |default 1
+ * |preview disable
+ *
+ * |param randomEngineType(Random Engine Type)
+ * |widget ComboBox(editable=False)
+ * |option [Philox] "Philox"
+ * |option [Threefry] "Threefry"
+ * |option [Mersenne] "Mersenne"
+ * |default "Philox"
+ * |preview enable
+ */
 static Pothos::BlockRegistry registerRandomSource(
     "/arrayfire/random/source",
     Pothos::Callable(&RandomBlock::make));

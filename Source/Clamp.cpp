@@ -9,6 +9,7 @@
 #include <Pothos/Object.hpp>
 
 #include <Poco/Format.h>
+#include <Poco/NumberFormatter.h>
 
 #include <arrayfire.h>
 
@@ -92,7 +93,10 @@ class Clamp: public OneToOneBlock
             {
                 throw Pothos::InvalidArgumentException(
                           "minValue must be < maxValue",
-                          Poco::format("{0} > {1}", min, max));
+                          Poco::format(
+                              "%s > %s",
+                              Poco::NumberFormatter::format(min),
+                              Poco::NumberFormatter::format(max)));
             }
         }
 };
@@ -167,6 +171,43 @@ void Clamp<double>::work(const af::array& afInput)
     }
 };
 
+/*
+ * |PothosDoc Clamp
+ *
+ * Calls <b>af::clamp</b> on all inputs with given minimum and maximum values.
+ * This block computes all outputs in parallel, using one of the following
+ * implementations by priority (based on availability of hardware and
+ * underlying libraries).
+ * <ol>
+ * <li>CUDA (if GPU present)</li>
+ * <li>OpenCL (if GPU present)</li>
+ * <li>Standard C++ (if no GPU present)</li>
+ * </ol>
+ *
+ * |category /ArrayFire/Arith
+ * |keywords array arith clamp min max
+ * |factory /arrayfire/arith/clamp(dtype,minValue,maxValue,numChannels)
+ * |setter setMinValue(minValue)
+ * |setter setMaxValue(maxValue)
+ *
+ * |param dtype(Data Type) The output's data type.
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1)
+ * |default "float64"
+ * |preview disable
+ *
+ * |param minValue(Min Value)
+ * |default 0
+ * |preview enable
+ *
+ * |param maxValue(Min Value)
+ * |default 10
+ * |preview enable
+ *
+ * |param numChannels(Num Channels) The number of channels.
+ * |widget SpinBox(minimum=1)
+ * |default 1
+ * |preview disable
+ */
 static Pothos::Block* clampFactory(
     const Pothos::DType& dtype,
     const Pothos::Object& minValue,

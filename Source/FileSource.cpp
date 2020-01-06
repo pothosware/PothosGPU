@@ -155,8 +155,8 @@ class FileSourceBlock: public ArrayFireBlock
  * <li>Standard C++ (if no GPU present)</li>
  * </ol>
  *
- * |category /ArrayFire/Stream
- * |keywords array file source
+ * |category /ArrayFire/File IO
+ * |keywords array file source io
  * |factory /arrayfire/array/file_source(filepath,key,repeat)
  *
  * |param filepath(Filepath) The path of the ArrayFire binary file.

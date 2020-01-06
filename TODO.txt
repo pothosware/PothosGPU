@@ -1,4 +1,5 @@
 Short-term:
+ * For PothosDoc parameters, put name in [] instead of () so it appears in diagram
  * Consistency in if strings are all upper-case or title-case
 
 Long-term:
