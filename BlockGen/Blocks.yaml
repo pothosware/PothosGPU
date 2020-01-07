@@ -252,12 +252,6 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        #
-        # af/data.h
-        #
-
-        # TODO: flat, custom
-
 TwoToOneBlocks:
         #
         # af/arith.h

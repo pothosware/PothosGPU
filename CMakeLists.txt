@@ -78,6 +78,7 @@ POTHOS_MODULE_UTIL(
         Source/FileSink.cpp
         Source/FileSource.cpp
         Source/Filter.cpp
+        Source/Flat.cpp
         Source/MinMax.cpp
         Source/NToOneBlock.cpp
         Source/NumericConversions.cpp
@@ -92,6 +93,7 @@ POTHOS_MODULE_UTIL(
         Testing/BlockExecutionTests.cpp
         Testing/CastBlockTest.cpp
         Testing/ClampBlockTest.cpp
+        Testing/FlatBlockTest.cpp
         Testing/SplitComplexBlockTest.cpp
         Testing/FileIOTests.cpp
         Testing/NToOneBlockExecutionTest.cpp

@@ -155,7 +155,7 @@ ${block["description"]}
 %endif
  *
  * Calls <b>af::${block["func"]}</b> to generate outputs. This block uses
- * one ofthe following implementations by priority (based on availability
+ * one of the following implementations by priority (based on availability
  * of hardware and underlying libraries).
  * <ol>
  * <li>CUDA (if GPU present)</li>
