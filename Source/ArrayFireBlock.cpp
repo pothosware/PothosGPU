@@ -5,10 +5,14 @@
 #include "DeviceCache.hpp"
 #include "Utility.hpp"
 
+// TODO: move stdVectorToString to common debug header, don't depend on test
+#include "Testing/TestUtility.hpp"
+
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
 #include <Poco/Format.h>
+#include <Poco/Logger.h>
 
 #include <arrayfire.h>
 
@@ -202,6 +206,26 @@ void ArrayFireBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray
     {
         this->postAfArray(portIndex, afArray.row(portIndex));
     }
+}
+
+//
+// Debug
+//
+
+void ArrayFireBlock::debugLogInputPortElements()
+{
+#ifndef NDEBUG
+    std::vector<int> elements;
+    std::transform(
+        this->inputs().begin(),
+        this->inputs().end(),
+        std::back_inserter(elements),
+        [](Pothos::InputPort* port){return port->elements();});
+
+    poco_information(
+        Poco::Logger::get(this->getName()),
+        stdVectorToString(elements));
+#endif
 }
 
 //

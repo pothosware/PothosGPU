@@ -177,6 +177,8 @@ void OneToOneBlock::work()
     af::setDevice(_afDevice);
 #endif
 
+    this->debugLogInputPortElements();
+
     const size_t elems = this->workInfo().minElements;
     if(0 == elems)
     {

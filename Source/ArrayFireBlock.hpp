@@ -66,6 +66,12 @@ class ArrayFireBlock: public Pothos::Block
         void post2DAfArrayToNumberedOutputPorts(const af::array& afArray);
 
         //
+        // Debug
+        //
+
+        void debugLogInputPortElements();
+
+        //
         // Member variables
         //
 

@@ -101,6 +101,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_from_different_domains)
                               2);
 
     auto infiniteSource = Pothos::BlockRegistry::make("/blocks/infinite_source");
+    infiniteSource.call("enableBuffers", true);
 
     auto afSin = Pothos::BlockRegistry::make(
                      "/arrayfire/arith/sin",
