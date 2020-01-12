@@ -104,6 +104,7 @@ POTHOS_MODULE_UTIL(
         Testing/TestEnumConversions.cpp
         Testing/TestLabels.cpp
         Testing/TestNumericConversions.cpp
+        Testing/TestPortDomainCombos.cpp
     LIBRARIES
         ArrayFire::af
     ENABLE_DOCS ON
