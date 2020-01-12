@@ -4,7 +4,10 @@
 #include "DeviceCache.hpp"
 #include "Utility.hpp"
 
-#include <Pothos/Plugin/Static.hpp>
+#include <Pothos/Object.hpp>
+#include <Pothos/Plugin.hpp>
+
+#include <Poco/Logger.h>
 
 #include <algorithm>
 
@@ -59,13 +62,26 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                 toolkit,
                 compute,
                 af::getMemStepSize(),
-                af::isDoubleAvailable(devIndex),
 
                 backend,
                 devIndex
             };
 
-            deviceCache.emplace_back(std::move(deviceCacheEntry));
+            if(af::isDoubleAvailable(devIndex))
+            {
+                deviceCache.emplace_back(std::move(deviceCacheEntry));
+            }
+            else
+            {
+                auto& logger = Poco::Logger::get("PothosArrayFire");
+                poco_warning_f2(
+                    logger,
+                    "Found %s device %s, which does not have 64-bit floating-point "
+                    "support through ArrayFire. This device will not be made "
+                    "available through PothosArrayFire.",
+                    Pothos::Object(backend).convert<std::string>(),
+                    deviceCacheEntry.name);
+            }
         }
     }
 
@@ -91,11 +107,9 @@ const std::vector<DeviceCacheEntry>& getDeviceCache()
 // Force device caching on init
 pothos_static_block(arrayFireCacheDevices)
 {
-    (void)getAvailableBackends();
-    (void)getDeviceCache();
-
 #if !IS_AF_CONFIG_PER_THREAD
-    // Set the global backend and device on init
+    // Set the global backend and device on init.
+    // TODO: smarter logic to use most powerful device
     af::setBackend(getAvailableBackends()[0]);
     af::setDevice(0);
 #endif
