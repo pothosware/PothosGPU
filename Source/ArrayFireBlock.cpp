@@ -116,6 +116,26 @@ std::string ArrayFireBlock::getPortDomain() const
 // Input port API
 //
 
+bool ArrayFireBlock::doesInputPortDomainMatch(size_t portNum) const
+{
+    return _doesInputPortDomainMatch(portNum);
+}
+
+bool ArrayFireBlock::doesInputPortDomainMatch(const std::string& portName) const
+{
+    return _doesInputPortDomainMatch(portName);
+}
+
+const af::array& ArrayFireBlock::getInputPortAfArrayRef(size_t portNum)
+{
+    return _getInputPortAfArrayRef(portNum);
+}
+
+const af::array& ArrayFireBlock::getInputPortAfArrayRef(const std::string& portName)
+{
+    return _getInputPortAfArrayRef(portName);
+}
+
 af::array ArrayFireBlock::getInputPortAsAfArray(
     size_t portNum,
     bool truncateToMinLength)
@@ -185,9 +205,27 @@ void ArrayFireBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray
 }
 
 //
-// The underlying implementation for moving buffers back and forth between
-// Pothos and ArrayFire.
+// The protected functions call into these, making the compiler generate the
+// versions of these with those types.
 //
+
+template <typename PortIdType>
+bool ArrayFireBlock::_doesInputPortDomainMatch(const PortIdType& portId) const
+{
+    return (this->input(portId)->domain() == this->getPortDomain());
+}
+
+template <typename PortIdType>
+const af::array& ArrayFireBlock::_getInputPortAfArrayRef(const PortIdType& portId)
+{
+    if(!_doesInputPortDomainMatch(portId))
+    {
+        throw Pothos::AssertionViolationException("Called _getInputPortAfArrayRef() with invalid port");
+    }
+
+    const auto& containerSPtr = this->input(portId)->buffer().getBuffer().getContainer();
+    return *reinterpret_cast<af::array*>(containerSPtr.get());
+}
 
 template <typename PortIdType>
 af::array ArrayFireBlock::_getInputPortAsAfArray(

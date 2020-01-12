@@ -183,5 +183,12 @@ void OneToOneBlock::work()
         return;
     }
 
-    work(getInputsAsAfArray());
+    if((1 == _nchans) && this->doesInputPortDomainMatch(0))
+    {
+        work(getInputPortAfArrayRef(0));
+    }
+    else
+    {
+        work(getInputsAsAfArray());
+    }
 }

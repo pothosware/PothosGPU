@@ -54,18 +54,30 @@ class SplitComplex: public ArrayFireBlock
                 return;
             }
 
-            af::array afInput;
+            af::array afReal;
+            af::array afImag;
+
             if(1 == _nchans)
             {
-                afInput = this->getInputPortAsAfArray(0);
+                if(this->doesInputPortDomainMatch(0))
+                {
+                    const auto& afInput = this->getInputPortAfArrayRef(0);
+                    afReal = af::real(afInput);
+                    afImag = af::imag(afInput);
+                }
+                else
+                {
+                    auto afInput = this->getInputPortAsAfArray(0);
+                    afReal = af::real(afInput);
+                    afImag = af::imag(afInput);
+                }
             }
             else
             {
-                afInput = this->getNumberedInputPortsAs2DAfArray();
+                auto afInput = this->getNumberedInputPortsAs2DAfArray();
+                afReal = af::real(afInput);
+                afImag = af::imag(afInput);
             }
-
-            auto afReal = af::real(afInput);
-            auto afImag = af::imag(afInput);
 
             if(1 == _nchans)
             {
@@ -75,10 +87,6 @@ class SplitComplex: public ArrayFireBlock
             }
             else
             {
-                assert(0 != _nchans);
-                assert(_nchans == static_cast<size_t>(afInput.dims(0)));
-                assert(elems == static_cast<size_t>(afInput.dims(1)));
-
                 for(size_t chan = 0; chan < this->_nchans; ++chan)
                 {
                     this->postAfArray(

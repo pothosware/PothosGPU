@@ -33,6 +33,14 @@ class ArrayFireBlock: public Pothos::Block
         // Input port API
         //
 
+        bool doesInputPortDomainMatch(size_t portNum) const;
+
+        bool doesInputPortDomainMatch(const std::string& portName) const;
+
+        const af::array& getInputPortAfArrayRef(size_t portNum);
+
+        const af::array& getInputPortAfArrayRef(const std::string& portName);
+
         af::array getInputPortAsAfArray(
             size_t portNum,
             bool truncateToMinLength = true);
@@ -65,6 +73,12 @@ class ArrayFireBlock: public Pothos::Block
         int _afDevice;
 
     private:
+
+        template <typename PortIdType>
+        bool _doesInputPortDomainMatch(const PortIdType& portId) const;
+
+        template <typename PortIdType>
+        const af::array& _getInputPortAfArrayRef(const PortIdType& portId);
 
         template <typename PortIdType>
         af::array _getInputPortAsAfArray(
