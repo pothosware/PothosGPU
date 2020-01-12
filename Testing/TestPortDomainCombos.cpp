@@ -21,6 +21,8 @@
 #include <typeinfo>
 #include <vector>
 
+static constexpr long SleepTimeMs = 100;
+
 // Currently, our only non-file source needs ArrayFire 3.4.0+.
 #if AF_API_VERSION_CURRENT >= 34
 
@@ -80,7 +82,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
         topology.connect(afHypot, 0, collectorSink, 0);
 
         topology.commit();
-        Poco::Thread::sleep(5);
+        Poco::Thread::sleep(SleepTimeMs);
     }
 
     POTHOS_TEST_TRUE(collectorSink.call("getBuffer").call<int>("elements") > 0);
@@ -124,7 +126,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_from_different_domains)
         topology.connect(afSin, 3, collectorSink, 0);
 
         topology.commit();
-        Poco::Thread::sleep(5);
+        Poco::Thread::sleep(SleepTimeMs);
     }
 
     POTHOS_TEST_TRUE(collectorSink.call("getBuffer").call<int>("elements") > 0);
