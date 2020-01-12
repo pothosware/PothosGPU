@@ -69,7 +69,7 @@ TwoToOneBlock::TwoToOneBlock(
 {
     this->setupInput(0, inputDType);
     this->setupInput(1, inputDType);
-    this->setupOutput(0, outputDType);
+    this->setupOutput(0, outputDType, this->getPortDomain());
 }
 
 TwoToOneBlock::~TwoToOneBlock() {}

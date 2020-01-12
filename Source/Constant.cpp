@@ -28,7 +28,7 @@ class Constant: public ArrayFireBlock
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getConstant));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setConstant));
-            this->setupOutput(0, Class::dtype);
+            this->setupOutput(0, Class::dtype, this->getPortDomain());
         }
 
         virtual ~Constant() {}

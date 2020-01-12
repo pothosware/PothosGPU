@@ -77,6 +77,8 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 this->setupInput(chan, _dtype);
 
                 // Custom domain because of buffer forwarding
+                // Note: since we are forwarding the input array,
+                //       we aren't setting our own domain.
                 this->setupOutput(chan, _dtype, this->uid());
             }
         }
@@ -118,7 +120,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 size_t index = 0;
                 if(_searchForIndex)
                 {
-                    //index = getArrayValueOfUnknownTypeAtIndex(afInput.row(chan), labelVal).convert<size_t>();
                     ssize_t sIndex = findValueOfUnknownTypeInArray(
                                          afInput.row(chan),
                                          labelVal);

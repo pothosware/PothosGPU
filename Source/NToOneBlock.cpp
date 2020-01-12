@@ -55,7 +55,7 @@ NToOneBlock::NToOneBlock(
     {
         this->setupInput(chan, dtype);
     }
-    this->setupOutput(0, dtype);
+    this->setupOutput(0, dtype, this->getPortDomain());
 }
 
 NToOneBlock::~NToOneBlock() {}

@@ -33,7 +33,7 @@ class FlatBlock: public ArrayFireBlock
             {
                 this->setupInput(chan, dtype);
             }
-            this->setupOutput(0, dtype);
+            this->setupOutput(0, dtype, this->getPortDomain());
         }
 
         void work() override

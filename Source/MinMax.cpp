@@ -35,7 +35,7 @@ class MinMax: public ArrayFireBlock
             for(size_t chan = 0; chan < nchans; ++chan)
             {
                 this->setupInput(chan, _dtype);
-                this->setupOutput(chan, _dtype);
+                this->setupOutput(chan, _dtype, this->getPortDomain());
             }
         }
 

@@ -35,10 +35,12 @@ class SplitComplex: public ArrayFireBlock
 
                 this->setupOutput(
                     "re"+std::to_string(chan),
-                    dtype);
+                    dtype,
+                    this->getPortDomain());
                 this->setupOutput(
                     "im"+std::to_string(chan),
-                    dtype);
+                    dtype,
+                    this->getPortDomain());
             }
         }
 

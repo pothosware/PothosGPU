@@ -82,7 +82,7 @@ class FileSourceBlock: public ArrayFireBlock
                 const size_t nchans = static_cast<size_t>(_fileContents.dims(0));
                 for(size_t chan = 0; chan < nchans; ++chan)
                 {
-                    this->setupOutput(chan, dtype);
+                    this->setupOutput(chan, dtype, this->getPortDomain());
                 }
             }
         }

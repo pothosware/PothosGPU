@@ -75,7 +75,7 @@ class FFTBaseBlock: public ArrayFireBlock
             for(size_t chan = 0; chan < _nchans; ++chan)
             {
                 this->setupInput(chan, inDType);
-                this->setupOutput(chan, outDType);
+                this->setupOutput(chan, outDType, this->getPortDomain());
             }
 
             this->registerProbe(

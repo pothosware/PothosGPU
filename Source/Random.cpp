@@ -71,7 +71,7 @@ class RandomBlock: public ArrayFireBlock
 
             for(size_t chan = 0; chan < numOutputs; ++chan)
             {
-                this->setupOutput(chan, dtype);
+                this->setupOutput(chan, dtype, this->getPortDomain());
             }
 
             this->setDistribution(distribution);

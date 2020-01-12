@@ -105,6 +105,13 @@ void ArrayFireBlock::setArrayFireDevice(const std::string& device)
     }
 }
 
+std::string ArrayFireBlock::getPortDomain() const
+{
+    return Poco::format(
+               "ArrayFire_%s",
+               Pothos::Object(_afBackend).convert<std::string>());
+}
+
 //
 // Input port API
 //
