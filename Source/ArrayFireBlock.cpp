@@ -8,6 +8,8 @@
 // TODO: move stdVectorToString to common debug header, don't depend on test
 #include "Testing/TestUtility.hpp"
 
+#include <nlohmann/json.hpp>
+
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
@@ -67,6 +69,7 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
 
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getArrayFireBackend));
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getArrayFireDevice));
+    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, overlay));
 }
 
 ArrayFireBlock::~ArrayFireBlock()
@@ -88,6 +91,41 @@ std::string ArrayFireBlock::getPortDomain() const
     return Poco::format(
                "ArrayFire_%s",
                Pothos::Object(_afBackend).convert<std::string>());
+}
+
+std::string ArrayFireBlock::overlay() const
+{
+    nlohmann::json topObj;
+    auto& params = topObj["params"];
+
+    nlohmann::json deviceParam;
+    deviceParam["key"] = "device";
+    deviceParam["widgetType"] = "ComboBox";
+    deviceParam["widgetKwargs"]["editable"] = false;
+
+    auto& deviceParamOpts = deviceParam["options"];
+
+    // The default option defaults to what the library guesses is the most
+    // optimal device.
+    nlohmann::json defaultOption;
+    defaultOption["name"] = "Auto";
+    defaultOption["value"] = "Auto";
+    deviceParamOpts.push_back(defaultOption);
+
+    for(const auto& entry: getDeviceCache())
+    {
+        nlohmann::json option;
+        option["name"] = Poco::format(
+                             "%s (%s)",
+                             entry.name,
+                             Pothos::Object(entry.afBackendEnum).convert<std::string>());
+        option["value"] = Poco::format("\"%s\"", entry.name);
+        deviceParamOpts.push_back(option);
+    }
+
+    params.push_back(deviceParam);
+
+    return topObj.dump();
 }
 
 //

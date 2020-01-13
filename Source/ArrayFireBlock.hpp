@@ -24,6 +24,8 @@ class ArrayFireBlock: public Pothos::Block
 
         std::string getPortDomain() const;
 
+        virtual std::string overlay() const;
+
         //
         // Input port API
         //
