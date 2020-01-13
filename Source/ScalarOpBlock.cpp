@@ -16,12 +16,14 @@
 
 template <typename T>
 ScalarOpBlock<T>::ScalarOpBlock(
+    const std::string& device,
     const AfArrayScalarOp<T>& func,
     const Pothos::DType& dtype,
     T scalar,
     size_t numChans,
     bool allowZeroOperand
 ): OneToOneBlock(
+       device,
        Pothos::Callable(func),
        dtype,
        dtype,

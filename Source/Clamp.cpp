@@ -29,11 +29,13 @@ class Clamp: public OneToOneBlock
         static const Pothos::DType dtype;
 
         Clamp(
+            const std::string& device,
             const T& minValue,
             const T& maxValue,
             size_t nchans
         ):
             OneToOneBlock(
+                device,
                 Pothos::Callable(),
                 dtype,
                 dtype,
@@ -186,9 +188,14 @@ void Clamp<double>::work(const af::array& afInput)
  *
  * |category /ArrayFire/Arith
  * |keywords array arith clamp min max
- * |factory /arrayfire/arith/clamp(dtype,minValue,maxValue,numChannels)
+ * |factory /arrayfire/arith/clamp(device,dtype,minValue,maxValue,numChannels)
  * |setter setMinValue(minValue)
  * |setter setMaxValue(maxValue)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param dtype(Data Type) The output's data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1)
@@ -209,6 +216,7 @@ void Clamp<double>::work(const af::array& afInput)
  * |preview disable
  */
 static Pothos::Block* clampFactory(
+    const std::string& device,
     const Pothos::DType& dtype,
     const Pothos::Object& minValue,
     const Pothos::Object& maxValue,
@@ -216,7 +224,7 @@ static Pothos::Block* clampFactory(
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new Clamp<T>(minValue.convert<T>(), maxValue.convert<T>(), nchans);
+            return new Clamp<T>(device, minValue.convert<T>(), maxValue.convert<T>(), nchans);
 
     // ArrayFire has no implementation for std::int8_t.
     ifTypeDeclareFactory(std::int16_t)

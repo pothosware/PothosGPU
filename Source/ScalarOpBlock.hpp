@@ -24,6 +24,7 @@ class ScalarOpBlock: public OneToOneBlock
         using Class = ScalarOpBlock<T>;
 
         ScalarOpBlock(
+            const std::string& device,
             const AfArrayScalarOp<T>& func,
             const Pothos::DType& dtype,
             T scalar,
@@ -52,6 +53,7 @@ class ScalarOpBlock: public OneToOneBlock
 #define ScalarOpIfTypeDeclareFactory(T, op, allowZeroOperand) \
     if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
         return new ScalarOpBlock<T>( \
+                       device, \
                        &af::operator op, \
                        dtype, \
                        scalarObject.convert<T>(), \
@@ -60,6 +62,7 @@ class ScalarOpBlock: public OneToOneBlock
 
 #define ScalarOpBlockFactory(opName, op, allowZeroOperand, intOnly) \
     static Pothos::Block* scalarFactory_ ## opName ( \
+        const std::string& device, \
         const Pothos::DType& dtype, \
         Pothos::Object scalarObject, \
         size_t numChans) \

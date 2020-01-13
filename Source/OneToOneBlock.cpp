@@ -19,6 +19,7 @@
 //
 
 Pothos::Block* OneToOneBlock::makeFromOneType(
+    const std::string& device,
     const OneToOneFunc& func,
     const Pothos::DType& dtype,
     const DTypeSupport& supportedTypes,
@@ -26,10 +27,11 @@ Pothos::Block* OneToOneBlock::makeFromOneType(
 {
     validateDType(dtype, supportedTypes);
 
-    return new OneToOneBlock(func, dtype, dtype, numChans);
+    return new OneToOneBlock(device, func, dtype, dtype, numChans);
 }
 
 Pothos::Block* OneToOneBlock::makeFloatToComplex(
+    const std::string& device,
     const OneToOneFunc& func,
     const Pothos::DType& floatType,
     size_t numChans)
@@ -44,6 +46,7 @@ Pothos::Block* OneToOneBlock::makeFloatToComplex(
     Pothos::DType complexDType("complex_"+floatType.name());
 
     return new OneToOneBlock(
+                   device,
                    func,
                    floatType,
                    complexDType,
@@ -51,6 +54,7 @@ Pothos::Block* OneToOneBlock::makeFloatToComplex(
 }
 
 Pothos::Block* OneToOneBlock::makeComplexToFloat(
+    const std::string& device,
     const OneToOneFunc& func,
     const Pothos::DType& floatType,
     size_t numChans)
@@ -65,6 +69,7 @@ Pothos::Block* OneToOneBlock::makeComplexToFloat(
     Pothos::DType complexDType("complex_"+floatType.name());
 
     return new OneToOneBlock(
+                   device,
                    func,
                    complexDType,
                    floatType,
@@ -76,11 +81,13 @@ Pothos::Block* OneToOneBlock::makeComplexToFloat(
 //
 
 OneToOneBlock::OneToOneBlock(
+    const std::string& device,
     const OneToOneFunc& func,
     const Pothos::DType& inputDType,
     const Pothos::DType& outputDType,
     size_t numChans
 ): OneToOneBlock(
+       device,
        Pothos::Callable(func),
        inputDType,
        outputDType,
@@ -89,11 +96,12 @@ OneToOneBlock::OneToOneBlock(
 }
 
 OneToOneBlock::OneToOneBlock(
+    const std::string& device,
     const Pothos::Callable& func,
     const Pothos::DType& inputDType,
     const Pothos::DType& outputDType,
     size_t numChans
-): ArrayFireBlock(),
+): ArrayFireBlock(device),
    _func(func),
    _nchans(numChans),
    _afOutputDType(Pothos::Object(outputDType).convert<af::dtype>())

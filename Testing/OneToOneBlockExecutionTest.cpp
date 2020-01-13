@@ -109,6 +109,7 @@ void testOneToOneBlock(
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
+                     "Auto",
                      dtype,
                      numChannels);
     auto inputs = block.call<InputPortVector>("inputs");
@@ -136,6 +137,7 @@ void testOneToOneBlockF2C(
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
+                     "Auto",
                      floatDType,
                      numChannels);
     auto inputs = block.call<InputPortVector>("inputs");
@@ -163,6 +165,7 @@ void testOneToOneBlockC2F(
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
+                     "Auto",
                      floatDType,
                      numChannels);
     auto inputs = block.call<InputPortVector>("inputs");
@@ -196,6 +199,7 @@ void testScalarOpBlock(
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
+                     "Auto",
                      dtype,
                      scalar,
                      numChannels);

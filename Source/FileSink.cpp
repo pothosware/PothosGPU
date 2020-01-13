@@ -24,23 +24,25 @@ class FileSinkBlock: public ArrayFireBlock
 {
     public:
         static Pothos::Block* make(
+            const std::string& device,
             const std::string& filepath,
             const std::string& key,
             const Pothos::DType& dtype,
             size_t numChannels,
             bool append)
         {
-            return new FileSinkBlock(filepath, key, dtype, numChannels, append);
+            return new FileSinkBlock(device, filepath, key, dtype, numChannels, append);
         }
 
         FileSinkBlock(
+            const std::string& device,
             const std::string& filepath,
             const std::string& key,
             const Pothos::DType& dtype,
             size_t numChannels,
             bool append
         ):
-            ArrayFireBlock(),
+            ArrayFireBlock(device),
             _filepath(filepath),
             _key(key),
             _append(append),
@@ -227,7 +229,12 @@ class FileSinkBlock: public ArrayFireBlock
  *
  * |category /ArrayFire/File IO
  * |keywords array file sink io
- * |factory /arrayfire/array/file_sink(filepath,key,dtype,numChannels,append)
+ * |factory /arrayfire/array/file_sink(device,filepath,key,dtype,numChannels,append)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param filepath[Filepath] The path of the ArrayFire binary file.
  * |widget FileEntry(mode=save)

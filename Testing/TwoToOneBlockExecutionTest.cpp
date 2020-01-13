@@ -142,6 +142,7 @@ void testTwoToOneBlock(
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
+                     "Auto",
                      dtype);
     auto inputs = block.call<InputPortVector>("inputs");
     auto outputs = block.call<OutputPortVector>("outputs");
@@ -168,6 +169,7 @@ void testTwoToOneBlockF2C(
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
+                     "Auto",
                      floatDType);
     auto inputs = block.call<InputPortVector>("inputs");
     auto outputs = block.call<OutputPortVector>("outputs");

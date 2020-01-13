@@ -35,6 +35,7 @@ static void testCastBlock(
         POTHOS_TEST_THROWS(
             Pothos::BlockRegistry::make(
                 blockRegistryPath,
+                "Auto",
                 type1,
                 type2,
                 numChannels),
@@ -44,6 +45,7 @@ static void testCastBlock(
     {
         auto block = Pothos::BlockRegistry::make(
                          blockRegistryPath,
+                         "Auto",
                          type1,
                          type2,
                          numChannels);

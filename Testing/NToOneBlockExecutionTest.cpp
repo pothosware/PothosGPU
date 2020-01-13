@@ -149,6 +149,7 @@ void testNToOneBlock(
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
+                     "Auto",
                      dtype,
                      numInputChannels);
     auto inputs = block.call<InputPortVector>("inputs");

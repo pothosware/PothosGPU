@@ -72,6 +72,7 @@ static void testClampBlock(
         POTHOS_TEST_THROWS(
             Pothos::BlockRegistry::make(
                 blockRegistryPath,
+                "Auto",
                 type,
                 minObject,
                 maxObject,
@@ -82,6 +83,7 @@ static void testClampBlock(
     {
         auto block = Pothos::BlockRegistry::make(
                          blockRegistryPath,
+                         "Auto",
                          type,
                          minObject,
                          maxObject,

@@ -32,27 +32,32 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
 
     auto afRandomSource = Pothos::BlockRegistry::make(
                               "/arrayfire/random/source",
+                              "Auto",
                               type,
                               "NORMAL",
                               4);
 
     auto afAbs = Pothos::BlockRegistry::make(
                      "/arrayfire/arith/abs",
+                     "Auto",
                      type,
                      2);
 
     auto afCeil = Pothos::BlockRegistry::make(
                       "/arrayfire/arith/ceil",
+                      "Auto",
                       type,
                       2);
 
     auto afCos = Pothos::BlockRegistry::make(
                      "/arrayfire/arith/cos",
+                     "Auto",
                      type,
                      4);
 
     auto afHypot = Pothos::BlockRegistry::make(
                        "/arrayfire/arith/hypot",
+                       "Auto",
                        type);
 
     auto collectorSink = Pothos::BlockRegistry::make(
@@ -96,6 +101,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_from_different_domains)
 
     auto afRandomSource = Pothos::BlockRegistry::make(
                               "/arrayfire/random/source",
+                              "Auto",
                               type,
                               "NORMAL",
                               2);
@@ -105,6 +111,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_from_different_domains)
 
     auto afSin = Pothos::BlockRegistry::make(
                      "/arrayfire/arith/sin",
+                     "Auto",
                      type,
                      4);
 

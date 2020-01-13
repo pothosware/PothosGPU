@@ -26,19 +26,21 @@ class RandomBlock: public ArrayFireBlock
         using SeedType = unsigned long long;
 
         static Pothos::Block* make(
+            const std::string& device,
             const Pothos::DType& dtype,
             const std::string& distribution,
             size_t numOutputs)
         {
-            return new RandomBlock(dtype, distribution, numOutputs);
+            return new RandomBlock(device, dtype, distribution, numOutputs);
         }
 
         RandomBlock(
+            const std::string& device,
             const Pothos::DType& dtype,
             const std::string& distribution,
             size_t numOutputs
         ):
-            ArrayFireBlock(),
+            ArrayFireBlock(device),
             _numOutputs(static_cast<dim_t>(numOutputs)),
             _afRandomFunc(nullptr), // Set in constructor
             _distribution(), // Set in constructor
@@ -163,9 +165,14 @@ class RandomBlock: public ArrayFireBlock
  *
  * |category /ArrayFire/Random
  * |keywords array random uniform normal philox threefry mersenne source
- * |factory /arrayfire/random/source(dtype,distribution,numOutputs)
+ * |factory /arrayfire/random/source(device,dtype,distribution,numOutputs)
  * |setter setDistribution(distribution)
  * |setter setRandomEngineType(randomEngineType)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param dtype(Data Type) The output's data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)

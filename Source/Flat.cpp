@@ -17,17 +17,19 @@ class FlatBlock: public ArrayFireBlock
 {
     public:
         static Pothos::Block* make(
+            const std::string& device,
             const Pothos::DType& dtype,
             size_t numChannels)
         {
-            return new FlatBlock(dtype, numChannels);
+            return new FlatBlock(device, dtype, numChannels);
         }
 
         FlatBlock(
+            const std::string& device,
             const Pothos::DType& dtype,
             size_t numChannels
         ):
-            ArrayFireBlock()
+            ArrayFireBlock(device)
         {
             for(size_t chan = 0; chan < numChannels; ++chan)
             {
@@ -74,7 +76,12 @@ class FlatBlock: public ArrayFireBlock
  *
  * |category /ArrayFire/Data
  * |keywords array data flat
- * |factory /arrayfire/data/flat(dtype,numChannels)
+ * |factory /arrayfire/data/flat(device,dtype,numChannels)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param dtype(Data Type) The output's data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)

@@ -26,8 +26,12 @@ class FIRBlock: public OneToOneBlock
 
         static const Pothos::DType dtype;
 
-        FIRBlock(size_t nchans):
+        FIRBlock(
+            const std::string& device,
+            size_t nchans
+        ):
             OneToOneBlock(
+                device,
                 Pothos::Callable(&af::fir),
                 Class::dtype,
                 Class::dtype,
@@ -81,8 +85,12 @@ class IIRBlock: public OneToOneBlock
 
         static const Pothos::DType dtype;
 
-        IIRBlock(size_t nchans):
+        IIRBlock(
+            const std::string& device,
+            size_t nchans
+        ):
             OneToOneBlock(
+                device,
                 Pothos::Callable(&af::iir),
                 Class::dtype,
                 Class::dtype,
@@ -218,12 +226,13 @@ const Pothos::DType IIRBlock<T>::dtype(typeid(T));
 //
 
 static Pothos::Block* makeFIR(
+    const std::string& device,
     const Pothos::DType& dtype,
     size_t nchans)
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new FIRBlock<T>(nchans);
+            return new FIRBlock<T>(device,nchans);
 
     // TODO: 64-bit int types
     ifTypeDeclareFactory(std::int16_t)
@@ -243,12 +252,13 @@ static Pothos::Block* makeFIR(
 }
 
 static Pothos::Block* makeIIR(
+    const std::string& device,
     const Pothos::DType& dtype,
     size_t nchans)
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new IIRBlock<T>(nchans);
+            return new IIRBlock<T>(device,nchans);
 
     // TODO: 64-bit int types
     ifTypeDeclareFactory(std::int16_t)

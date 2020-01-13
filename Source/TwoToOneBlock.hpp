@@ -21,12 +21,14 @@ class TwoToOneBlock: public ArrayFireBlock
         //
 
         static Pothos::Block* makeFromOneType(
+            const std::string& device,
             const TwoToOneFunc& func,
             const Pothos::DType& dtype,
             const DTypeSupport& supportedTypes,
             bool allowZeroInBuffer1);
 
         static Pothos::Block* makeFloatToComplex(
+            const std::string& device,
             const TwoToOneFunc& func,
             const Pothos::DType& floatType,
             bool allowZeroInBuffer1);
@@ -36,6 +38,7 @@ class TwoToOneBlock: public ArrayFireBlock
         //
 
         TwoToOneBlock(
+            const std::string& device,
             const TwoToOneFunc& func,
             const Pothos::DType& inputDType,
             const Pothos::DType& outputDType,

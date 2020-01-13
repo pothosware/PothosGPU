@@ -25,8 +25,11 @@ class SplitComplex: public ArrayFireBlock
         static const Pothos::DType dtype;
         static const Pothos::DType complexDType;
 
-        SplitComplex(size_t nchans):
-            ArrayFireBlock(),
+        SplitComplex(
+            const std::string& device,
+            size_t nchans
+        ):
+            ArrayFireBlock(device),
             _nchans(nchans)
         {
             for(size_t chan = 0; chan < _nchans; ++chan)
@@ -110,12 +113,13 @@ template <typename T>
 const Pothos::DType SplitComplex<T>::complexDType = Pothos::DType(typeid(ComplexType));
 
 static Pothos::Block* splitComplexFactory(
+    const std::string& device,
     const Pothos::DType& dtype,
     size_t nchans)
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new SplitComplex<T>(nchans);
+            return new SplitComplex<T>(device,nchans);
 
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
@@ -140,7 +144,12 @@ static Pothos::Block* splitComplexFactory(
  *
  * |category /ArrayFire/Arith
  * |keywords arith complex real imag imaginary
- * |factory /arrayfire/arith/split_complex(dtype,numInputs)
+ * |factory /arrayfire/arith/split_complex(device,dtype,numInputs)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(float=1)

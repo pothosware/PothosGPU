@@ -21,8 +21,11 @@ class Constant: public ArrayFireBlock
 
         using Class = Constant<T>;
 
-        Constant(T constant):
-            ArrayFireBlock(),
+        Constant(
+            const std::string& device,
+            T constant
+        ):
+            ArrayFireBlock(device),
             _constant(PothosToAF<T>::to(constant)),
             _afDType(Pothos::Object(Class::dtype).convert<af::dtype>())
         {
@@ -66,12 +69,13 @@ template <typename T>
 const Pothos::DType Constant<T>::dtype(typeid(T));
 
 static Pothos::Block* constantFactory(
+    const std::string& device,
     const Pothos::DType& dtype,
     const Pothos::Object& constant)
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new Constant<T>(constant.convert<T>());
+            return new Constant<T>(device, constant.convert<T>());
 
     // ArrayFire has no implementation for std::int8_t.
     ifTypeDeclareFactory(std::int16_t)
@@ -83,6 +87,7 @@ static Pothos::Block* constantFactory(
     ifTypeDeclareFactory(std::uint64_t)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
+    // ArrayFire does not support any integral complex numbers.
     ifTypeDeclareFactory(std::complex<float>)
     ifTypeDeclareFactory(std::complex<double>)
 
@@ -106,8 +111,13 @@ static Pothos::Block* constantFactory(
  *
  * |category /ArrayFire/Data
  * |keywords data constant
- * |factory /arrayfire/data/constant(dtype,constant)
+ * |factory /arrayfire/data/constant(device,dtype,constant)
  * |setter setConstant(constant)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)

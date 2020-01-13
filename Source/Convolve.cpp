@@ -38,12 +38,14 @@ class ConvolveBaseBlock: public OneToOneBlock
         static const Pothos::DType dtype;
 
         ConvolveBaseBlock(
+            const std::string& device,
             const Pothos::Callable& callable,
             const Pothos::Object& taps,
             const Pothos::Object& mode,
             size_t nchans
         ):
             OneToOneBlock(
+                device,
                 Pothos::Callable(callable),
                 Class::dtype,
                 Class::dtype,
@@ -116,12 +118,14 @@ class ConvolveBlock: public ConvolveBaseBlock<T>
         using Class = ConvolveBlock<T>;
 
         ConvolveBlock(
+            const std::string& device,
             const Pothos::Object& taps,
             const Pothos::Object& mode,
             const Pothos::Object& domain,
             size_t nchans
         ):
             ConvolveBaseBlock<T>(
+                device,
                 Pothos::Callable(&af::convolve1),
                 taps,
                 mode,
@@ -164,6 +168,7 @@ using FFTConvolveBlock = ConvolveBaseBlock<T>;
 //
 
 static Pothos::Block* makeConvolve(
+    const std::string& device,
     const Pothos::DType& dtype,
     const Pothos::Object& taps,
     const Pothos::Object& mode,
@@ -172,7 +177,7 @@ static Pothos::Block* makeConvolve(
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new ConvolveBlock<T>(taps, mode, domain, nchans);
+            return new ConvolveBlock<T>(device, taps, mode, domain, nchans);
 
     // TODO: 64-bit int types
     ifTypeDeclareFactory(std::int16_t)
@@ -192,6 +197,7 @@ static Pothos::Block* makeConvolve(
 }
 
 static Pothos::Block* makeFFTConvolve(
+    const std::string& device,
     const Pothos::DType& dtype,
     const Pothos::Object& taps,
     const Pothos::Object& mode,
@@ -201,7 +207,7 @@ static Pothos::Block* makeFFTConvolve(
 
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new FFTConvolveBlock<T>(callableFFTConvolve, taps, mode, nchans);
+            return new FFTConvolveBlock<T>(device, callableFFTConvolve, taps, mode, nchans);
 
     // TODO: 64-bit int types
     ifTypeDeclareFactory(std::int16_t)

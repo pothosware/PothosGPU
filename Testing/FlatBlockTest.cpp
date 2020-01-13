@@ -25,6 +25,7 @@ static void testFlatBlock(
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
+                     "Auto",
                      type,
                      numChannels);
 

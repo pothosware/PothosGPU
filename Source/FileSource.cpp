@@ -22,19 +22,21 @@ class FileSourceBlock: public ArrayFireBlock
 {
     public:
         static Pothos::Block* make(
+            const std::string& device,
             const std::string& filepath,
             const std::string& key,
             bool repeat)
         {
-            return new FileSourceBlock(filepath, key, repeat);
+            return new FileSourceBlock(device, filepath, key, repeat);
         }
 
         FileSourceBlock(
+            const std::string& device,
             const std::string& filepath,
             const std::string& key,
             bool repeat
         ):
-            ArrayFireBlock(),
+            ArrayFireBlock(device),
             _filepath(filepath),
             _key(key),
             _repeat(repeat),
@@ -157,7 +159,12 @@ class FileSourceBlock: public ArrayFireBlock
  *
  * |category /ArrayFire/File IO
  * |keywords array file source io
- * |factory /arrayfire/array/file_source(filepath,key,repeat)
+ * |factory /arrayfire/array/file_source(device,filepath,key,repeat)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param filepath(Filepath) The path of the ArrayFire binary file.
  * |widget FileEntry(mode=open)

@@ -32,7 +32,12 @@ ${block["description"]}
  *
  * |category /ArrayFire/${block["header"].title()}
  * |keywords ${block["header"]} ${block["blockName"]}
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype,scalar,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,dtype,scalar,numChannels)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(${"int16=1,int32=1,int64=1,uint=1" if block.get("intOnly", False) else "int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1"})
@@ -72,28 +77,28 @@ ${block["description"]}
  * |category /ArrayFire/${block["header"].title()}
  * |keywords ${block["header"]} ${block["blockName"]}
 %if block.get("pattern", "") == "FloatToComplex":
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,floatDType,numChannels)
  *
  * |param floatDType(Data Type) The float type for the scalar input and complex output.
  * |widget DTypeChooser(float=1)
  * |default "float64"
  * |preview disable
 %elif block.get("pattern", "") == "ComplexToFloat":
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,floatDType,numChannels)
  *
  * |param floatDType(Data Type) The float type for the complex input and scalar output.
  * |widget DTypeChooser(float=1)
  * |default "float64"
  * |preview disable
 %elif "supportedTypes" in block:
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,dtype,numChannels)
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
  * |default "${block["supportedTypes"]["defaultType"]}"
  * |preview disable
 %else:
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(inputDType,outputDType,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(deviceinputDType,outputDType,numChannels)
  *
  * |param inputDType(Input Data Type) The input data type.
  * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
@@ -106,6 +111,11 @@ ${block["description"]}
  * |preview disable
 %endif
  *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
+ *
  * |param numChannels[Num Channels] The number of channels.
  * |default 1
  * |widget SpinBox(minimum=1)
@@ -115,73 +125,20 @@ ${block["description"]}
         "/arrayfire/${block["header"]}/${block["blockName"]}",
     %if block.get("pattern", "") == "FloatToComplex":
         Pothos::Callable(&OneToOneBlock::makeFloatToComplex)
-            .bind<OneToOneFunc>(&af::${block["func"]}, 0)
+            .bind<OneToOneFunc>(&af::${block["func"]}, 1)
     %elif block.get("pattern", "") == "ComplexToFloat":
         Pothos::Callable(&OneToOneBlock::makeComplexToFloat)
-            .bind<OneToOneFunc>(&af::${block["func"]}, 0)
-    %elif "supportedInputTypes" in block:
-        Pothos::Callable(&OneToOneBlock::makeFromTwoTypes)
-            .bind<OneToOneFunc>(&af::${block["func"]}, 0)
-            .bind<DTypeSupport>({
-                ${"true" if block["supportedInputTypes"].get("supportInt", block["supportedInputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedInputTypes"].get("supportUInt", block["supportedInputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedInputTypes"].get("supportFloat", block["supportedInputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedInputTypes"].get("supportComplexFloat", block["supportedInputTypes"].get("supportAll", False)) else "false"},
-            }, 3)
-            .bind<DTypeSupport>({
-                ${"true" if block["supportedOutputTypes"].get("supportInt", block["supportedOutputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedOutputTypes"].get("supportUInt", block["supportedOutputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedOutputTypes"].get("supportFloat", block["supportedOutputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedOutputTypes"].get("supportComplexFloat", block["supportedOutputTypes"].get("supportAll", False)) else "false"},
-            }, 4)
+            .bind<OneToOneFunc>(&af::${block["func"]}, 1)
     %else:
         Pothos::Callable(&OneToOneBlock::makeFromOneType)
-            .bind<OneToOneFunc>(&af::${block["func"]}, 0)
+            .bind<OneToOneFunc>(&af::${block["func"]}, 1)
             .bind<DTypeSupport>({
                 ${"true" if block["supportedTypes"].get("supportInt", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportUInt", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportComplexFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
-            }, 2)
+            }, 3)
     %endif
-    ),
-%endfor
-%for block in singleOutputSources:
-/*
- * |PothosDoc ${block.get("niceName", block["blockName"].title())}
-%if "description" in block:
- *
-${block["description"]}
-%endif
- *
- * Calls <b>af::${block["func"]}</b> to generate outputs. This block uses
- * one of the following implementations by priority (based on availability
- * of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
- *
- * |category /ArrayFire/${block["header"].title()}
- * |keywords ${block["header"]} ${block["blockName"]}
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype)
- *
- * |param dtype(Data Type) The block data type.
- * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
- * |default "${block["supportedTypes"]["defaultType"]}"
- * |preview disable
- */
-    Pothos::BlockRegistry(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        Pothos::Callable(&SingleOutputSource::make)
-            .bind<SingleOutputFunc>(&af::${block["func"]}, 0)
-            .bind<DTypeSupport>({
-                ${"true" if block["supportedTypes"].get("supportInt", block["supportedTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedTypes"].get("supportUInt", block["supportedTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedTypes"].get("supportFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedTypes"].get("supportComplexFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
-            }, 2)
     ),
 %endfor
 %for block in twoToOneBlocks:
@@ -204,21 +161,21 @@ ${block["description"]}
  * |category /ArrayFire/${block["header"].title()}
  * |keywords ${block["header"]} ${block["blockName"]}
 %if block.get("pattern", "") == "FloatToComplex":
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(floatDType)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,floatDType)
  *
  * |param floatDType(Data Type) The float type for the scalar input and complex output.
  * |widget DTypeChooser(float=1)
  * |default "float64"
  * |preview disable
 %elif "supportedTypes" in block:
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,dtype)
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
  * |default "${block["supportedTypes"]["defaultType"]}"
  * |preview disable
 %else:
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(inputDType,outputDType)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,inputDType,outputDType)
  *
  * |param inputDType(Input Data Type) The input data type.
  * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
@@ -230,39 +187,28 @@ ${block["description"]}
  * |default "${block["supportedOutputTypes"]["defaultType"]}"
  * |preview disable
 %endif
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
     %if block.get("pattern", "") == "FloatToComplex":
         Pothos::Callable(&TwoToOneBlock::makeFloatToComplex)
-            .bind<TwoToOneFunc>(&af::${block["func"]}, 0)
-            .bind<bool>(${"true" if block.get("allowZeroInBuffer1", True) else "false"}, 2)
-    %elif "supportedInputTypes" in block:
-        Pothos::Callable(&TwoToOneBlock::makeFromTwoTypes)
-            .bind<TwoToOneFunc>(&af::${block["func"]}, 0)
-            .bind<DTypeSupport>({
-                ${"true" if block["supportedInputTypes"].get("supportInt", block["supportedInputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedInputTypes"].get("supportUInt", block["supportedInputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedInputTypes"].get("supportFloat", block["supportedInputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedInputTypes"].get("supportComplexFloat", block["supportedInputTypes"].get("supportAll", False)) else "false"},
-            }, 3)
-            .bind<DTypeSupport>({
-                ${"true" if block["supportedOutputTypes"].get("supportInt", block["supportedOutputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedOutputTypes"].get("supportUInt", block["supportedOutputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedOutputTypes"].get("supportFloat", block["supportedOutputTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedOutputTypes"].get("supportComplexFloat", block["supportedOutputTypes"].get("supportAll", False)) else "false"},
-            }, 4)
-            .bind<bool>(${"true" if block.get("allowZeroInBuffer1", True) else "false"}, 5)
+            .bind<TwoToOneFunc>(&af::${block["func"]}, 1)
+            .bind<bool>(${"true" if block.get("allowZeroInBuffer1", True) else "false"}, 3)
     %else:
         Pothos::Callable(&TwoToOneBlock::makeFromOneType)
-            .bind<TwoToOneFunc>(&af::${block["blockName"]}, 0)
+            .bind<TwoToOneFunc>(&af::${block["blockName"]}, 1)
             .bind<DTypeSupport>({
                 ${"true" if block["supportedTypes"].get("supportInt", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportUInt", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportComplexFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
-            }, 2)
-            .bind<bool>(${"true" if block.get("allowZeroInBuffer1", True) else "false"}, 3)
+            }, 3)
+            .bind<bool>(${"true" if block.get("allowZeroInBuffer1", True) else "false"}, 4)
     %endif
     ),
 %endfor
@@ -286,7 +232,12 @@ ${block["description"]}
  *
  * |category /ArrayFire/${block["header"].title()}
  * |keywords ${block["header"]} ${block["blockName"]}
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(dtype,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,dtype,numChannels)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(${"int16=1,int32=1,int64=1,uint=1" if block.get("intOnly", False) else "int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1"})
@@ -301,13 +252,13 @@ ${block["description"]}
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
         Pothos::Callable(&NToOneBlock::make)
-            .bind<NToOneFunc>(AF_ARRAY_OP_N_TO_ONE_FUNC(${block["operator"]}), 0)
+            .bind<NToOneFunc>(AF_ARRAY_OP_N_TO_ONE_FUNC(${block["operator"]}), 1)
             .bind<DTypeSupport>({
                 ${"true" if block["supportedTypes"].get("supportInt", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportUInt", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportComplexFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
-            }, 3)
+            }, 4)
     ),
 %endfor
 };

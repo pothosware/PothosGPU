@@ -72,6 +72,7 @@ static void testFileSource1D(
 
     auto oneDimBlock = Pothos::BlockRegistry::make(
                            "/arrayfire/array/file_source",
+                           "Auto",
                            filepath,
                            testData.oneDimKey,
                            false /*repeat*/);
@@ -129,6 +130,7 @@ static void testFileSource2D(
 
     auto twoDimBlock = Pothos::BlockRegistry::make(
                            "/arrayfire/array/file_source",
+                           "Auto",
                            filepath,
                            testData.twoDimKey,
                            false /*repeat*/);

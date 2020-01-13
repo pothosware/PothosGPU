@@ -143,12 +143,12 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
     // NaN functions will be tested elsewhere.
     const std::vector<Pothos::Proxy> arrayFireBlocks =
     {
-        Pothos::BlockRegistry::make("/arrayfire/algorithm/max", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/algorithm/min", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/mean", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/median", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/var", dtype, false, 1),
+        Pothos::BlockRegistry::make("/arrayfire/algorithm/max", "Auto", dtype, 1),
+        Pothos::BlockRegistry::make("/arrayfire/algorithm/min", "Auto", dtype, 1),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/mean", "Auto", dtype, 1),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/median", "Auto", dtype, 1),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", "Auto", dtype, 1),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/var", "Auto", dtype, false, 1),
     };
     const size_t numBlocks = arrayFireBlocks.size();
 

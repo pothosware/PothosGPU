@@ -20,6 +20,7 @@
 //
 
 Pothos::Block* NToOneBlock::make(
+    const std::string& device,
     const NToOneFunc& func,
     const Pothos::DType& dtype,
     size_t numChannels,
@@ -28,6 +29,7 @@ Pothos::Block* NToOneBlock::make(
     validateDType(dtype, supportedTypes);
 
     return new NToOneBlock(
+                   device,
                    func,
                    dtype,
                    numChannels);
@@ -38,10 +40,11 @@ Pothos::Block* NToOneBlock::make(
 //
 
 NToOneBlock::NToOneBlock(
+    const std::string& device,
     const NToOneFunc& func,
     const Pothos::DType& dtype,
     size_t numChannels
-): ArrayFireBlock(),
+): ArrayFireBlock(device),
    _func(func),
    _nchans(0)
 {

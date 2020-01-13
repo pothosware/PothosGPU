@@ -12,20 +12,15 @@
 class ArrayFireBlock: public Pothos::Block
 {
     public:
-        ArrayFireBlock();
+        ArrayFireBlock(const std::string& device);
+
         virtual ~ArrayFireBlock();
 
     protected:
 
-        // TODO: single function that deals with both
-
         std::string getArrayFireBackend() const;
 
-        void setArrayFireBackend(const Pothos::Object& backend);
-
         std::string getArrayFireDevice() const;
-
-        void setArrayFireDevice(const std::string& device);
 
         std::string getPortDomain() const;
 
@@ -77,6 +72,7 @@ class ArrayFireBlock: public Pothos::Block
 
         af::Backend _afBackend;
         int _afDevice;
+        std::string _afDeviceName;
 
     private:
 

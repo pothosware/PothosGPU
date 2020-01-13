@@ -20,6 +20,7 @@ class NToOneBlock: public ArrayFireBlock
         //
 
         static Pothos::Block* make(
+            const std::string& device,
             const NToOneFunc& func,
             const Pothos::DType& dtype,
             size_t numChannels,
@@ -30,6 +31,7 @@ class NToOneBlock: public ArrayFireBlock
         //
 
         NToOneBlock(
+            const std::string& device,
             const NToOneFunc& func,
             const Pothos::DType& dtype,
             size_t numChannels);

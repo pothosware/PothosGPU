@@ -41,6 +41,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
     public:
 
         static Pothos::Block* makeFromFuncPtr(
+            const std::string& device,
             OneArrayStatsFuncPtr func,
             const Pothos::DType& dtype,
             const std::string& labelName,
@@ -48,6 +49,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
             bool searchForIndex)
         {
             return new OneArrayStatsBlock(
+                           device,
                            func,
                            dtype,
                            labelName,
@@ -56,13 +58,14 @@ class OneArrayStatsBlock: public ArrayFireBlock
         }
 
         OneArrayStatsBlock(
+            const std::string& device,
             OneArrayStatsFunction func,
             const Pothos::DType& dtype,
             const std::string& labelName,
             size_t nchans,
             bool searchForIndex
         ):
-            ArrayFireBlock(),
+            ArrayFireBlock(device),
             _func(std::move(func)),
             _dtype(dtype),
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
@@ -84,6 +87,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
         }
 
         OneArrayStatsBlock(
+            const std::string& device,
             OneArrayStatsFuncPtr func,
             const Pothos::DType& dtype,
             const std::string& labelName,
@@ -91,6 +95,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
             bool searchForIndex
         ):
             OneArrayStatsBlock(
+                device,
                 OneArrayStatsFunction(func),
                 dtype,
                 labelName,
@@ -158,19 +163,22 @@ class VarianceBlock: public OneArrayStatsBlock
     public:
 
         static Pothos::Block* make(
+            const std::string& device,
             const Pothos::DType& dtype,
             bool isBiased,
             size_t nchans)
         {
-            return new VarianceBlock(dtype, isBiased, nchans);
+            return new VarianceBlock(device, dtype, isBiased, nchans);
         }
 
         VarianceBlock(
+            const std::string& device,
             const Pothos::DType& dtype,
             bool isBiased,
             size_t nchans
         ):
             OneArrayStatsBlock(
+                device,
                 getAfVarBoundFunction(isBiased),
                 dtype,
                 "VAR",
@@ -212,22 +220,22 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
     Pothos::BlockRegistry(
         "/arrayfire/statistics/mean",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-            .bind<OneArrayStatsFuncPtr>(&af::mean, 0)
-            .bind<std::string>("MEAN", 2)
-            .bind<bool>(false /*searchForIndex*/, 4)),
+            .bind<OneArrayStatsFuncPtr>(&af::mean, 1)
+            .bind<std::string>("MEAN", 3)
+            .bind<bool>(false /*searchForIndex*/, 5)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/var",
         Pothos::Callable(&VarianceBlock::make)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/stdev",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-            .bind<OneArrayStatsFuncPtr>(&af::stdev, 0)
-            .bind<std::string>("STDDEV", 2)
-            .bind<bool>(false /*searchForIndex*/, 4)),
+            .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
+            .bind<std::string>("STDDEV", 3)
+            .bind<bool>(false /*searchForIndex*/, 5)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/median",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-            .bind<OneArrayStatsFuncPtr>(&af::median, 0)
-            .bind<std::string>("MEDIAN", 2)
-            .bind<bool>(true /*searchForIndex*/, 4)),
+            .bind<OneArrayStatsFuncPtr>(&af::median, 1)
+            .bind<std::string>("MEDIAN", 3)
+            .bind<bool>(true /*searchForIndex*/, 5)),
 };

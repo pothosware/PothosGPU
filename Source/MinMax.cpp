@@ -20,12 +20,13 @@ class MinMax: public ArrayFireBlock
     public:
 
         MinMax(
+            const std::string& device,
             const MinMaxFunction& func,
             const Pothos::DType& dtype,
             const std::string& labelName,
             size_t nchans
         ):
-            ArrayFireBlock(),
+            ArrayFireBlock(device),
             _dtype(dtype),
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _func(func),
@@ -80,6 +81,7 @@ class MinMax: public ArrayFireBlock
 
 template <bool isMin>
 static Pothos::Block* minMaxFactory(
+    const std::string& device,
     const Pothos::DType& dtype,
     size_t nchans)
 {
@@ -88,6 +90,7 @@ static Pothos::Block* minMaxFactory(
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new MinMax( \
+                           device, \
                            (isMin ? (MinMaxFunction)af::min : (MinMaxFunction)af::max), \
                            dtype, \
                            labelName, \
@@ -157,7 +160,12 @@ static Pothos::BlockRegistry registerMin(
  *
  * |category /ArrayFire/Algorithm
  * |keywords algorithm max
- * |factory /arrayfire/algorithm/max(dtype,nchans)
+ * |factory /arrayfire/algorithm/max(device,dtype,nchans)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1)

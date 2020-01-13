@@ -11,6 +11,8 @@
 
 #include <arrayfire.h>
 
+#include <string>
+
 using OneToOneFunc = af::array(*)(const af::array&);
 
 class OneToOneBlock: public ArrayFireBlock
@@ -21,17 +23,20 @@ class OneToOneBlock: public ArrayFireBlock
         //
 
         static Pothos::Block* makeFromOneType(
+            const std::string& device,
             const OneToOneFunc& func,
             const Pothos::DType& dtype,
             const DTypeSupport& supportedTypes,
             size_t numChans);
 
         static Pothos::Block* makeFloatToComplex(
+            const std::string& device,
             const OneToOneFunc& func,
             const Pothos::DType& floatType,
             size_t numChans);
 
         static Pothos::Block* makeComplexToFloat(
+            const std::string& device,
             const OneToOneFunc& func,
             const Pothos::DType& floatType,
             size_t numChans);
@@ -41,12 +46,14 @@ class OneToOneBlock: public ArrayFireBlock
         //
 
         OneToOneBlock(
+            const std::string& device,
             const OneToOneFunc& func,
             const Pothos::DType& inputDType,
             const Pothos::DType& outputDType,
             size_t numChans);
 
         OneToOneBlock(
+            const std::string& device,
             const Pothos::Callable& func,
             const Pothos::DType& inputDType,
             const Pothos::DType& outputDType,

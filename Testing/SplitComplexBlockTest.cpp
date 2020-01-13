@@ -37,14 +37,17 @@ static void testSplitComplexBlock(
 
         auto block = Pothos::BlockRegistry::make(
                          blockRegistryPath,
+                         "Auto",
                          type,
                          numChannels);
         auto realBlock = Pothos::BlockRegistry::make(
                              "/arrayfire/arith/real",
+                             "Auto",
                              type,
                              numChannels);
         auto imagBlock = Pothos::BlockRegistry::make(
                              "/arrayfire/arith/imag",
+                             "Auto",
                              type,
                              numChannels);
 

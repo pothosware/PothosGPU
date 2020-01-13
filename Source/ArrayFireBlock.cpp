@@ -19,16 +19,54 @@
 #include <algorithm>
 #include <string>
 
-// TODO: make sure device supports double
-ArrayFireBlock::ArrayFireBlock():
+// TODO: overlay
+
+ArrayFireBlock::ArrayFireBlock(const std::string& device):
     Pothos::Block(),
-    _afBackend(af::getActiveBackend()),
-    _afDevice(af::getDevice())
+    _afDeviceName(device)
 {
+    const auto& deviceCache = getDeviceCache();
+    if(device == "Auto")
+    {
+        _afBackend = deviceCache[0].afBackendEnum;
+        _afDevice = deviceCache[0].afDeviceIndex;
+        _afDeviceName = deviceCache[0].name;
+
+#if IS_AF_CONFIG_PER_THREAD
+        af::setBackend(_afBackend);
+        af::setDevice(_afDevice);
+#endif
+    }
+    else
+    {
+        auto deviceCacheIter = std::find_if(
+                                   deviceCache.begin(),
+                                   deviceCache.end(),
+                                   [&device](const DeviceCacheEntry& entry)
+                                   {
+                                       return (entry.name == device);
+                                   });
+        if(deviceCache.end() != deviceCacheIter)
+        {
+            _afBackend = deviceCacheIter->afBackendEnum;
+            _afDevice = deviceCacheIter->afDeviceIndex;
+
+#if IS_AF_CONFIG_PER_THREAD
+            af::setBackend(_afBackend);
+            af::setDevice(_afDevice);
+#endif
+        }
+        else
+        {
+            throw Pothos::InvalidArgumentException(
+                      Poco::format(
+                          "Could not find ArrayFire device %s.",
+                          device));
+        }
+    }
+
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getArrayFireBackend));
-    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, setArrayFireBackend));
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getArrayFireDevice));
-    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, setArrayFireDevice));
 }
 
 ArrayFireBlock::~ArrayFireBlock()
@@ -37,76 +75,12 @@ ArrayFireBlock::~ArrayFireBlock()
 
 std::string ArrayFireBlock::getArrayFireBackend() const
 {
-    assert(_afBackend == af::getActiveBackend());
     return Pothos::Object(_afBackend).convert<std::string>();
-}
-
-void ArrayFireBlock::setArrayFireBackend(const Pothos::Object& backend)
-{
-    if(!this->isActive())
-    {
-        auto afBackend = backend.convert<af::Backend>();
-        setThreadAFBackend(afBackend);
-
-        _afBackend = afBackend;
-
-        // New backend likely means new device ID.
-        _afDevice = af::getDevice();
-    }
-    else
-    {
-        throw Pothos::RuntimeException("Cannot change a block's backend while the block is active.");
-    }
 }
 
 std::string ArrayFireBlock::getArrayFireDevice() const
 {
-    const auto& deviceCache = getDeviceCache();
-    auto deviceIter = std::find_if(
-                          deviceCache.begin(),
-                          deviceCache.end(),
-                          [this](const DeviceCacheEntry& entry)
-                          {
-                              return (entry.afBackendEnum == this->_afBackend) &&
-                                     (entry.afDeviceIndex == this->_afDevice);
-                          });
-    assert(deviceIter != deviceCache.end());
-
-    return deviceIter->name;
-}
-
-void ArrayFireBlock::setArrayFireDevice(const std::string& device)
-{
-    if(!this->isActive())
-    {
-        const auto& deviceCache = getDeviceCache();
-        auto deviceIter = std::find_if(
-                              deviceCache.begin(),
-                              deviceCache.end(),
-                              [this, &device](const DeviceCacheEntry& entry)
-                              {
-                                  return (entry.afBackendEnum == this->_afBackend) &&
-                                         (entry.name == device);
-                              });
-        if(deviceIter != deviceCache.end())
-        {
-            setThreadAFDevice(device);
-
-            _afDevice = deviceIter->afDeviceIndex;
-        }
-        else
-        {
-            throw Pothos::InvalidArgumentException(
-                      Poco::format(
-                          "Could not find %s device with name \"%s\"",
-                          Pothos::Object(_afBackend).convert<std::string>(),
-                          device));
-        }
-    }
-    else
-    {
-        throw Pothos::RuntimeException("Cannot change a block's device while the block is active.");
-    }
+    return _afDeviceName;
 }
 
 std::string ArrayFireBlock::getPortDomain() const

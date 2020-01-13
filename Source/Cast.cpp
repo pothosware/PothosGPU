@@ -37,6 +37,7 @@ class CastBlock: public OneToOneBlock
 
         // This is what will be registered.
         static Pothos::Block* make(
+            const std::string& device,
             const Pothos::DType& inputDType,
             const Pothos::DType& outputDType,
             size_t nchans)
@@ -44,15 +45,17 @@ class CastBlock: public OneToOneBlock
             // Validate here to avoid the ArrayFireBlock overhead.
             validateCastTypes(inputDType, outputDType);
 
-            return new CastBlock(inputDType, outputDType, nchans);
+            return new CastBlock(device, inputDType, outputDType, nchans);
         }
 
         CastBlock(
+            const std::string& device,
             const Pothos::DType& inputDType,
             const Pothos::DType& outputDType,
             size_t nchans
         ):
             OneToOneBlock(
+                device,
                 Pothos::Callable(),
                 inputDType,
                 outputDType,
@@ -95,7 +98,12 @@ class CastBlock: public OneToOneBlock
  *
  * |category /ArrayFire/Stream
  * |keywords array cast
- * |factory /arrayfire/array/cast(inputDType,outputDType,numChannels)
+ * |factory /arrayfire/array/cast(device,inputDType,outputDType,numChannels)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ * |widget ComboBox(editable=false)
+ * |preview enable
  *
  * |param inputDType(Input Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)

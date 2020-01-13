@@ -19,6 +19,7 @@
 //
 
 Pothos::Block* TwoToOneBlock::makeFromOneType(
+    const std::string& device,
     const TwoToOneFunc& func,
     const Pothos::DType& dtype,
     const DTypeSupport& supportedTypes,
@@ -27,6 +28,7 @@ Pothos::Block* TwoToOneBlock::makeFromOneType(
     validateDType(dtype, supportedTypes);
 
     return new TwoToOneBlock(
+                   device,
                    func,
                    dtype,
                    dtype,
@@ -34,6 +36,7 @@ Pothos::Block* TwoToOneBlock::makeFromOneType(
 }
 
 Pothos::Block* TwoToOneBlock::makeFloatToComplex(
+    const std::string& device,
     const TwoToOneFunc& func,
     const Pothos::DType& floatType,
     bool allowZeroInBuffer1)
@@ -48,6 +51,7 @@ Pothos::Block* TwoToOneBlock::makeFloatToComplex(
     Pothos::DType complexDType("complex_"+floatType.name());
 
     return new TwoToOneBlock(
+                   device,
                    func,
                    floatType,
                    complexDType,
@@ -59,11 +63,12 @@ Pothos::Block* TwoToOneBlock::makeFloatToComplex(
 //
 
 TwoToOneBlock::TwoToOneBlock(
+    const std::string& device,
     const TwoToOneFunc& func,
     const Pothos::DType& inputDType,
     const Pothos::DType& outputDType,
     bool allowZeroInBuffer1
-): ArrayFireBlock(),
+): ArrayFireBlock(device),
    _func(func),
    _allowZeroInBuffer1(allowZeroInBuffer1)
 {
