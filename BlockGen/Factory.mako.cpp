@@ -6,6 +6,7 @@
 
 #include <Pothos/Callable.hpp>
 #include <Pothos/Framework.hpp>
+#include <Pothos/Plugin.hpp>
 #include <Pothos/Proxy.hpp>
 
 #include <arrayfire.h>
@@ -262,3 +263,9 @@ ${block["description"]}
     ),
 %endfor
 };
+
+pothos_static_block(register_pothos_arrayfire_docs)
+{
+%for doc in docs:
+%endfor
+}
