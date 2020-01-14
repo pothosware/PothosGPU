@@ -33,7 +33,7 @@ static const std::unordered_map<std::string, af::convDomain> ConvDomainEnumMap =
 
 static const std::unordered_map<std::string, af::dtype> DTypeEnumMap =
 {
-    // No int8 support
+    {"int8",            ::b8},
     {"int16",           ::s16},
     {"int32",           ::s32},
     {"int64",           ::s64},

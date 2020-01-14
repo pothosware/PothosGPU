@@ -74,6 +74,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_array_conversion)
         af::setBackend(backend);
         std::cout << "Backend: " << Pothos::Object(backend).convert<std::string>() << std::endl;
 
+        test1DArrayConversion<std::int8_t>("int8", ::b8);
         test1DArrayConversion<std::int16_t>("int16", ::s16);
         test1DArrayConversion<std::int32_t>("int32", ::s32);
         test1DArrayConversion<std::int64_t>("int64", ::s64);
@@ -100,6 +101,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_arrayproxy_conversion)
         af::setBackend(backend);
         std::cout << "Backend: " << Pothos::Object(backend).convert<std::string>() << std::endl;
 
+        test2DArrayConversion<std::int8_t>("int8", ::b8);
         test2DArrayConversion<std::int16_t>("int16", ::s16);
         test2DArrayConversion<std::int32_t>("int32", ::s32);
         test2DArrayConversion<std::int64_t>("int64", ::s64);

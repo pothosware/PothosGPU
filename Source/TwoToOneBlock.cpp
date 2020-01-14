@@ -58,6 +58,24 @@ Pothos::Block* TwoToOneBlock::makeFloatToComplex(
                    allowZeroInBuffer1);
 }
 
+Pothos::Block* TwoToOneBlock::makeComparator(
+    const std::string& device,
+    const TwoToOneFunc& func,
+    const Pothos::DType& dtype,
+    const DTypeSupport& supportedTypes)
+{
+    validateDType(dtype, supportedTypes);
+
+    static const Pothos::DType Int8DType("int8");
+
+    return new TwoToOneBlock(
+                   device,
+                   func,
+                   dtype,
+                   Int8DType,
+                   true /*allowZeroInBuffer1*/);
+}
+
 //
 // Class implementation
 //

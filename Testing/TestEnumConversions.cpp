@@ -85,6 +85,7 @@ static void testDTypeEnumUsage(
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_dtype_conversion)
 {
     testTypesCanConvert<Pothos::DType, af::dtype>();
+    testDTypeEnumUsage("int8",            ::b8);
     testDTypeEnumUsage("int16",           ::s16);
     testDTypeEnumUsage("int32",           ::s32);
     testDTypeEnumUsage("int64",           ::s64);
