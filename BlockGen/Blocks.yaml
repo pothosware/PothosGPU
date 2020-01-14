@@ -263,24 +263,6 @@ TwoToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        # TODO: N to one
-        - func: min
-          header: arith
-          verify: std::min
-          supportedTypes:
-                  supportInt: true
-                  supportUInt: true
-                  supportFloat: true
-
-        # TODO: N to one
-        - func: max
-          header: arith
-          verify: std::max
-          supportedTypes:
-                  supportInt: true
-                  supportUInt: true
-                  supportFloat: true
-
         - func: rem
           niceName: Remainder
           header: arith
@@ -331,6 +313,24 @@ NToOneBlocks:
           verify: std::multiplies<In>()
           supportedTypes:
                   supportAll: true
+
+        - func: min
+          niceName: Minimum
+          header: arith
+          verify: std::min
+          supportedTypes:
+                  supportInt: true
+                  supportUInt: true
+                  supportFloat: true
+
+        - func: max
+          niceName: Maximum
+          header: arith
+          verify: std::max
+          supportedTypes:
+                  supportInt: true
+                  supportUInt: true
+                  supportFloat: true
 
 ScalarOpBlocks:
 

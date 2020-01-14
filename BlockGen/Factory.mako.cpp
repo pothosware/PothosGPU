@@ -218,10 +218,13 @@ ${block["description"]}
     %if "description" in block:
  *
 ${block["description"]}
-    %endif
+    %elif "operator" in block:
  *
  * Applies the <b>${block["operator"]}</b> operator to all inputs, resulting
- * in a single output. This block computes all outputs in parallel, using one
+ * in a single output.
+   %endif
+ *
+ * This block computes all outputs in parallel, using one
  * of the following implementations by priority (based on availability of
  * hardware and underlying libraries).
  * <ol>
@@ -252,7 +255,11 @@ ${block["description"]}
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
         Pothos::Callable(&NToOneBlock::make)
+    %if "operator" in block:
             .bind<NToOneFunc>(AF_ARRAY_OP_N_TO_ONE_FUNC(${block["operator"]}), 1)
+    %else:
+            .bind<NToOneFunc>(&af::${block["func"]}, 1)
+    %endif
             .bind<DTypeSupport>({
                 ${"true" if block["supportedTypes"].get("supportInt", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportUInt", block["supportedTypes"].get("supportAll", False)) else "false"},
