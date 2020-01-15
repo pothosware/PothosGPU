@@ -159,7 +159,7 @@ Pothos::Object getArrayValueOfUnknownTypeAtIndex(
 }
 
 // TODO: does ArrayFire have a way to do this without reading the array to
-// the host.
+// the host?
 ssize_t findValueOfUnknownTypeInArray(
     const af::array& afArray,
     const Pothos::Object& value)

@@ -21,8 +21,6 @@
 #include <algorithm>
 #include <string>
 
-// TODO: overlay
-
 ArrayFireBlock::ArrayFireBlock(const std::string& device):
     Pothos::Block(),
     _afDeviceName(device)

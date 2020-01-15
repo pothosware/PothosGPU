@@ -27,10 +27,6 @@ static void validateCastTypes(
     }
 }
 
-// TODO:
-//  * See if different backends have different casting support.
-//  * If this is the case, automatically set backend or error out
-//    based on given DTypes.
 class CastBlock: public OneToOneBlock
 {
     public:
