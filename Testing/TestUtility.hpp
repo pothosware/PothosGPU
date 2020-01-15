@@ -243,6 +243,15 @@ ReturnType getAndCallPlugin(
     return getter.call<ReturnType>(args...);
 }
 
+namespace PothosArrayFireTests
+{
+
+void testBufferChunk(
+    const Pothos::BufferChunk& expectedBufferChunk,
+    const Pothos::BufferChunk& actualBufferChunk);
+
+}
+
 //
 // For debugging purposes
 //
@@ -259,7 +268,7 @@ std::string bufferChunkToString(const Pothos::BufferChunk& bufferChunk)
         {
             ostream << " ";
         }
-        ostream << buff[i];
+        ostream << (ssize_t)buff[i];
     }
 
     return ostream.str();

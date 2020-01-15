@@ -133,7 +133,7 @@ static Pothos::Block* makeComparator(
     const Pothos::DType& dtype,
     const std::string& operation)
 {
-    TwoToOneFunc func;
+    TwoToOneFunc func = nullptr;
 
     #define IF_OP_CREATE_LAMBDA(op) \
         if(operation == #op) \
@@ -143,7 +143,16 @@ static Pothos::Block* makeComparator(
     else IF_OP_CREATE_LAMBDA(<=)
     else IF_OP_CREATE_LAMBDA(>)
     else IF_OP_CREATE_LAMBDA(>=)
+    else IF_OP_CREATE_LAMBDA(==)
+    else IF_OP_CREATE_LAMBDA(!=)
     else throw Pothos::InvalidArgumentException("Invalid operation", operation);
+
+    if(nullptr == func)
+    {
+        throw Pothos::AssertionViolationException(
+                  "Failed to create comparator function for operation",
+                  operation);
+    }
 
     static const DTypeSupport dtypeSupport{true,true,true,false};
 

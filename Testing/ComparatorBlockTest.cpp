@@ -157,15 +157,19 @@ static void testComparatorBlockForTypeAndOperation(
             POTHOS_TEST_TRUE(topology.waitInactive(0.05));
         }
 
-        // TODO: test outputs
-        POTHOS_TEST_EQUAL(
-            output.elements(),
-            collectorSink.call("getBuffer").call<int>("elements"));
+        std::cout << "----------" << std::endl;
+        std::cout << bufferChunkToString<std::int8_t>(output) << std::endl;
+        std::cout << bufferChunkToString<std::int8_t>(collectorSink.call<Pothos::BufferChunk>("getBuffer")) << std::endl;
+
+        PothosArrayFireTests::testBufferChunk(
+            output,
+            collectorSink.call<Pothos::BufferChunk>("getBuffer"));
     }
 }
 
 void testComparatorBlockForType(const std::string& type)
 {
+    // TODO: specific tests for == and !=
     static const std::vector<std::string> operations{"<","<=",">",">="};
     for(const std::string& operation: operations)
     {

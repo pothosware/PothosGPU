@@ -9,9 +9,25 @@
 #include <Pothos/Proxy.hpp>
 #include <Pothos/Testing.hpp>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
+
+static Pothos::BufferChunk concatBufferChunks(
+    const std::vector<Pothos::BufferChunk>& bufferChunks)
+{
+    Pothos::BufferChunk ret;
+    std::for_each(
+        bufferChunks.begin(),
+        bufferChunks.end(),
+        [&ret](const Pothos::BufferChunk& bufferChunk)
+        {
+            ret.append(bufferChunk);
+        });
+
+    return ret;
+}
 
 static void testFlatBlock(
     const std::string& type,
@@ -71,12 +87,9 @@ static void testFlatBlock(
         POTHOS_TEST_TRUE(topology.waitInactive(0.05));
     }
 
-    // Make sure the blocks output data.
-    // TODO: output verification
-    auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
-    POTHOS_TEST_EQUAL(
-        static_cast<int>(testInputs[0].elements() * testInputs.size()),
-        output.elements());
+    PothosArrayFireTests::testBufferChunk(
+        concatBufferChunks(testInputs),
+        collectorSink.call<Pothos::BufferChunk>("getBuffer"));
 }
 
 void testFlatBlockForType(const std::string& type)

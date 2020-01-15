@@ -147,29 +147,19 @@ static void testSplitComplexBlock(
         }
 
         // Make sure the blocks output data.
-        // TODO: test output values
         for(size_t chan = 0; chan < numChannels; ++chan)
         {
-            const auto& chanInputs = testInputs[chan];
-            const size_t numInputs = chanInputs.elements();
-
             auto realOutputs = collectorSinksReal[chan].call<Pothos::BufferChunk>("getBuffer");
             auto realBlockOutputs = collectorSinksRealBlock[chan].call<Pothos::BufferChunk>("getBuffer");
-            POTHOS_TEST_EQUAL(
-                numInputs,
-                realOutputs.elements());
-            POTHOS_TEST_EQUAL(
-                realOutputs.elements(),
-                realBlockOutputs.elements());
+            PothosArrayFireTests::testBufferChunk(
+                realBlockOutputs,
+                realOutputs);
 
             auto imagOutputs = collectorSinksImag[chan].call<Pothos::BufferChunk>("getBuffer");
             auto imagBlockOutputs = collectorSinksImagBlock[chan].call<Pothos::BufferChunk>("getBuffer");
-            POTHOS_TEST_EQUAL(
-                numInputs,
-                imagOutputs.elements());
-            POTHOS_TEST_EQUAL(
-                imagOutputs.elements(),
-                imagBlockOutputs.elements());
+            PothosArrayFireTests::testBufferChunk(
+                imagBlockOutputs,
+                imagOutputs);
         }
     }
     else
