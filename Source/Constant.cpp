@@ -26,25 +26,23 @@ class Constant: public ArrayFireBlock
             T constant
         ):
             ArrayFireBlock(device),
-            _constant(PothosToAF<T>::to(constant)),
-            _afDType(Pothos::Object(Class::dtype).convert<af::dtype>())
+            _afDType(Pothos::Object(Class::dtype).convert<af::dtype>()),
+            _afOutput()
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getConstant));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setConstant));
             this->setupOutput(0, Class::dtype, this->getPortDomain());
+
+            this->registerProbe("getConstant", "constantChanged", "setConstant");
+
+            this->setConstant(constant);
         }
 
         virtual ~Constant() {}
 
         void work() override
         {
-            // Since we post all buffers but don't have an input size
-            // to match.
-            static constexpr dim_t OutputBufferSize = 1024;
-
-            this->postAfArray(
-                0,
-                af::constant(_constant, OutputBufferSize, _afDType));
+            this->postAfArray(0, _afOutput);
         }
 
         T getConstant() const
@@ -55,14 +53,22 @@ class Constant: public ArrayFireBlock
         void setConstant(const T& constant)
         {
             _constant = PothosToAF<T>::to(constant);
+            _afOutput = af::constant(_constant, OutputBufferSize, _afDType);
+
+            this->emitSignal("constantChanged", constant);
         }
 
     private:
+
+        // Since we post all buffers but don't have an input size
+        // to match.
+        static constexpr dim_t OutputBufferSize = 1024;
 
         static const Pothos::DType dtype;
 
         typename PothosToAF<T>::type _constant;
         af::dtype _afDType;
+        af::array _afOutput;
 };
 
 template <typename T>
