@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "BufferConversions.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Exception.hpp>
@@ -21,21 +22,31 @@
 //
 
 template <typename AfArrayType>
-static Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
+Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 {
-    auto afArraySPtr = std::make_shared<af::array>(afArray);
+    af::array outputAfArray(afArray);
+    return moveAfArrayToBufferChunk(std::move(outputAfArray));
+}
+
+Pothos::BufferChunk moveAfArrayToBufferChunk(af::array&& rAfArray)
+{
+    if(1 != rAfArray.numdims())
+    {
+        throw Pothos::AssertionViolationException(
+                  "moveAfArrayToBufferChunk should only be called with 1D arrays");
+    }
+
+    auto afArraySPtr = std::make_shared<af::array>(std::move(rAfArray));
     const size_t address = reinterpret_cast<size_t>(afArraySPtr->template device<std::uint8_t>());
     const size_t bytes = afArraySPtr->bytes();
 
     Pothos::SharedBuffer sharedBuff(address, bytes, afArraySPtr);
     Pothos::BufferChunk bufferChunk(sharedBuff);
-    bufferChunk.dtype = Pothos::Object(afArray.type()).convert<Pothos::DType>();
+    bufferChunk.dtype = Pothos::Object(afArraySPtr->type()).convert<Pothos::DType>();
     if(bufferChunk.elements() != static_cast<size_t>(afArraySPtr->elements()))
     {
         throw Pothos::AssertionViolationException(
-                  Poco::format(
-                      "Element count doesn't match in %s conversion to Pothos::BufferChunk",
-                      Pothos::Util::typeInfoToString(typeid(AfArrayType))),
+                  "Element count doesn't match in ArrayFire array conversion to Pothos::BufferChunk",
                   Poco::format(
                       "%s -> %s",
                       Poco::NumberFormatter::format(afArraySPtr->elements()),

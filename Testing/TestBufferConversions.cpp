@@ -1,8 +1,10 @@
 // Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "BufferConversions.hpp"
 #include "DeviceCache.hpp"
 #include "Utility.hpp"
+#include "TestUtility.hpp"
 #include "BlockExecutionTests.hpp"
 
 #include <Pothos/Framework.hpp>
@@ -44,6 +46,11 @@ static void test1DArrayConversion(
         reinterpret_cast<const T*>(afArray.device<std::uint8_t>()),
         reinterpret_cast<const T*>(afArray2.device<std::uint8_t>()),
         ArrDim);
+
+    auto bufferChunk2 = moveAfArrayToBufferChunk(std::move(afArray2));
+    PothosArrayFireTests::testBufferChunk(
+        bufferChunk,
+        bufferChunk2);
 }
 
 template <typename T>

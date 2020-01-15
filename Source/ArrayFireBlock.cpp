@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
+#include "BufferConversions.hpp"
 #include "DeviceCache.hpp"
 #include "Utility.hpp"
 
@@ -204,6 +205,20 @@ void ArrayFireBlock::postAfArray(
     _postAfArray(portName, afArray);
 }
 
+void ArrayFireBlock::postAfArray(
+    size_t portNum,
+    af::array&& rAfArray)
+{
+    _postAfArray(portNum, std::move(rAfArray));
+}
+
+void ArrayFireBlock::postAfArray(
+    const std::string& portName,
+    af::array&& rAfArray)
+{
+    _postAfArray(portName, std::move(rAfArray));
+}
+
 void ArrayFireBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray)
 {
     const size_t numOutputs = this->outputs().size();
@@ -281,5 +296,14 @@ void ArrayFireBlock::_postAfArray(
     const AfArrayType& afArray)
 {
     auto bufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
+    this->output(portId)->postBuffer(std::move(bufferChunk));
+}
+
+template <typename PortIdType, typename AfArrayType>
+void ArrayFireBlock::_postAfArray(
+    const PortIdType& portId,
+    AfArrayType&& rAfArray)
+{
+    auto bufferChunk = moveAfArrayToBufferChunk(std::forward<AfArrayType>(rAfArray));
     this->output(portId)->postBuffer(std::move(bufferChunk));
 }

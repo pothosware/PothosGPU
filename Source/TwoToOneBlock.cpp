@@ -122,7 +122,7 @@ void TwoToOneBlock::work()
 
     this->input(0)->consume(elems);
     this->input(1)->consume(elems);
-    this->postAfArray(0, outputAfArray);
+    this->postAfArray(0, std::move(outputAfArray));
 }
 
 //

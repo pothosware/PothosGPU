@@ -80,5 +80,5 @@ void NToOneBlock::work()
     {
         outputAfArray = _func(outputAfArray, afArray.row(chan));
     }
-    this->postAfArray(0, outputAfArray);
+    this->postAfArray(0, std::move(outputAfArray));
 }

@@ -56,7 +56,7 @@ class FlatBlock: public ArrayFireBlock
                               Poco::NumberFormatter::format(afOutput.numdims())));
             }
 
-            this->postAfArray(0, afOutput);
+            this->postAfArray(0, std::move(afOutput));
         }
 };
 

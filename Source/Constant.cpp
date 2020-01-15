@@ -41,7 +41,7 @@ class Constant: public ArrayFireBlock
 
         void work() override
         {
-            this->postAfArray(0, _afOutput);
+            this->postAfArray(0, std::move(_afOutput));
         }
 
         T getConstant() const

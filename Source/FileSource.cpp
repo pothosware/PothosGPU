@@ -118,7 +118,7 @@ class FileSourceBlock: public ArrayFireBlock
 
             if(1 == _numDims)
             {
-                this->postAfArray(0, _fileContents);
+                this->postAfArray(0, std::move(_fileContents));
             }
             else
             {
