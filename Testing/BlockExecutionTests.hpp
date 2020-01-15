@@ -86,6 +86,8 @@ void testCastBlockForType(const std::string& inputType);
 
 void testClampBlockForType(const std::string& inputType);
 
+void testComparatorBlockForType(const std::string& type);
+
 void testFlatBlockForType(const std::string& type);
 
 void testSplitComplexBlockForType(const std::string& floatType);

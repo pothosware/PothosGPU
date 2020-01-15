@@ -124,3 +124,32 @@ void TwoToOneBlock::work()
     this->input(1)->consume(elems);
     this->postAfArray(0, outputAfArray);
 }
+
+//
+// Comparator
+//
+static Pothos::Block* makeComparator(
+    const std::string& device,
+    const Pothos::DType& dtype,
+    const std::string& operation)
+{
+    TwoToOneFunc func;
+
+    #define IF_OP_CREATE_LAMBDA(op) \
+        if(operation == #op) \
+            func = AF_ARRAY_OP_TWO_TO_ONE_FUNC(op);
+
+    IF_OP_CREATE_LAMBDA(<)
+    else IF_OP_CREATE_LAMBDA(<=)
+    else IF_OP_CREATE_LAMBDA(>)
+    else IF_OP_CREATE_LAMBDA(>=)
+    else throw Pothos::InvalidArgumentException("Invalid operation", operation);
+
+    static const DTypeSupport dtypeSupport{true,true,true,false};
+
+    return TwoToOneBlock::makeComparator(device, func, dtype, dtypeSupport);
+}
+
+static Pothos::BlockRegistry registerComparator(
+    "/arrayfire/array/comparator",
+    Pothos::Callable(&makeComparator));

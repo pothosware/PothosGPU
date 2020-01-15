@@ -93,6 +93,7 @@ POTHOS_MODULE_UTIL(
         Testing/BlockExecutionTests.cpp
         Testing/CastBlockTest.cpp
         Testing/ClampBlockTest.cpp
+        Testing/ComparatorBlockTest.cpp
         Testing/FlatBlockTest.cpp
         Testing/SplitComplexBlockTest.cpp
         Testing/FileIOTests.cpp
