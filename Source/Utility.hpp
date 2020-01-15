@@ -219,3 +219,23 @@ static inline bool isDTypeComplexFloat(const Pothos::DType& dtype)
 {
     return (dtype.isFloat() && dtype.isComplex());
 }
+
+//
+// Formatting
+//
+
+template <typename T>
+std::string stdVectorToString(const std::vector<T>& vec)
+{
+    std::ostringstream ostream;
+    for(const T& val: vec)
+    {
+        if(&val != &vec[0])
+        {
+            ostream << " ";
+        }
+        ostream << val;
+    }
+
+    return ostream.str();
+}

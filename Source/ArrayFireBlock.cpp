@@ -5,9 +5,6 @@
 #include "DeviceCache.hpp"
 #include "Utility.hpp"
 
-// TODO: move stdVectorToString to common debug header, don't depend on test
-#include "Testing/TestUtility.hpp"
-
 #include <nlohmann/json.hpp>
 
 #include <Pothos/Framework.hpp>

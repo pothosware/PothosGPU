@@ -248,22 +248,6 @@ ReturnType getAndCallPlugin(
 //
 
 template <typename T>
-std::string stdVectorToString(const std::vector<T>& vec)
-{
-    std::ostringstream ostream;
-    for(const T& val: vec)
-    {
-        if(&val != &vec[0])
-        {
-            ostream << " ";
-        }
-        ostream << (ssize_t)val;
-    }
-
-    return ostream.str();
-}
-
-template <typename T>
 std::string bufferChunkToString(const Pothos::BufferChunk& bufferChunk)
 {
     std::ostringstream ostream;
