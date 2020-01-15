@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include <arrayfire.h>
@@ -18,6 +18,9 @@
 #include <string>
 #include <typeinfo>
 #include <vector>
+
+namespace PothosArrayFireTests
+{
 
 static constexpr const char* blockRegistryPath = "/arrayfire/array/comparator";
 
@@ -175,4 +178,6 @@ void testComparatorBlockForType(const std::string& type)
     {
         testComparatorBlockForTypeAndOperation(type, operation);
     }
+}
+
 }

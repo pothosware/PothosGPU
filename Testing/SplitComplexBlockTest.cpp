@@ -19,6 +19,9 @@
 #include <typeinfo>
 #include <vector>
 
+namespace PothosArrayFireTests
+{
+
 // Test this block by comparing the outputs to blocks that individually output
 // the real and imaginary components.
 static void testSplitComplexBlock(
@@ -177,4 +180,6 @@ void testSplitComplexBlockForType(const std::string& type)
 {
     testSplitComplexBlock(type, 1);
     testSplitComplexBlock(type, 3);
+}
+
 }

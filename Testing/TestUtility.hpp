@@ -16,6 +16,9 @@
 #include <type_traits>
 #include <vector>
 
+namespace PothosArrayFireTests
+{
+
 //
 // Useful typedefs
 //
@@ -242,9 +245,6 @@ ReturnType getAndCallPlugin(
 
     return getter.call<ReturnType>(args...);
 }
-
-namespace PothosArrayFireTests
-{
 
 void testBufferChunk(
     const Pothos::BufferChunk& expectedBufferChunk,

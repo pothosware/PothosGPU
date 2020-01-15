@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BlockExecutionTests.hpp"
@@ -15,6 +15,9 @@
 #include <string>
 #include <typeinfo>
 #include <vector>
+
+namespace PothosArrayFireTests
+{
 
 static void testCastBlock(
     const std::string& type1,
@@ -130,4 +133,6 @@ void testCastBlockForType(const std::string& inputType)
         testCastBlock(inputType, outputType, 1);
         testCastBlock(inputType, outputType, 3);
     }
+}
+
 }

@@ -21,6 +21,8 @@
 #include <typeinfo>
 #include <vector>
 
+using namespace PothosArrayFireTests;
+
 static constexpr long SleepTimeMs = 100;
 
 // Currently, our only non-file source needs ArrayFire 3.4.0+.

@@ -14,6 +14,9 @@
 #include <string>
 #include <typeinfo>
 
+namespace PothosArrayFireTests
+{
+
 template <typename Type1, typename Type2>
 static void testTypesCanConvert()
 {
@@ -40,8 +43,10 @@ static void testComplexConversion()
     testEqual(stdComplex1, stdComplex2);
 }
 
+}
+
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_complex_conversion)
 {
-    testComplexConversion<std::complex<float>, af::cfloat>();
-    testComplexConversion<std::complex<double>, af::cdouble>();
+    PothosArrayFireTests::testComplexConversion<std::complex<float>, af::cfloat>();
+    PothosArrayFireTests::testComplexConversion<std::complex<double>, af::cdouble>();
 }

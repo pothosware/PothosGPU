@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include <arrayfire.h>
@@ -19,6 +19,9 @@
 #include <typeinfo>
 #include <vector>
 
+namespace PothosArrayFireTests
+{
+
 static constexpr const char* blockRegistryPath = "/arrayfire/arith/clamp";
 static constexpr const char* pluginPath = "/blocks/arrayfire/arith/clamp";
 
@@ -34,7 +37,7 @@ static constexpr const char* pluginPath = "/blocks/arrayfire/arith/clamp";
         (*pMaxObjectOut) = Pothos::Object(sortedInputs[sortedInputs.size()-3]); \
     }
 
-void getMinMaxObjects(
+static void getMinMaxObjects(
     const std::string& type,
     Pothos::Object* pMinObjectOut,
     Pothos::Object* pMaxObjectOut)
@@ -177,3 +180,5 @@ void testClampBlockForType(const std::string&)
 }
 
 #endif
+
+}

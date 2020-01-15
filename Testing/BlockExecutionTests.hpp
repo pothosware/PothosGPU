@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -11,6 +11,9 @@
 #include <cmath>
 #include <functional>
 #include <random>
+
+namespace PothosArrayFireTests
+{
 
 using PortInfoVector = std::vector<Pothos::PortInfo>;
 
@@ -206,4 +209,6 @@ template <typename T>
 static inline EnableIfFloat<T, T> testFactorial(const T& val)
 {
     return std::tgamma(val + T(1.0));
+}
+
 }

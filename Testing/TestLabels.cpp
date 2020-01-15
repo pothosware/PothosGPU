@@ -14,6 +14,9 @@
 #include <random>
 #include <vector>
 
+namespace PothosArrayFireTests
+{
+
 //
 // Get expected values for the labels.
 //
@@ -123,8 +126,12 @@ static std::vector<Pothos::Label> getExpectedLabels(const std::vector<double>& i
     });
 }
 
+}
+
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
 {
+    using namespace PothosArrayFireTests;
+
     std::random_device rd;
     std::mt19937 g(rd());
 

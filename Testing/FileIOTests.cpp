@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BlockExecutionTests.hpp"
@@ -15,6 +15,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
+namespace PothosArrayFireTests
+{
 
 static const std::vector<std::string> AllTypes =
 {
@@ -40,7 +43,7 @@ struct TestData
     af::array twoDimArray;
 };
 
-std::string generateTestFile(const std::vector<TestData>& allTestData)
+static std::string generateTestFile(const std::vector<TestData>& allTestData)
 {
     Poco::TemporaryFile tempFile;
     tempFile.keepUntilExit();
@@ -187,8 +190,12 @@ static void testFileSource2D(
     }
 }
 
+}
+
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_source)
 {
+    using namespace PothosArrayFireTests;
+
     constexpr dim_t numChannels = 4;
     constexpr dim_t numElements = 50;
 

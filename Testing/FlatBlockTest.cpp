@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BlockExecutionTests.hpp"
@@ -13,6 +13,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
+namespace PothosArrayFireTests
+{
 
 static Pothos::BufferChunk concatBufferChunks(
     const std::vector<Pothos::BufferChunk>& bufferChunks)
@@ -96,4 +99,6 @@ void testFlatBlockForType(const std::string& type)
 {
     testFlatBlock(type, 1);
     testFlatBlock(type, 3);
+}
+
 }

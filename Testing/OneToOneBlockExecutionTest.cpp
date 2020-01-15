@@ -14,6 +14,9 @@
 #include <string>
 #include <typeinfo>
 
+namespace PothosArrayFireTests
+{
+
 template <typename In, typename Out>
 static void testOneToOneBlockCommon(
     const Pothos::Proxy& block,
@@ -254,3 +257,5 @@ SPECIALIZE_TEMPLATE_TEST(std::complex<double>)
 
 SPECIALIZE_COMPLEX_1TO1_TEMPLATE_TEST(float)
 SPECIALIZE_COMPLEX_1TO1_TEMPLATE_TEST(double)
+
+}

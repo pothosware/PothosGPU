@@ -15,6 +15,9 @@
 #include <string>
 #include <typeinfo>
 
+namespace PothosArrayFireTests
+{
+
 template <typename T>
 static void test1DArrayConversion(
     const std::string& dtypeName,
@@ -68,8 +71,30 @@ static void test2DArrayConversion(
     }
 }
 
+template <typename T>
+static void testStdVectorToAfArrayConversion(af::dtype expectedAfDType)
+{
+    std::cout << " * Testing " << Pothos::DType(typeid(T)).name() << "..." << std::endl;
+
+    const std::vector<T> stdVector = getTestInputs<T>();
+
+    const auto afArray = Pothos::Object(stdVector).convert<af::array>();
+    POTHOS_TEST_EQUAL(1, afArray.numdims());
+    POTHOS_TEST_TRUE(expectedAfDType == afArray.type());
+    POTHOS_TEST_EQUAL(
+        stdVector.size(),
+        static_cast<size_t>(afArray.elements()));
+
+    const auto stdVector2 = Pothos::Object(afArray).convert<std::vector<T>>();
+    POTHOS_TEST_EQUALV(
+        stdVector,
+        stdVector2);
+}
+
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_array_conversion)
 {
+    using namespace PothosArrayFireTests;
+
     for(const auto& backend: getAvailableBackends())
     {
         af::setBackend(backend);
@@ -95,8 +120,12 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_array_conversion)
 #endif
 }
 
+}
+
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_arrayproxy_conversion)
 {
+    using namespace PothosArrayFireTests;
+
     for(const auto& backend: getAvailableBackends())
     {
         af::setBackend(backend);
@@ -122,28 +151,10 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_arrayproxy_conversion)
 #endif
 }
 
-template <typename T>
-static void testStdVectorToAfArrayConversion(af::dtype expectedAfDType)
-{
-    std::cout << " * Testing " << Pothos::DType(typeid(T)).name() << "..." << std::endl;
-
-    const std::vector<T> stdVector = getTestInputs<T>();
-
-    const auto afArray = Pothos::Object(stdVector).convert<af::array>();
-    POTHOS_TEST_EQUAL(1, afArray.numdims());
-    POTHOS_TEST_TRUE(expectedAfDType == afArray.type());
-    POTHOS_TEST_EQUAL(
-        stdVector.size(),
-        static_cast<size_t>(afArray.elements()));
-
-    const auto stdVector2 = Pothos::Object(afArray).convert<std::vector<T>>();
-    POTHOS_TEST_EQUALV(
-        stdVector,
-        stdVector2);
-}
-
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_std_vector_conversion)
 {
+    using namespace PothosArrayFireTests;
+
     for(const auto& backend: getAvailableBackends())
     {
         af::setBackend(backend);

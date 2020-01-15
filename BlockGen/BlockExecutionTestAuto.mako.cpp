@@ -7,6 +7,8 @@
 #include <cmath>
 #include <cstdint>
 
+using namespace PothosArrayFireTests;
+
 //
 // Verification functions
 //

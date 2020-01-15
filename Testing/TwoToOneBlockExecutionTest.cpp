@@ -14,6 +14,9 @@
 #include <string>
 #include <typeinfo>
 
+namespace PothosArrayFireTests
+{
+
 template <typename In, typename Out>
 static std::vector<Out> getExpectedOutputs(
     const std::vector<In>& inputs0,
@@ -211,3 +214,5 @@ SPECIALIZE_TEMPLATE_TEST(std::complex<double>)
 
 SPECIALIZE_F2C_TEMPLATE_TEST(float)
 SPECIALIZE_F2C_TEMPLATE_TEST(double)
+
+}
