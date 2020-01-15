@@ -234,12 +234,13 @@ static Pothos::Block* makeFIR(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new FIRBlock<T>(device,nchans);
 
-    // TODO: 64-bit int types
     ifTypeDeclareFactory(std::int16_t)
     ifTypeDeclareFactory(std::int32_t)
+    ifTypeDeclareFactory(std::int64_t)
     ifTypeDeclareFactory(std::uint8_t)
     ifTypeDeclareFactory(std::uint16_t)
     ifTypeDeclareFactory(std::uint32_t)
+    ifTypeDeclareFactory(std::uint64_t)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     ifTypeDeclareFactory(std::complex<float>)
@@ -260,12 +261,13 @@ static Pothos::Block* makeIIR(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new IIRBlock<T>(device,nchans);
 
-    // TODO: 64-bit int types
     ifTypeDeclareFactory(std::int16_t)
     ifTypeDeclareFactory(std::int32_t)
+    ifTypeDeclareFactory(std::int64_t)
     ifTypeDeclareFactory(std::uint8_t)
     ifTypeDeclareFactory(std::uint16_t)
     ifTypeDeclareFactory(std::uint32_t)
+    ifTypeDeclareFactory(std::uint64_t)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     ifTypeDeclareFactory(std::complex<float>)
