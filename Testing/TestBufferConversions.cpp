@@ -3,6 +3,7 @@
 
 #include "DeviceCache.hpp"
 #include "Utility.hpp"
+#include "BlockExecutionTests.hpp"
 
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
@@ -112,6 +113,47 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_arrayproxy_conversion)
         test2DArrayConversion<double>("float64", ::f64);
         test2DArrayConversion<std::complex<float>>("complex_float32", ::c32);
         test2DArrayConversion<std::complex<double>>("complex_float64", ::c64);
+    }
+
+#if !IS_AF_CONFIG_PER_THREAD
+    // Restore global backend and device to fastest options.
+    af::setBackend(getAvailableBackends()[0]);
+    af::setDevice(0);
+#endif
+}
+
+template <typename T>
+static void testStdVectorToAfArrayConversion(af::dtype expectedAfDType)
+{
+    std::cout << " * Testing " << Pothos::DType(typeid(T)).name() << "..." << std::endl;
+
+    const std::vector<T> stdVector = getTestInputs<T>();
+
+    const auto afArray = Pothos::Object(stdVector).convert<af::array>();
+    POTHOS_TEST_EQUAL(1, afArray.numdims());
+    POTHOS_TEST_TRUE(expectedAfDType == afArray.type());
+    POTHOS_TEST_EQUAL(
+        stdVector.size(),
+        static_cast<size_t>(afArray.elements()));
+
+    const auto stdVector2 = Pothos::Object(afArray).convert<std::vector<T>>();
+    POTHOS_TEST_EQUALV(
+        stdVector,
+        stdVector2);
+}
+
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_std_vector_conversion)
+{
+    for(const auto& backend: getAvailableBackends())
+    {
+        af::setBackend(backend);
+        std::cout << "Backend: " << Pothos::Object(backend).convert<std::string>() << std::endl;
+
+        testStdVectorToAfArrayConversion<float>(::f32);
+        testStdVectorToAfArrayConversion<double>(::f64);
+
+        testStdVectorToAfArrayConversion<std::complex<float>>(::c32);
+        testStdVectorToAfArrayConversion<std::complex<double>>(::c64);
     }
 
 #if !IS_AF_CONFIG_PER_THREAD
