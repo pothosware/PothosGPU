@@ -30,12 +30,6 @@ Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 
 Pothos::BufferChunk moveAfArrayToBufferChunk(af::array&& rAfArray)
 {
-    if(1 != rAfArray.numdims())
-    {
-        throw Pothos::AssertionViolationException(
-                  "moveAfArrayToBufferChunk should only be called with 1D arrays");
-    }
-
     auto afArraySPtr = std::make_shared<af::array>(std::move(rAfArray));
     const size_t address = reinterpret_cast<size_t>(afArraySPtr->template device<std::uint8_t>());
     const size_t bytes = afArraySPtr->bytes();

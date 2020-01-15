@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "BufferConversions.hpp"
 #include "OneToOneBlock.hpp"
 #include "Utility.hpp"
 
@@ -156,8 +157,7 @@ void OneToOneBlock::work(const af::array& afInput)
         }
 
         this->input(0)->consume(elems);
-        this->output(0)->postBuffer(Pothos::Object(afOutput)
-                                        .convert<Pothos::BufferChunk>());
+        this->output(0)->postBuffer(moveAfArrayToBufferChunk(std::move(afOutput)));
     }
     else
     {
