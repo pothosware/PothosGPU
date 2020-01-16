@@ -58,23 +58,24 @@ static void test2DArrayConversion(
     const std::string& dtypeName,
     af::dtype afDType)
 {
-    static constexpr dim_t ArrDim = 32;
+    static constexpr dim_t ArrDim1 = 16;
+    static constexpr dim_t ArrDim2 = 32;
 
     std::cout << " * Testing " << dtypeName << "..." << std::endl;
 
-    auto afArray = af::randu(ArrDim, ArrDim, afDType);
-    for(dim_t row = 0; row < ArrDim; ++row)
+    auto afArray = af::randu(ArrDim1, ArrDim2, afDType);
+    for(dim_t row = 0; row < ArrDim1; ++row)
     {
         const af::array::array_proxy afArrayRow = afArray.row(row);
 
         auto bufferChunk = Pothos::Object(afArrayRow)
                                .convert<Pothos::BufferChunk>();
-        POTHOS_TEST_EQUAL(ArrDim, bufferChunk.elements());
+        POTHOS_TEST_EQUAL(ArrDim2, bufferChunk.elements());
         POTHOS_TEST_TRUE(Pothos::DType(typeid(T)) == bufferChunk.dtype);
         POTHOS_TEST_EQUALA(
             reinterpret_cast<const T*>(afArrayRow.device<std::uint8_t>()),
             bufferChunk.as<const T*>(),
-            ArrDim);
+            ArrDim2);
     }
 }
 
