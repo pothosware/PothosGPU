@@ -46,7 +46,7 @@ class FlatBlock: public ArrayFireBlock
             }
 
             auto afInput = this->getNumberedInputPortsAs2DAfArray();
-            auto afOutput = af::flat(afInput);
+            auto afOutput = af::flat(afInput.T());
             if(1 != afOutput.numdims())
             {
                 throw Pothos::AssertionViolationException(
