@@ -135,12 +135,12 @@ static void testSplitComplexBlock(
 
                 topology.connect(
                     realBlock,
-                    0,
+                    chan,
                     collectorSinksRealBlock[chan],
                     0);
                 topology.connect(
                     imagBlock,
-                    0,
+                    chan,
                     collectorSinksImagBlock[chan],
                     0);
             }
@@ -152,12 +152,14 @@ static void testSplitComplexBlock(
         // Make sure the blocks output data.
         for(size_t chan = 0; chan < numChannels; ++chan)
         {
+            std::cout << " * Testing re" << chan << "..." << std::endl;
             auto realOutputs = collectorSinksReal[chan].call<Pothos::BufferChunk>("getBuffer");
             auto realBlockOutputs = collectorSinksRealBlock[chan].call<Pothos::BufferChunk>("getBuffer");
             PothosArrayFireTests::testBufferChunk(
                 realBlockOutputs,
                 realOutputs);
 
+            std::cout << " * Testing im" << chan << "..." << std::endl;
             auto imagOutputs = collectorSinksImag[chan].call<Pothos::BufferChunk>("getBuffer");
             auto imagBlockOutputs = collectorSinksImagBlock[chan].call<Pothos::BufferChunk>("getBuffer");
             PothosArrayFireTests::testBufferChunk(
