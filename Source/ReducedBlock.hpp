@@ -12,7 +12,7 @@
 
 #include <string>
 
-using ReducedFunc = af::array(*)(const af::array, const int);
+using ReducedFunc = af::array(*)(const af::array&, const int);
 
 class ReducedBlock: public ArrayFireBlock
 {

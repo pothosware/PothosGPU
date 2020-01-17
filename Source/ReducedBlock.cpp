@@ -14,8 +14,6 @@
 #include <string>
 #include <typeinfo>
 
-using ReducedFunc = af::array(*)(const af::array, const int);
-
 ReducedBlock::ReducedBlock(
     const std::string& device,
     const ReducedFunc& func,
