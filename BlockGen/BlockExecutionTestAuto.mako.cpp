@@ -37,16 +37,6 @@ static inline Out verify_${block["header"]}_${block["blockName"]}(const In& val0
 }
     %endif
 %endfor
-%for block in scalarOpBlocks:
-    %if "verify" in block:
-
-template <typename In, typename Out>
-static inline Out verify_${block["header"]}_${block["blockName"]}(const In& val0, const In& val1)
-{
-    return ${block["verify"]}(val0, val1);
-}
-    %endif
-%endfor
 %for block in NToOneBlocks:
     %if "verify" in block:
 
@@ -127,21 +117,6 @@ static EnableIf${k}<T, void> blockExecutionTest()
         5,
         ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
             %endif
-        %endif
-    %endfor
-
-    %for block in scalarOpBlocks:
-        %if (not block.get("intOnly", False)) or ("Int" in k):
-    testScalarOpBlock<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        1,
-        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"},
-        ${"true" if block.get("allowZeroScalar", True) else "false"});
-    testScalarOpBlock<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        3,
-        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"},
-        ${"true" if block.get("allowZeroScalar", True) else "false"});
         %endif
     %endfor
 

@@ -332,50 +332,50 @@ NToOneBlocks:
                   supportUInt: true
                   supportFloat: true
 
-ScalarOpBlocks:
-
-        - func: add
-          niceName: Add Scalar
-          header: scalar
-          operator: "+"
-          verify: std::plus<In>()
-
-        - func: subtract
-          niceName: Subtract Scalar
-          header: scalar
-          operator: "-"
-          verify: std::minus<In>()
-
-        - func: multiply
-          niceName: Multiply Scalar
-          header: scalar
-          operator: "*"
-          verify: std::multiplies<In>()
-
-        - func: divide
-          niceName: Divide Scalar
-          header: scalar
-          allowZeroScalar: false
-          operator: "/"
-          verify: std::divides<In>()
-
-        - func: bitwise_or
-          niceName: Bitwise-Or Scalar
-          header: scalar
-          operator: "|"
-          intOnly: true
-          verify: std::bit_or<In>()
-
-        - func: bitwise_and
-          niceName: Bitwise-And Scalar
-          header: scalar
-          operator: "&"
-          intOnly: true
-          verify: std::bit_and<In>()
-
-        - func: bitwise_xor
-          niceName: Bitwise-XOR Scalar
-          header: scalar
-          operator: "^"
-          intOnly: true
-          verify: std::bit_xor<In>()
+#ScalarOpBlocks:
+#
+#        - func: add
+#          niceName: Add Scalar
+#          header: scalar
+#          operator: "+"
+#          verify: std::plus<In>()
+#
+#        - func: subtract
+#          niceName: Subtract Scalar
+#          header: scalar
+#          operator: "-"
+#          verify: std::minus<In>()
+#
+#        - func: multiply
+#          niceName: Multiply Scalar
+#          header: scalar
+#          operator: "*"
+#          verify: std::multiplies<In>()
+#
+#        - func: divide
+#          niceName: Divide Scalar
+#          header: scalar
+#          allowZeroScalar: false
+#          operator: "/"
+#          verify: std::divides<In>()
+#
+#        - func: bitwise_or
+#          niceName: Bitwise-Or Scalar
+#          header: scalar
+#          operator: "|"
+#          intOnly: true
+#          verify: std::bit_or<In>()
+#
+#        - func: bitwise_and
+#          niceName: Bitwise-And Scalar
+#          header: scalar
+#          operator: "&"
+#          intOnly: true
+#          verify: std::bit_and<In>()
+#
+#        - func: bitwise_xor
+#          niceName: Bitwise-XOR Scalar
+#          header: scalar
+#          operator: "^"
+#          intOnly: true
+#          verify: std::bit_xor<In>()

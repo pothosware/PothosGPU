@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "ScalarOpBlock.hpp"
+#include "OneToOneBlock.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Framework.hpp>
@@ -15,78 +15,172 @@
 #include <typeinfo>
 
 template <typename T>
-ScalarOpBlock<T>::ScalarOpBlock(
+using AfArrayScalarOp = af::array(*)(
+                            const af::array&,
+                            const typename PothosToAF<T>::type&);
+
+template <typename T>
+class ScalarOpBlock: public OneToOneBlock
+{
+    public:
+
+        using Class = ScalarOpBlock<T>;
+
+        ScalarOpBlock(
+            const std::string& device,
+            const AfArrayScalarOp<T>& func,
+            const Pothos::DType& dtype,
+            const T& scalar,
+            size_t numChans,
+            bool allowZeroOperand
+        ):
+        OneToOneBlock(
+            device,
+            Pothos::Callable(func),
+            dtype,
+            dtype,
+            numChans),
+        _allowZeroOperand(allowZeroOperand)
+        {
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getScalar));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, setScalar));
+
+            this->registerProbe("getScalar", "scalarChanged", "setScalar");
+
+            setScalar(scalar);
+        }
+
+        virtual ~ScalarOpBlock() = default;
+
+        T getScalar() const
+        {
+            return PothosToAF<T>::from(_scalar);
+        }
+
+        void setScalar(const T& scalar)
+        {
+            static const T Zero(0);
+
+            if(!_allowZeroOperand && (scalar == Zero))
+            {
+                throw Pothos::InvalidArgumentException("Scalar cannot be zero.");
+            }
+
+            _scalar = PothosToAF<T>::to(scalar);
+            _func.bind(_scalar, 1);
+
+            this->emitSignal("scalarChanged", scalar);
+        }
+
+        void work() override
+        {
+            if(0 == this->workInfo().minElements)
+            {
+                return;
+            }
+
+            auto afInput = this->getInputsAsAfArray();
+            _func.bind(afInput, 0);
+
+            OneToOneBlock::work(afInput);
+        }
+
+    private:
+        typename PothosToAF<T>::type _scalar;
+
+        bool _allowZeroOperand;
+};
+
+//
+// Factories
+//
+// These blocks have the same implementation but make sense to separate.
+//
+
+enum class ScalarBlockType
+{
+    ARITHMETIC,
+    COMPARATOR,
+    BITWISE
+};
+
+#define IfTypeThenLambda(op, callerOp, cType, dest) \
+    if(#op == callerOp) \
+        dest = [](const af::array& a, const PothosToAF<cType>::type& b){return a op b;};
+
+static Pothos::Block* makeScalarOpBlock(
+    ScalarBlockType blockType,
     const std::string& device,
-    const AfArrayScalarOp<T>& func,
+    const std::string& operation,
     const Pothos::DType& dtype,
-    T scalar,
-    size_t numChans,
-    bool allowZeroOperand
-): OneToOneBlock(
-       device,
-       Pothos::Callable(func),
-       dtype,
-       dtype,
-       numChans),
-   _allowZeroOperand(allowZeroOperand)
+    const Pothos::Object& scalarObject,
+    size_t numChans)
 {
-    this->registerCall(this, POTHOS_FCN_TUPLE(Class, getScalar));
-    this->registerCall(this, POTHOS_FCN_TUPLE(Class, setScalar));
+    const bool allowZeroScalar = ("/" != operation);
 
-    this->registerProbe("getScalar", "scalarChanged", "setScalar");
+    #define IfTypeDeclareFactory(cType) \
+        if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(cType))) \
+        { \
+            AfArrayScalarOp<cType> func = nullptr; \
+            switch(blockType) \
+            { \
+                case ScalarBlockType::ARITHMETIC: \
+                    IfTypeThenLambda(+, operation, cType, func) \
+                    else IfTypeThenLambda(-, operation, cType, func) \
+                    else IfTypeThenLambda(*, operation, cType, func) \
+                    else IfTypeThenLambda(/, operation, cType, func) \
+                    break; \
+                case ScalarBlockType::COMPARATOR: \
+                    IfTypeThenLambda(>, operation, cType, func) \
+                    else IfTypeThenLambda(>=, operation, cType, func) \
+                    else IfTypeThenLambda(<, operation, cType, func) \
+                    else IfTypeThenLambda(<=, operation, cType, func) \
+                    break; \
+                case ScalarBlockType::BITWISE: \
+                    IfTypeThenLambda(&, operation, cType, func) \
+                    else IfTypeThenLambda(|, operation, cType, func) \
+                    else IfTypeThenLambda(^, operation, cType, func) \
+                    break; \
+                default: \
+                    throw Pothos::AssertionViolationException("Invalid ScalarBlockType"); \
+            } \
+            if(nullptr == func) throw Pothos::AssertionViolationException("nullptr == func"); \
+ \
+            return new ScalarOpBlock<cType>( \
+                           device, \
+                           func, \
+                           dtype, \
+                           scalarObject.convert<cType>(), \
+                           numChans, \
+                           allowZeroScalar); \
+        }
 
-    setScalar(scalar);
-}
-
-template <typename T>
-ScalarOpBlock<T>::~ScalarOpBlock() {};
-
-template <typename T>
-T ScalarOpBlock<T>::getScalar() const
-{
-    return PothosToAF<T>::from(_scalar);
-}
-
-template <typename T>
-void ScalarOpBlock<T>::setScalar(const T& scalar)
-{
-    static const T Zero(0);
-
-    if(!_allowZeroOperand && (scalar == Zero))
+    IfTypeDeclareFactory(std::int16_t)
+    IfTypeDeclareFactory(std::int32_t)
+    IfTypeDeclareFactory(std::int64_t)
+    IfTypeDeclareFactory(std::uint8_t)
+    IfTypeDeclareFactory(std::uint16_t)
+    IfTypeDeclareFactory(std::uint32_t)
+    IfTypeDeclareFactory(std::uint64_t)
+    if(ScalarBlockType::BITWISE != blockType)
     {
-        throw Pothos::InvalidArgumentException("Scalar cannot be zero.");
+        IfTypeDeclareFactory(float)
+        IfTypeDeclareFactory(double)
+        IfTypeDeclareFactory(std::complex<float>)
+        IfTypeDeclareFactory(std::complex<double>)
     }
 
-    _scalar = PothosToAF<T>::to(scalar);
-    _func.bind(_scalar, 1);
-
-    this->emitSignal("scalarChanged", scalar);
+    throw Pothos::InvalidArgumentException("Invalid type", dtype.name());
 }
 
-template <typename T>
-void ScalarOpBlock<T>::work()
-{
-    if(0 == this->workInfo().minElements)
-    {
-        return;
-    }
+static Pothos::BlockRegistry registerScalarArithmetic(
+    "/arrayfire/scalar/arithmetic",
+    Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::ARITHMETIC, 0));
 
-    auto afInput = this->getInputsAsAfArray();
-    _func.bind(afInput, 0);
+static Pothos::BlockRegistry registerScalarComparator(
+    "/arrayfire/scalar/comparator",
+    Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::COMPARATOR, 0));
 
-    OneToOneBlock::work(afInput);
-}
-
-// ArrayFire does not support std::int8_t.
-template class ScalarOpBlock<std::int16_t>;
-template class ScalarOpBlock<std::int32_t>;
-template class ScalarOpBlock<std::int64_t>;
-template class ScalarOpBlock<std::uint8_t>;
-template class ScalarOpBlock<std::uint16_t>;
-template class ScalarOpBlock<std::uint32_t>;
-template class ScalarOpBlock<std::uint64_t>;
-template class ScalarOpBlock<float>;
-template class ScalarOpBlock<double>;
-// ArrayFire does not support any integral complex type.
-template class ScalarOpBlock<std::complex<float>>;
-template class ScalarOpBlock<std::complex<double>>;
+static Pothos::BlockRegistry registerScalarBitwise(
+    "/arrayfire/scalar/bitwise",
+    Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::BITWISE, 0));

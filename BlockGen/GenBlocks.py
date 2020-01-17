@@ -108,9 +108,7 @@ def generateFactory(blockYAML):
     try:
         rendered = Template(FactoryTemplate).render(
                        oneToOneBlocks=filterBlockYAML(blockYAML["OneToOneBlocks"]),
-                       scalarOpBlocks=filterBlockYAML(blockYAML["ScalarOpBlocks"]),
                        singleOutputSources=[],
-                       #singleOutputSources=filterBlockYAML(blockYAML["SingleOutputSources"]),
                        twoToOneBlocks=filterBlockYAML(blockYAML["TwoToOneBlocks"]),
                        NToOneBlocks=filterBlockYAML(blockYAML["NToOneBlocks"]),)
     except:
@@ -134,9 +132,7 @@ def generateBlockExecutionTest(blockYAML):
     try:
         rendered = Template(BlockExecutionTestAutoTemplate).render(
                        oneToOneBlocks=filterBlockYAML(blockYAML["OneToOneBlocks"], True),
-                       scalarOpBlocks=filterBlockYAML(blockYAML["ScalarOpBlocks"], True),
                        singleOutputSources=[],
-                       #singleOutputSources=filterBlockYAML(blockYAML["SingleOutputSources"], True),
                        twoToOneBlocks=filterBlockYAML(blockYAML["TwoToOneBlocks"], True),
                        NToOneBlocks=filterBlockYAML(blockYAML["NToOneBlocks"], True),
                        sfinaeMap=sfinaeMap)
