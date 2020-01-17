@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -131,6 +131,7 @@ static Pothos::Block* makeScalarOpBlock(
                     else IfTypeThenLambda(*, operation, cType, func) \
                     else IfTypeThenLambda(/, operation, cType, func) \
                     else IfTypeThenLambda(%, operation, cType, func) \
+                    else throw Pothos::InvalidArgumentException("Invalid operation", operation); \
                     break; \
                 case ScalarBlockType::COMPARATOR: \
                     IfTypeThenLambda(>, operation, cType, func) \
@@ -139,6 +140,7 @@ static Pothos::Block* makeScalarOpBlock(
                     else IfTypeThenLambda(<=, operation, cType, func) \
                     else IfTypeThenLambda(==, operation, cType, func) \
                     else IfTypeThenLambda(!=, operation, cType, func) \
+                    else throw Pothos::InvalidArgumentException("Invalid operation", operation); \
                     break; \
                 case ScalarBlockType::BITWISE: \
                     IfTypeThenLambda(&, operation, cType, func) \
@@ -146,10 +148,12 @@ static Pothos::Block* makeScalarOpBlock(
                     else IfTypeThenLambda(^, operation, cType, func) \
                     else IfTypeThenLambda(<<, operation, cType, func) \
                     else IfTypeThenLambda(>>, operation, cType, func) \
+                    else throw Pothos::InvalidArgumentException("Invalid operation", operation); \
                     break; \
                 case ScalarBlockType::LOGICAL: \
                     IfTypeThenLambda(&&, operation, cType, func) \
                     else IfTypeThenLambda(||, operation, cType, func) \
+                    else throw Pothos::InvalidArgumentException("Invalid operation", operation); \
                     break; \
                 default: \
                     throw Pothos::AssertionViolationException("Invalid ScalarBlockType"); \
