@@ -101,7 +101,8 @@ enum class ScalarBlockType
 {
     ARITHMETIC,
     COMPARATOR,
-    BITWISE
+    BITWISE,
+    LOGICAL
 };
 
 #define IfTypeThenLambda(op, callerOp, cType, dest) \
@@ -116,7 +117,7 @@ static Pothos::Block* makeScalarOpBlock(
     const Pothos::Object& scalarObject,
     size_t numChans)
 {
-    const bool allowZeroScalar = ("/" != operation);
+    const bool allowZeroScalar = ("/" != operation) && ("%" != operation);
 
     #define IfTypeDeclareFactory(cType) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(cType))) \
@@ -129,17 +130,26 @@ static Pothos::Block* makeScalarOpBlock(
                     else IfTypeThenLambda(-, operation, cType, func) \
                     else IfTypeThenLambda(*, operation, cType, func) \
                     else IfTypeThenLambda(/, operation, cType, func) \
+                    else IfTypeThenLambda(%, operation, cType, func) \
                     break; \
                 case ScalarBlockType::COMPARATOR: \
                     IfTypeThenLambda(>, operation, cType, func) \
                     else IfTypeThenLambda(>=, operation, cType, func) \
                     else IfTypeThenLambda(<, operation, cType, func) \
                     else IfTypeThenLambda(<=, operation, cType, func) \
+                    else IfTypeThenLambda(==, operation, cType, func) \
+                    else IfTypeThenLambda(!=, operation, cType, func) \
                     break; \
                 case ScalarBlockType::BITWISE: \
                     IfTypeThenLambda(&, operation, cType, func) \
                     else IfTypeThenLambda(|, operation, cType, func) \
                     else IfTypeThenLambda(^, operation, cType, func) \
+                    else IfTypeThenLambda(<<, operation, cType, func) \
+                    else IfTypeThenLambda(>>, operation, cType, func) \
+                    break; \
+                case ScalarBlockType::LOGICAL: \
+                    IfTypeThenLambda(&&, operation, cType, func) \
+                    else IfTypeThenLambda(||, operation, cType, func) \
                     break; \
                 default: \
                     throw Pothos::AssertionViolationException("Invalid ScalarBlockType"); \
@@ -162,13 +172,10 @@ static Pothos::Block* makeScalarOpBlock(
     IfTypeDeclareFactory(std::uint16_t)
     IfTypeDeclareFactory(std::uint32_t)
     IfTypeDeclareFactory(std::uint64_t)
-    if(ScalarBlockType::BITWISE != blockType)
-    {
-        IfTypeDeclareFactory(float)
-        IfTypeDeclareFactory(double)
-        IfTypeDeclareFactory(std::complex<float>)
-        IfTypeDeclareFactory(std::complex<double>)
-    }
+    IfTypeDeclareFactory(float)
+    IfTypeDeclareFactory(double)
+    IfTypeDeclareFactory(std::complex<float>)
+    IfTypeDeclareFactory(std::complex<double>)
 
     throw Pothos::InvalidArgumentException("Invalid type", dtype.name());
 }
@@ -184,3 +191,7 @@ static Pothos::BlockRegistry registerScalarComparator(
 static Pothos::BlockRegistry registerScalarBitwise(
     "/arrayfire/scalar/bitwise",
     Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::BITWISE, 0));
+
+static Pothos::BlockRegistry registerScalarLogical(
+    "/arrayfire/scalar/logical",
+    Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::LOGICAL, 0));
