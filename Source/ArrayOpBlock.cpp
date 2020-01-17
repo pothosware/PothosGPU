@@ -22,59 +22,11 @@ enum class ArrayOpBlockType
     LOGICAL
 };
 
-/*
-    #define IfTypeDeclareFactory(cType) \
-        if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(cType))) \
-        { \
-            AfArrayScalarOp<cType> func = nullptr; \
-            switch(blockType) \
-            { \
-                case ScalarBlockType::ARITHMETIC: \
-                    IfTypeThenLambda(+, operation, cType, func) \
-                    else IfTypeThenLambda(-, operation, cType, func) \
-                    else IfTypeThenLambda(*, operation, cType, func) \
-                    else IfTypeThenLambda(/, operation, cType, func) \
-                    else IfTypeThenLambda(%, operation, cType, func) \
-                    break; \
-                case ScalarBlockType::COMPARATOR: \
-                    IfTypeThenLambda(>, operation, cType, func) \
-                    else IfTypeThenLambda(>=, operation, cType, func) \
-                    else IfTypeThenLambda(<, operation, cType, func) \
-                    else IfTypeThenLambda(<=, operation, cType, func) \
-                    else IfTypeThenLambda(==, operation, cType, func) \
-                    else IfTypeThenLambda(!=, operation, cType, func) \
-                    break; \
-                case ScalarBlockType::BITWISE: \
-                    IfTypeThenLambda(&, operation, cType, func) \
-                    else IfTypeThenLambda(|, operation, cType, func) \
-                    else IfTypeThenLambda(^, operation, cType, func) \
-                    else IfTypeThenLambda(<<, operation, cType, func) \
-                    else IfTypeThenLambda(>>, operation, cType, func) \
-                    break; \
-                case ScalarBlockType::LOGICAL: \
-                    IfTypeThenLambda(&&, operation, cType, func) \
-                    else IfTypeThenLambda(||, operation, cType, func) \
-                    break; \
-                default: \
-                    throw Pothos::AssertionViolationException("Invalid ScalarBlockType"); \
-            } \
-            if(nullptr == func) throw Pothos::AssertionViolationException("nullptr == func"); \
- \
-            return new ScalarOpBlock<cType>( \
-                           device, \
-                           func, \
-                           dtype, \
-                           scalarObject.convert<cType>(), \
-                           numChans, \
-                           allowZeroScalar); \
-        }
- */
-
 #define IfTypeThenLambda(op, callerOp, dest) \
     if(#op == callerOp) \
         dest = [](const af::array& a, const af::array& b){return a op b;};
 
-// TwoToOne: comparators, << >>
+// TODO: TwoToOne: comparators, << >>
 
 static Pothos::Block* makeArrayOpBlock(
     ArrayOpBlockType blockType,
