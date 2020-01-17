@@ -85,6 +85,7 @@ POTHOS_MODULE_UTIL(
         Source/NumericConversions.cpp
         Source/OneToOneBlock.cpp
         Source/Random.cpp
+        Source/ReducedBlock.cpp
         Source/ScalarOpBlock.cpp
         Source/SplitComplex.cpp
         Source/Statistics.cpp
