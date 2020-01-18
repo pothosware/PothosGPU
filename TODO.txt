@@ -1,5 +1,4 @@
 Drop-in replacements for:
- * /comms/noise_source
  * /comms/waveform_source (?)
  * /comms/freq_demod
 
