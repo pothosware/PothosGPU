@@ -87,10 +87,12 @@ POTHOS_MODULE_UTIL(
         Source/Random.cpp
         Source/ReducedBlock.cpp
         Source/ScalarOpBlock.cpp
-        Source/SplitComplex.cpp
         Source/Statistics.cpp
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
+
+        Source/Comms/Scale.cpp
+        Source/Comms/SplitComplex.cpp
 
         Testing/BlockExecutionTests.cpp
         Testing/CastBlockTest.cpp

@@ -144,7 +144,7 @@ static Pothos::Block* splitComplexFactory(
  *
  * |category /ArrayFire/Arith
  * |keywords arith complex real imag imaginary
- * |factory /arrayfire/arith/split_complex(device,dtype,numInputs)
+ * |factory /arrayfire/comms/split_complex(device,dtype,numInputs)
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
@@ -162,5 +162,5 @@ static Pothos::Block* splitComplexFactory(
  * |preview disable
  */
 static Pothos::BlockRegistry registerSplitComplex(
-    "/arrayfire/arith/split_complex",
+    "/arrayfire/comms/split_complex",
     Pothos::Callable(&splitComplexFactory));
