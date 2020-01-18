@@ -91,6 +91,7 @@ POTHOS_MODULE_UTIL(
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
 
+        Source/Comms/Rotate.cpp
         Source/Comms/Scale.cpp
         Source/Comms/SplitComplex.cpp
 

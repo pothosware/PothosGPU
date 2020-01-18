@@ -1,18 +1,15 @@
 // Copyright (c) 2014-2016 Josh Blum
 //                    2020 Nicholas Corgan
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: BSD-Clause-3
 
 #include "ArrayFireBlock.hpp"
-#include "BufferConversions.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Framework.hpp>
-#include <Pothos/Object.hpp>
 #include <Pothos/Util/QFormat.hpp>
-
-#include <cstdint>
 #include <iostream>
 #include <complex>
+#include <cmath>
 #include <algorithm> //min/max
 
 using Pothos::Util::floatToQ;
@@ -20,71 +17,66 @@ using Pothos::Util::floatToQ;
 // TODO: parallel
 
 /***********************************************************************
- * |PothosDoc Scale
+ * |PothosDoc Rotate
  *
- * Perform a multiply by scalar operation on every input element.
+ * Perform a complex phase rotation operation on every input element.
  *
- * out[n] = in[n] * factor
+ * out[n] = in[n] * exp(j*phase)
  *
  * |category /Math
- * |keywords math scale multiply factor gain
+ * |keywords math phase multiply
  *
  * |param dtype[Data Type] The data type used in the arithmetic.
- * |widget DTypeChooser(float=1,cfloat=1,int=1,cint=1,dim=1)
+ * |widget DTypeChooser(cint=1, cfloat=1,dim=1)
  * |default "complex_float32"
  * |preview disable
  *
- * |param factor[Factor] The multiplication scale factor.
+ * |param phase[Phase] The phase rotation in radians.
+ * |units radians
  * |default 0.0
  *
- * |param labelId[Label ID] A optional label ID that can be used to change the scale factor.
- * Upstream blocks can pass a configurable scale factor along with the stream data.
- * The scale block searches input labels for an ID match and interprets the label data as the new scale factor.
+ * |param labelId[Label ID] A optional label ID that can be used to change the phase rotator.
+ * Upstream blocks can pass a configurable phase rotator along with the stream data.
+ * The rotate block searches input labels for an ID match and interprets the label data as the new phase rotator.
  * |preview valid
  * |default ""
  * |widget StringEntry()
  * |tab Labels
  *
- * |factory /arrayfire/comms/scale(dtype)
- * |setter setFactor(factor)
+ * |factory /arrayfire/comms/rotate(dtype)
+ * |setter setPhase(phase)
  * |setter setLabelId(labelId)
  **********************************************************************/
-template <typename Type, typename QType, typename ScaleType>
-class Scale : public ArrayFireBlock
+template <typename Type, typename QType>
+class Rotate : public ArrayFireBlock
 {
 public:
     using AFType = typename PothosToAF<Type>::type;
     using AFQType = typename PothosToAF<QType>::type;
-    using AFScaleType = typename PothosToAF<ScaleType>::type;
 
-    Scale(const std::string& device, const size_t dimension):
+    Rotate(const std::string& device, const size_t dimension):
         ArrayFireBlock(device),
-        _factor(0.0),
+        _phase(0.0),
         _afDType(Pothos::Object(Pothos::DType(typeid(Type))).convert<af::dtype>()),
-        _afQDType(Pothos::Object(Pothos::DType(typeid(QType))).convert<af::dtype>()),
-        _afScaleDType(Pothos::Object(Pothos::DType(typeid(ScaleType))).convert<af::dtype>())
+        _afQDType(Pothos::Object(Pothos::DType(typeid(QType))).convert<af::dtype>())
     {
-        this->registerCall(this, POTHOS_FCN_TUPLE(Scale, setFactor));
-        this->registerCall(this, POTHOS_FCN_TUPLE(Scale, getFactor));
-        this->registerCall(this, POTHOS_FCN_TUPLE(Scale, setLabelId));
-        this->registerCall(this, POTHOS_FCN_TUPLE(Scale, getLabelId));
-
+        this->registerCall(this, POTHOS_FCN_TUPLE(Rotate, setPhase));
+        this->registerCall(this, POTHOS_FCN_TUPLE(Rotate, getPhase));
+        this->registerCall(this, POTHOS_FCN_TUPLE(Rotate, setLabelId));
+        this->registerCall(this, POTHOS_FCN_TUPLE(Rotate, getLabelId));
         this->setupInput(0, Pothos::DType(typeid(Type), dimension));
-        this->setupOutput(
-            0,
-            Pothos::DType(typeid(Type), dimension),
-            this->getPortDomain());
+        this->setupOutput(0, Pothos::DType(typeid(Type), dimension));
     }
 
-    void setFactor(const double factor)
+    void setPhase(const double phase)
     {
-        _factor = factor;
-        _factorScaled = PothosToAF<ScaleType>::to(floatToQ<ScaleType>(_factor));
+        _phase = phase;
+        _phasor = PothosToAF<QType>::to(floatToQ<QType>(std::polar(1.0, phase)));
     }
 
-    double getFactor(void) const
+    double getPhase(void) const
     {
-        return _factor;
+        return _phase;
     }
 
     void setLabelId(const std::string &id)
@@ -100,22 +92,22 @@ public:
     void work(void)
     {
         // Number of elements to work with
-        auto elems = this->workInfo().minInElements;
+        auto elems = this->workInfo().minElements;
         if (elems == 0) return;
 
         auto inPort = this->input(0);
         auto afArray = this->getInputPortAsAfArray(0);
 
-        // Check the labels for scale factors
+        // Check the labels for rotation phase
         if (not _labelId.empty()) for (const auto &label : inPort->labels())
         {
             if (label.index >= elems) break; // Ignore labels past input bounds
             if (label.id == _labelId)
             {
-                // Only set scale-factor when the label is at the front
+                // Only set scale-phase when the label is at the front
                 if (label.index == 0)
                 {
-                    this->setFactor(label.data.template convert<double>());
+                    this->setPhase(label.data.template convert<double>());
                 }
                 // Otherwise stop processing before the next label
                 // on the next call, this label will be index 0
@@ -136,13 +128,13 @@ public:
          * const size_t N = elems*inPort->dtype().dimension();
          * for (size_t i = 0; i < N; i++)
          * {
-         *     const QType tmp = _factorScaled*QType(in[i]);
+         *     const QType tmp = _phasor*QType(in[i]);
          *     out[i] = fromQ<Type>(tmp);
          * }
          * ---------------------------------------------------
          */
         afArray = afArray.as(_afQDType);
-        afArray *= _factorScaled;
+        afArray *= _phasor;
         afArray = afArray.as(_afDType);
 
         inPort->consume(elems);
@@ -150,32 +142,30 @@ public:
     }
 
 private:
-    double _factor;
-    AFScaleType _factorScaled;
+    double _phase;
+    AFQType _phasor;
     std::string _labelId;
 
     af::dtype _afDType;
     af::dtype _afQDType;
-    af::dtype _afScaleDType;
 };
 
 /***********************************************************************
- * Registration
+ * registration
  **********************************************************************/
-static Pothos::Block *scaleFactory(
+static Pothos::Block *rotateFactory(
     const std::string& device,
     const Pothos::DType &dtype)
 {
-    #define ifTypeDeclareFactory_(type, qtype, scaleType) \
+    #define ifTypeDeclareFactory_(type, qtype) \
         if (Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(type))) \
-            return new Scale<type, qtype, scaleType>(device, dtype.dimension());
+            return new Rotate<type, qtype>(device, dtype.dimension());
     #define ifTypeDeclareFactory(type, qtype) \
-        ifTypeDeclareFactory_(type, qtype, qtype) \
-        ifTypeDeclareFactory_(std::complex<type>, std::complex<qtype>, qtype)
-    ifTypeDeclareFactory(float, float);
+        ifTypeDeclareFactory_(std::complex<type>, std::complex<qtype>)
     ifTypeDeclareFactory(double, double);
-    throw Pothos::InvalidArgumentException("scaleFactory("+dtype.toString()+")", "unsupported type");
+    ifTypeDeclareFactory(float, float);
+    throw Pothos::InvalidArgumentException("rotateFactory("+dtype.toString()+")", "unsupported type");
 }
 
-static Pothos::BlockRegistry registerScale(
-    "/arrayfire/comms/scale", &scaleFactory);
+static Pothos::BlockRegistry registerRotate(
+    "/arrayfire/comms/rotate", &rotateFactory);

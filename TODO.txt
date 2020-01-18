@@ -1,6 +1,4 @@
 Drop-in replacements for:
- * /comms/scale
- * /comms/rotate
  * /comms/noise_source
  * /comms/waveform_source (?)
  * /comms/freq_demod
