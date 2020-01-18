@@ -3,16 +3,21 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
+#include "BufferConversions.hpp"
+#include "Utility.hpp"
 
 #include <Pothos/Framework.hpp>
+#include <Pothos/Object.hpp>
 #include <Pothos/Util/QFormat.hpp>
+
 #include <cstdint>
 #include <iostream>
 #include <complex>
 #include <algorithm> //min/max
 
-using Pothos::Util::fromQ;
 using Pothos::Util::floatToQ;
+
+// TODO: parallel
 
 /***********************************************************************
  * |PothosDoc Scale
@@ -45,24 +50,36 @@ using Pothos::Util::floatToQ;
  * |setter setLabelId(labelId)
  **********************************************************************/
 template <typename Type, typename QType, typename ScaleType>
-class Scale : public Pothos::Block
+class Scale : public ArrayFireBlock
 {
 public:
-    Scale(const size_t dimension):
-        _factor(0.0)
+    using AFType = typename PothosToAF<Type>::type;
+    using AFQType = typename PothosToAF<QType>::type;
+    using AFScaleType = typename PothosToAF<ScaleType>::type;
+
+    Scale(const std::string& device, const size_t dimension):
+        ArrayFireBlock(device),
+        _factor(0.0),
+        _afDType(Pothos::Object(Pothos::DType(typeid(Type))).convert<af::dtype>()),
+        _afQDType(Pothos::Object(Pothos::DType(typeid(QType))).convert<af::dtype>()),
+        _afScaleDType(Pothos::Object(Pothos::DType(typeid(ScaleType))).convert<af::dtype>())
     {
         this->registerCall(this, POTHOS_FCN_TUPLE(Scale, setFactor));
         this->registerCall(this, POTHOS_FCN_TUPLE(Scale, getFactor));
         this->registerCall(this, POTHOS_FCN_TUPLE(Scale, setLabelId));
         this->registerCall(this, POTHOS_FCN_TUPLE(Scale, getLabelId));
+
         this->setupInput(0, Pothos::DType(typeid(Type), dimension));
-        this->setupOutput(0, Pothos::DType(typeid(Type), dimension));
+        this->setupOutput(
+            0,
+            Pothos::DType(typeid(Type), dimension),
+            this->getPortDomain());
     }
 
     void setFactor(const double factor)
     {
         _factor = factor;
-        _factorScaled = floatToQ<ScaleType>(_factor);
+        _factorScaled = PothosToAF<ScaleType>::to(floatToQ<ScaleType>(_factor));
     }
 
     double getFactor(void) const
@@ -86,25 +103,22 @@ public:
         auto elems = this->workInfo().minInElements;
         if (elems == 0) return;
 
-        //get pointers to in and out buffer
         auto inPort = this->input(0);
-        auto outPort = this->output(0);
-        const Type *in = inPort->buffer();
-        Type *out = outPort->buffer();
+        auto afArray = this->getInputPortAsAfArray(0);
 
-        //check the labels for scale factors
+        // Check the labels for scale factors
         if (not _labelId.empty()) for (const auto &label : inPort->labels())
         {
-            if (label.index >= elems) break; //ignore labels past input bounds
+            if (label.index >= elems) break; // Ignore labels past input bounds
             if (label.id == _labelId)
             {
-                //only set scale-factor when the label is at the front
+                // Only set scale-factor when the label is at the front
                 if (label.index == 0)
                 {
                     this->setFactor(label.data.template convert<double>());
                 }
-                //otherwise stop processing before the next label
-                //on the next call, this label will be index 0
+                // Otherwise stop processing before the next label
+                // on the next call, this label will be index 0
                 else
                 {
                     elems = label.index;
@@ -113,42 +127,54 @@ public:
             }
         }
 
-        //perform scale operation
-        const size_t N = elems*inPort->dtype().dimension();
-        for (size_t i = 0; i < N; i++)
-        {
-            const QType tmp = _factorScaled*QType(in[i]);
-            out[i] = fromQ<Type>(tmp);
-        }
 
-        //produce and consume on 0th ports
+        /*
+         * Perform scale operation. ArrayFire vectorizes theses operations,
+         * optimizing it from the original implementation.
+         *
+         * Original:
+         * ---------------------------------------------------
+         * const size_t N = elems*inPort->dtype().dimension();
+         * for (size_t i = 0; i < N; i++)
+         * {
+         *     const QType tmp = _factorScaled*QType(in[i]);
+         *     out[i] = fromQ<Type>(tmp);
+         * }
+         * ---------------------------------------------------
+         */
+        afArray = afArray.as(_afQDType);
+        afArray *= _factorScaled;
+        afArray = afArray.as(_afDType);
+
         inPort->consume(elems);
-        outPort->produce(elems);
+        this->postAfArray(0, std::move(afArray));
     }
 
 private:
     double _factor;
-    ScaleType _factorScaled;
+    AFScaleType _factorScaled;
     std::string _labelId;
+
+    af::dtype _afDType;
+    af::dtype _afQDType;
+    af::dtype _afScaleDType;
 };
 
 /***********************************************************************
- * registration
+ * Registration
  **********************************************************************/
-static Pothos::Block *scaleFactory(const Pothos::DType &dtype)
+static Pothos::Block *scaleFactory(
+    const std::string& device,
+    const Pothos::DType &dtype)
 {
     #define ifTypeDeclareFactory_(type, qtype, scaleType) \
         if (Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(type))) \
-            return new Scale<type, qtype, scaleType>(dtype.dimension());
+            return new Scale<type, qtype, scaleType>(device, dtype.dimension());
     #define ifTypeDeclareFactory(type, qtype) \
         ifTypeDeclareFactory_(type, qtype, qtype) \
         ifTypeDeclareFactory_(std::complex<type>, std::complex<qtype>, qtype)
-    ifTypeDeclareFactory(double, double);
     ifTypeDeclareFactory(float, float);
-    ifTypeDeclareFactory(int64_t, int64_t);
-    ifTypeDeclareFactory(int32_t, int64_t);
-    ifTypeDeclareFactory(int16_t, int32_t);
-    ifTypeDeclareFactory(int8_t, int16_t);
+    ifTypeDeclareFactory(double, double);
     throw Pothos::InvalidArgumentException("scaleFactory("+dtype.toString()+")", "unsupported type");
 }
 

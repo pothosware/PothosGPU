@@ -22,27 +22,27 @@ class SplitComplex: public ArrayFireBlock
     public:
         using ComplexType = std::complex<T>;
 
-        static const Pothos::DType dtype;
-        static const Pothos::DType complexDType;
-
         SplitComplex(
             const std::string& device,
-            size_t nchans
+            size_t nchans,
+            size_t dtypeDimensions
         ):
             ArrayFireBlock(device),
             _nchans(nchans)
         {
             for(size_t chan = 0; chan < _nchans; ++chan)
             {
-                this->setupInput(chan, complexDType);
+                this->setupInput(
+                    chan,
+                    Pothos::DType(typeid(ComplexType), dtypeDimensions));
 
                 this->setupOutput(
                     "re"+std::to_string(chan),
-                    dtype,
+                    Pothos::DType(typeid(T), dtypeDimensions),
                     this->getPortDomain());
                 this->setupOutput(
                     "im"+std::to_string(chan),
-                    dtype,
+                    Pothos::DType(typeid(T), dtypeDimensions),
                     this->getPortDomain());
             }
         }
@@ -106,12 +106,6 @@ class SplitComplex: public ArrayFireBlock
         size_t _nchans;
 };
 
-template <typename T>
-const Pothos::DType SplitComplex<T>::dtype = Pothos::DType(typeid(T));
-
-template <typename T>
-const Pothos::DType SplitComplex<T>::complexDType = Pothos::DType(typeid(ComplexType));
-
 static Pothos::Block* splitComplexFactory(
     const std::string& device,
     const Pothos::DType& dtype,
@@ -119,7 +113,7 @@ static Pothos::Block* splitComplexFactory(
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new SplitComplex<T>(device,nchans);
+            return new SplitComplex<T>(device,nchans,dtype.dimension());
 
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
