@@ -9,10 +9,28 @@
 
 #include <arrayfire.h>
 
+static Pothos::BlockRegistry registerCommsAbs(
+    "/arrayfire/comms/abs",
+    Pothos::Callable(&OneToOneBlock::makeFromOneType)
+        .bind<OneToOneFunc>(&af::abs, 1)
+        .bind(DTypeSupport{true,true,true,true}, 3));
+
+static Pothos::BlockRegistry registerCommsAngle(
+    "/arrayfire/comms/angle",
+    Pothos::Callable(&OneToOneBlock::makeFromOneType)
+        .bind<OneToOneFunc>(&af::arg, 1)
+        .bind(DTypeSupport{false,false,false,true}, 3));
+
 static Pothos::BlockRegistry registerCommsCombineComplex(
     "/arrayfire/comms/combine_complex",
     Pothos::Callable(&OneToOneBlock::makeFloatToComplex)
         .bind<OneToOneFunc>(&af::complex, 1));
+
+static Pothos::BlockRegistry registerCommsConjugate(
+    "/arrayfire/comms/conjugate",
+    Pothos::Callable(&OneToOneBlock::makeFromOneType)
+        .bind<OneToOneFunc>(&af::conjg, 1)
+        .bind(DTypeSupport{false,false,false,true}, 3));
 
 static Pothos::BlockRegistry registerCommsLog10(
     "/arrayfire/comms/log10",
