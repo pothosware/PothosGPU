@@ -6,7 +6,7 @@
 #include <arrayfire.h>
 
 // Equivalent of std::polar
-af::array polarToComplex(const af::array& rho, const af::array& theta)
+inline af::array polarToComplex(const af::array& rho, const af::array& theta)
 {
     return af::complex((rho * af::cos(theta)), (rho * af::sin(theta)));
 };

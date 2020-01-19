@@ -95,6 +95,7 @@ POTHOS_MODULE_UTIL(
         Source/Comms/Rotate.cpp
         Source/Comms/Scale.cpp
         Source/Comms/SplitComplex.cpp
+        Source/Comms/WaveformSource.cpp
 
         Testing/BlockExecutionTests.cpp
         Testing/CastBlockTest.cpp
