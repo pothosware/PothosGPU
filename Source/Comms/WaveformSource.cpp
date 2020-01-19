@@ -80,12 +80,9 @@ public:
 
     WaveformSource(const std::string& device):
         ArrayFireBlock(device),
-        _index(0), _step(0), _mask(0),
-        __rate(1.0), __freq(0.0), __res(0.0),
-        __offset(0.0), __scalar(1.0),
-        _rate(PothosToAF<double>::to(1.0)),
-        _freq(PothosToAF<double>::to(0.0)),
-        _res(PothosToAF<double>::to(0.0)),
+        _rate(1.0),
+        _freq(0.0),
+        _res(0.0),
         _offset(PothosToAF<std::complex<double>>::to(0.0)),
         _scalar(PothosToAF<std::complex<double>>::to(1.0)),
         _afTable(),
@@ -114,14 +111,12 @@ public:
 
     void work(void)
     {
-        auto outPort = this->output(0);
-        Type *out = outPort->buffer();
-        for (size_t i = 0; i < outPort->elements(); i++)
-        {
-            out[i] = __table[_index & _mask];
-            _index += _step;
-        }
-        outPort->produce(outPort->elements());
+        // Since we post buffers, instead of pulling out values from the table
+        // to match the output size, simply post the whole thing. This solves
+        // the issue of having to query and set specific indices, which has to
+        // either be done on the host or in an inefficient GPU operation. We
+        // may need to change this if the larger buffers become unwieldy.
+        this->postAfArray(0, _afTable);
     }
 
     void setWaveform(const std::string &wave)
@@ -159,35 +154,35 @@ public:
 
     void setFrequency(const double &freq)
     {
-        _freq = PothosToAF<double>::to(freq);
+        _freq = freq;
         this->updateTable();
     }
 
     double getFrequency(void)
     {
-        return PothosToAF<double>::from(_freq);
+        return _freq;
     }
 
     void setSampleRate(const double &rate)
     {
-        _rate = PothosToAF<double>::to(rate);
+        _rate = rate;
         this->updateTable();
     }
 
     double getSampleRate(void)
     {
-        return PothosToAF<double>::from(_rate);
+        return _rate;
     }
 
     void setResolution(const double &res)
     {
-        _res = PothosToAF<double>::to(res);
+        _res = res;
         this->updateTable();
     }
 
     double getResolution(void)
     {
-        return PothosToAF<double>::from(_res);
+        return _res;
     }
 
 private:
@@ -198,7 +193,7 @@ private:
 
         //This fraction (of a period) is used to determine table size efficacy.
         //When specified, use the resolution, otherwise the user's frequency.
-        const auto frac = ((__res == 0.0)?__freq:__res)/__rate;
+        const auto frac = ((_res == 0.0)?_freq:_res)/_rate;
 
         //loop for a table size that meets the minimum step
         size_t numEntries = defaultWaveTableSize;
@@ -207,30 +202,16 @@ private:
             const auto delta = std::llround(frac*numEntries);
             if (frac == 0.0) break;
             if (size_t(std::abs(delta)) >= minimumTableStepSize) break;
-            if (numEntries*2 > __table.max_size()) break;
             if (numEntries*2 > maxWaveTableSize) break;
             numEntries *= 2;
         }
 
-        //update mask: assumes power of 2
-        _mask = numEntries-1;
-
-        //update step: given ratio and table size
-        _step = size_t(std::llround((__freq/__rate)*numEntries));
-        if (_step == 0 and __freq != 0.0)
-        {
-            throw Pothos::InvalidArgumentException("WaveformSource::updateTable()", "step size not achievable");
-        }
-
-        //resize the table for the new number of entries
-        __table.resize(numEntries);
-
         if (_wave == "CONST")
         {
             /*
-             * for (size_t i = 0; i < __table.size(); i++)
+             * for (size_t i = 0; i < _table.size(); i++)
              * {
-             *     this->setElem(__table[i], 1.0);
+             *     this->setElem(_table[i], 1.0);
              * }
              */
             _afTable = af::range(static_cast<dim_t>(numEntries)).as(_afDType);
@@ -238,8 +219,8 @@ private:
         else if (_wave == "SINE")
         {
             /*
-             * for (size_t i = 0; i < __table.size(); i++){
-             *     this->setElem(__table[i], std::polar(1.0, 2*M_PI*i/__table.size()));
+             * for (size_t i = 0; i < _table.size(); i++){
+             *     this->setElem(_table[i], std::polar(1.0, 2*M_PI*i/_table.size()));
              * }
              */
             auto rho = af::identity(static_cast<dim_t>(numEntries)).as(::f64);
@@ -254,12 +235,12 @@ private:
         else if (_wave == "RAMP")
         {
             /*
-             * for (size_t i = 0; i < __table.size(); i++)
+             * for (size_t i = 0; i < _table.size(); i++)
              * {
-             *     const size_t q = (i+(3*__table.size())/4)%__table.size();
-             *     this->setElem(__table[i], std::complex<double>(
-             *         2.0*i/(__table.size()-1) - 1.0,
-             *         2.0*q/(__table.size()-1) - 1.0
+             *     const size_t q = (i+(3*_table.size())/4)%_table.size();
+             *     this->setElem(_table[i], std::complex<double>(
+             *         2.0*i/(_table.size()-1) - 1.0,
+             *         2.0*q/(_table.size()-1) - 1.0
              *     ));
              * }
              */
@@ -270,12 +251,12 @@ private:
         else if (_wave == "SQUARE")
         {
             /*
-             * for (size_t i = 0; i < __table.size(); i++)
+             * for (size_t i = 0; i < _table.size(); i++)
              * {
-             *     const size_t q = (i+(3*__table.size())/4)%__table.size();
-             *     this->setElem(__table[i], std::complex<double>(
-             *         (i < __table.size()/2)? 0.0 : 1.0,
-             *         (q < __table.size()/2)? 0.0 : 1.0
+             *     const size_t q = (i+(3*_table.size())/4)%_table.size();
+             *     this->setElem(_table[i], std::complex<double>(
+             *         (i < _table.size()/2)? 0.0 : 1.0,
+             *         (q < _table.size()/2)? 0.0 : 1.0
              *     ));
              * }
              */
@@ -298,9 +279,9 @@ private:
     af::array Q(size_t tableSize)
     {
         /*
-         * for (size_t i = 0; i < __table.size(); i++)
+         * for (size_t i = 0; i < _table.size(); i++)
          * {
-         *     const size_t q = (i+(3*__table.size())/4)%__table.size();
+         *     const size_t q = (i+(3*_table.size())/4)%_table.size();
          * }
          */
         return ((I(tableSize) + (3 * tableSize) / 4) % tableSize).as(::f64);
@@ -313,27 +294,6 @@ private:
 
         return ret.as(_afDType);
     }
-
-    template <typename T>
-    void setElem(T &out, const std::complex<double> &val)
-    {
-        out = Type((__scalar * val + __offset).real());
-    }
-
-    template <typename T>
-    void setElem(std::complex<T> &out, const std::complex<double> &val)
-    {
-        out = Type(__scalar * val + __offset);
-    }
-
-    size_t _index;
-    size_t _step;
-    size_t _mask;
-    double __rate;
-    double __freq;
-    double __res;
-    std::vector<Type> __table;
-    std::complex<double> __offset, __scalar;
 
     PothosToAF<double>::type _rate, _freq, _res;
     PothosToAF<std::complex<double>>::type _offset, _scalar;
