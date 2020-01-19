@@ -28,7 +28,6 @@ static const size_t minimumTableStepSize = 16;
  * |category /Sources
  * |category /Waveforms
  * |keywords cosine sine ramp square waveform source signal
- * |alias /blocks/waveform_source
  *
  * |param dtype[Data Type] The data type produced by the waveform source.
  * |widget DTypeChooser(float=1,cfloat=1,int=1,cint=1)
