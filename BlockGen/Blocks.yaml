@@ -203,13 +203,6 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        - func: log10
-          niceName: Log Base-10
-          header: arith
-          verify: std::log10
-          supportedTypes:
-                  supportFloat: true
-
         - func: log2
           niceName: Log Base-2
           header: arith
