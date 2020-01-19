@@ -85,12 +85,6 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        - func: complex
-          niceName: Float to Complex
-          description: Converts real inputs to complex outputs.
-          header: arith
-          pattern: FloatToComplex
-
         - func: real
           niceName: Complex to Real
           header: arith
