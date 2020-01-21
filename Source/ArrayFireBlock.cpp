@@ -284,7 +284,7 @@ af::array ArrayFireBlock::_getInputPortAsAfArray(
 
     if(truncateToMinLength && (minLength < bufferChunk.elements()))
     {
-        bufferChunk.length = minLength * bufferChunk.dtype.elemSize();
+        bufferChunk.length = minLength * bufferChunk.dtype.size();
     }
 
     return Pothos::Object(bufferChunk).convert<af::array>();
