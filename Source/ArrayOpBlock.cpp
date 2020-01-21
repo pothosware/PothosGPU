@@ -25,20 +25,6 @@
     if(#op == operation) \
         return new NToOneBlock(device, NToOneLambda(op), dtype, numChans);
 
-static Pothos::Block* makeArrayArithmetic(
-    const std::string& device,
-    const std::string& operation,
-    const Pothos::DType& dtype,
-    size_t numChans)
-{
-    IfOpThenReducedBlock(+, af::sum)
-    else IfOpThenNToOneBlock(-)
-    else IfOpThenReducedBlock(*, af::product)
-    else IfOpThenNToOneBlock(/)
-
-    throw Pothos::InvalidArgumentException("Invalid operation", operation);
-}
-
 static Pothos::Block* makeArrayBitwise(
     const std::string& device,
     const std::string& operation,
@@ -65,10 +51,6 @@ static Pothos::Block* makeArrayLogical(
 }
 
 // TODO: TwoToOne: comparators, << >>
-
-static Pothos::BlockRegistry registerArrayArithmetic(
-    "/arrayfire/array/arithmetic",
-    Pothos::Callable(&makeArrayArithmetic));
 
 static Pothos::BlockRegistry registerArrayBitwise(
     "/arrayfire/array/bitwise",

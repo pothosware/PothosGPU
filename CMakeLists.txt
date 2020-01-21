@@ -92,6 +92,8 @@ POTHOS_MODULE_UTIL(
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
 
+        Source/Comms/Arithmetic.cpp
+        Source/Comms/Comparator.cpp
         Source/Comms/RegistryOnly.cpp
         Source/Comms/Rotate.cpp
         Source/Comms/Scale.cpp

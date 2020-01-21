@@ -146,7 +146,7 @@ static Pothos::Block* splitComplexFactory(
  * |preview enable
  *
  * |param dtype(Data Type) The block data type.
- * |widget DTypeChooser(float=1)
+ * |widget DTypeChooser(float=1,dim=1)
  * |default "float64"
  * |preview disable
  *

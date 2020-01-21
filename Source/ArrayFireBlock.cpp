@@ -105,7 +105,7 @@ std::string ArrayFireBlock::overlay() const
     // optimal device.
     nlohmann::json defaultOption;
     defaultOption["name"] = "Auto";
-    defaultOption["value"] = "Auto";
+    defaultOption["value"] = "\"Auto\"";
     deviceParamOpts.push_back(defaultOption);
 
     for(const auto& entry: getDeviceCache())
