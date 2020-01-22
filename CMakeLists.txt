@@ -80,6 +80,7 @@ POTHOS_MODULE_UTIL(
         Source/FileSource.cpp
         Source/Filter.cpp
         Source/Flat.cpp
+        Source/LogN.cpp
         Source/MinMax.cpp
         Source/NToOneBlock.cpp
         Source/NumericConversions.cpp
