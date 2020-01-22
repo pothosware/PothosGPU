@@ -36,40 +36,67 @@ class FIRBlock: public OneToOneBlock
                 Class::dtype,
                 Class::dtype,
                 nchans),
-            _taps()
+            _taps({T(1.0)}),
+            _waitTaps(false),
+            _waitTapsArmed(false)
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getTaps));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setTaps));
 
             this->registerProbe("getTaps", "tapsChanged", "setTaps");
+            this->registerProbe("getWaitTaps", "waitTapsChanged", "setWaitTaps");
         }
 
         virtual ~FIRBlock() = default;
+
+        void activate() override
+        {
+            _waitTapsArmed = _waitTaps;
+        }
 
         std::vector<TapType> getTaps() const
         {
             return _taps;
         }
 
-        void setTaps(const Pothos::Object& taps)
+        void setTaps(const std::vector<TapType>& taps)
         {
-            // Explicitly convert to a vector of the correct type to prevent
-            // implicit conversions from passing an incompatible type into
-            // ArrayFire.
-            auto __taps = Pothos::Object(taps).convert<std::vector<TapType>>();
-            if(__taps.empty())
+            if(taps.empty())
             {
                 throw Pothos::InvalidArgumentException("Taps cannot be empty.");
             }
 
-            _taps = std::move(__taps);
+            _taps = std::move(taps);
             _func.bind(Pothos::Object(_taps).convert<af::array>(), 0);
+            _waitTapsArmed = false; // We have taps
 
             this->emitSignal("tapsChanged", _taps);
         }
 
+        bool getWaitTaps() const
+        {
+            return _waitTaps;
+        }
+
+        void setWaitTaps(bool waitTaps)
+        {
+            _waitTaps = waitTaps;
+
+            this->emitSignal("waitTapsChanged", waitTaps);
+        }
+
+        void work() override
+        {
+            // If specified, don't do anything until taps are explicitly set.
+            if(_waitTapsArmed) return;
+
+            OneToOneBlock::work();
+        }
+
     private:
         std::vector<TapType> _taps;
+        bool _waitTaps;
+        bool _waitTapsArmed;
 };
 
 template <typename T>
@@ -96,7 +123,9 @@ class IIRBlock: public OneToOneBlock
                 Class::dtype,
                 nchans),
             _feedForwardCoeffs({0.0676, 0.135, 0.0676}),
-            _feedbackCoeffs({1, -1.142, 0.412})
+            _feedbackCoeffs({1, -1.142, 0.412}),
+            _waitTaps(false),
+            _waitTapsArmed(false)
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getFeedForwardCoeffs));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setFeedForwardCoeffs));
@@ -106,33 +135,38 @@ class IIRBlock: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setTaps));
 
             this->registerProbe("getTaps", "tapsChanged", "setTaps");
+            this->registerProbe("getWaitTaps", "waitTapsChanged", "setWaitTaps");
         }
 
         virtual ~IIRBlock() = default;
+
+        void activate() override
+        {
+            _waitTapsArmed = _waitTaps;
+        }
 
         std::vector<TapType> getFeedForwardCoeffs() const
         {
             return _feedForwardCoeffs;
         }
 
-        void setFeedForwardCoeffs(const Pothos::Object& feedForwardCoeffs)
+        void setFeedForwardCoeffs(const std::vector<TapType>& feedForwardCoeffs)
         {
-            // Explicitly convert to a vector of the correct type to prevent
-            // implicit conversions from passing an incompatible type into
-            // ArrayFire.
-            auto ffCoeffs = Pothos::Object(feedForwardCoeffs).convert<std::vector<TapType>>();
-            if(ffCoeffs.empty())
+            if(feedForwardCoeffs.empty())
             {
                 throw Pothos::InvalidArgumentException("Coefficients cannot be empty.");
             }
-            else if(ffCoeffs.size() != _feedbackCoeffs.size())
+            else if(feedForwardCoeffs.size() != _feedbackCoeffs.size())
             {
                 throw Pothos::InvalidArgumentException(
                           "Feed-forward and feedback coefficients "
                           "must be the same size.");
             }
 
+            _feedForwardCoeffs = feedForwardCoeffs;
             _func.bind(Pothos::Object(_feedForwardCoeffs).convert<af::array>(), 0);
+            _waitTapsArmed = false; // We have taps
+
             this->emitAllCoeffsChanged();
         }
 
@@ -141,24 +175,23 @@ class IIRBlock: public OneToOneBlock
             return _feedbackCoeffs;
         }
 
-        void setFeedbackCoeffs(const Pothos::Object& feedbackCoeffs)
+        void setFeedbackCoeffs(const std::vector<TapType>& feedbackCoeffs)
         {
-            // Explicitly convert to a vector of the correct type to prevent
-            // implicit conversions from passing an incompatible type into
-            // ArrayFire.
-            auto fbCoeffs = Pothos::Object(feedbackCoeffs).convert<std::vector<TapType>>();
-            if(fbCoeffs.empty())
+            if(feedbackCoeffs.empty())
             {
                 throw Pothos::InvalidArgumentException("Coefficients cannot be empty.");
             }
-            else if(fbCoeffs.size() != _feedForwardCoeffs.size())
+            else if(feedbackCoeffs.size() != _feedForwardCoeffs.size())
             {
                 throw Pothos::InvalidArgumentException(
                           "Feed-forward and feedback coefficients "
                           "must be the same size.");
             }
 
+            _feedbackCoeffs = feedbackCoeffs;
             _func.bind(Pothos::Object(_feedbackCoeffs).convert<af::array>(), 1);
+            _waitTapsArmed = false; // We have taps
+
             this->emitAllCoeffsChanged();
         }
 
@@ -170,24 +203,20 @@ class IIRBlock: public OneToOneBlock
             return taps;
         }
 
-        void setTaps(const Pothos::Object& taps)
+        void setTaps(const std::vector<TapType>& taps)
         {
-            // Explicitly convert to a vector of the correct type to prevent
-            // implicit conversions from passing an incompatible type into
-            // ArrayFire.
-            auto __taps = Pothos::Object(taps).convert<std::vector<TapType>>();
-            if(__taps.empty())
+            if(taps.empty())
             {
                 throw Pothos::InvalidArgumentException("Taps cannot be empty.");
             }
-            else if(1 == (__taps.size() % 2))
+            else if(1 == (taps.size() % 2))
             {
                 throw Pothos::InvalidArgumentException(
                           "When passing in both sets of coefficients, "
                           "the input must be of an even size.");
             }
 
-            _feedForwardCoeffs = _feedbackCoeffs = __taps;
+            _feedForwardCoeffs = _feedbackCoeffs = taps;
             _feedForwardCoeffs.erase(
                 _feedForwardCoeffs.begin() + (_feedForwardCoeffs.size()/2),
                 _feedForwardCoeffs.end());
@@ -197,15 +226,36 @@ class IIRBlock: public OneToOneBlock
 
             _func.bind(Pothos::Object(_feedForwardCoeffs).convert<af::array>(), 0);
             _func.bind(Pothos::Object(_feedbackCoeffs).convert<af::array>(), 1);
+            _waitTapsArmed = false; // We have taps
 
-            this->emitSignal("feedForwardCoeffsChanged", _feedForwardCoeffs);
-            this->emitSignal("feedbackCoeffsChanged", _feedbackCoeffs);
-            this->emitSignal("tapsChanged", __taps);
+            this->emitAllCoeffsChanged();
+        }
+
+        bool getWaitTaps() const
+        {
+            return _waitTaps;
+        }
+
+        void setWaitTaps(bool waitTaps)
+        {
+            _waitTaps = waitTaps;
+
+            this->emitSignal("waitTapsChanged", waitTaps);
+        }
+
+        void work() override
+        {
+            // If specified, don't do anything until taps are explicitly set.
+            if(_waitTapsArmed) return;
+
+            OneToOneBlock::work();
         }
 
     private:
         std::vector<TapType> _feedForwardCoeffs;
         std::vector<TapType> _feedbackCoeffs;
+        bool _waitTaps;
+        bool _waitTapsArmed;
 
         void emitAllCoeffsChanged()
         {
