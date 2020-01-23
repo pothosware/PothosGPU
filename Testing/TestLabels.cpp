@@ -98,6 +98,23 @@ static T variance(const std::vector<T>& inputs)
     return std::pow(stddev(inputs), T(2));
 }
 
+template <typename T>
+static T medAbsDev(const std::vector<T>& inputs)
+{
+    size_t _;
+
+    const T med = median(inputs, &_);
+    std::vector<T> diffs;
+
+    std::transform(
+        inputs.begin(),
+        inputs.end(),
+        std::back_inserter(diffs),
+        [&med](T input){return std::abs<T>(input-med);});
+
+    return median(diffs, &_);
+}
+
 //
 // Make sure that blocks that post labels post the labels we expect.
 //
@@ -114,6 +131,7 @@ static std::vector<Pothos::Label> getExpectedLabels(const std::vector<double>& i
     const auto expectedMedian = median(inputs, &expectedMedianPosition);
     const auto expectedStdDev = stddev(inputs);
     const auto expectedVariance = variance(inputs);
+    const auto expectedMedAbsDev = medAbsDev(inputs);
 
     return std::vector<Pothos::Label>
     ({
@@ -123,6 +141,7 @@ static std::vector<Pothos::Label> getExpectedLabels(const std::vector<double>& i
         Pothos::Label("MEDIAN", expectedMedian, expectedMedianPosition),
         Pothos::Label("STDDEV", expectedStdDev, 0),
         Pothos::Label("VAR", expectedVariance, 0),
+        Pothos::Label("MEDABSDEV", expectedMedAbsDev, 0),
     });
 }
 
@@ -156,6 +175,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
         Pothos::BlockRegistry::make("/arrayfire/statistics/median", "Auto", dtype, 1),
         Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", "Auto", dtype, 1),
         Pothos::BlockRegistry::make("/arrayfire/statistics/var", "Auto", dtype, false, 1),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/medabsdev", "Auto", dtype, 1),
     };
     const size_t numBlocks = arrayFireBlocks.size();
 

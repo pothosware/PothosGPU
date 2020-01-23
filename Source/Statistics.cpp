@@ -36,6 +36,20 @@ static OneArrayStatsFunction getAfVarBoundFunction(bool isBiased)
                std::placeholders::_2);
 }
 
+// TODO: do we need to #ifdef the batchFunc call?
+static af::array afMedAbsDev(const af::array& afInput, const dim_t)
+{
+    auto afMedian = af::median(afInput);
+
+    auto afAbsSub = [](const af::array& arr0, const af::array& arr1) -> af::array
+    {
+        return af::abs(arr0 - arr1);
+    };
+    auto afInputSubMedian = af::batchFunc(afInput, afMedian, afAbsSub);
+
+    return af::median(afInputSubMedian);
+}
+
 class OneArrayStatsBlock: public ArrayFireBlock
 {
     public:
@@ -238,4 +252,10 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
             .bind<OneArrayStatsFuncPtr>(&af::median, 1)
             .bind<std::string>("MEDIAN", 3)
             .bind<bool>(true /*searchForIndex*/, 5)),
+    Pothos::BlockRegistry(
+        "/arrayfire/statistics/medabsdev",
+        Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
+            .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
+            .bind("MEDABSDEV", 3)
+            .bind<bool>(false /*searchForIndex*/, 5))
 };
