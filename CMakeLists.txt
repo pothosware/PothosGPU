@@ -73,6 +73,7 @@ POTHOS_MODULE_UTIL(
         Source/Clamp.cpp
         Source/Constant.cpp
         Source/Convolve.cpp
+        Source/CorrCoef.cpp
         Source/DeviceCache.cpp
         Source/EnumConversions.cpp
         Source/FFT.cpp
@@ -80,6 +81,7 @@ POTHOS_MODULE_UTIL(
         Source/FileSource.cpp
         Source/Filter.cpp
         Source/Flat.cpp
+        Source/IsInfNaN.cpp
         Source/LogN.cpp
         Source/MinMax.cpp
         Source/NToOneBlock.cpp
