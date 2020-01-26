@@ -72,6 +72,38 @@ ArrayFireBlock::~ArrayFireBlock()
 {
 }
 
+std::shared_ptr<Pothos::BufferManager> ArrayFireBlock::getInputBufferManager(
+    const std::string& /*name*/,
+    const std::string& domain)
+{
+    if(domain == this->getPortDomain())
+    {
+        // The input is another instance of this block, with an af::array from the
+        // same backend, so we know what it'll be doing.
+        return Pothos::BufferManager::Sptr();
+    }
+    else if(domain.empty())
+    {
+        // We always want to operate on pinned memory, as GPUs can access this via DMA.
+        return Pothos::BufferManager::make("pinned");
+    }
+
+    throw Pothos::PortDomainError(domain);
+}
+
+std::shared_ptr<Pothos::BufferManager> ArrayFireBlock::getOutputBufferManager(
+    const std::string& /*name*/,
+    const std::string& domain)
+{
+    if((domain == this->getPortDomain()) || domain.empty())
+    {
+        // We always want to operate on pinned memory, as GPUs can access this via DMA.
+        return Pothos::BufferManager::make("pinned");
+    }
+
+    throw Pothos::PortDomainError(domain);
+}
+
 std::string ArrayFireBlock::getArrayFireBackend() const
 {
     return Pothos::Object(_afBackend).convert<std::string>();

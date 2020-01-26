@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -17,6 +17,14 @@ class ArrayFireBlock: public Pothos::Block
         virtual ~ArrayFireBlock();
 
     protected:
+
+        std::shared_ptr<Pothos::BufferManager> getInputBufferManager(
+            const std::string& name,
+            const std::string& domain);
+
+        std::shared_ptr<Pothos::BufferManager> getOutputBufferManager(
+            const std::string& name,
+            const std::string& domain);
 
         std::string getArrayFireBackend() const;
 
