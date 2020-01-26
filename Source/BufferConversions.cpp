@@ -55,53 +55,23 @@ Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 Pothos::BufferChunk moveAfArrayToBufferChunk(af::array&& rAfArray)
 {
     #ifndef NDEBUG
-    static auto& logger = Poco::Logger::get("moveAfArrayToBufferChunk");
+    static auto& logger = Poco::Logger::get(__FUNCTION__);
     logger.setLevel("debug");
 
-    poco_debug_f2(
+    poco_debug_f3(
         logger,
-        "Moving af::array of size %s and type %s",
+        "Moving %s af::array of size %s and type %s",
+        Pothos::Object(af::getBackendId(rAfArray)).convert<std::string>(),
         Poco::NumberFormatter::format(rAfArray.bytes()),
         Pothos::Object(rAfArray.type()).convert<std::string>());
     #endif
-    
-    auto containerSPtr = std::make_shared<AfArrayPothosContainer>();
-    containerSPtr->afArray = std::move(rAfArray);
-    containerSPtr->afPinnedMemSPtr = std::make_shared<AfPinnedMemRAII>(
-                                         af::getBackendId(containerSPtr->afArray),
-                                         containerSPtr->afArray.bytes());
-    containerSPtr->afArray.host(containerSPtr->afPinnedMemSPtr.get());
-    
-    const size_t address = reinterpret_cast<size_t>(containerSPtr->afPinnedMemSPtr.get());
-    const size_t bytes = containerSPtr->afArray.bytes();
 
-    Pothos::SharedBuffer sharedBuff(address, bytes, containerSPtr);
-    Pothos::BufferChunk bufferChunk(sharedBuff);
-    bufferChunk.dtype = Pothos::Object(containerSPtr->afArray.type()).convert<Pothos::DType>();
-    if(bufferChunk.elements() != static_cast<size_t>(containerSPtr->afArray.elements()))
-    {
-        throw Pothos::AssertionViolationException(
-                  "Element count doesn't match in ArrayFire array conversion to Pothos::BufferChunk",
-                  Poco::format(
-                      "%s -> %s",
-                      Poco::NumberFormatter::format(containerSPtr->afArray.elements()),
-                      bufferChunk.elements()));
-    }
-
-    return bufferChunk;
+    return Pothos::BufferChunk();
 }
 
 static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
 {
-    const auto dim0 = static_cast<dim_t>(bufferChunk.elements());
-    const auto afDType = Pothos::Object(bufferChunk.dtype).convert<af::dtype>();
-
-    af::array afArray(dim0, afDType);
-    afArray.write<std::uint8_t>(
-        bufferChunk.as<const std::uint8_t*>(),
-        bufferChunk.length);
-
-    return afArray;
+    return af::array();
 }
 
 //
