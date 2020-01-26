@@ -20,6 +20,29 @@
 namespace PothosArrayFireTests
 {
 
+template <typename AfArrayType, typename ElemType>
+static void compareAfArrayToBufferChunk(
+    const AfArrayType& afArray,
+    const Pothos::BufferChunk& bufferChunk)
+{
+    POTHOS_TEST_EQUAL(
+        afArray.bytes(),
+        bufferChunk.length);
+    POTHOS_TEST_EQUAL(
+        afArray.elements(),
+        bufferChunk.elements());
+    POTHOS_TEST_EQUAL(
+        Pothos::Object(afArray.type()).convert<std::string>(),
+        Pothos::Object(bufferChunk.dtype).convert<std::string>());
+
+    std::vector<ElemType> afArrayHost(bufferChunk.elements());
+    afArray.host(afArrayHost.data());
+    POTHOS_TEST_EQUALA(
+        afArrayHost.data(),
+        reinterpret_cast<const ElemType*>(bufferChunk.address),
+        bufferChunk.length);
+}
+
 template <typename T>
 static void test1DArrayConversion(
     const std::string& dtypeName,
@@ -31,26 +54,15 @@ static void test1DArrayConversion(
 
     auto afArray = af::randu(ArrDim, afDType);
 
-    auto bufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
-    POTHOS_TEST_EQUAL(ArrDim, bufferChunk.elements());
-    POTHOS_TEST_TRUE(Pothos::DType(typeid(T)) == bufferChunk.dtype);
-    POTHOS_TEST_EQUALA(
-        reinterpret_cast<const T*>(afArray.device<std::uint8_t>()),
-        bufferChunk.as<const T*>(),
-        ArrDim);
+    auto convertedBufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
+    compareAfArrayToBufferChunk<af::array, T>(
+        afArray,
+        convertedBufferChunk);
 
-    auto afArray2 = Pothos::Object(bufferChunk).convert<af::array>();
-    POTHOS_TEST_EQUAL(ArrDim, afArray2.elements());
-    POTHOS_TEST_EQUAL(afDType, afArray2.type());
-    POTHOS_TEST_EQUALA(
-        reinterpret_cast<const T*>(afArray.device<std::uint8_t>()),
-        reinterpret_cast<const T*>(afArray2.device<std::uint8_t>()),
-        ArrDim);
-
-    auto bufferChunk2 = moveAfArrayToBufferChunk(std::move(afArray2));
-    PothosArrayFireTests::testBufferChunk(
-        bufferChunk,
-        bufferChunk2);
+    auto convertedAfArray = Pothos::Object(convertedBufferChunk).convert<af::array>();
+    compareAfArrayToBufferChunk<af::array, T>(
+        convertedAfArray,
+        convertedBufferChunk);
 }
 
 template <typename T>
@@ -68,14 +80,16 @@ static void test2DArrayConversion(
     {
         const af::array::array_proxy afArrayRow = afArray.row(row);
 
-        auto bufferChunk = Pothos::Object(afArrayRow)
-                               .convert<Pothos::BufferChunk>();
-        POTHOS_TEST_EQUAL(ArrDim2, bufferChunk.elements());
-        POTHOS_TEST_TRUE(Pothos::DType(typeid(T)) == bufferChunk.dtype);
-        POTHOS_TEST_EQUALA(
-            reinterpret_cast<const T*>(afArrayRow.device<std::uint8_t>()),
-            bufferChunk.as<const T*>(),
-            ArrDim2);
+        auto convertedBufferChunk = Pothos::Object(afArrayRow)
+                                        .convert<Pothos::BufferChunk>();
+        compareAfArrayToBufferChunk<af::array::array_proxy, T>(
+            afArrayRow,
+            convertedBufferChunk);
+
+        auto convertedAfArray = Pothos::Object(convertedBufferChunk).convert<af::array>();
+        compareAfArrayToBufferChunk<af::array, T>(
+            convertedAfArray,
+            convertedBufferChunk);
     }
 }
 
