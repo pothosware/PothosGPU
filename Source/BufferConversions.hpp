@@ -26,6 +26,8 @@
 class AfPinnedMemRAII
 {
     public:
+        using SPtr = std::shared_ptr<AfPinnedMemRAII>;
+        
         AfPinnedMemRAII(af::Backend backend, size_t allocSize);
 
         ~AfPinnedMemRAII();
@@ -38,6 +40,16 @@ class AfPinnedMemRAII
     private:
         af::Backend _backend;
         void* _pinnedMem;
+};
+
+// The af::array is passed into ArrayFire functions, and the pinned
+// memory is exposed in the BufferChunk.
+struct AfArrayPothosContainer
+{
+    using SPtr = std::shared_ptr<AfArrayPothosContainer>;
+    
+    af::array afArray;
+    AfPinnedMemRAII::SPtr afPinnedMemSPtr;
 };
 
 //

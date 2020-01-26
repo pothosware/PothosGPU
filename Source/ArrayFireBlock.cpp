@@ -317,7 +317,8 @@ const af::array& ArrayFireBlock::_getInputPortAfArrayRef(const PortIdType& portI
     }
 
     const auto& containerSPtr = this->input(portId)->buffer().getBuffer().getContainer();
-    return *reinterpret_cast<af::array*>(containerSPtr.get());
+
+    return reinterpret_cast<const AfArrayPothosContainer*>(containerSPtr.get())->afArray;
 }
 
 template <typename PortIdType>
