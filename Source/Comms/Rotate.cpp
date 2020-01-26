@@ -137,7 +137,6 @@ public:
         afArray *= _phasor;
         afArray = afArray.as(_afDType);
 
-        inPort->consume(elems);
         this->postAfArray(0, std::move(afArray));
     }
 

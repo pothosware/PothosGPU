@@ -156,7 +156,6 @@ void OneToOneBlock::work(const af::array& afInput)
             afOutput = afOutput.as(_afOutputDType);
         }
 
-        this->input(0)->consume(elems);
         this->output(0)->postBuffer(moveAfArrayToBufferChunk(std::move(afOutput)));
     }
     else

@@ -18,6 +18,29 @@
 #include <vector>
 
 //
+// Minimal wrapper class to ensure allocation and deallocation are done
+// with the same backend.
+//
+
+AfPinnedMemRAII::AfPinnedMemRAII(af::Backend backend, size_t allocSize):
+    _backend(backend),
+    _pinnedMem(nullptr)
+{
+    af::setBackend(_backend);
+    _pinnedMem = af::pinned(allocSize, ::u8);
+}
+
+AfPinnedMemRAII::~AfPinnedMemRAII()
+{
+    try
+    {
+        af::setBackend(_backend);
+        af::freePinned(_pinnedMem);
+    }
+    catch(...){}
+}
+
+//
 // Pothos::BufferChunk <-> af::array
 //
 

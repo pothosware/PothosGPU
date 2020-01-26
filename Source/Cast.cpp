@@ -67,7 +67,6 @@ class CastBlock: public OneToOneBlock
             auto afOutput = afArray.as(_afOutputDType);
             if(1 == _nchans)
             {
-                this->input(0)->consume(elems);
                 this->output(0)->postBuffer(Pothos::Object(afOutput)
                                                 .convert<Pothos::BufferChunk>());
             }

@@ -60,6 +60,10 @@ class ArrayFireBlock: public Pothos::Block
         // Output port API
         //
 
+        bool doesOutputPortDomainMatch(size_t portNum) const;
+
+        bool doesOutputPortDomainMatch(const std::string& portName) const;
+
         void postAfArray(
             size_t portNum,
             const af::array& afArray);
@@ -96,6 +100,9 @@ class ArrayFireBlock: public Pothos::Block
 
         template <typename PortIdType>
         bool _doesInputPortDomainMatch(const PortIdType& portId) const;
+
+        template <typename PortIdType>
+        bool _doesOutputPortDomainMatch(const PortIdType& portId) const;
 
         template <typename PortIdType>
         const af::array& _getInputPortAfArrayRef(const PortIdType& portId);

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -84,7 +84,6 @@ class SplitComplex: public ArrayFireBlock
 
             if(1 == _nchans)
             {
-                this->input(0)->consume(elems);
                 this->postAfArray("re0", afReal);
                 this->postAfArray("im0", afImag);
             }

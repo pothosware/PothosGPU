@@ -2,6 +2,7 @@
 //                    2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "BufferConversions.hpp"
 #include "DeviceCache.hpp"
 #include "Utility.hpp"
 
@@ -14,39 +15,6 @@
 
 #include <cassert>
 #include <iostream>
-
-// Minimal wrapper class to ensure allocation and deallocation are done
-// with the same backend.
-class AfPinnedMemRAII
-{
-    public:
-        AfPinnedMemRAII(af::Backend backend, size_t allocSize):
-            _backend(backend),
-            _pinnedMem(nullptr)
-        {
-            af::setBackend(_backend);
-            _pinnedMem = af::pinned(allocSize, ::u8);
-        }
-
-        ~AfPinnedMemRAII()
-        {
-            try
-            {
-                af::setBackend(_backend);
-                af::freePinned(_pinnedMem);
-            }
-            catch(...){}
-        }
-
-        void* get() const
-        {
-            return _pinnedMem;
-        }
-
-    private:
-        af::Backend _backend;
-        void* _pinnedMem;
-};
 
 /************************************************************************
  * Identical to Pothos::GenericBufferManager but uses page-locked memory

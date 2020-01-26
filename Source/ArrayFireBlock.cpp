@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -13,6 +13,7 @@
 
 #include <Poco/Format.h>
 #include <Poco/Logger.h>
+#include <Poco/NumberFormatter.h>
 
 #include <arrayfire.h>
 
@@ -212,8 +213,6 @@ af::array ArrayFireBlock::getNumberedInputPortsAs2DAfArray()
     {
         ret.row(row) = this->getInputPortAsAfArray(row);
         assert(ret.row(row).elements() == dim1);
-
-        inputs[row]->consume(dim1);
     }
 
     return ret;
@@ -222,6 +221,16 @@ af::array ArrayFireBlock::getNumberedInputPortsAs2DAfArray()
 //
 // Output port API
 //
+
+bool ArrayFireBlock::doesOutputPortDomainMatch(size_t portNum) const
+{
+    return _doesOutputPortDomainMatch(portNum);
+}
+
+bool ArrayFireBlock::doesOutputPortDomainMatch(const std::string& portName) const
+{
+    return _doesOutputPortDomainMatch(portName);
+}
 
 void ArrayFireBlock::postAfArray(
     size_t portNum,
@@ -241,14 +250,14 @@ void ArrayFireBlock::postAfArray(
     size_t portNum,
     af::array&& rAfArray)
 {
-    _postAfArray(portNum, std::move(rAfArray));
+    _postAfArray(portNum, std::forward<af::array>(rAfArray));
 }
 
 void ArrayFireBlock::postAfArray(
     const std::string& portName,
     af::array&& rAfArray)
 {
-    _postAfArray(portName, std::move(rAfArray));
+    _postAfArray(portName, std::forward<af::array>(rAfArray));
 }
 
 void ArrayFireBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray)
@@ -294,6 +303,12 @@ bool ArrayFireBlock::_doesInputPortDomainMatch(const PortIdType& portId) const
 }
 
 template <typename PortIdType>
+bool ArrayFireBlock::_doesOutputPortDomainMatch(const PortIdType& portId) const
+{
+    return (this->output(portId)->domain() == this->getPortDomain());
+}
+
+template <typename PortIdType>
 const af::array& ArrayFireBlock::_getInputPortAfArrayRef(const PortIdType& portId)
 {
     if(!_doesInputPortDomainMatch(portId))
@@ -319,6 +334,7 @@ af::array ArrayFireBlock::_getInputPortAsAfArray(
         bufferChunk.length = minLength * bufferChunk.dtype.size();
     }
 
+    this->input(portId)->consume(minLength);
     return Pothos::Object(bufferChunk).convert<af::array>();
 }
 
@@ -327,8 +343,29 @@ void ArrayFireBlock::_postAfArray(
     const PortIdType& portId,
     const AfArrayType& afArray)
 {
-    auto bufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
-    this->output(portId)->postBuffer(std::move(bufferChunk));
+    if(_doesOutputPortDomainMatch(portId))
+    {
+        // The BufferChunk doesn't matter too much here, as the next ArrayFire
+        // block will grab the underlying af::array anyway.
+        auto bufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
+        this->output(portId)->postBuffer(std::move(bufferChunk));
+    }
+    else
+    {
+        auto* outputPort = this->output(portId);
+        if(outputPort->elements() < static_cast<size_t>(afArray.elements()))
+        {
+            throw Pothos::AssertionViolationException(
+                      "Attempted to output an af::array larger than the provided buffer.",
+                      Poco::format(
+                          "af::array: %s elements, BufferChunk: %s elements",
+                          Poco::NumberFormatter::format(afArray.elements()),
+                          Poco::NumberFormatter::format(outputPort->elements())));
+        }
+
+        afArray.host(outputPort->buffer());
+        outputPort->produce(afArray.elements());
+    }
 }
 
 template <typename PortIdType, typename AfArrayType>

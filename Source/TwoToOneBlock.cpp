@@ -120,8 +120,6 @@ void TwoToOneBlock::work()
     auto outputAfArray = _func(inputAfArray0, inputAfArray1);
     assert(elems == static_cast<size_t>(outputAfArray.elements()));
 
-    this->input(0)->consume(elems);
-    this->input(1)->consume(elems);
     this->postAfArray(0, std::move(outputAfArray));
 }
 

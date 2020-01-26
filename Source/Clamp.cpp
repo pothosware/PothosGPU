@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -129,7 +129,6 @@ void Clamp<T>::work(const af::array& afInput)
         afArrayMaxValue = af::constant(_afMaxValue, elems, afDType);
         auto afOutput = af::clamp(afInput, afArrayMinValue, afArrayMaxValue);
 
-        this->input(0)->consume(elems);
         this->output(0)->postBuffer(Pothos::Object(afOutput)
                                         .convert<Pothos::BufferChunk>());
     }
@@ -157,7 +156,6 @@ void Clamp<double>::work(const af::array& afInput)
     {
         auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
 
-        this->input(0)->consume(elems);
         this->output(0)->postBuffer(Pothos::Object(afOutput)
                                         .convert<Pothos::BufferChunk>());
     }
