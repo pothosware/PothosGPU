@@ -50,6 +50,8 @@ static void testDTypeEnumUsage(
 
     auto dtypeFromAF = Pothos::Object(afDType).convert<Pothos::DType>();
     POTHOS_TEST_EQUAL(dtypeName, dtypeFromAF.name());
+
+    testEnumValueConversion(dtypeName, afDType);
 }
 
 }

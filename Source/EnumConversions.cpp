@@ -88,9 +88,12 @@ static void registerEnumConversion(
             .bind(unorderedMap, 0));
 }
 
-// TODO: af::dtype <-> std::string
 pothos_static_block(registerArrayFireEnumConversions)
 {
+    registerEnumConversion(
+        DTypeEnumMap,
+        "std_string_to_af_dtype",
+        "af_dtype_to_std_string");
     registerEnumConversion(
         BackendEnumMap,
         "std_string_to_af_backend",
