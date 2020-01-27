@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -92,14 +92,24 @@ class FFTBaseBlock: public ArrayFireBlock
 
         virtual ~FFTBaseBlock() = default;
 
-        // Custom output buffer manager with slabs large enough for the FFT
-        // result.
-        Pothos::BufferManager::Sptr getOutputBufferManager(const std::string&, const std::string&) override
+        Pothos::BufferManager::Sptr getOutputBufferManager(
+            const std::string& /*name*/,
+            const std::string& domain)
         {
-            Pothos::BufferManagerArgs args;
-            args.bufferSize = _numBins*sizeof(OutType);
-            return Pothos::BufferManager::make("generic", args);
+            if((domain == this->getPortDomain()) || domain.empty())
+            {
+                // Make sure the slab is large enough for the FFT result.
+                Pothos::BufferManagerArgs args;
+                args.bufferSize = _numBins*sizeof(OutType);
+
+                // We always want to operate on pinned memory, as GPUs can access this via DMA.
+                return Pothos::BufferManager::make("pinned", args);
+            }
+
+            throw Pothos::PortDomainError(domain);
         }
+
+        virtual void work() = 0;
 
         double getNormalizationFactor() const
         {
@@ -140,7 +150,7 @@ class FFTBlock: public FFTBaseBlock<T,T>
         void work() override
         {
             auto elems = this->workInfo().minElements;
-            if(0 == elems)
+            if(elems < this->_numBins)
             {
                 return;
             }
@@ -164,7 +174,7 @@ class FFTBlock: public FFTBaseBlock<T,T>
                 afArray(row) = row;
             }
 
-            this->post2DAfArrayToNumberedOutputPorts(afArray);
+            this->postAfArrayToNumberedOutputPorts(afArray);
         }
 
     private:
@@ -192,7 +202,7 @@ class RFFTBlock: public FFTBaseBlock<In,Out>
         void work() override
         {
             auto elems = this->workInfo().minElements;
-            if(0 == elems)
+            if(elems < this->_numBins)
             {
                 return;
             }
@@ -214,7 +224,7 @@ class RFFTBlock: public FFTBaseBlock<In,Out>
                 afArray.row(chan) = _func(afArray.row(chan), this->_norm);
             }
 
-            this->post2DAfArrayToNumberedOutputPorts(afArray);
+            this->postAfArrayToNumberedOutputPorts(afArray);
         }
 
     private:

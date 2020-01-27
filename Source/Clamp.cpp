@@ -117,58 +117,35 @@ void Clamp<T>::work(const af::array& afInput)
 {
     static const af::dtype afDType = Pothos::Object(dtype).convert<af::dtype>();
 
-    const size_t elems = this->workInfo().minElements;
-    assert(0 < elems);
-
     af::array afArrayMinValue;
     af::array afArrayMaxValue;
 
     if(1 == _nchans)
     {
+        const auto elems = afInput.elements();
+
         afArrayMinValue = af::constant(_afMinValue, elems, afDType);
         afArrayMaxValue = af::constant(_afMaxValue, elems, afDType);
-        auto afOutput = af::clamp(afInput, afArrayMinValue, afArrayMaxValue);
-
-        this->output(0)->postBuffer(Pothos::Object(afOutput)
-                                        .convert<Pothos::BufferChunk>());
     }
     else
     {
-        assert(0 != _nchans);
-        assert(_nchans == static_cast<size_t>(afInput.dims(0)));
-        assert(elems == static_cast<size_t>(afInput.dims(1)));
-
+        const auto elems = afInput.dims(1);
+        
         afArrayMinValue = af::constant(_afMinValue, _nchans, elems, afDType);
         afArrayMaxValue = af::constant(_afMaxValue, _nchans, elems, afDType);
-        auto afOutput = af::clamp(afInput, afArrayMinValue, afArrayMaxValue);
-
-        this->post2DAfArrayToNumberedOutputPorts(afOutput);
     }
+
+    auto afOutput = af::clamp(afInput, afArrayMinValue, afArrayMaxValue);
+
+    this->postAfArrayToNumberedOutputPorts(afOutput);
 };
 
 template <>
 void Clamp<double>::work(const af::array& afInput)
 {
-    const size_t elems = this->workInfo().minElements;
-    assert(0 < elems);
+    auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
 
-    if(1 == _nchans)
-    {
-        auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
-
-        this->output(0)->postBuffer(Pothos::Object(afOutput)
-                                        .convert<Pothos::BufferChunk>());
-    }
-    else
-    {
-        assert(0 != _nchans);
-        assert(_nchans == static_cast<size_t>(afInput.dims(0)));
-        assert(elems == static_cast<size_t>(afInput.dims(1)));
-
-        auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
-
-        this->post2DAfArrayToNumberedOutputPorts(afOutput);
-    }
+    this->postAfArrayToNumberedOutputPorts(afOutput);
 };
 
 /*

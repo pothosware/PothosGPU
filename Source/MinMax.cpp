@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -66,7 +66,7 @@ class MinMax: public ArrayFireBlock
                     getArrayValueOfUnknownTypeAtIndex(val, chan),
                     idxPtr[chan]);
             }
-            this->post2DAfArrayToNumberedOutputPorts(afInput);
+            this->postAfArrayToNumberedOutputPorts(afInput);
         }
 
     private:

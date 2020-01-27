@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "NToOneBlock.hpp"
@@ -63,7 +63,6 @@ NToOneBlock::NToOneBlock(
 
 NToOneBlock::~NToOneBlock() {}
 
-// TODO: ArrayFire likely has a way to optimize this
 void NToOneBlock::work()
 {
     const size_t elems = this->workInfo().minAllElements;
@@ -80,5 +79,5 @@ void NToOneBlock::work()
     {
         outputAfArray = _func(outputAfArray, afArray.row(chan));
     }
-    this->postAfArray(0, std::move(outputAfArray));
+    this->postAfArray(0, outputAfArray);
 }

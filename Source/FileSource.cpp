@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -109,6 +109,7 @@ class FileSourceBlock: public ArrayFireBlock
             _repeat = repeat;
         }
 
+        // TODO: read into buffer
         void work()
         {
             if(!_repeat && _hasPosted)
@@ -116,15 +117,7 @@ class FileSourceBlock: public ArrayFireBlock
                 return;
             }
 
-            if(1 == _numDims)
-            {
-                this->postAfArray(0, std::move(_fileContents));
-            }
-            else
-            {
-                this->post2DAfArrayToNumberedOutputPorts(_fileContents);
-            }
-
+            this->postAfArrayToNumberedOutputPorts(_fileContents);
             _hasPosted = true;
         }
 

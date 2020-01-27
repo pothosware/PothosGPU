@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -6,8 +6,6 @@
 
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
-
-#include <Poco/Logger.h>
 
 #include <arrayfire.h>
 
@@ -59,23 +57,11 @@ class CastBlock: public OneToOneBlock
         {
         }
 
-        void work(const af::array& afArray) override
+        void work(const af::array& afInput) override
         {
-            const size_t elems = this->workInfo().minElements;
-            assert(elems > 0);
+            auto afOutput = afInput.as(_afOutputDType);
 
-            auto afOutput = afArray.as(_afOutputDType);
-            if(1 == _nchans)
-            {
-                this->output(0)->postBuffer(Pothos::Object(afOutput)
-                                                .convert<Pothos::BufferChunk>());
-            }
-            else
-            {
-                assert(0 != _nchans);
-
-                this->post2DAfArrayToNumberedOutputPorts(afOutput);
-            }
+            this->postAfArrayToNumberedOutputPorts(afOutput);
         }
 };
 

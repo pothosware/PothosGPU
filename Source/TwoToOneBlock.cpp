@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TwoToOneBlock.hpp"
@@ -100,7 +100,6 @@ TwoToOneBlock::~TwoToOneBlock() {}
 void TwoToOneBlock::work()
 {
     const size_t elems = this->workInfo().minAllElements;
-
     if(0 == elems)
     {
         return;
@@ -109,18 +108,13 @@ void TwoToOneBlock::work()
     auto inputAfArray0 = this->getInputPortAsAfArray(0);
     auto inputAfArray1 = this->getInputPortAsAfArray(1);
 
-    assert(elems == static_cast<size_t>(inputAfArray0.elements()));
-    assert(elems == static_cast<size_t>(inputAfArray1.elements()));
-
     if(!_allowZeroInBuffer1 && (elems != static_cast<size_t>(inputAfArray1.nonzeros())))
     {
         throw Pothos::InvalidArgumentException("Denominator cannot contain zeros.");
     }
 
     auto outputAfArray = _func(inputAfArray0, inputAfArray1);
-    assert(elems == static_cast<size_t>(outputAfArray.elements()));
-
-    this->postAfArray(0, std::move(outputAfArray));
+    this->postAfArray(0, outputAfArray);
 }
 
 //

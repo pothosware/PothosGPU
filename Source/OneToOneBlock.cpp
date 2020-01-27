@@ -1,14 +1,18 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BufferConversions.hpp"
 #include "OneToOneBlock.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Exception.hpp>
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
 #include <arrayfire.h>
+
+#include <Poco/Format.h>
+#include <Poco/NumberFormatter.h>
 
 #include <cassert>
 #include <cstring>
@@ -116,28 +120,25 @@ OneToOneBlock::OneToOneBlock(
 
 OneToOneBlock::~OneToOneBlock() {}
 
-// TODO: move to ArrayFireBlock
 af::array OneToOneBlock::getInputsAsAfArray()
 {
-// This variable is only used in debug.
-#ifndef NDEBUG
-    const size_t elems = this->workInfo().minElements;
-#endif
-    assert(this->workInfo().minElements > 0);
-
     af::array afInput;
     if(1 == _nchans)
     {
         afInput = this->getInputPortAsAfArray(0, false);
-        assert(elems == static_cast<size_t>(afInput.elements()));
     }
     else
     {
-        assert(0 != _nchans);
-
         afInput = getNumberedInputPortsAs2DAfArray();
-        assert(_nchans == static_cast<size_t>(afInput.dims(0)));
-        assert(elems == static_cast<size_t>(afInput.dims(1)));
+        if(_nchans != static_cast<size_t>(afInput.dims(0)))
+        {
+            throw Pothos::AssertionViolationException(
+                      "getNumberedInputPortsAs2DAfArray() returned an af::array of invalid dimensions",
+                      Poco::format(
+                          "Expected %s, got %s",
+                          Poco::NumberFormatter::format(_nchans),
+                          Poco::NumberFormatter::format(afInput.dims(0))));
+        }
     }
 
     return afInput;
@@ -146,32 +147,20 @@ af::array OneToOneBlock::getInputsAsAfArray()
 void OneToOneBlock::work(const af::array& afInput)
 {
     const size_t elems = this->workInfo().minElements;
-    assert(elems > 0);
-
-    if(1 == _nchans)
+    if(0 == elems)
     {
-        auto afOutput = _func.call(afInput).extract<af::array>();
-        if(afOutput.type() != _afOutputDType)
-        {
-            afOutput = afOutput.as(_afOutputDType);
-        }
-
-        this->output(0)->postBuffer(moveAfArrayToBufferChunk(std::move(afOutput)));
+        throw Pothos::AssertionViolationException(
+                  "work(const af::array&) called when elems = 0",
+                  __FUNCTION__);
     }
-    else
+
+    auto afOutput = _func.call(afInput).extract<af::array>();
+    if(afOutput.type() != _afOutputDType)
     {
-        assert(0 != _nchans);
-        assert(_nchans == static_cast<size_t>(afInput.dims(0)));
-        assert(elems == static_cast<size_t>(afInput.dims(1)));
-
-        auto afOutput = _func.call(afInput).extract<af::array>();
-        if(afOutput.type() != _afOutputDType)
-        {
-            afOutput = afOutput.as(_afOutputDType);
-        }
-
-        post2DAfArrayToNumberedOutputPorts(afOutput);
+        afOutput = afOutput.as(_afOutputDType);
     }
+
+    this->postAfArrayToNumberedOutputPorts(afOutput);
 }
 
 // Default behavior, can be overridden

@@ -73,7 +73,7 @@ ArrayFireBlock::~ArrayFireBlock()
 {
 }
 
-std::shared_ptr<Pothos::BufferManager> ArrayFireBlock::getInputBufferManager(
+Pothos::BufferManager::Sptr ArrayFireBlock::getInputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
@@ -92,7 +92,7 @@ std::shared_ptr<Pothos::BufferManager> ArrayFireBlock::getInputBufferManager(
     throw Pothos::PortDomainError(domain);
 }
 
-std::shared_ptr<Pothos::BufferManager> ArrayFireBlock::getOutputBufferManager(
+Pothos::BufferManager::Sptr ArrayFireBlock::getOutputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
@@ -161,16 +161,6 @@ std::string ArrayFireBlock::overlay() const
 // Input port API
 //
 
-bool ArrayFireBlock::doesInputPortDomainMatch(size_t portNum) const
-{
-    return _doesInputPortDomainMatch(portNum);
-}
-
-bool ArrayFireBlock::doesInputPortDomainMatch(const std::string& portName) const
-{
-    return _doesInputPortDomainMatch(portName);
-}
-
 af::array ArrayFireBlock::getInputPortAsAfArray(
     size_t portNum,
     bool truncateToMinLength)
@@ -201,8 +191,18 @@ af::array ArrayFireBlock::getNumberedInputPortsAs2DAfArray()
     af::array ret(dim0, dim1, afDType);
     for(dim_t row = 0; row < dim0; ++row)
     {
-        ret.row(row) = this->getInputPortAsAfArray(row);
-        assert(ret.row(row).elements() == dim1);
+        auto afArray = this->getInputPortAsAfArray(row);
+        if(afArray.elements() != dim1)
+        {
+            throw Pothos::AssertionViolationException(
+                      "getInputPortAsAfArray() returned an af::array of invalid size",
+                      Poco::format(
+                          "Expected %s, got %s",
+                          Poco::NumberFormatter::format(dim1),
+                          Poco::NumberFormatter::format(afArray.elements())));
+        }
+
+        ret.row(row) = afArray;
     }
 
     return ret;
@@ -211,16 +211,6 @@ af::array ArrayFireBlock::getNumberedInputPortsAs2DAfArray()
 //
 // Output port API
 //
-
-bool ArrayFireBlock::doesOutputPortDomainMatch(size_t portNum) const
-{
-    return _doesOutputPortDomainMatch(portNum);
-}
-
-bool ArrayFireBlock::doesOutputPortDomainMatch(const std::string& portName) const
-{
-    return _doesOutputPortDomainMatch(portName);
-}
 
 void ArrayFireBlock::postAfArray(
     size_t portNum,
@@ -236,28 +226,19 @@ void ArrayFireBlock::postAfArray(
     _postAfArray(portName, afArray);
 }
 
-void ArrayFireBlock::postAfArray(
-    size_t portNum,
-    af::array&& rAfArray)
+void ArrayFireBlock::postAfArrayToNumberedOutputPorts(const af::array& afArray)
 {
-    _postAfArray(portNum, std::forward<af::array>(rAfArray));
-}
-
-void ArrayFireBlock::postAfArray(
-    const std::string& portName,
-    af::array&& rAfArray)
-{
-    _postAfArray(portName, std::forward<af::array>(rAfArray));
-}
-
-void ArrayFireBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray)
-{
-    const size_t numOutputs = this->outputs().size();
-    assert(numOutputs == static_cast<size_t>(afArray.dims(0)));
-
-    for(size_t portIndex = 0; portIndex < numOutputs; ++portIndex)
+    if(1 == afArray.numdims())
     {
-        this->postAfArray(portIndex, afArray.row(portIndex));
+        this->postAfArray(0, afArray);
+    }
+    else
+    {
+        const auto numOutputs = static_cast<size_t>(afArray.dims(0));
+        for(size_t portIndex = 0; portIndex < numOutputs; ++portIndex)
+        {
+            this->postAfArray(portIndex, afArray.row(portIndex));
+        }
     }
 }
 
@@ -267,24 +248,12 @@ void ArrayFireBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray
 //
 
 template <typename PortIdType>
-bool ArrayFireBlock::_doesInputPortDomainMatch(const PortIdType& portId) const
-{
-    return (this->input(portId)->domain() == this->getPortDomain());
-}
-
-template <typename PortIdType>
-bool ArrayFireBlock::_doesOutputPortDomainMatch(const PortIdType& portId) const
-{
-    return (this->output(portId)->domain() == this->getPortDomain());
-}
-
-template <typename PortIdType>
 af::array ArrayFireBlock::_getInputPortAsAfArray(
     const PortIdType& portId,
     bool truncateToMinLength)
 {
     auto bufferChunk = this->input(portId)->buffer();
-    const size_t minLength = this->workInfo().minAllElements;
+    const size_t minLength = this->workInfo().minElements;
     assert(minLength <= bufferChunk.elements());
 
     if(truncateToMinLength && (minLength < bufferChunk.elements()))
