@@ -171,16 +171,6 @@ bool ArrayFireBlock::doesInputPortDomainMatch(const std::string& portName) const
     return _doesInputPortDomainMatch(portName);
 }
 
-const af::array& ArrayFireBlock::getInputPortAfArrayRef(size_t portNum)
-{
-    return _getInputPortAfArrayRef(portNum);
-}
-
-const af::array& ArrayFireBlock::getInputPortAfArrayRef(const std::string& portName)
-{
-    return _getInputPortAfArrayRef(portName);
-}
-
 af::array ArrayFireBlock::getInputPortAsAfArray(
     size_t portNum,
     bool truncateToMinLength)
@@ -272,26 +262,6 @@ void ArrayFireBlock::post2DAfArrayToNumberedOutputPorts(const af::array& afArray
 }
 
 //
-// Debug
-//
-
-void ArrayFireBlock::debugLogInputPortElements()
-{
-#ifndef NDEBUG
-    std::vector<int> elements;
-    std::transform(
-        this->inputs().begin(),
-        this->inputs().end(),
-        std::back_inserter(elements),
-        [](Pothos::InputPort* port){return port->elements();});
-
-    poco_information(
-        Poco::Logger::get(this->getName()),
-        stdVectorToString(elements));
-#endif
-}
-
-//
 // The protected functions call into these, making the compiler generate the
 // versions of these with those types.
 //
@@ -306,19 +276,6 @@ template <typename PortIdType>
 bool ArrayFireBlock::_doesOutputPortDomainMatch(const PortIdType& portId) const
 {
     return (this->output(portId)->domain() == this->getPortDomain());
-}
-
-template <typename PortIdType>
-const af::array& ArrayFireBlock::_getInputPortAfArrayRef(const PortIdType& portId)
-{
-    if(!_doesInputPortDomainMatch(portId))
-    {
-        throw Pothos::AssertionViolationException("Called _getInputPortAfArrayRef() with invalid port");
-    }
-
-    const auto& containerSPtr = this->input(portId)->buffer().getBuffer().getContainer();
-
-    return reinterpret_cast<const AfArrayPothosContainer*>(containerSPtr.get())->afArray;
 }
 
 template <typename PortIdType>
@@ -344,36 +301,17 @@ void ArrayFireBlock::_postAfArray(
     const PortIdType& portId,
     const AfArrayType& afArray)
 {
-    if(_doesOutputPortDomainMatch(portId))
+    auto* outputPort = this->output(portId);
+    if(outputPort->elements() < static_cast<size_t>(afArray.elements()))
     {
-        // The BufferChunk doesn't matter too much here, as the next ArrayFire
-        // block will grab the underlying af::array anyway.
-        auto bufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
-        this->output(portId)->postBuffer(std::move(bufferChunk));
+        throw Pothos::AssertionViolationException(
+                  "Attempted to output an af::array larger than the provided buffer.",
+                  Poco::format(
+                      "af::array: %s elements, BufferChunk: %s elements",
+                      Poco::NumberFormatter::format(afArray.elements()),
+                      Poco::NumberFormatter::format(outputPort->elements())));
     }
-    else
-    {
-        auto* outputPort = this->output(portId);
-        if(outputPort->elements() < static_cast<size_t>(afArray.elements()))
-        {
-            throw Pothos::AssertionViolationException(
-                      "Attempted to output an af::array larger than the provided buffer.",
-                      Poco::format(
-                          "af::array: %s elements, BufferChunk: %s elements",
-                          Poco::NumberFormatter::format(afArray.elements()),
-                          Poco::NumberFormatter::format(outputPort->elements())));
-        }
 
-        afArray.host(outputPort->buffer());
-        outputPort->produce(afArray.elements());
-    }
-}
-
-template <typename PortIdType, typename AfArrayType>
-void ArrayFireBlock::_postAfArray(
-    const PortIdType& portId,
-    AfArrayType&& rAfArray)
-{
-    auto bufferChunk = moveAfArrayToBufferChunk(std::forward<AfArrayType>(rAfArray));
-    this->output(portId)->postBuffer(std::move(bufferChunk));
+    afArray.host(outputPort->buffer());
+    outputPort->produce(afArray.elements());
 }

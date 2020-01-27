@@ -57,30 +57,9 @@ class SplitComplex: public ArrayFireBlock
                 return;
             }
 
-            af::array afReal;
-            af::array afImag;
-
-            if(1 == _nchans)
-            {
-                if(this->doesInputPortDomainMatch(0))
-                {
-                    const auto& afInput = this->getInputPortAfArrayRef(0);
-                    afReal = af::real(afInput);
-                    afImag = af::imag(afInput);
-                }
-                else
-                {
-                    auto afInput = this->getInputPortAsAfArray(0);
-                    afReal = af::real(afInput);
-                    afImag = af::imag(afInput);
-                }
-            }
-            else
-            {
-                auto afInput = this->getNumberedInputPortsAs2DAfArray();
-                afReal = af::real(afInput);
-                afImag = af::imag(afInput);
-            }
+            auto afInput = this->getInputPortAsAfArray(0);
+            auto afReal = af::real(afInput);
+            auto afImag = af::imag(afInput);
 
             if(1 == _nchans)
             {

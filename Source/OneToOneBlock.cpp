@@ -184,20 +184,11 @@ void OneToOneBlock::work()
     af::setDevice(_afDevice);
 #endif
 
-    this->debugLogInputPortElements();
-
     const size_t elems = this->workInfo().minElements;
     if(0 == elems)
     {
         return;
     }
 
-    if((1 == _nchans) && this->doesInputPortDomainMatch(0))
-    {
-        work(getInputPortAfArrayRef(0));
-    }
-    else
-    {
-        work(getInputsAsAfArray());
-    }
+    this->work(getInputsAsAfArray());
 }

@@ -83,12 +83,6 @@ class ArrayFireBlock: public Pothos::Block
         void post2DAfArrayToNumberedOutputPorts(const af::array& afArray);
 
         //
-        // Debug
-        //
-
-        void debugLogInputPortElements();
-
-        //
         // Member variables
         //
 
@@ -105,9 +99,6 @@ class ArrayFireBlock: public Pothos::Block
         bool _doesOutputPortDomainMatch(const PortIdType& portId) const;
 
         template <typename PortIdType>
-        const af::array& _getInputPortAfArrayRef(const PortIdType& portId);
-
-        template <typename PortIdType>
         af::array _getInputPortAsAfArray(
             const PortIdType& portId,
             bool truncateToMinLength);
@@ -116,9 +107,4 @@ class ArrayFireBlock: public Pothos::Block
         void _postAfArray(
             const PortIdType& portId,
             const AfArrayType& afArray);
-
-        template <typename PortIdType, typename AfArrayType>
-        void _postAfArray(
-            const PortIdType& portId,
-            AfArrayType&& rAfArray);
 };
