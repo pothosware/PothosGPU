@@ -48,12 +48,6 @@ AfPinnedMemRAII::~AfPinnedMemRAII()
 template <typename AfArrayType>
 Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 {
-    af::array outputAfArray(afArray);
-    return moveAfArrayToBufferChunk(std::move(outputAfArray));
-}
-
-Pothos::BufferChunk moveAfArrayToBufferChunk(af::array&& rAfArray)
-{
     #ifndef NDEBUG
     static auto& logger = Poco::Logger::get(__FUNCTION__);
     logger.setLevel("debug");
@@ -61,17 +55,42 @@ Pothos::BufferChunk moveAfArrayToBufferChunk(af::array&& rAfArray)
     poco_debug_f3(
         logger,
         "Moving %s af::array of size %s and type %s",
-        Pothos::Object(af::getBackendId(rAfArray)).convert<std::string>(),
-        Poco::NumberFormatter::format(rAfArray.bytes()),
-        Pothos::Object(rAfArray.type()).convert<std::string>());
+        Pothos::Object(af::getBackendId(afArray)).convert<std::string>(),
+        Poco::NumberFormatter::format(afArray.bytes()),
+        Pothos::Object(afArray.type()).convert<std::string>());
     #endif
 
+    auto afPinnedMemSPtr = std::make_shared<AfPinnedMemRAII>(
+                               af::getBackendId(afArray),
+                               afArray.bytes());
+    afArray.host(afPinnedMemSPtr->get());
+
+    auto sharedBuffer = Pothos::SharedBuffer(
+                            reinterpret_cast<size_t>(afPinnedMemSPtr->get()),
+                            afArray.bytes(),
+                            afPinnedMemSPtr);
+    auto bufferChunk = Pothos::BufferChunk(sharedBuffer);
+    bufferChunk.dtype = Pothos::Object(afArray.type()).convert<Pothos::DType>();
+
+    return bufferChunk;
+}
+
+Pothos::BufferChunk moveAfArrayToBufferChunk(af::array&& rAfArray)
+{
     return Pothos::BufferChunk();
 }
 
 static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
 {
-    return af::array();
+    af::array ret(
+        bufferChunk.elements(),
+        Pothos::Object(bufferChunk.dtype).convert<af::dtype>());
+    ret.write<std::uint8_t>(
+        reinterpret_cast<const std::uint8_t*>(bufferChunk.address),
+        bufferChunk.length,
+        ::afHost);
+
+    return ret;
 }
 
 //

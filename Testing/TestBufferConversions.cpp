@@ -40,7 +40,7 @@ static void compareAfArrayToBufferChunk(
     POTHOS_TEST_EQUALA(
         afArrayHost.data(),
         reinterpret_cast<const ElemType*>(bufferChunk.address),
-        bufferChunk.length);
+        bufferChunk.elements());
 }
 
 template <typename T>
