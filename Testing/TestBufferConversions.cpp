@@ -20,6 +20,7 @@
 namespace PothosArrayFireTests
 {
 
+// TODO: move to TestUtilities, use in FileIOTests
 template <typename AfArrayType, typename ElemType>
 static void compareAfArrayToBufferChunk(
     const AfArrayType& afArray,

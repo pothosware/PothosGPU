@@ -75,11 +75,6 @@ Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
     return bufferChunk;
 }
 
-Pothos::BufferChunk moveAfArrayToBufferChunk(af::array&& rAfArray)
-{
-    return Pothos::BufferChunk();
-}
-
 static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
 {
     af::array ret(

@@ -92,11 +92,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
             for(size_t chan = 0; chan < _nchans; ++chan)
             {
                 this->setupInput(chan, _dtype);
-
-                // Custom domain because of buffer forwarding
-                // Note: since we are forwarding the input array,
-                //       we aren't setting our own domain.
-                this->setupOutput(chan, _dtype, this->uid());
+                this->setupOutput(chan, _dtype, this->getPortDomain());
             }
         }
 
@@ -125,22 +121,19 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 return;
             }
 
-            auto afInput = this->getNumberedInputPortsAs2DAfArray();
-            auto afLabelValues = _func(afInput, defaultDim);
+            auto afArray = this->getNumberedInputPortsAs2DAfArray();
+            auto afLabelValues = _func(afArray, defaultDim);
             assert(afLabelValues.elements() == static_cast<dim_t>(_nchans));
 
             for(dim_t chan = 0; chan < static_cast<dim_t>(_nchans); ++chan)
             {
-                auto* input = this->input(chan);
-                auto* output = this->output(chan);
-
                 auto labelVal = getArrayValueOfUnknownTypeAtIndex(afLabelValues, chan);
 
                 size_t index = 0;
                 if(_searchForIndex)
                 {
                     ssize_t sIndex = findValueOfUnknownTypeInArray(
-                                         afInput.row(chan),
+                                         afArray.row(chan),
                                          labelVal);
                     if(0 > sIndex)
                     {
@@ -154,12 +147,13 @@ class OneArrayStatsBlock: public ArrayFireBlock
                     index = static_cast<size_t>(sIndex);
                 }
 
-                output->postLabel(
+                this->output(chan)->postLabel(
                     _labelName,
                     std::move(labelVal),
                     index);
-                output->postBuffer(std::move(input->takeBuffer()));
             }
+
+            this->postAfArrayToNumberedOutputPorts(afArray);
         }
 
     protected:
