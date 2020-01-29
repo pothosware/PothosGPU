@@ -94,17 +94,10 @@ POTHOS_MODULE_UTIL(
         Source/ReducedBlock.cpp
         Source/Root.cpp
         Source/ScalarOpBlock.cpp
+        Source/SplitComplex.cpp
         Source/Statistics.cpp
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
-
-        Source/Comms/Arithmetic.cpp
-        Source/Comms/Comparator.cpp
-        Source/Comms/RegistryOnly.cpp
-        Source/Comms/Rotate.cpp
-        Source/Comms/Scale.cpp
-        Source/Comms/SplitComplex.cpp
-        Source/Comms/WaveformSource.cpp
 
         Testing/BlockExecutionTests.cpp
         Testing/CastBlockTest.cpp
