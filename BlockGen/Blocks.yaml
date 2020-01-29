@@ -6,6 +6,19 @@ OneToOneBlocks:
         # af/arith.h
         #
 
+        - func: abs
+          niceName: Absolute Value
+          header: arith
+          supportedTypes:
+                  supportAll: true
+
+        - func: arg
+          niceName: Phase of Complex Number
+          header: arith
+          description: Phase of a number in the complex plane.
+          #verify: std::arg
+          pattern: ComplexToFloat
+
         - func: round
           header: arith
           description: Round to nearest integer.
@@ -83,6 +96,13 @@ OneToOneBlocks:
           header: arith
           verify: testImag
           pattern: ComplexToFloat
+
+        - func: conjg
+          niceName: Complex Conjugate
+          header: arith
+          verify: std::conj
+          supportedTypes:
+                  supportComplexFloat: true
 
         - func: sinh
           niceName: Hyperbolic Sine
