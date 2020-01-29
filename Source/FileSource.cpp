@@ -40,11 +40,11 @@ class FileSourceBlock: public ArrayFireBlock
             _filepath(filepath),
             _key(key),
             _repeat(repeat),
-            _filesize(0),
+            _nchans(0),
+            _rowSize(0),
             _pos(0),
             _afFileContents(),
-            _fileContents(),
-            _numDims(0)
+            _fileContents()
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, getFilepath));
             this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, getKey));
@@ -65,9 +65,8 @@ class FileSourceBlock: public ArrayFireBlock
             }
 
             _afFileContents = af::readArray(_filepath.c_str(), _key.c_str());
-            _filesize = _afFileContents.bytes();
-            _numDims = _afFileContents.numdims();
-            if((1 != _numDims) && (2 != _numDims))
+            const auto numDims = _afFileContents.numdims();
+            if((1 != numDims) && (2 != numDims))
             {
                 throw Pothos::DataFormatException(
                           "Only arrays of 1-2 dimensions are supported.");
@@ -77,14 +76,18 @@ class FileSourceBlock: public ArrayFireBlock
             // initialize our ports.
             const auto dtype = Pothos::Object(_afFileContents.type()).convert<Pothos::DType>();
 
-            if(1 == _numDims)
+            if(1 == numDims)
             {
+                _nchans = 1;
+                _rowSize = _afFileContents.bytes();
                 this->setupOutput(0, dtype, this->getPortDomain());
             }
             else
             {
-                const size_t nchans = static_cast<size_t>(_afFileContents.dims(0));
-                for(size_t chan = 0; chan < nchans; ++chan)
+                _nchans = static_cast<size_t>(_afFileContents.dims(0));
+                _rowSize = _afFileContents.bytes() / _nchans;
+
+                for(size_t chan = 0; chan < _nchans; ++chan)
                 {
                     this->setupOutput(chan, dtype, this->getPortDomain());
                 }
@@ -115,43 +118,56 @@ class FileSourceBlock: public ArrayFireBlock
         {
             // Incur a one-time performance hit of reading the file contents
             // into paged memory to make the work() implementation easier.
-            _fileContents = Pothos::SharedBuffer::makeCirc(_afFileContents.bytes());
-            _afFileContents.host(reinterpret_cast<void*>(_fileContents.getAddress()));
+            if(1 == _nchans)
+            {
+                _fileContents.emplace_back(Pothos::SharedBuffer::makeCirc(_afFileContents.bytes()));
+                _afFileContents.host(reinterpret_cast<void*>(_fileContents.back().getAddress()));
+            }
+            else
+            {
+                for(size_t chan = 0; chan < _nchans; ++chan)
+                {
+                    _fileContents.emplace_back(Pothos::SharedBuffer::makeCirc(_afFileContents.bytes()));
+                    _afFileContents.row(chan).host(reinterpret_cast<void*>(_fileContents.back().getAddress()));
+                }
+            }
         }
 
         void work()
         {
             const size_t elems = this->workInfo().minElements;
-            if((0 == elems) || (!_repeat && (_pos >= _filesize)))
+            if((0 == elems) || (!_repeat && (_pos >= _rowSize)))
             {
                 return;
             }
 
-            auto* outputPort = this->output(0);
-            const auto elemsBytes = elems * outputPort->dtype().size();
-
-            const void* srcPtr = reinterpret_cast<const void*>(_fileContents.getAddress() + _pos);
-            void* out = outputPort->buffer().as<void*>();
+            const auto elemsBytes = elems * this->output(0)->dtype().size();
+            size_t memcpySize = 0;
+            size_t actualElems = 0;
 
             if(_repeat)
             {
-                std::memcpy(out, srcPtr, elemsBytes);
-
-                _pos += elemsBytes;
-                if(_pos >= _filesize) _pos -= _filesize;
-
-                outputPort->produce(elems);
+                memcpySize = elemsBytes;
+                actualElems = elems;
             }
             else
             {
-                const auto memcpySize = std::min(elemsBytes, (_filesize-_pos));
-                const auto actualElems = memcpySize / outputPort->dtype().size();
+                memcpySize = std::min(elemsBytes, (_rowSize-_pos));
+                actualElems = memcpySize / this->output(0)->dtype().size();
+            }
+
+            for(size_t chan = 0; chan < _nchans; ++chan)
+            {
+                auto* outputPort = this->output(chan);
+                const void* srcPtr = reinterpret_cast<const void*>(_fileContents[chan].getAddress() + _pos);
+                void* out = outputPort->buffer().as<void*>();
 
                 std::memcpy(out, srcPtr, memcpySize);
-
-                _pos += memcpySize;
                 outputPort->produce(actualElems);
             }
+
+            _pos += memcpySize;
+            if(_repeat && (_pos >= _rowSize)) _pos -= _rowSize;
         }
 
     private:
@@ -159,12 +175,12 @@ class FileSourceBlock: public ArrayFireBlock
         std::string _key;
         bool _repeat;
 
-        size_t _filesize;
+        size_t _nchans;
+        size_t _rowSize;
         size_t _pos;
 
         af::array _afFileContents;
-        Pothos::SharedBuffer _fileContents;
-        size_t _numDims;
+        std::vector<Pothos::SharedBuffer> _fileContents;
 };
 
 /*
