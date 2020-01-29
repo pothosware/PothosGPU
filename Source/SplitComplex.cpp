@@ -28,7 +28,9 @@ class SplitComplex: public ArrayFireBlock
             size_t dtypeDimensions
         ):
             ArrayFireBlock(device),
-            _nchans(nchans)
+            _nchans(nchans),
+            _afComplexDType(Pothos::Object(Pothos::DType(typeid(ComplexType))).convert<af::dtype>()),
+            _afDType(Pothos::Object(Pothos::DType(typeid(T))).convert<af::dtype>())
         {
             for(size_t chan = 0; chan < _nchans; ++chan)
             {
@@ -57,31 +59,31 @@ class SplitComplex: public ArrayFireBlock
                 return;
             }
 
-            auto afInput = this->getInputPortAsAfArray(0);
+            af::array afInput(static_cast<dim_t>(_nchans), static_cast<dim_t>(elems), _afComplexDType);
+            for(size_t chan = 0; chan < _nchans; ++chan)
+            {
+                afInput.row(chan) = this->getInputPortAsAfArray(chan);
+            }
+
             auto afReal = af::real(afInput);
             auto afImag = af::imag(afInput);
 
-            if(1 == _nchans)
+            for(size_t chan = 0; chan < this->_nchans; ++chan)
             {
-                this->postAfArray("re0", afReal);
-                this->postAfArray("im0", afImag);
-            }
-            else
-            {
-                for(size_t chan = 0; chan < this->_nchans; ++chan)
-                {
-                    this->postAfArray(
-                        "re"+std::to_string(chan),
-                        afReal.row(chan));
-                    this->postAfArray(
-                        "im"+std::to_string(chan),
-                        afImag.row(chan));
-                }
+                this->postAfArray(
+                    "re"+std::to_string(chan),
+                    afReal.row(chan));
+                this->postAfArray(
+                    "im"+std::to_string(chan),
+                    afImag.row(chan));
             }
         }
 
     private:
         size_t _nchans;
+
+        af::dtype _afComplexDType;
+        af::dtype _afDType;
 };
 
 static Pothos::Block* splitComplexFactory(
