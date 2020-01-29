@@ -250,6 +250,20 @@ void testBufferChunk(
     const Pothos::BufferChunk& expectedBufferChunk,
     const Pothos::BufferChunk& actualBufferChunk);
 
+template <typename AfArrayType>
+static void compareAfArrayToBufferChunk(
+    const AfArrayType& afArray,
+    const Pothos::BufferChunk& bufferChunk)
+{
+    POTHOS_TEST_EQUAL(
+        afArray.bytes(),
+        bufferChunk.length);
+
+    testBufferChunk(
+        Pothos::Object(afArray).convert<Pothos::BufferChunk>(),
+        bufferChunk);
+}
+
 }
 
 //

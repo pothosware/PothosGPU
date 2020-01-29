@@ -23,7 +23,8 @@
 
 using namespace PothosArrayFireTests;
 
-static constexpr long SleepTimeMs = 100;
+// TODO: why do I need to increase the sleep when moving from CPU to CUDA???
+static constexpr long SleepTimeMs = 500;
 
 // Currently, our only non-file source needs ArrayFire 3.4.0+.
 #if AF_API_VERSION_CURRENT >= 34

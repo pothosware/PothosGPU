@@ -14,7 +14,7 @@
 
 #include <arrayfire.h>
 
-#include <cassert>
+#include <cstring>
 #include <string>
 #include <typeinfo>
 
@@ -40,7 +40,9 @@ class FileSourceBlock: public ArrayFireBlock
             _filepath(filepath),
             _key(key),
             _repeat(repeat),
-            _hasPosted(false),
+            _filesize(0),
+            _pos(0),
+            _afFileContents(),
             _fileContents(),
             _numDims(0)
         {
@@ -62,8 +64,9 @@ class FileSourceBlock: public ArrayFireBlock
                           _key);
             }
 
-            auto fileContents = af::readArray(_filepath.c_str(), _key.c_str());
-            _numDims = fileContents.numdims();
+            _afFileContents = af::readArray(_filepath.c_str(), _key.c_str());
+            _filesize = _afFileContents.bytes();
+            _numDims = _afFileContents.numdims();
             if((1 != _numDims) && (2 != _numDims))
             {
                 throw Pothos::DataFormatException(
@@ -72,16 +75,15 @@ class FileSourceBlock: public ArrayFireBlock
 
             // Now that we know the file is valid, store the array and
             // initialize our ports.
-            _fileContents = std::move(fileContents);
-            const auto dtype = Pothos::Object(_fileContents.type()).convert<Pothos::DType>();
+            const auto dtype = Pothos::Object(_afFileContents.type()).convert<Pothos::DType>();
 
             if(1 == _numDims)
             {
-                this->setupOutput(0, dtype);
+                this->setupOutput(0, dtype, this->getPortDomain());
             }
             else
             {
-                const size_t nchans = static_cast<size_t>(_fileContents.dims(0));
+                const size_t nchans = static_cast<size_t>(_afFileContents.dims(0));
                 for(size_t chan = 0; chan < nchans; ++chan)
                 {
                     this->setupOutput(chan, dtype, this->getPortDomain());
@@ -109,25 +111,59 @@ class FileSourceBlock: public ArrayFireBlock
             _repeat = repeat;
         }
 
-        // TODO: read into buffer
+        void activate() override
+        {
+            // Incur a one-time performance hit of reading the file contents
+            // into paged memory to make the work() implementation easier.
+            _fileContents = Pothos::SharedBuffer::makeCirc(_afFileContents.bytes());
+            _afFileContents.host(reinterpret_cast<void*>(_fileContents.getAddress()));
+        }
+
         void work()
         {
-            if(!_repeat && _hasPosted)
+            const size_t elems = this->workInfo().minElements;
+            if((0 == elems) || (!_repeat && (_pos >= _filesize)))
             {
                 return;
             }
 
-            this->postAfArrayToNumberedOutputPorts(_fileContents);
-            _hasPosted = true;
+            auto* outputPort = this->output(0);
+            const auto elemsBytes = elems * outputPort->dtype().size();
+
+            const void* srcPtr = reinterpret_cast<const void*>(_fileContents.getAddress() + _pos);
+            void* out = outputPort->buffer().as<void*>();
+
+            if(_repeat)
+            {
+                std::memcpy(out, srcPtr, elemsBytes);
+
+                _pos += elemsBytes;
+                if(_pos >= _filesize) _pos -= _filesize;
+
+                outputPort->produce(elems);
+            }
+            else
+            {
+                const auto memcpySize = std::min(elemsBytes, (_filesize-_pos));
+                const auto actualElems = memcpySize / outputPort->dtype().size();
+
+                std::memcpy(out, srcPtr, memcpySize);
+
+                _pos += memcpySize;
+                outputPort->produce(actualElems);
+            }
         }
 
     private:
         std::string _filepath;
         std::string _key;
         bool _repeat;
-        bool _hasPosted;
 
-        af::array _fileContents;
+        size_t _filesize;
+        size_t _pos;
+
+        af::array _afFileContents;
+        Pothos::SharedBuffer _fileContents;
         size_t _numDims;
 };
 
