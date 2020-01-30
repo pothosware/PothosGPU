@@ -125,7 +125,7 @@ af::array OneToOneBlock::getInputsAsAfArray()
     af::array afInput;
     if(1 == _nchans)
     {
-        afInput = this->getInputPortAsAfArray(0, false);
+        afInput = this->getInputPortAsAfArray(0);
     }
     else
     {
