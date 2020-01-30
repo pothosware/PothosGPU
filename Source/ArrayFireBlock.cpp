@@ -80,7 +80,11 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getInputBufferManager(
     if((domain == this->getPortDomain()) || domain.empty())
     {
         // We always want to operate on pinned memory, as GPUs can access this via DMA.
-        return Pothos::BufferManager::make("pinned");
+        Pothos::BufferManagerArgs args;
+        args.numBuffers = 16;
+        args.bufferSize = (2 << 20);
+        
+        return Pothos::BufferManager::make("pinned", args);
     }
 
     throw Pothos::PortDomainError(domain);
@@ -93,7 +97,11 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getOutputBufferManager(
     if((domain == this->getPortDomain()) || domain.empty())
     {
         // We always want to operate on pinned memory, as GPUs can access this via DMA.
-        return Pothos::BufferManager::make("pinned");
+        Pothos::BufferManagerArgs args;
+        args.numBuffers = 16;
+        args.bufferSize = (2 << 20);
+        
+        return Pothos::BufferManager::make("pinned", args);
     }
 
     throw Pothos::PortDomainError(domain);
