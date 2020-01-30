@@ -114,7 +114,7 @@ OneToOneBlock::OneToOneBlock(
     for(size_t chan = 0; chan < _nchans; ++chan)
     {
         this->setupInput(chan, inputDType);
-        this->setupOutput(chan, outputDType, this->getPortDomain());
+        this->setupOutput(chan, outputDType);
     }
 }
 

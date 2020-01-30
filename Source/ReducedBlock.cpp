@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ReducedBlock.hpp"
@@ -44,7 +44,7 @@ ReducedBlock::~ReducedBlock() {}
 
 void ReducedBlock::work()
 {
-    const size_t elems = this->workInfo().minAllInElements;
+    const size_t elems = this->workInfo().minAllElements;
 
     if(0 == elems)
     {

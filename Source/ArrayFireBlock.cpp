@@ -77,13 +77,7 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getInputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
-    if(domain == this->getPortDomain())
-    {
-        // The input is another instance of this block, with an af::array from the
-        // same backend, so we know what it'll be doing.
-        return Pothos::BufferManager::Sptr();
-    }
-    else if(domain.empty())
+    if((domain == this->getPortDomain()) || domain.empty())
     {
         // We always want to operate on pinned memory, as GPUs can access this via DMA.
         return Pothos::BufferManager::make("pinned");
