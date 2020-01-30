@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -28,7 +28,9 @@ class SplitComplex: public ArrayFireBlock
             size_t dtypeDimensions
         ):
             ArrayFireBlock(device),
-            _nchans(nchans)
+            _nchans(nchans),
+            _afComplexDType(Pothos::Object(Pothos::DType(typeid(ComplexType))).convert<af::dtype>()),
+            _afDType(Pothos::Object(Pothos::DType(typeid(T))).convert<af::dtype>())
         {
             for(size_t chan = 0; chan < _nchans; ++chan)
             {
@@ -57,53 +59,31 @@ class SplitComplex: public ArrayFireBlock
                 return;
             }
 
-            af::array afReal;
-            af::array afImag;
-
-            if(1 == _nchans)
+            af::array afInput(static_cast<dim_t>(_nchans), static_cast<dim_t>(elems), _afComplexDType);
+            for(size_t chan = 0; chan < _nchans; ++chan)
             {
-                if(this->doesInputPortDomainMatch(0))
-                {
-                    const auto& afInput = this->getInputPortAfArrayRef(0);
-                    afReal = af::real(afInput);
-                    afImag = af::imag(afInput);
-                }
-                else
-                {
-                    auto afInput = this->getInputPortAsAfArray(0);
-                    afReal = af::real(afInput);
-                    afImag = af::imag(afInput);
-                }
-            }
-            else
-            {
-                auto afInput = this->getNumberedInputPortsAs2DAfArray();
-                afReal = af::real(afInput);
-                afImag = af::imag(afInput);
+                afInput.row(chan) = this->getInputPortAsAfArray(chan);
             }
 
-            if(1 == _nchans)
+            auto afReal = af::real(afInput);
+            auto afImag = af::imag(afInput);
+
+            for(size_t chan = 0; chan < this->_nchans; ++chan)
             {
-                this->input(0)->consume(elems);
-                this->postAfArray("re0", afReal);
-                this->postAfArray("im0", afImag);
-            }
-            else
-            {
-                for(size_t chan = 0; chan < this->_nchans; ++chan)
-                {
-                    this->postAfArray(
-                        "re"+std::to_string(chan),
-                        afReal.row(chan));
-                    this->postAfArray(
-                        "im"+std::to_string(chan),
-                        afImag.row(chan));
-                }
+                this->postAfArray(
+                    "re"+std::to_string(chan),
+                    afReal.row(chan));
+                this->postAfArray(
+                    "im"+std::to_string(chan),
+                    afImag.row(chan));
             }
         }
 
     private:
         size_t _nchans;
+
+        af::dtype _afComplexDType;
+        af::dtype _afDType;
 };
 
 static Pothos::Block* splitComplexFactory(

@@ -49,9 +49,6 @@ class CorrCoefBlock: public ArrayFireBlock
 
             const auto corrcoef = af::corrcoef<double>(afInput0, afInput1);
 
-            this->input(0)->consume(elems);
-            this->input(1)->consume(elems);
-
             this->output(0)->postLabel(
                 LabelName,
                 corrcoef,

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BlockExecutionTests.hpp"
@@ -121,7 +121,7 @@ void testTwoToOneBlockCommon(
     POTHOS_TEST_EQUAL(
         testInputs[0].size(),
         output.elements());
-    if(nullptr != verificationFunc)
+    if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("getArrayFireBackend")))
     {
         auto expectedOutputs = getExpectedOutputs(
                                    testInputs[0],

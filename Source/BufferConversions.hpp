@@ -19,6 +19,40 @@
 #include <vector>
 
 //
+// Minimal wrapper class to ensure allocation and deallocation are done
+// with the same backend.
+//
+
+class AfPinnedMemRAII
+{
+    public:
+        using SPtr = std::shared_ptr<AfPinnedMemRAII>;
+        
+        AfPinnedMemRAII(af::Backend backend, size_t allocSize);
+
+        ~AfPinnedMemRAII();
+
+        inline void* get() const
+        {
+            return _pinnedMem;
+        }
+
+    private:
+        af::Backend _backend;
+        void* _pinnedMem;
+};
+
+// The af::array is passed into ArrayFire functions, and the pinned
+// memory is exposed in the BufferChunk.
+struct AfArrayPothosContainer
+{
+    using SPtr = std::shared_ptr<AfArrayPothosContainer>;
+    
+    af::array afArray;
+    AfPinnedMemRAII::SPtr afPinnedMemSPtr;
+};
+
+//
 // Pothos::BufferChunk <-> af::array
 //
 

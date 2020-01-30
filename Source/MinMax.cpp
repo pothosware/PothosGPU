@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -57,16 +57,17 @@ class MinMax: public ArrayFireBlock
             assert(_nchans == static_cast<size_t>(val.elements()));
             assert(_nchans == static_cast<size_t>(idx.elements()));
 
-            const auto* idxPtr = idx.device<std::uint32_t>();
+            std::vector<std::uint32_t> idxVec(idx.elements());
+            idx.host(idxVec.data());
 
             for(dim_t chan = 0; chan < static_cast<dim_t>(_nchans); ++chan)
             {
                 this->output(chan)->postLabel(
                     _labelName,
                     getArrayValueOfUnknownTypeAtIndex(val, chan),
-                    idxPtr[chan]);
+                    idxVec[chan]);
             }
-            this->post2DAfArrayToNumberedOutputPorts(afInput);
+            this->postAfArrayToNumberedOutputPorts(afInput);
         }
 
     private:

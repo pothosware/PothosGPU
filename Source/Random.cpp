@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -131,15 +131,19 @@ class RandomBlock: public ArrayFireBlock
 
         void work() override
         {
-            const af::dim4 dims(_numOutputs, BufferLen);
+            const auto elems = this->workInfo().minElements;
+            if(0 == elems)
+            {
+                return;
+            }
+
+            const af::dim4 dims(_numOutputs, static_cast<dim_t>(elems));
 
             auto afOutput = _afRandomFunc(dims, _afDType, _afRandomEngine);
-            this->post2DAfArrayToNumberedOutputPorts(afOutput);
+            this->postAfArrayToNumberedOutputPorts(afOutput);
         }
 
     private:
-
-        static constexpr dim_t BufferLen = 8192;
 
         dim_t _numOutputs;
 

@@ -162,14 +162,13 @@ ssize_t findValueOfUnknownTypeInArray(
     const af::array& afArray,
     const Pothos::Object& value)
 {
-    assert(1 == afArray.numdims());
-
     #define SwitchCase(afDType, ctype) \
         case afDType: \
         { \
             const size_t size = static_cast<size_t>(afArray.elements()); \
-            const ctype* buffer = reinterpret_cast<const ctype*>(afArray.device<PothosToAF<ctype>::type>()); \
+            const ctype* buffer = reinterpret_cast<const ctype*>(afArray.host<PothosToAF<ctype>::type>()); \
             auto iter = std::find(buffer, (buffer+size), value.extract<ctype>()); \
+            af::freeHost(buffer); \
             if(iter != (buffer+size)) \
             { \
                 return static_cast<ssize_t>(std::distance(buffer, iter)); \

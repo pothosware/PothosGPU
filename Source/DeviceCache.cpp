@@ -67,20 +67,33 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                 devIndex
             };
 
-            if(af::isDoubleAvailable(devIndex))
-            {
-                deviceCache.emplace_back(std::move(deviceCacheEntry));
-            }
-            else
-            {
-                auto& logger = Poco::Logger::get("PothosArrayFire");
-                poco_warning_f2(
-                    logger,
-                    "Found %s device %s, which does not have 64-bit floating-point "
-                    "support through ArrayFire. This device will not be made "
-                    "available through PothosArrayFire.",
-                    Pothos::Object(backend).convert<std::string>(),
-                    deviceCacheEntry.name);
+            // Policy: some devices are supported by multiple backends. Only
+            //         store each device once, with the most efficient backend
+            //         that supports it.
+            auto devIter = std::find_if(
+                               deviceCache.begin(),
+                               deviceCache.end(),
+                               [&deviceCacheEntry](const DeviceCacheEntry& entry)
+                               {
+                                   return (deviceCacheEntry.name == entry.name);
+                               });
+            if(deviceCache.end() == devIter)
+            {            
+                if(af::isDoubleAvailable(devIndex))
+                {
+                    deviceCache.emplace_back(std::move(deviceCacheEntry));
+                }
+                else
+                {
+                    auto& logger = Poco::Logger::get("PothosArrayFire");
+                    poco_warning_f2(
+                        logger,
+                        "Found %s device %s, which does not have 64-bit floating-point "
+                        "support through ArrayFire. This device will not be made "
+                        "available through PothosArrayFire.",
+                        Pothos::Object(backend).convert<std::string>(),
+                        deviceCacheEntry.name);
+                }
             }
         }
     }
