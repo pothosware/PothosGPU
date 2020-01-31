@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -56,7 +56,7 @@ class FlatBlock: public ArrayFireBlock
                               Poco::NumberFormatter::format(afOutput.numdims())));
             }
 
-            this->postAfArray(0, std::move(afOutput));
+            this->postAfArray(0, afOutput);
         }
 };
 

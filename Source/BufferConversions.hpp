@@ -58,5 +58,3 @@ struct AfArrayPothosContainer
 
 template <typename AfArrayType>
 Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray);
-
-Pothos::BufferChunk moveAfArrayToBufferChunk(af::array&& rAfArray);

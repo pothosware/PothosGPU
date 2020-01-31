@@ -74,7 +74,7 @@ static void benchmarkBlock(
             afRate = rateMonitor.call<double>("rate");
         }
 
-        std::cout << " * " << device.name << ": " << afRate << std::endl;
+        std::cout << " * " << device.name << ": " << afRate << " (" << (afRate/commsRate) << "x)" << std::endl;
     }
 }
 
@@ -124,7 +124,7 @@ static void benchmarkArithmeticBlock(
 
         commsRate = rateMonitor.call<double>("rate");
     }
-    std::cout << commsBlockPath << " (" << commsOperation <<  "): " << commsRate << std::endl;
+    std::cout << commsBlockPath << " (" << commsOperation << "): " << commsRate << std::endl;
 
     //
     // /arrayfire
@@ -158,9 +158,84 @@ static void benchmarkArithmeticBlock(
             afRate = rateMonitor.call<double>("rate");
         }
 
-        std::cout << " * " << device.name << ": " << afRate << std::endl;
+        std::cout << " * " << device.name << ": " << afRate << " (" << (afRate/commsRate) << "x)" << std::endl;
     }
 }
+
+static void benchmarkFFT(const std::string& dtype)
+{
+    static const std::string commsBlockPath = "/comms/fft";
+    static const std::string afBlockPath = "/arrayfire/signal/fft";
+    static constexpr size_t numBins = 1024;
+
+    auto noiseSource = Pothos::BlockRegistry::make(
+                           "/comms/noise_source",
+                           dtype);
+    auto rateMonitor = Pothos::BlockRegistry::make("/blocks/rate_monitor");
+
+    double commsRate = 0.0;
+    double afRate = 0.0;
+
+    //
+    // /comms
+    //
+
+    auto commsFFT = Pothos::BlockRegistry::make(
+                        commsBlockPath,
+                        dtype,
+                        numBins,
+                        false);
+
+    {
+        Pothos::Topology topology;
+        
+        topology.connect(noiseSource, 0, commsFFT, 0);
+        topology.connect(commsFFT, 0, rateMonitor, 0);
+
+        topology.commit();
+        Poco::Thread::sleep(SleepTime);
+
+        commsRate = rateMonitor.call<double>("rate");
+    }
+    std::cout << commsBlockPath << ": " << commsRate << std::endl;
+
+    //
+    // /arrayfire
+    //
+
+    std::cout << afBlockPath << ":" << std::endl;
+
+    const auto& deviceCache = getDeviceCache();
+    for(const auto& device: deviceCache)
+    {
+        auto afFFT = Pothos::BlockRegistry::make(
+                                afBlockPath,
+                                device.name,
+                                dtype,
+                                numBins,
+                                1.0,
+                                1,
+                                false);
+
+        {
+            Pothos::Topology topology;
+
+            topology.connect(noiseSource, 0, afFFT, 0);
+            topology.connect(afFFT, 0, rateMonitor, 0);
+
+            topology.commit();
+            Poco::Thread::sleep(SleepTime);
+
+            afRate = rateMonitor.call<double>("rate");
+        }
+
+        std::cout << " * " << device.name << ": " << afRate << " (" << (afRate/commsRate) << "x)" << std::endl;
+    }
+}
+
+//
+// Registered tests
+//
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", benchmark_abs)
 {
@@ -175,14 +250,6 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", benchmark_conjg)
     benchmarkBlock(
         "/comms/conjugate",
         "/arrayfire/arith/conjg",
-        "complex_float64");
-}
-
-POTHOS_TEST_BLOCK("/arrayfire/tests", benchmark_arg)
-{
-    benchmarkBlock(
-        "/comms/angle",
-        "/arrayfire/arith/arg",
         "complex_float64");
 }
 
@@ -216,4 +283,9 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", benchmark_div)
         "DIV",
         "/",
         "float64");
+}
+
+POTHOS_TEST_BLOCK("/arrayfire/tests", benchmark_fft)
+{
+    benchmarkFFT("complex_float64");
 }

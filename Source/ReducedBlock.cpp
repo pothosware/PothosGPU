@@ -61,5 +61,5 @@ void ReducedBlock::work()
                   std::to_string(elems));
     }
 
-    this->postAfArray(0, std::move(afOutput));
+    this->postAfArray(0, afOutput);
 }

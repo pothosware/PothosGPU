@@ -58,8 +58,9 @@ class CorrCoefBlock: public ArrayFireBlock
                 corrcoef,
                 0);
 
-            this->postAfArray(0, std::move(afInput0));
-            this->postAfArray(1, std::move(afInput1));
+            // TODO: forward input since we're bringing memory to host anyway
+            this->postAfArray(0, afInput0);
+            this->postAfArray(1, afInput1);
         }
 
         static const std::string LabelName;

@@ -92,23 +92,6 @@ class FFTBaseBlock: public ArrayFireBlock
 
         virtual ~FFTBaseBlock() = default;
 
-        Pothos::BufferManager::Sptr getOutputBufferManager(
-            const std::string& /*name*/,
-            const std::string& domain)
-        {
-            if((domain == this->getPortDomain()) || domain.empty())
-            {
-                // Make sure the slab is large enough for the FFT result.
-                Pothos::BufferManagerArgs args;
-                args.bufferSize = _numBins*sizeof(OutType);
-
-                // We always want to operate on pinned memory, as GPUs can access this via DMA.
-                return Pothos::BufferManager::make("pinned", args);
-            }
-
-            throw Pothos::PortDomainError(domain);
-        }
-
         virtual void work() = 0;
 
         double getNormalizationFactor() const
@@ -163,15 +146,23 @@ class FFTBlock: public FFTBaseBlock<T,T>
              * all of this stuff is thread-local, so we can take advantage of
              * it.
              */
-            #if AF_CONFIG_PER_THREAD
-            gfor(size_t chan, this->_nchans)
-            #else
-            for(size_t chan = 0; chan < this->_nchans; ++chan)
-            #endif
+            if(1 == this->_nchans)
             {
-                af::array row(afArray.row(chan));
-                _func(row, this->_norm);
-                afArray(row) = row;
+                _func(afArray, this->_norm);
+            }
+            else
+            {
+                // TODO: fix
+                #if AF_CONFIG_PER_THREAD
+                gfor(size_t chan, this->_nchans)
+                #else
+                for(size_t chan = 0; chan < this->_nchans; ++chan)
+                #endif
+                {
+                    af::array row(afArray.row(chan));
+                    _func(row, this->_norm);
+                    afArray(row) = row;
+                }
             }
 
             this->postAfArrayToNumberedOutputPorts(afArray);
