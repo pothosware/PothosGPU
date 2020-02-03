@@ -83,6 +83,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
             _func(std::move(func)),
             _dtype(dtype),
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
+            _lastValue(),
             _labelName(labelName),
             _nchans(nchans),
             _searchForIndex(searchForIndex)
@@ -94,6 +95,8 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 this->setupInput(chan, _dtype);
                 this->setupOutput(chan, _dtype, this->getPortDomain());
             }
+
+            this->registerProbe("lastValue");
         }
 
         OneArrayStatsBlock(
@@ -113,6 +116,11 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 searchForIndex)
         {}
 
+        Pothos::Object lastValue() const
+        {
+            return _lastValue;
+        }
+
         void work() override
         {
             const size_t elems = this->workInfo().minAllElements;
@@ -127,14 +135,14 @@ class OneArrayStatsBlock: public ArrayFireBlock
 
             for(dim_t chan = 0; chan < static_cast<dim_t>(_nchans); ++chan)
             {
-                auto labelVal = getArrayValueOfUnknownTypeAtIndex(afLabelValues, chan);
+                _lastValue = getArrayValueOfUnknownTypeAtIndex(afLabelValues, chan);
 
                 size_t index = 0;
                 if(_searchForIndex)
                 {
                     ssize_t sIndex = findValueOfUnknownTypeInArray(
                                          afArray.row(chan),
-                                         labelVal);
+                                         _lastValue);
                     if(0 > sIndex)
                     {
                         throw Pothos::AssertionViolationException(
@@ -149,7 +157,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
 
                 this->output(chan)->postLabel(
                     _labelName,
-                    std::move(labelVal),
+                    std::move(_lastValue),
                     index);
             }
 
@@ -161,6 +169,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
         OneArrayStatsFunction _func;
         Pothos::DType _dtype;
         af::dtype _afDType;
+        Pothos::Object _lastValue;
         std::string _labelName;
         size_t _nchans;
         bool _searchForIndex;
