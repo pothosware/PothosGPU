@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -19,6 +19,7 @@ struct DeviceCacheEntry
     af::Backend afBackendEnum;
     int afDeviceIndex;
 };
+using DeviceCache = std::vector<DeviceCacheEntry>;
 
 const std::vector<af::Backend>& getAvailableBackends();
 

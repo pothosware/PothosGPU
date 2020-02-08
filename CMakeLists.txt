@@ -113,6 +113,7 @@ POTHOS_MODULE_UTIL(
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
         Testing/TestLabels.cpp
+        Testing/TestManagedDeviceCache.cpp
         Testing/TestNumericConversions.cpp
         Testing/TestPortDomainCombos.cpp
         Testing/TestUtility.cpp
