@@ -31,13 +31,14 @@ class Clamp: public OneToOneBlock
         Clamp(
             const std::string& device,
             const T& minValue,
-            const T& maxValue
+            const T& maxValue,
+            size_t dtypeDims
         ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(),
-                dtype,
-                dtype)
+                Pothos::DType::fromDType(Class::dtype, dtypeDims),
+                Pothos::DType::fromDType(Class::dtype, dtypeDims))
         {
             validateMinMax(minValue, maxValue);
 
@@ -193,7 +194,7 @@ static Pothos::Block* clampFactory(
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new Clamp<T>(device, minValue.convert<T>(), maxValue.convert<T>());
+            return new Clamp<T>(device, minValue.convert<T>(), maxValue.convert<T>(), dtype.dimension());
 
     // ArrayFire has no implementation for std::int8_t.
     ifTypeDeclareFactory(std::int16_t)

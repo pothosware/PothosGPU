@@ -53,6 +53,7 @@ class FFTBaseBlock: public ArrayFireBlock
             const std::string& device,
             size_t numBins,
             double norm,
+            size_t dtypeDims,
             const std::string& blockRegistryPath
         ):
             ArrayFireBlock(device),
@@ -71,8 +72,14 @@ class FFTBaseBlock: public ArrayFireBlock
             static const Pothos::DType inDType(typeid(InType));
             static const Pothos::DType outDType(typeid(OutType));
 
-            this->setupInput(0, inDType, this->getPortDomain());
-            this->setupOutput(0, outDType, this->getPortDomain());
+            this->setupInput(
+                0,
+                Pothos::DType::fromDType(inDType, dtypeDims),
+                this->getPortDomain());
+            this->setupOutput(
+                0,
+                Pothos::DType::fromDType(outDType, dtypeDims),
+                this->getPortDomain());
 
             this->registerProbe(
                 "getNormalizationFactor",
@@ -115,9 +122,10 @@ class FFTBlock: public FFTBaseBlock<T,T>
             const std::string& device,
             FFTInPlaceFuncPtr func,
             size_t numBins,
-            double norm
+            double norm,
+            size_t dtypeDims
         ):
-            FFTBaseBlock<T,T>(device, numBins, norm, fftBlockPath),
+            FFTBaseBlock<T,T>(device, numBins, norm, dtypeDims, fftBlockPath),
             _func(func)
         {
         }
@@ -149,9 +157,10 @@ class RFFTBlock: public FFTBaseBlock<In,Out>
             const std::string& device,
             const FFTFunc& func,
             size_t numBins,
-            double norm
+            double norm,
+            size_t dtypeDims
         ):
-            FFTBaseBlock<In,Out>(device, numBins, norm, rfftBlockPath),
+            FFTBaseBlock<In,Out>(device, numBins, norm, dtypeDims, rfftBlockPath),
             _func(func)
         {
         }
@@ -190,7 +199,7 @@ static Pothos::Block* makeFFT(
 
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new FFTBlock<T>(device, func, numBins, norm);
+            return new FFTBlock<T>(device, func, numBins, norm, dtype.dimension());
 
     ifTypeDeclareFactory(std::complex<float>)
     ifTypeDeclareFactory(std::complex<double>)
@@ -227,8 +236,8 @@ static Pothos::Block* makeRFFT(
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
         { \
-            if(inverse) return new RFFTBlock<T,std::complex<T>>(device,func,numBins,norm); \
-            else        return new RFFTBlock<std::complex<T>,T>(device,func,numBins,norm); \
+            if(inverse) return new RFFTBlock<T,std::complex<T>>(device,func,numBins,norm,dtype.dimension()); \
+            else        return new RFFTBlock<std::complex<T>,T>(device,func,numBins,norm,dtype.dimension()); \
         }
 
     ifTypeDeclareFactory(float)
@@ -270,7 +279,7 @@ static Pothos::Block* makeRFFT(
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(cfloat=1)
+ * |widget DTypeChooser(cfloat=1,dim=1)
  * |default "complex_float64"
  * |preview disable
  *
@@ -323,7 +332,7 @@ static Pothos::BlockRegistry registerFFT(
  * |preview enable
  *
  * |param dtype[Data Type] The floating-type underlying the input types.
- * |widget DTypeChooser(float=1)
+ * |widget DTypeChooser(float=1,dim=1)
  * |default "float64"
  * |preview disable
  *

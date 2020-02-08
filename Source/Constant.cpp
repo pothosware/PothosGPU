@@ -22,14 +22,18 @@ class Constant: public ArrayFireBlock
 
         Constant(
             const std::string& device,
-            T constant
+            T constant,
+            size_t dtypeDims
         ):
             ArrayFireBlock(device),
             _afDType(Pothos::Object(Class::dtype).convert<af::dtype>())
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getConstant));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setConstant));
-            this->setupOutput(0, Class::dtype, this->getPortDomain());
+            this->setupOutput(
+                0,
+                Pothos::DType::fromDType(Class::dtype, dtypeDims),
+                this->getPortDomain());
 
             this->registerProbe("getConstant", "constantChanged", "setConstant");
 
@@ -80,7 +84,7 @@ static Pothos::Block* constantFactory(
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new Constant<T>(device, constant.convert<T>());
+            return new Constant<T>(device, constant.convert<T>(), dtype.dimension());
 
     // ArrayFire has no implementation for std::int8_t.
     ifTypeDeclareFactory(std::int16_t)

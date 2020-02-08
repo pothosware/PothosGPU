@@ -26,12 +26,15 @@ class FIRBlock: public OneToOneBlock
 
         static const Pothos::DType dtype;
 
-        FIRBlock(const std::string& device):
+        FIRBlock(
+            const std::string& device,
+            size_t dtypeDims
+        ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(&af::fir),
-                Class::dtype,
-                Class::dtype),
+                Pothos::DType::fromDType(Class::dtype, dtypeDims),
+                Pothos::DType::fromDType(Class::dtype, dtypeDims)),
             _taps({T(1.0)}),
             _waitTaps(false),
             _waitTapsArmed(false)
@@ -108,12 +111,15 @@ class IIRBlock: public OneToOneBlock
 
         static const Pothos::DType dtype;
 
-        IIRBlock(const std::string& device):
+        IIRBlock(
+            const std::string& device,
+            size_t dtypeDims
+        ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(&af::iir),
-                Class::dtype,
-                Class::dtype),
+                Pothos::DType::fromDType(Class::dtype, dtypeDims),
+                Pothos::DType::fromDType(Class::dtype, dtypeDims)),
             _feedForwardCoeffs({0.0676, 0.135, 0.0676}),
             _feedbackCoeffs({1, -1.142, 0.412}),
             _waitTaps(false),
@@ -273,7 +279,7 @@ static Pothos::Block* makeFIR(
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new FIRBlock<T>(device);
+            return new FIRBlock<T>(device,dtype.dimension());
 
     ifTypeDeclareFactory(std::int16_t)
     ifTypeDeclareFactory(std::int32_t)
@@ -299,7 +305,7 @@ static Pothos::Block* makeIIR(
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new IIRBlock<T>(device);
+            return new IIRBlock<T>(device,dtype.dimension());
 
     ifTypeDeclareFactory(std::int16_t)
     ifTypeDeclareFactory(std::int32_t)

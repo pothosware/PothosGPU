@@ -1,5 +1,4 @@
 Short-term:
- * Allow blocks to take in multi-dimensional DTypes, for consistency
  * data: range (optionally tracking across multiple works), iota(?), join, shift, flip
  * signal: interp?
  * statistics: topk
