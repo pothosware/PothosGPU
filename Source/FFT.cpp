@@ -256,17 +256,9 @@ static Pothos::Block* makeRFFT(
 /*
  * |PothosDoc FFT
  *
- * Calculates the 1-dimensional FFT of all input streams.
- *
- * Calls <b>af::fftInPlace</b> or <b>af::ifftInPlace</b> on all inputs.
- * This block computes all outputs in parallel, using one of the following
- * implementations by priority (based on availability of hardware and
- * underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calculates the FFT of all input streams. For the forward FFT, this
+ * block uses <b>af::fftInPlace</b> For the reverse FFT, this block
+ * uses <b>af::ifftInPlace</b>.
  *
  * |category /ArrayFire/Signal
  * |keywords array signal fft ifft fourier
@@ -309,17 +301,9 @@ static Pothos::BlockRegistry registerFFT(
 /*
  * |PothosDoc Real FFT
  *
- * Calculates the 1-dimensional real FFT of all input streams.
- *
- * Calls <b>af::fftR2C\<1\></b> or <b>af::fftC2R\<1\></b> on all inputs.
- * This block computes all outputs in parallel, using one of the following
- * implementations by priority (based on availability of hardware and
- * underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calculates the real FFT of all input streams. For the forward FFT, this
+ * block uses <b>af::fftR2C\<1\></b>. For the reverse FFT, this block uses
+ * <b>af::fftC2R\<1\></b>.
  *
  * |category /ArrayFire/Signal
  * |keywords array signal fft ifft rfft fourier

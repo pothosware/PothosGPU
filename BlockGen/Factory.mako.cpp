@@ -19,16 +19,10 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 %if "description" in block:
  *
 ${block["description"]}
-%endif
+%else:
  *
- * Calls <b>af::${block["func"]}</b> on all inputs. This block computes all
- * outputs in parallel, using one of the following implementations by priority
- * (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calls <b>af::${block["func"]}</b> on all inputs.
+%endif
  *
  * |category /ArrayFire/${block["header"].title()}
  * |keywords ${block["header"]} ${block["blockName"]}
@@ -98,16 +92,10 @@ ${block["description"]}
 %if "description" in block:
  *
 ${block["description"]}
-%endif
+%else:
  *
- * Calls <b>af::${block["func"]}</b> on all inputs. This block uses one of
- * the following implementations by priority (based on availability of
- * hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calls <b>af::${block["func"]}</b> on all inputs.
+%endif
  *
  * |category /ArrayFire/${block["header"].title()}
  * |keywords ${block["header"]} ${block["blockName"]}
@@ -174,15 +162,6 @@ ${block["description"]}
  * Applies the <b>${block["operator"]}</b> operator to all inputs, resulting
  * in a single output.
    %endif
- *
- * This block computes all outputs in parallel, using one
- * of the following implementations by priority (based on availability of
- * hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
  *
  * |category /ArrayFire/${block["header"].title()}
  * |keywords ${block["header"]} ${block["blockName"]}

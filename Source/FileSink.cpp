@@ -219,14 +219,6 @@ class FileSinkBlock: public ArrayFireBlock
  * <li>Appending to an array in an existing file</li>
  * </ol>
  *
- * This is potentially accelerated using one of the following implementations
- * by priority (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
- *
  * |category /ArrayFire/File IO
  * |keywords array file sink io
  * |factory /arrayfire/array/file_sink(device,filepath,key,dtype,numChannels,append)

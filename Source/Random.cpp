@@ -148,16 +148,12 @@ class RandomBlock: public ArrayFireBlock
 /*
  * |PothosDoc Random Source
  *
- * Calls <b>af::randn</b> or <b>af::randu</b> to generate random values of
- * the requested type.
+ * Generates random values from a <b>normal</b> or <b>uniform</b> distribution.
+ * For the normal distribution, this block uses <b>af::randn</b>. For the
+ * uniform distribution, this block uses <b>af::randu</b>.
  *
- * This is potentially accelerated using one of the following implementations
- * by priority (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * The underlying random generation scheme can also be customized, although for
+ * most purposes, leaving this value as its default will be fine.
  *
  * |category /ArrayFire/Random
  * |keywords array random uniform normal philox threefry mersenne source

@@ -148,18 +148,10 @@ void Clamp<double>::work()
  * |PothosDoc Clamp
  *
  * Calls <b>af::clamp</b> on all inputs with given minimum and maximum values.
- * This block computes all outputs in parallel, using one of the following
- * implementations by priority (based on availability of hardware and
- * underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
  *
  * |category /ArrayFire/Arith
  * |keywords array arith clamp min max
- * |factory /arrayfire/arith/clamp(device,dtype,minValue,maxValue,numChannels)
+ * |factory /arrayfire/arith/clamp(device,dtype,minValue,maxValue)
  * |setter setMinValue(minValue)
  * |setter setMaxValue(maxValue)
  *
@@ -180,11 +172,6 @@ void Clamp<double>::work()
  * |param maxValue(Min Value)
  * |default 10
  * |preview enable
- *
- * |param numChannels(Num Channels) The number of channels.
- * |widget SpinBox(minimum=1)
- * |default 1
- * |preview disable
  */
 static Pothos::Block* clampFactory(
     const std::string& device,
@@ -207,10 +194,6 @@ static Pothos::Block* clampFactory(
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     // ArrayFire has no implementation for any integral complex type.
-
-    // TODO: how does ArrayFire compare complex numbers?
-    /*ifTypeDeclareFactory(std::complex<float>)
-    ifTypeDeclareFactory(std::complex<double>)*/
 
     throw Pothos::InvalidArgumentException(
               "Unsupported type",

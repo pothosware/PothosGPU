@@ -194,14 +194,6 @@ class FileSourceBlock: public ArrayFireBlock
  * a given channel. The DType of each OutputPort is determined by the type
  * of the given array.
  *
- * This is potentially accelerated using one of the following implementations
- * by priority (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
- *
  * |category /ArrayFire/File IO
  * |keywords array file source io
  * |factory /arrayfire/array/file_source(device,filepath,key,repeat)

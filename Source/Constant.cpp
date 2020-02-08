@@ -108,15 +108,7 @@ static Pothos::Block* constantFactory(
 /*
  * |PothosDoc Constant
  *
- * Calls <b>af::constant</b> on all inputs. to fill buffers with a given
- * constant. This is potentially accelerated using one of the following
- * implementations by priority (based on availability of hardware
- * and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calls <b>af::constant</b> to fill all outgoing buffers with a given value.
  *
  * |category /ArrayFire/Data
  * |keywords data constant

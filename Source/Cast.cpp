@@ -70,18 +70,11 @@ class CastBlock: public OneToOneBlock
 /*
  * |PothosDoc Cast
  *
- * Calls <b>af::array::as</b> on all inputs to cast to a given type. This
- * is potentially accelerated using one of the following implementations
- * by priority (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calls <b>af::array::as</b> on all inputs to cast to a given type.
  *
  * |category /ArrayFire/Stream
  * |keywords array cast
- * |factory /arrayfire/array/cast(device,inputDType,outputDType,numChannels)
+ * |factory /arrayfire/array/cast(device,inputDType,outputDType)
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
@@ -96,11 +89,6 @@ class CastBlock: public OneToOneBlock
  * |param outputDType(Output Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
  * |default "complex_float64"
- * |preview disable
- *
- * |param numChannels[Num Channels] The number of channels.
- * |default 1
- * |widget SpinBox(minimum=1)
  * |preview disable
  */
 static Pothos::BlockRegistry registerCast(

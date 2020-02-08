@@ -86,14 +86,7 @@ static Pothos::Block* splitComplexFactory(
  * |PothosDoc Split Complex
  *
  * Calls <b>af::real</b> and <b>af::imag</b> on all inputs and outputs results
- * in "re" and "im" output channels. This is potentially accelerated using
- * one of the following implementations by priority (based on availability of
- * hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * in "re" and "im" output channels.
  *
  * |category /ArrayFire/Arith
  * |keywords arith complex real imag imaginary
@@ -104,7 +97,7 @@ static Pothos::Block* splitComplexFactory(
  * |widget ComboBox(editable=false)
  * |preview enable
  *
- * |param dtype(Data Type) The block data type.
+ * |param dtype(Data Type) The block data type. The input type will be the complex form of this type.
  * |widget DTypeChooser(float=1,dim=1)
  * |default "float64"
  * |preview disable
