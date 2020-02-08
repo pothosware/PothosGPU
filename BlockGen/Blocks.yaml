@@ -248,7 +248,7 @@ TwoToOneBlocks:
                   supportFloat: true
 
         - blockName: complex2
-          niceName: Real+Imag to Complex
+          niceName: Combine Complex
           func: complex
           description: Combine real and imaginary inputs into complex outputs.
           header: arith

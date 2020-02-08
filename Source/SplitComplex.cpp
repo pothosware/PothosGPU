@@ -83,7 +83,7 @@ static Pothos::Block* splitComplexFactory(
 }
 
 /*
- * |PothosDoc Split Complex (Parallel)
+ * |PothosDoc Split Complex
  *
  * Calls <b>af::real</b> and <b>af::imag</b> on all inputs and outputs results
  * in "re" and "im" output channels. This is potentially accelerated using
