@@ -80,7 +80,7 @@ POTHOS_MODULE_UTIL(
         Source/FileSink.cpp
         Source/FileSource.cpp
         Source/Filter.cpp
-        Source/Flat.cpp
+        #Source/Flat.cpp
         Source/IsInfNaN.cpp
         Source/LogN.cpp
         Source/MinMax.cpp
