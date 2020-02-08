@@ -33,6 +33,12 @@ class TwoToOneBlock: public ArrayFireBlock
             const Pothos::DType& floatType,
             bool allowZeroInBuffer1);
 
+        static Pothos::Block* makeComparator(
+            const std::string& device,
+            const TwoToOneFunc& func,
+            const Pothos::DType& dtype,
+            const DTypeSupport& supportedTypes);
+
         //
         // Class implementation
         //
@@ -52,3 +58,9 @@ class TwoToOneBlock: public ArrayFireBlock
         TwoToOneFunc _func;
         bool _allowZeroInBuffer1;
 };
+
+#define AF_ARRAY_OP_TWO_TO_ONE_FUNC(op) \
+    [](const af::array& arr1, const af::array& arr2) -> af::array \
+    { \
+        return (arr1 op arr2); \
+    }

@@ -33,7 +33,7 @@ static const std::unordered_map<std::string, af::convDomain> ConvDomainEnumMap =
 
 static const std::unordered_map<std::string, af::dtype> DTypeEnumMap =
 {
-    // No int8 support
+    {"int8",            ::b8},
     {"int16",           ::s16},
     {"int32",           ::s32},
     {"int64",           ::s64},
@@ -90,6 +90,10 @@ static void registerEnumConversion(
 
 pothos_static_block(registerArrayFireEnumConversions)
 {
+    registerEnumConversion(
+        DTypeEnumMap,
+        "std_string_to_af_dtype",
+        "af_dtype_to_std_string");
     registerEnumConversion(
         BackendEnumMap,
         "std_string_to_af_backend",

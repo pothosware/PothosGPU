@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -22,29 +22,26 @@ class SplitComplex: public ArrayFireBlock
     public:
         using ComplexType = std::complex<T>;
 
-        static const Pothos::DType dtype;
-        static const Pothos::DType complexDType;
-
         SplitComplex(
             const std::string& device,
-            size_t nchans
+            size_t dtypeDimensions
         ):
             ArrayFireBlock(device),
-            _nchans(nchans)
+            _afComplexDType(Pothos::Object(Pothos::DType(typeid(ComplexType))).convert<af::dtype>()),
+            _afDType(Pothos::Object(Pothos::DType(typeid(T))).convert<af::dtype>())
         {
-            for(size_t chan = 0; chan < _nchans; ++chan)
-            {
-                this->setupInput(chan, complexDType);
+            this->setupInput(
+                0,
+                Pothos::DType(typeid(ComplexType), dtypeDimensions));
 
-                this->setupOutput(
-                    "re"+std::to_string(chan),
-                    dtype,
-                    this->getPortDomain());
-                this->setupOutput(
-                    "im"+std::to_string(chan),
-                    dtype,
-                    this->getPortDomain());
-            }
+            this->setupOutput(
+                "re",
+                Pothos::DType(typeid(T), dtypeDimensions),
+                this->getPortDomain());
+            this->setupOutput(
+                "im",
+                Pothos::DType(typeid(T), dtypeDimensions),
+                this->getPortDomain());
         }
 
         virtual ~SplitComplex() = default;
@@ -57,69 +54,25 @@ class SplitComplex: public ArrayFireBlock
                 return;
             }
 
-            af::array afReal;
-            af::array afImag;
-
-            if(1 == _nchans)
-            {
-                if(this->doesInputPortDomainMatch(0))
-                {
-                    const auto& afInput = this->getInputPortAfArrayRef(0);
-                    afReal = af::real(afInput);
-                    afImag = af::imag(afInput);
-                }
-                else
-                {
-                    auto afInput = this->getInputPortAsAfArray(0);
-                    afReal = af::real(afInput);
-                    afImag = af::imag(afInput);
-                }
-            }
-            else
-            {
-                auto afInput = this->getNumberedInputPortsAs2DAfArray();
-                afReal = af::real(afInput);
-                afImag = af::imag(afInput);
-            }
-
-            if(1 == _nchans)
-            {
-                this->input(0)->consume(elems);
-                this->postAfArray("re0", afReal);
-                this->postAfArray("im0", afImag);
-            }
-            else
-            {
-                for(size_t chan = 0; chan < this->_nchans; ++chan)
-                {
-                    this->postAfArray(
-                        "re"+std::to_string(chan),
-                        afReal.row(chan));
-                    this->postAfArray(
-                        "im"+std::to_string(chan),
-                        afImag.row(chan));
-                }
-            }
+            auto afInput = this->getInputPortAsAfArray(0);
+            this->postAfArray("re", af::real(afInput));
+            this->postAfArray("im", af::imag(afInput));
         }
 
     private:
         size_t _nchans;
+
+        af::dtype _afComplexDType;
+        af::dtype _afDType;
 };
-
-template <typename T>
-const Pothos::DType SplitComplex<T>::dtype = Pothos::DType(typeid(T));
-
-template <typename T>
-const Pothos::DType SplitComplex<T>::complexDType = Pothos::DType(typeid(ComplexType));
 
 static Pothos::Block* splitComplexFactory(
     const std::string& device,
-    const Pothos::DType& dtype,
-    size_t nchans)
+    const Pothos::DType& dtype)
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new SplitComplex<T>(device,nchans);
+            return new SplitComplex<T>(device,dtype.dimension());
 
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
@@ -130,35 +83,23 @@ static Pothos::Block* splitComplexFactory(
 }
 
 /*
- * |PothosDoc Split Complex (Parallel)
+ * |PothosDoc Split Complex
  *
  * Calls <b>af::real</b> and <b>af::imag</b> on all inputs and outputs results
- * in "reX" and "imX" output channels. This is potentially accelerated using
- * one of the following implementations by priority (based on availability of
- * hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * in "re" and "im" output channels.
  *
  * |category /ArrayFire/Arith
  * |keywords arith complex real imag imaginary
- * |factory /arrayfire/arith/split_complex(device,dtype,numInputs)
+ * |factory /arrayfire/arith/split_complex(device,dtype)
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  * |widget ComboBox(editable=false)
  * |preview enable
  *
- * |param dtype(Data Type) The block data type.
- * |widget DTypeChooser(float=1)
+ * |param dtype(Data Type) The block data type. The input type will be the complex form of this type.
+ * |widget DTypeChooser(float=1,dim=1)
  * |default "float64"
- * |preview disable
- *
- * |param numInputs[Num Inputs] The number of input channels.
- * |default 1
- * |widget SpinBox(minimum=1)
  * |preview disable
  */
 static Pothos::BlockRegistry registerSplitComplex(

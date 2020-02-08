@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -46,7 +46,7 @@ class FlatBlock: public ArrayFireBlock
             }
 
             auto afInput = this->getNumberedInputPortsAs2DAfArray();
-            auto afOutput = af::flat(afInput);
+            auto afOutput = af::flat(afInput.T());
             if(1 != afOutput.numdims())
             {
                 throw Pothos::AssertionViolationException(
@@ -84,7 +84,7 @@ class FlatBlock: public ArrayFireBlock
  * |preview enable
  *
  * |param dtype(Data Type) The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *

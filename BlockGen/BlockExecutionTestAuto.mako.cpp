@@ -7,6 +7,8 @@
 #include <cmath>
 #include <cstdint>
 
+using namespace PothosArrayFireTests;
+
 //
 // Verification functions
 //
@@ -26,16 +28,6 @@ static inline Out verify_${block["header"]}_${block["blockName"]}(const In& val)
     %endif
 %endfor
 %for block in twoToOneBlocks:
-    %if "verify" in block:
-
-template <typename In, typename Out>
-static inline Out verify_${block["header"]}_${block["blockName"]}(const In& val0, const In& val1)
-{
-    return ${block["verify"]}(val0, val1);
-}
-    %endif
-%endfor
-%for block in scalarOpBlocks:
     %if "verify" in block:
 
 template <typename In, typename Out>
@@ -68,30 +60,14 @@ static EnableIf${k}<T, void> blockExecutionTest()
         %if (block.get("pattern", "") == "FloatToComplex") and (k == "Float"):
     testOneToOneBlockF2C<T>(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
-        1,
         ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-    testOneToOneBlockF2C<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        3,
-        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-        %elif (block.get("pattern", "") == "ComplexToFloat") and (k == "Complex"):
     testOneToOneBlockC2F<Scalar>(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
-        1,
-        ${"&verify_{0}_{1}<T, Scalar>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-    testOneToOneBlockC2F<Scalar>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        3,
         ${"&verify_{0}_{1}<T, Scalar>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
         %elif "supportedTypes" in block:
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
     testOneToOneBlock<T>(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
-        1,
-        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-    testOneToOneBlock<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        3,
         ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
             %endif
         %endif
@@ -128,26 +104,12 @@ static EnableIf${k}<T, void> blockExecutionTest()
         %endif
     %endfor
 
-    %for block in scalarOpBlocks:
-        %if (not block.get("intOnly", False)) or ("Int" in k):
-    testScalarOpBlock<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        1,
-        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"},
-        ${"true" if block.get("allowZeroScalar", True) else "false"});
-    testScalarOpBlock<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        3,
-        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"},
-        ${"true" if block.get("allowZeroScalar", True) else "false"});
-        %endif
-    %endfor
-
     const std::string dtypeName = Pothos::DType(typeid(T)).name();
 
     testCastBlockForType(dtypeName);
     testClampBlockForType(dtypeName);
-    testFlatBlockForType(dtypeName);
+    testComparatorBlockForType(dtypeName);
+    //testFlatBlockForType(dtypeName);
     testSplitComplexBlockForType(dtypeName);
 }
 %endfor

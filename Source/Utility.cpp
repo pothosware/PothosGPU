@@ -158,23 +158,20 @@ Pothos::Object getArrayValueOfUnknownTypeAtIndex(
     return ret;
 }
 
-// TODO: does ArrayFire have a way to do this without reading the array to
-// the host.
 ssize_t findValueOfUnknownTypeInArray(
     const af::array& afArray,
     const Pothos::Object& value)
 {
-    assert(1 == afArray.numdims());
-
     #define SwitchCase(afDType, ctype) \
         case afDType: \
         { \
-            std::vector<ctype> vec(static_cast<size_t>(afArray.elements())); \
-            afArray.host(vec.data()); \
-            auto iter = std::find(vec.begin(), vec.end(), value.extract<ctype>()); \
-            if(iter != vec.end()) \
+            const size_t size = static_cast<size_t>(afArray.elements()); \
+            const ctype* buffer = reinterpret_cast<const ctype*>(afArray.host<PothosToAF<ctype>::type>()); \
+            auto iter = std::find(buffer, (buffer+size), value.extract<ctype>()); \
+            af::freeHost(buffer); \
+            if(iter != (buffer+size)) \
             { \
-                return static_cast<ssize_t>(std::distance(vec.begin(), iter)); \
+                return static_cast<ssize_t>(std::distance(buffer, iter)); \
             } \
             break; \
         }

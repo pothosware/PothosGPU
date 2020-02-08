@@ -16,6 +16,9 @@
 #include <type_traits>
 #include <vector>
 
+namespace PothosArrayFireTests
+{
+
 //
 // Useful typedefs
 //
@@ -243,25 +246,29 @@ ReturnType getAndCallPlugin(
     return getter.call<ReturnType>(args...);
 }
 
+void testBufferChunk(
+    const Pothos::BufferChunk& expectedBufferChunk,
+    const Pothos::BufferChunk& actualBufferChunk);
+
+template <typename AfArrayType>
+static void compareAfArrayToBufferChunk(
+    const AfArrayType& afArray,
+    const Pothos::BufferChunk& bufferChunk)
+{
+    POTHOS_TEST_EQUAL(
+        afArray.bytes(),
+        bufferChunk.length);
+
+    testBufferChunk(
+        Pothos::Object(afArray).convert<Pothos::BufferChunk>(),
+        bufferChunk);
+}
+
+}
+
 //
 // For debugging purposes
 //
-
-template <typename T>
-std::string stdVectorToString(const std::vector<T>& vec)
-{
-    std::ostringstream ostream;
-    for(const T& val: vec)
-    {
-        if(&val != &vec[0])
-        {
-            ostream << " ";
-        }
-        ostream << (ssize_t)val;
-    }
-
-    return ostream.str();
-}
 
 template <typename T>
 std::string bufferChunkToString(const Pothos::BufferChunk& bufferChunk)
@@ -275,7 +282,7 @@ std::string bufferChunkToString(const Pothos::BufferChunk& bufferChunk)
         {
             ostream << " ";
         }
-        ostream << buff[i];
+        ostream << (ssize_t)buff[i];
     }
 
     return ostream.str();

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -15,6 +15,7 @@
 
 using MinMaxFunction = void(*)(af::array&, af::array&, const af::array&, const int);
 
+// TODO: store last value to be probed
 class MinMax: public ArrayFireBlock
 {
     public:
@@ -23,28 +24,23 @@ class MinMax: public ArrayFireBlock
             const std::string& device,
             const MinMaxFunction& func,
             const Pothos::DType& dtype,
-            const std::string& labelName,
-            size_t nchans
+            const std::string& labelName
         ):
             ArrayFireBlock(device),
             _dtype(dtype),
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _func(func),
-            _labelName(labelName),
-            _nchans(nchans)
+            _labelName(labelName)
         {
-            for(size_t chan = 0; chan < nchans; ++chan)
-            {
-                this->setupInput(chan, _dtype);
-                this->setupOutput(chan, _dtype, this->getPortDomain());
-            }
+            this->setupInput(0, _dtype, this->getPortDomain());
+            this->setupOutput(0, _dtype, this->getPortDomain());
         }
 
         virtual ~MinMax() {}
 
         void work() override
         {
-            const size_t elems = this->workInfo().minAllElements;
+            const size_t elems = this->workInfo().minElements;
             if(0 == elems)
             {
                 return;
@@ -52,21 +48,27 @@ class MinMax: public ArrayFireBlock
 
             af::array val, idx;
 
-            auto afInput = this->getNumberedInputPortsAs2DAfArray();
+            auto afInput = this->getInputPortAsAfArray(0);
             _func(val, idx, afInput, -1);
-            assert(_nchans == static_cast<size_t>(val.elements()));
-            assert(_nchans == static_cast<size_t>(idx.elements()));
-
-            const auto* idxPtr = idx.device<std::uint32_t>();
-
-            for(dim_t chan = 0; chan < static_cast<dim_t>(_nchans); ++chan)
+            if(1 != idx.elements())
             {
-                this->output(chan)->postLabel(
-                    _labelName,
-                    getArrayValueOfUnknownTypeAtIndex(val, chan),
-                    idxPtr[chan]);
+                throw Pothos::AssertionViolationException(
+                          "idx: invalid size",
+                          std::to_string(idx.elements()));
             }
-            this->post2DAfArrayToNumberedOutputPorts(afInput);
+
+            std::uint32_t idxVal;
+            idx.host(&idxVal);
+
+            std::vector<std::uint32_t> idxVec(idx.elements());
+            idx.host(idxVec.data());
+
+            this->output(0)->postLabel(
+                _labelName,
+                getArrayValueOfUnknownTypeAtIndex(val, 0),
+                idxVal);
+
+            this->postAfArray(0, afInput);
         }
 
     private:
@@ -82,8 +84,7 @@ class MinMax: public ArrayFireBlock
 template <bool isMin>
 static Pothos::Block* minMaxFactory(
     const std::string& device,
-    const Pothos::DType& dtype,
-    size_t nchans)
+    const Pothos::DType& dtype)
 {
     static constexpr const char* labelName = isMin ? "MIN" : "MAX";
 
@@ -93,8 +94,7 @@ static Pothos::Block* minMaxFactory(
                            device, \
                            (isMin ? (MinMaxFunction)af::min : (MinMaxFunction)af::max), \
                            dtype, \
-                           labelName, \
-                           nchans);
+                           labelName);
 
     // ArrayFire has no implementation for int8_t, int64_t, or uint64_t.
     ifTypeDeclareFactory(std::int16_t)
@@ -113,14 +113,7 @@ static Pothos::Block* minMaxFactory(
 /*
  * |PothosDoc Buffer Minimum
  *
- * Calls <b>af::min</b> on all inputs. This block computes all outputs
- * in parallel, using one of the following implementations by priority
- * (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calls <b>af::min</b> on all inputs.
  *
  * For each output, this block posts a <b>"MIN"</b> label, whose position
  * and value match the element of the minimum value.
@@ -130,7 +123,7 @@ static Pothos::Block* minMaxFactory(
  * |factory /arrayfire/algorithm/min(dtype,nchans)
  *
  * |param dtype(Data Type) The block data type.
- * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1)
+ * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -146,14 +139,7 @@ static Pothos::BlockRegistry registerMin(
 /*
  * |PothosDoc Buffer Maximum
  *
- * Calls <b>af::max</b> on all inputs. This block computes all outputs
- * in parallel, using one of the following implementations by priority
- * (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calls <b>af::max</b> on all inputs.
  *
  * For each output, this block posts a <b>"MAX"</b> label, whose position
  * and value match the element of the maximum value.
@@ -168,7 +154,7 @@ static Pothos::BlockRegistry registerMin(
  * |preview enable
  *
  * |param dtype(Data Type) The block data type.
- * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1)
+ * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  *

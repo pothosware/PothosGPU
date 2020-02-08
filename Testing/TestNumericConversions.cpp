@@ -14,6 +14,9 @@
 #include <string>
 #include <typeinfo>
 
+namespace PothosArrayFireTests
+{
+
 template <typename Type1, typename Type2>
 static void testTypesCanConvert()
 {
@@ -40,37 +43,10 @@ static void testComplexConversion()
     testEqual(stdComplex1, stdComplex2);
 }
 
+}
+
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_complex_conversion)
 {
-    testComplexConversion<std::complex<float>, af::cfloat>();
-    testComplexConversion<std::complex<double>, af::cdouble>();
-}
-
-template <typename T>
-static void testStdVectorToAfArrayConversion(af::dtype expectedAfDType)
-{
-    std::cout << "Testing " << Pothos::DType(typeid(T)).name() << "..." << std::endl;
-
-    const std::vector<T> stdVector = getTestInputs<T>();
-
-    const auto afArray = Pothos::Object(stdVector).convert<af::array>();
-    POTHOS_TEST_EQUAL(1, afArray.numdims());
-    POTHOS_TEST_TRUE(expectedAfDType == afArray.type());
-    POTHOS_TEST_EQUAL(
-        stdVector.size(),
-        static_cast<size_t>(afArray.elements()));
-
-    const auto stdVector2 = Pothos::Object(afArray).convert<std::vector<T>>();
-    POTHOS_TEST_EQUALV(
-        stdVector,
-        stdVector2);
-}
-
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_std_vector_conversion)
-{
-    testStdVectorToAfArrayConversion<float>(::f32);
-    testStdVectorToAfArrayConversion<double>(::f64);
-
-    testStdVectorToAfArrayConversion<std::complex<float>>(::c32);
-    testStdVectorToAfArrayConversion<std::complex<double>>(::c64);
+    PothosArrayFireTests::testComplexConversion<std::complex<float>, af::cfloat>();
+    PothosArrayFireTests::testComplexConversion<std::complex<double>, af::cdouble>();
 }

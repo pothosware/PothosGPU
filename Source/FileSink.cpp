@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -219,14 +219,6 @@ class FileSinkBlock: public ArrayFireBlock
  * <li>Appending to an array in an existing file</li>
  * </ol>
  *
- * This is potentially accelerated using one of the following implementations
- * by priority (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
- *
  * |category /ArrayFire/File IO
  * |keywords array file sink io
  * |factory /arrayfire/array/file_sink(device,filepath,key,dtype,numChannels,append)
@@ -249,7 +241,7 @@ class FileSinkBlock: public ArrayFireBlock
  * |param dtype[Data Type] The output's data type.
  * If appending to an existing array, this value must match the type of the
  * existing array.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *

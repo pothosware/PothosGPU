@@ -1,13 +1,18 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "BufferConversions.hpp"
 #include "OneToOneBlock.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Exception.hpp>
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
 #include <arrayfire.h>
+
+#include <Poco/Format.h>
+#include <Poco/NumberFormatter.h>
 
 #include <cassert>
 #include <cstring>
@@ -22,19 +27,17 @@ Pothos::Block* OneToOneBlock::makeFromOneType(
     const std::string& device,
     const OneToOneFunc& func,
     const Pothos::DType& dtype,
-    const DTypeSupport& supportedTypes,
-    size_t numChans)
+    const DTypeSupport& supportedTypes)
 {
     validateDType(dtype, supportedTypes);
 
-    return new OneToOneBlock(device, func, dtype, dtype, numChans);
+    return new OneToOneBlock(device, func, dtype, dtype);
 }
 
 Pothos::Block* OneToOneBlock::makeFloatToComplex(
     const std::string& device,
     const OneToOneFunc& func,
-    const Pothos::DType& floatType,
-    size_t numChans)
+    const Pothos::DType& floatType)
 {
     if(!isDTypeFloat(floatType))
     {
@@ -49,15 +52,13 @@ Pothos::Block* OneToOneBlock::makeFloatToComplex(
                    device,
                    func,
                    floatType,
-                   complexDType,
-                   numChans);
+                   complexDType);
 }
 
 Pothos::Block* OneToOneBlock::makeComplexToFloat(
     const std::string& device,
     const OneToOneFunc& func,
-    const Pothos::DType& floatType,
-    size_t numChans)
+    const Pothos::DType& floatType)
 {
     if(!isDTypeFloat(floatType))
     {
@@ -72,8 +73,7 @@ Pothos::Block* OneToOneBlock::makeComplexToFloat(
                    device,
                    func,
                    complexDType,
-                   floatType,
-                   numChans);
+                   floatType);
 }
 
 //
@@ -84,14 +84,12 @@ OneToOneBlock::OneToOneBlock(
     const std::string& device,
     const OneToOneFunc& func,
     const Pothos::DType& inputDType,
-    const Pothos::DType& outputDType,
-    size_t numChans
+    const Pothos::DType& outputDType
 ): OneToOneBlock(
        device,
        Pothos::Callable(func),
        inputDType,
-       outputDType,
-       numChans)
+       outputDType)
 {
 }
 
@@ -99,81 +97,16 @@ OneToOneBlock::OneToOneBlock(
     const std::string& device,
     const Pothos::Callable& func,
     const Pothos::DType& inputDType,
-    const Pothos::DType& outputDType,
-    size_t numChans
+    const Pothos::DType& outputDType
 ): ArrayFireBlock(device),
    _func(func),
-   _nchans(numChans),
    _afOutputDType(Pothos::Object(outputDType).convert<af::dtype>())
 {
-    for(size_t chan = 0; chan < _nchans; ++chan)
-    {
-        this->setupInput(chan, inputDType);
-        this->setupOutput(chan, outputDType, this->getPortDomain());
-    }
+    this->setupInput(0, inputDType, this->getPortDomain());
+    this->setupOutput(0, outputDType, this->getPortDomain());
 }
 
 OneToOneBlock::~OneToOneBlock() {}
-
-// TODO: move to ArrayFireBlock
-af::array OneToOneBlock::getInputsAsAfArray()
-{
-// This variable is only used in debug.
-#ifndef NDEBUG
-    const size_t elems = this->workInfo().minElements;
-#endif
-    assert(this->workInfo().minElements > 0);
-
-    af::array afInput;
-    if(1 == _nchans)
-    {
-        afInput = this->getInputPortAsAfArray(0, false);
-        assert(elems == static_cast<size_t>(afInput.elements()));
-    }
-    else
-    {
-        assert(0 != _nchans);
-
-        afInput = getNumberedInputPortsAs2DAfArray();
-        assert(_nchans == static_cast<size_t>(afInput.dims(0)));
-        assert(elems == static_cast<size_t>(afInput.dims(1)));
-    }
-
-    return afInput;
-}
-
-void OneToOneBlock::work(const af::array& afInput)
-{
-    const size_t elems = this->workInfo().minElements;
-    assert(elems > 0);
-
-    if(1 == _nchans)
-    {
-        auto afOutput = _func.call(afInput).extract<af::array>();
-        if(afOutput.type() != _afOutputDType)
-        {
-            afOutput = afOutput.as(_afOutputDType);
-        }
-
-        this->input(0)->consume(elems);
-        this->output(0)->postBuffer(Pothos::Object(afOutput)
-                                        .convert<Pothos::BufferChunk>());
-    }
-    else
-    {
-        assert(0 != _nchans);
-        assert(_nchans == static_cast<size_t>(afInput.dims(0)));
-        assert(elems == static_cast<size_t>(afInput.dims(1)));
-
-        auto afOutput = _func.call(afInput).extract<af::array>();
-        if(afOutput.type() != _afOutputDType)
-        {
-            afOutput = afOutput.as(_afOutputDType);
-        }
-
-        post2DAfArrayToNumberedOutputPorts(afOutput);
-    }
-}
 
 // Default behavior, can be overridden
 void OneToOneBlock::work()
@@ -185,20 +118,19 @@ void OneToOneBlock::work()
     af::setDevice(_afDevice);
 #endif
 
-    this->debugLogInputPortElements();
-
     const size_t elems = this->workInfo().minElements;
     if(0 == elems)
     {
         return;
     }
 
-    if((1 == _nchans) && this->doesInputPortDomainMatch(0))
+    auto afInput = this->getInputPortAsAfArray(0);
+
+    auto afOutput = _func.call(afInput).extract<af::array>();
+    if(afOutput.type() != _afOutputDType)
     {
-        work(getInputPortAfArrayRef(0));
+        afOutput = afOutput.as(_afOutputDType);
     }
-    else
-    {
-        work(getInputsAsAfArray());
-    }
+
+    this->postAfArray(0, afOutput);
 }

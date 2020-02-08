@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -28,20 +28,17 @@ class RandomBlock: public ArrayFireBlock
         static Pothos::Block* make(
             const std::string& device,
             const Pothos::DType& dtype,
-            const std::string& distribution,
-            size_t numOutputs)
+            const std::string& distribution)
         {
-            return new RandomBlock(device, dtype, distribution, numOutputs);
+            return new RandomBlock(device, dtype, distribution);
         }
 
         RandomBlock(
             const std::string& device,
             const Pothos::DType& dtype,
-            const std::string& distribution,
-            size_t numOutputs
+            const std::string& distribution
         ):
             ArrayFireBlock(device),
-            _numOutputs(static_cast<dim_t>(numOutputs)),
             _afRandomFunc(nullptr), // Set in constructor
             _distribution(), // Set in constructor
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
@@ -71,10 +68,7 @@ class RandomBlock: public ArrayFireBlock
                 "randomEngineTypeChanged",
                 "setRandomEngineType");
 
-            for(size_t chan = 0; chan < numOutputs; ++chan)
-            {
-                this->setupOutput(chan, dtype, this->getPortDomain());
-            }
+            this->setupOutput(0, dtype, this->getPortDomain());
 
             this->setDistribution(distribution);
             this->reseedRandomEngineWithTime();
@@ -131,17 +125,19 @@ class RandomBlock: public ArrayFireBlock
 
         void work() override
         {
-            const af::dim4 dims(_numOutputs, BufferLen);
+            const auto elems = this->workInfo().minElements;
+            if(0 == elems)
+            {
+                return;
+            }
+
+            const af::dim4 dims(static_cast<dim_t>(elems));
 
             auto afOutput = _afRandomFunc(dims, _afDType, _afRandomEngine);
-            this->post2DAfArrayToNumberedOutputPorts(afOutput);
+            this->postAfArray(0, afOutput);
         }
 
     private:
-
-        static constexpr dim_t BufferLen = 8192;
-
-        dim_t _numOutputs;
 
         AfRandomFunc _afRandomFunc;
         std::string _distribution;
@@ -152,20 +148,16 @@ class RandomBlock: public ArrayFireBlock
 /*
  * |PothosDoc Random Source
  *
- * Calls <b>af::randn</b> or <b>af::randu</b> to generate random values of
- * the requested type.
+ * Generates random values from a <b>normal</b> or <b>uniform</b> distribution.
+ * For the normal distribution, this block uses <b>af::randn</b>. For the
+ * uniform distribution, this block uses <b>af::randu</b>.
  *
- * This is potentially accelerated using one of the following implementations
- * by priority (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * The underlying random generation scheme can also be customized, although for
+ * most purposes, leaving this value as its default will be fine.
  *
  * |category /ArrayFire/Random
  * |keywords array random uniform normal philox threefry mersenne source
- * |factory /arrayfire/random/source(device,dtype,distribution,numOutputs)
+ * |factory /arrayfire/random/source(device,dtype,distribution)
  * |setter setDistribution(distribution)
  * |setter setRandomEngineType(randomEngineType)
  *
@@ -175,7 +167,7 @@ class RandomBlock: public ArrayFireBlock
  * |preview enable
  *
  * |param dtype(Data Type) The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -185,11 +177,6 @@ class RandomBlock: public ArrayFireBlock
  * |option [Uniform] "UNIFORM"
  * |default "NORMAL"
  * |preview enable
- *
- * |param numOutputs(Num Outputs) The number of output channels.
- * |widget SpinBox(minimum=1)
- * |default 1
- * |preview disable
  *
  * |param randomEngineType(Random Engine Type)
  * |widget ComboBox(editable=False)

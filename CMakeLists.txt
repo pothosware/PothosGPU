@@ -67,23 +67,32 @@ POTHOS_MODULE_UTIL(
 
         Source/ArrayFireBlock.cpp
         Source/ArrayFireInfo.cpp
+        Source/ArrayOpBlock.cpp
         Source/BufferConversions.cpp
         Source/Cast.cpp
         Source/Clamp.cpp
         Source/Constant.cpp
         Source/Convolve.cpp
+        Source/CorrCoef.cpp
         Source/DeviceCache.cpp
         Source/EnumConversions.cpp
         Source/FFT.cpp
         Source/FileSink.cpp
         Source/FileSource.cpp
         Source/Filter.cpp
-        Source/Flat.cpp
+        #Source/Flat.cpp
+        Source/IsInfNaN.cpp
+        Source/LogN.cpp
         Source/MinMax.cpp
         Source/NToOneBlock.cpp
         Source/NumericConversions.cpp
         Source/OneToOneBlock.cpp
+        Source/PinnedBufferManager.cpp
+        Source/PolarToComplex.cpp
+        Source/Pow.cpp
         Source/Random.cpp
+        Source/ReducedBlock.cpp
+        Source/Root.cpp
         Source/ScalarOpBlock.cpp
         Source/SplitComplex.cpp
         Source/Statistics.cpp
@@ -93,6 +102,7 @@ POTHOS_MODULE_UTIL(
         Testing/BlockExecutionTests.cpp
         Testing/CastBlockTest.cpp
         Testing/ClampBlockTest.cpp
+        Testing/ComparatorBlockTest.cpp
         Testing/FlatBlockTest.cpp
         Testing/SplitComplexBlockTest.cpp
         Testing/FileIOTests.cpp
@@ -103,8 +113,10 @@ POTHOS_MODULE_UTIL(
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
         Testing/TestLabels.cpp
+        Testing/TestManagedDeviceCache.cpp
         Testing/TestNumericConversions.cpp
         Testing/TestPortDomainCombos.cpp
+        Testing/TestUtility.cpp
     LIBRARIES
         ArrayFire::af
     ENABLE_DOCS ON

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BlockExecutionTests.hpp"
@@ -13,6 +13,9 @@
 #include <iostream>
 #include <string>
 #include <typeinfo>
+
+namespace PothosArrayFireTests
+{
 
 template <typename In, typename Out>
 static std::vector<Out> getExpectedOutputs(
@@ -123,7 +126,7 @@ static void testNToOneBlockCommon(
     POTHOS_TEST_EQUAL(
         testInputs[0].size(),
         output.elements());
-    if(nullptr != verificationFunc)
+    if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("getArrayFireBackend")))
     {
         auto expectedOutputs = getExpectedOutputs(
                                    testInputs,
@@ -183,3 +186,5 @@ SPECIALIZE_TEMPLATE_TEST(float)
 SPECIALIZE_TEMPLATE_TEST(double)
 SPECIALIZE_TEMPLATE_TEST(std::complex<float>)
 SPECIALIZE_TEMPLATE_TEST(std::complex<double>)
+
+}

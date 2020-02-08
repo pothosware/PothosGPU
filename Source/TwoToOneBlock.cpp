@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TwoToOneBlock.hpp"
@@ -58,6 +58,24 @@ Pothos::Block* TwoToOneBlock::makeFloatToComplex(
                    allowZeroInBuffer1);
 }
 
+Pothos::Block* TwoToOneBlock::makeComparator(
+    const std::string& device,
+    const TwoToOneFunc& func,
+    const Pothos::DType& dtype,
+    const DTypeSupport& supportedTypes)
+{
+    validateDType(dtype, supportedTypes);
+
+    static const Pothos::DType Int8DType("int8");
+
+    return new TwoToOneBlock(
+                   device,
+                   func,
+                   dtype,
+                   Int8DType,
+                   true /*allowZeroInBuffer1*/);
+}
+
 //
 // Class implementation
 //
@@ -82,7 +100,6 @@ TwoToOneBlock::~TwoToOneBlock() {}
 void TwoToOneBlock::work()
 {
     const size_t elems = this->workInfo().minAllElements;
-
     if(0 == elems)
     {
         return;
@@ -91,18 +108,49 @@ void TwoToOneBlock::work()
     auto inputAfArray0 = this->getInputPortAsAfArray(0);
     auto inputAfArray1 = this->getInputPortAsAfArray(1);
 
-    assert(elems == static_cast<size_t>(inputAfArray0.elements()));
-    assert(elems == static_cast<size_t>(inputAfArray1.elements()));
-
     if(!_allowZeroInBuffer1 && (elems != static_cast<size_t>(inputAfArray1.nonzeros())))
     {
         throw Pothos::InvalidArgumentException("Denominator cannot contain zeros.");
     }
 
     auto outputAfArray = _func(inputAfArray0, inputAfArray1);
-    assert(elems == static_cast<size_t>(outputAfArray.elements()));
-
-    this->input(0)->consume(elems);
-    this->input(1)->consume(elems);
     this->postAfArray(0, outputAfArray);
 }
+
+//
+// Comparator
+//
+static Pothos::Block* makeComparator(
+    const std::string& device,
+    const Pothos::DType& dtype,
+    const std::string& operation)
+{
+    TwoToOneFunc func = nullptr;
+
+    #define IF_OP_CREATE_LAMBDA(op) \
+        if(operation == #op) \
+            func = AF_ARRAY_OP_TWO_TO_ONE_FUNC(op);
+
+    IF_OP_CREATE_LAMBDA(<)
+    else IF_OP_CREATE_LAMBDA(<=)
+    else IF_OP_CREATE_LAMBDA(>)
+    else IF_OP_CREATE_LAMBDA(>=)
+    else IF_OP_CREATE_LAMBDA(==)
+    else IF_OP_CREATE_LAMBDA(!=)
+    else throw Pothos::InvalidArgumentException("Invalid operation", operation);
+
+    if(nullptr == func)
+    {
+        throw Pothos::AssertionViolationException(
+                  "Failed to create comparator function for operation",
+                  operation);
+    }
+
+    static const DTypeSupport dtypeSupport{true,true,true,false};
+
+    return TwoToOneBlock::makeComparator(device, func, dtype, dtypeSupport);
+}
+
+static Pothos::BlockRegistry registerComparator(
+    "/arrayfire/array/comparator",
+    Pothos::Callable(&makeComparator));

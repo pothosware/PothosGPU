@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "DeviceCache.hpp"
@@ -18,8 +18,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_arrayfire_config)
     auto abs = Pothos::BlockRegistry::make(
                    "/arrayfire/arith/abs",
                    "Auto",
-                   Pothos::DType(typeid(float)),
-                   3);
+                   Pothos::DType(typeid(float)));
 
     const auto& deviceCache = getDeviceCache();
     POTHOS_TEST_TRUE(!deviceCache.empty());
@@ -36,8 +35,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_arrayfire_config)
         abs = Pothos::BlockRegistry::make(
                   "/arrayfire/arith/abs",
                   entry.name,
-                  Pothos::DType(typeid(float)),
-                  3);
+                  Pothos::DType(typeid(float)));
 
         POTHOS_TEST_EQUAL(
             entry.afBackendEnum,

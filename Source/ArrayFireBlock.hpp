@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -18,6 +18,14 @@ class ArrayFireBlock: public Pothos::Block
 
     protected:
 
+        Pothos::BufferManager::Sptr getInputBufferManager(
+            const std::string& name,
+            const std::string& domain) override;
+
+        Pothos::BufferManager::Sptr getOutputBufferManager(
+            const std::string& name,
+            const std::string& domain) override;
+
         std::string getArrayFireBackend() const;
 
         std::string getArrayFireDevice() const;
@@ -30,14 +38,6 @@ class ArrayFireBlock: public Pothos::Block
         // Input port API
         //
 
-        bool doesInputPortDomainMatch(size_t portNum) const;
-
-        bool doesInputPortDomainMatch(const std::string& portName) const;
-
-        const af::array& getInputPortAfArrayRef(size_t portNum);
-
-        const af::array& getInputPortAfArrayRef(const std::string& portName);
-
         af::array getInputPortAsAfArray(
             size_t portNum,
             bool truncateToMinLength = true);
@@ -45,8 +45,6 @@ class ArrayFireBlock: public Pothos::Block
         af::array getInputPortAsAfArray(
             const std::string& portName,
             bool truncateToMinLength = true);
-
-        af::array getNumberedInputPortsAs2DAfArray();
 
         //
         // Output port API
@@ -60,14 +58,6 @@ class ArrayFireBlock: public Pothos::Block
             const std::string& portName,
             const af::array& afArray);
 
-        void post2DAfArrayToNumberedOutputPorts(const af::array& afArray);
-
-        //
-        // Debug
-        //
-
-        void debugLogInputPortElements();
-
         //
         // Member variables
         //
@@ -77,12 +67,6 @@ class ArrayFireBlock: public Pothos::Block
         std::string _afDeviceName;
 
     private:
-
-        template <typename PortIdType>
-        bool _doesInputPortDomainMatch(const PortIdType& portId) const;
-
-        template <typename PortIdType>
-        const af::array& _getInputPortAfArrayRef(const PortIdType& portId);
 
         template <typename PortIdType>
         af::array _getInputPortAsAfArray(

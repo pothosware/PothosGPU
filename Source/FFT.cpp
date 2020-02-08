@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -53,13 +53,12 @@ class FFTBaseBlock: public ArrayFireBlock
             const std::string& device,
             size_t numBins,
             double norm,
-            size_t nchans,
+            size_t dtypeDims,
             const std::string& blockRegistryPath
         ):
             ArrayFireBlock(device),
             _numBins(numBins),
-            _norm(0.0), // Set with class setter
-            _nchans(nchans)
+            _norm(0.0) // Set with class setter
         {
             if(!isPowerOfTwo(numBins))
             {
@@ -73,11 +72,14 @@ class FFTBaseBlock: public ArrayFireBlock
             static const Pothos::DType inDType(typeid(InType));
             static const Pothos::DType outDType(typeid(OutType));
 
-            for(size_t chan = 0; chan < _nchans; ++chan)
-            {
-                this->setupInput(chan, inDType);
-                this->setupOutput(chan, outDType, this->getPortDomain());
-            }
+            this->setupInput(
+                0,
+                Pothos::DType::fromDType(inDType, dtypeDims),
+                this->getPortDomain());
+            this->setupOutput(
+                0,
+                Pothos::DType::fromDType(outDType, dtypeDims),
+                this->getPortDomain());
 
             this->registerProbe(
                 "getNormalizationFactor",
@@ -92,14 +94,7 @@ class FFTBaseBlock: public ArrayFireBlock
 
         virtual ~FFTBaseBlock() = default;
 
-        // Custom output buffer manager with slabs large enough for the FFT
-        // result.
-        Pothos::BufferManager::Sptr getOutputBufferManager(const std::string&, const std::string&) override
-        {
-            Pothos::BufferManagerArgs args;
-            args.bufferSize = _numBins*sizeof(OutType);
-            return Pothos::BufferManager::make("generic", args);
-        }
+        virtual void work() = 0;
 
         double getNormalizationFactor() const
         {
@@ -128,9 +123,9 @@ class FFTBlock: public FFTBaseBlock<T,T>
             FFTInPlaceFuncPtr func,
             size_t numBins,
             double norm,
-            size_t nchans
+            size_t dtypeDims
         ):
-            FFTBaseBlock<T,T>(device, numBins, norm, nchans, fftBlockPath),
+            FFTBaseBlock<T,T>(device, numBins, norm, dtypeDims, fftBlockPath),
             _func(func)
         {
         }
@@ -140,31 +135,14 @@ class FFTBlock: public FFTBaseBlock<T,T>
         void work() override
         {
             auto elems = this->workInfo().minElements;
-            if(0 == elems)
+            if(elems < this->_numBins)
             {
                 return;
             }
 
-            auto afArray = this->getNumberedInputPortsAs2DAfArray();
-
-            /*
-             * Before ArrayFire 3.6, gfor was not thread-safe, as some
-             * internal bookkeeping was stored globally. As of ArrayFire 3.6,
-             * all of this stuff is thread-local, so we can take advantage of
-             * it.
-             */
-            #if AF_CONFIG_PER_THREAD
-            gfor(size_t chan, this->_nchans)
-            #else
-            for(size_t chan = 0; chan < this->_nchans; ++chan)
-            #endif
-            {
-                af::array row(afArray.row(chan));
-                _func(row, this->_norm);
-                afArray(row) = row;
-            }
-
-            this->post2DAfArrayToNumberedOutputPorts(afArray);
+            auto afArray = this->getInputPortAsAfArray(0);
+            _func(afArray, this->_norm);
+            this->postAfArray(0, afArray);
         }
 
     private:
@@ -180,9 +158,9 @@ class RFFTBlock: public FFTBaseBlock<In,Out>
             const FFTFunc& func,
             size_t numBins,
             double norm,
-            size_t nchans
+            size_t dtypeDims
         ):
-            FFTBaseBlock<In,Out>(device, numBins, norm, nchans, rfftBlockPath),
+            FFTBaseBlock<In,Out>(device, numBins, norm, dtypeDims, rfftBlockPath),
             _func(func)
         {
         }
@@ -192,29 +170,14 @@ class RFFTBlock: public FFTBaseBlock<In,Out>
         void work() override
         {
             auto elems = this->workInfo().minElements;
-            if(0 == elems)
+            if(elems < this->_numBins)
             {
                 return;
             }
 
-            auto afArray = this->getNumberedInputPortsAs2DAfArray();
-
-            /*
-             * Before ArrayFire 3.6, gfor was not thread-safe, as some
-             * internal bookkeeping was stored globally. As of ArrayFire 3.6,
-             * all of this stuff is thread-local, so we can take advantage of
-             * it.
-             */
-            #if AF_CONFIG_PER_THREAD
-            gfor(size_t chan, this->_nchans)
-            #else
-            for(size_t chan = 0; chan < this->_nchans; ++chan)
-            #endif
-            {
-                afArray.row(chan) = _func(afArray.row(chan), this->_norm);
-            }
-
-            this->post2DAfArrayToNumberedOutputPorts(afArray);
+            auto afInput = this->getInputPortAsAfArray(0);
+            auto afOutput = _func(afInput, this->_norm);
+            this->postAfArray(0, afOutput);
         }
 
     private:
@@ -230,14 +193,13 @@ static Pothos::Block* makeFFT(
     const Pothos::DType& dtype,
     size_t numBins,
     double norm,
-    size_t numChannels,
     bool inverse)
 {
     FFTInPlaceFuncPtr func = inverse ? &af::ifftInPlace : &af::fftInPlace;
 
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new FFTBlock<T>(device, func, numBins, norm, numChannels);
+            return new FFTBlock<T>(device, func, numBins, norm, dtype.dimension());
 
     ifTypeDeclareFactory(std::complex<float>)
     ifTypeDeclareFactory(std::complex<double>)
@@ -253,7 +215,6 @@ static Pothos::Block* makeRFFT(
     const Pothos::DType& dtype,
     size_t numBins,
     double norm,
-    size_t numChannels,
     bool inverse)
 {
     auto getC2RFunc = [&numBins]() -> FFTFunc
@@ -275,8 +236,8 @@ static Pothos::Block* makeRFFT(
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
         { \
-            if(inverse) return new RFFTBlock<T,std::complex<T>>(device,func,numBins,norm,numChannels); \
-            else        return new RFFTBlock<std::complex<T>,T>(device,func,numBins,norm,numChannels); \
+            if(inverse) return new RFFTBlock<T,std::complex<T>>(device,func,numBins,norm,dtype.dimension()); \
+            else        return new RFFTBlock<std::complex<T>,T>(device,func,numBins,norm,dtype.dimension()); \
         }
 
     ifTypeDeclareFactory(float)
@@ -295,21 +256,13 @@ static Pothos::Block* makeRFFT(
 /*
  * |PothosDoc FFT
  *
- * Calculates the 1-dimensional FFT of all input streams.
- *
- * Calls <b>af::fftInPlace</b> or <b>af::ifftInPlace</b> on all inputs.
- * This block computes all outputs in parallel, using one of the following
- * implementations by priority (based on availability of hardware and
- * underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calculates the FFT of all input streams. For the forward FFT, this
+ * block uses <b>af::fftInPlace</b> For the reverse FFT, this block
+ * uses <b>af::ifftInPlace</b>.
  *
  * |category /ArrayFire/Signal
  * |keywords array signal fft ifft fourier
- * |factory /arrayfire/signal/fft(device,dtype,numBins,norm,numChannels,inverse)
+ * |factory /arrayfire/signal/fft(device,dtype,numBins,norm,inverse)
  * |setter setNormalizationFactor(norm)
  *
  * |param device[Device] ArrayFire device to use.
@@ -318,7 +271,7 @@ static Pothos::Block* makeRFFT(
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(cfloat=1)
+ * |widget DTypeChooser(cfloat=1,dim=1)
  * |default "complex_float64"
  * |preview disable
  *
@@ -336,11 +289,6 @@ static Pothos::Block* makeRFFT(
  * |default 1.0
  * |preview enable
  *
- * |param numChannels[Num Channels] The number of channels.
- * |widget SpinBox(minimum=1)
- * |default 1
- * |preview disable
- *
  * |param inverse[Inverse?]
  * |widget ToggleSwitch()
  * |preview enable
@@ -353,21 +301,13 @@ static Pothos::BlockRegistry registerFFT(
 /*
  * |PothosDoc Real FFT
  *
- * Calculates the 1-dimensional real FFT of all input streams.
- *
- * Calls <b>af::fftR2C\<1\></b> or <b>af::fftC2R\<1\></b> on all inputs.
- * This block computes all outputs in parallel, using one of the following
- * implementations by priority (based on availability of hardware and
- * underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calculates the real FFT of all input streams. For the forward FFT, this
+ * block uses <b>af::fftR2C\<1\></b>. For the reverse FFT, this block uses
+ * <b>af::fftC2R\<1\></b>.
  *
  * |category /ArrayFire/Signal
  * |keywords array signal fft ifft rfft fourier
- * |factory /arrayfire/signal/rfft(device,dtype,numBins,norm,numChannels,inverse)
+ * |factory /arrayfire/signal/rfft(device,dtype,numBins,norm,inverse)
  * |setter setNormalizationFactor(norm)
  *
  * |param device[Device] ArrayFire device to use.
@@ -376,7 +316,7 @@ static Pothos::BlockRegistry registerFFT(
  * |preview enable
  *
  * |param dtype[Data Type] The floating-type underlying the input types.
- * |widget DTypeChooser(float=1)
+ * |widget DTypeChooser(float=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -393,11 +333,6 @@ static Pothos::BlockRegistry registerFFT(
  * |widget DoubleSpinBox(minimum=0.0)
  * |default 1.0
  * |preview enable
- *
- * |param numChannels[Num Channels] The number of channels.
- * |widget SpinBox(minimum=1)
- * |default 1
- * |preview disable
  *
  * |param inverse[Inverse?]
  * |widget ToggleSwitch()

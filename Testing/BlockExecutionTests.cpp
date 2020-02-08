@@ -1,8 +1,12 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BlockExecutionTests.hpp"
 #include "TestUtility.hpp"
+#include "Utility.hpp"
+
+namespace PothosArrayFireTests
+{
 
 #define RETURN_BUFFERCHUNK(typeStr, cType) \
     if(type == typeStr) \
@@ -26,4 +30,6 @@ Pothos::BufferChunk getTestInputs(const std::string& type)
 
     // Should never happen
     return Pothos::BufferChunk();
+}
+
 }

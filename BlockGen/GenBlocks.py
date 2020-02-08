@@ -90,97 +90,27 @@ DICT_ENTRY_KEYS = dict(
 # Operates in-place
 def generateDTypeDictEntries(supportedTypes):
     if "supportAll" in supportedTypes:
-        supportedTypes["dtypeString"] = ",".join([DICT_ENTRY_KEYS[key] for key in DICT_ENTRY_KEYS])
+        supportedTypes["dtypeString"] = ",".join([DICT_ENTRY_KEYS[key] for key in DICT_ENTRY_KEYS])+",dim=1"
         supportedTypes["defaultType"] = "float64"
     else:
-        supportedTypes["dtypeString"] = ",".join([DICT_ENTRY_KEYS[key] for key in DICT_ENTRY_KEYS if key in supportedTypes])
+        supportedTypes["dtypeString"] = ",".join([DICT_ENTRY_KEYS[key] for key in DICT_ENTRY_KEYS if key in supportedTypes])+",dim=1"
         supportedTypes["defaultType"] = "float64" if ("float=1" in supportedTypes["dtypeString"] and "cfloat=1" not in supportedTypes["dtypeString"]) else "{0}64".format(supportedTypes["dtypeString"].split("=")[0].split(",")[0]).replace("cfloat64", "complex_float64")
 
-def generatePothosDoc(category,blockYAML):
-    desc = dict()
-    desc["name"] = blockYAML("niceName", blockYAML["func"].title())
-    desc["path"] = "/arrayfire/{0}/{1}".format(blockYAML["header"], blockYAML["func"])
-    desc["categories"] = "/ArrayFire/" + blockYAML["header"].title()
-    desc["keywords"] = [blockYAML["header"], blockYAML["func"]]
-    if "keywords" in blockYAML:
-        desc["keywords"] += blockYAML["keywords"]
-        desc["keywords"] = list(set(desc["keywords"]))
-    if "description" in blockYAML:
-        desc["docs"] = blockYAML
-
-    # Common args for all auto-generated blocks
-
-    desc["params"] = [dict(key="device",
-                           name="Device",
-                           desc=["ArrayFire device"],
-                           widgetType="ComboBox",
-                           widgetKwargs=dict(editable="false"),
-                           preview="enable",
-                           default="\"Auto\"")]
-
-    dtypeArg = dict(key="dtype",
-                    name="Data Type",
-                    desc=["Block data type"],
-                    widgetType="DTypeChooser",
-                    preview="disable",
-                    default="\"int32\"" if blockYAML.get("intOnly", False) else "\"float64\"")
-    if "blockPattern" in blockYAML:
-        if blockYAML["blockPattern"] in ["FloatToComplex", "ComplexToFloat"]:
-            dtypeArg["widgetKwargs"] = dict(float=1)
-        else:
-            raise RuntimeError("Unknown block pattern: " + blockYAML["blockPattern"])
-    elif blockYAML.get("intOnly", False):
-        dtypeArg["widgetKwargs"]= dict(int16=1,int32=1,int64=1,uint=1)
-    else:
-        dtypeArg["widgetKwargs"] = dict()
-        if "supportedTypes" in blockYAML:
-            supportedTypes = blockYAML["supportedTypes"]
-            if ("supportInt" in supportedTypes) or ("supportAll" in supportedTypes):
-                dtypeArg["widgetKwargs"].update(dict(int16=1,int32=1,int64=1))
-            if ("supportUInt" in supportedTypes) or ("supportAll" in supportedTypes):
-                dtypeArg["widgetKwargs"]["uint"] = 1
-            if ("supportFloat" in supportedTypes) or ("supportAll" in supportedTypes):
-                dtypeArg["widgetKwargs"]["float"] = 1
-            if ("supportComplex" in supportedTypes) or ("supportAll" in supportedTypes):
-                dtypeArg["widgetKwargs"]["cfloat"] = 1
-
-    desc["params"] += [dtypeArg]
-
-    if category == "ScalarOpBlocks":
-        desc["params"] += [dict(key="scalar",
-                                name="Scalar",
-                                desc=["The scalar value to apply to all inputs."],
-                                default="0" if blockYAML.get("allowZeroScalar",True) else "1",
-                                preview="enable")]
-    if category != "TwoToOneBlocks":
-        desc["params"] += [dict(key="numInputs",
-                                name="Num Inputs",
-                                desc=["The number of inputs for this block."],
-                                default="2" if category == "NToOneBlocks" else "1",
-                                preview="disable")]
-
-    return desc
-
-def generateFactory(allBlockYAML):
+def generateFactory(blockYAML):
     # Generate the type support strings here (easier to do than in the Mako
     # template files).
-    for category,blocks in allBlockYAML.items():
+    for category,blocks in blockYAML.items():
         for block in blocks:
             for key in ["supportedTypes", "supportedInputTypes", "supportedOutputTypes"]:
                 if key in block:
                     generateDTypeDictEntries(block[key])
 
-    docs = []
-
     try:
         rendered = Template(FactoryTemplate).render(
-                       oneToOneBlocks=filterBlockYAML(allBlockYAML["OneToOneBlocks"]),
-                       scalarOpBlocks=filterBlockYAML(allBlockYAML["ScalarOpBlocks"]),
+                       oneToOneBlocks=filterBlockYAML(blockYAML["OneToOneBlocks"]),
                        singleOutputSources=[],
-                       #singleOutputSources=filterBlockYAML(allBlockYAML["SingleOutputSources"]),
-                       twoToOneBlocks=filterBlockYAML(allBlockYAML["TwoToOneBlocks"]),
-                       NToOneBlocks=filterBlockYAML(allBlockYAML["NToOneBlocks"]),
-                       docs=docs)
+                       twoToOneBlocks=filterBlockYAML(blockYAML["TwoToOneBlocks"]),
+                       NToOneBlocks=filterBlockYAML(blockYAML["NToOneBlocks"]),)
     except:
         print(mako.exceptions.text_error_template().render())
 
@@ -191,7 +121,7 @@ def generateFactory(allBlockYAML):
         f.write(output)
 
 # TODO: make OneToOneBlock test support different types
-def generateBlockExecutionTest(allBlockYAML):
+def generateBlockExecutionTest(blockYAML):
     sfinaeMap = dict(
         Integer="Int",
         UnsignedInt="UInt",
@@ -201,12 +131,10 @@ def generateBlockExecutionTest(allBlockYAML):
 
     try:
         rendered = Template(BlockExecutionTestAutoTemplate).render(
-                       oneToOneBlocks=filterBlockYAML(allBlockYAML["OneToOneBlocks"], True),
-                       scalarOpBlocks=filterBlockYAML(allBlockYAML["ScalarOpBlocks"], True),
+                       oneToOneBlocks=filterBlockYAML(blockYAML["OneToOneBlocks"], True),
                        singleOutputSources=[],
-                       #singleOutputSources=filterBlockYAML(allBlockYAML["SingleOutputSources"], True),
-                       twoToOneBlocks=filterBlockYAML(allBlockYAML["TwoToOneBlocks"], True),
-                       NToOneBlocks=filterBlockYAML(allBlockYAML["NToOneBlocks"], True),
+                       twoToOneBlocks=filterBlockYAML(blockYAML["TwoToOneBlocks"], True),
+                       NToOneBlocks=filterBlockYAML(blockYAML["NToOneBlocks"], True),
                        sfinaeMap=sfinaeMap)
     except:
         print(mako.exceptions.text_error_template().render())
@@ -221,7 +149,7 @@ if __name__ == "__main__":
     populateTemplates()
 
     yamlFilepath = os.path.join(ScriptDir, "Blocks.yaml")
-    allBlockYAML = processYAMLFile(yamlFilepath)
+    blockYAML = processYAMLFile(yamlFilepath)
 
-    generateFactory(allBlockYAML)
-    generateBlockExecutionTest(allBlockYAML)
+    generateFactory(blockYAML)
+    generateBlockExecutionTest(blockYAML)

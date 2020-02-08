@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -6,8 +6,6 @@
 
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
-
-#include <Poco/Logger.h>
 
 #include <arrayfire.h>
 
@@ -27,10 +25,6 @@ static void validateCastTypes(
     }
 }
 
-// TODO:
-//  * See if different backends have different casting support.
-//  * If this is the case, automatically set backend or error out
-//    based on given DTypes.
 class CastBlock: public OneToOneBlock
 {
     public:
@@ -39,66 +33,48 @@ class CastBlock: public OneToOneBlock
         static Pothos::Block* make(
             const std::string& device,
             const Pothos::DType& inputDType,
-            const Pothos::DType& outputDType,
-            size_t nchans)
+            const Pothos::DType& outputDType)
         {
             // Validate here to avoid the ArrayFireBlock overhead.
             validateCastTypes(inputDType, outputDType);
 
-            return new CastBlock(device, inputDType, outputDType, nchans);
+            return new CastBlock(device, inputDType, outputDType);
         }
 
         CastBlock(
             const std::string& device,
             const Pothos::DType& inputDType,
-            const Pothos::DType& outputDType,
-            size_t nchans
+            const Pothos::DType& outputDType
         ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(),
                 inputDType,
-                outputDType,
-                nchans)
+                outputDType)
         {
         }
 
-        void work(const af::array& afArray) override
+        void work() override
         {
             const size_t elems = this->workInfo().minElements;
-            assert(elems > 0);
-
-            auto afOutput = afArray.as(_afOutputDType);
-            if(1 == _nchans)
+            if(0 == elems)
             {
-                this->input(0)->consume(elems);
-                this->output(0)->postBuffer(Pothos::Object(afOutput)
-                                                .convert<Pothos::BufferChunk>());
+                return;
             }
-            else
-            {
-                assert(0 != _nchans);
 
-                this->post2DAfArrayToNumberedOutputPorts(afOutput);
-            }
+            auto afOutput = this->getInputPortAsAfArray(0).as(_afOutputDType);
+            this->postAfArray(0, afOutput);
         }
 };
 
 /*
  * |PothosDoc Cast
  *
- * Calls <b>af::array::as</b> on all inputs to cast to a given type. This
- * is potentially accelerated using one of the following implementations
- * by priority (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
+ * Calls <b>af::array::as</b> on all inputs to cast to a given type.
  *
  * |category /ArrayFire/Stream
  * |keywords array cast
- * |factory /arrayfire/array/cast(device,inputDType,outputDType,numChannels)
+ * |factory /arrayfire/array/cast(device,inputDType,outputDType)
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
@@ -113,11 +89,6 @@ class CastBlock: public OneToOneBlock
  * |param outputDType(Output Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
  * |default "complex_float64"
- * |preview disable
- *
- * |param numChannels[Num Channels] The number of channels.
- * |default 1
- * |widget SpinBox(minimum=1)
  * |preview disable
  */
 static Pothos::BlockRegistry registerCast(

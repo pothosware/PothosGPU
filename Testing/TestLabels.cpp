@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -13,6 +13,9 @@
 #include <numeric>
 #include <random>
 #include <vector>
+
+namespace PothosArrayFireTests
+{
 
 //
 // Get expected values for the labels.
@@ -95,6 +98,23 @@ static T variance(const std::vector<T>& inputs)
     return std::pow(stddev(inputs), T(2));
 }
 
+template <typename T>
+static T medAbsDev(const std::vector<T>& inputs)
+{
+    size_t _;
+
+    const T med = median(inputs, &_);
+    std::vector<T> diffs;
+
+    std::transform(
+        inputs.begin(),
+        inputs.end(),
+        std::back_inserter(diffs),
+        [&med](T input){return std::abs<T>(input-med);});
+
+    return median(diffs, &_);
+}
+
 //
 // Make sure that blocks that post labels post the labels we expect.
 //
@@ -111,6 +131,7 @@ static std::vector<Pothos::Label> getExpectedLabels(const std::vector<double>& i
     const auto expectedMedian = median(inputs, &expectedMedianPosition);
     const auto expectedStdDev = stddev(inputs);
     const auto expectedVariance = variance(inputs);
+    const auto expectedMedAbsDev = medAbsDev(inputs);
 
     return std::vector<Pothos::Label>
     ({
@@ -120,11 +141,16 @@ static std::vector<Pothos::Label> getExpectedLabels(const std::vector<double>& i
         Pothos::Label("MEDIAN", expectedMedian, expectedMedianPosition),
         Pothos::Label("STDDEV", expectedStdDev, 0),
         Pothos::Label("VAR", expectedVariance, 0),
+        Pothos::Label("MEDABSDEV", expectedMedAbsDev, 0),
     });
+}
+
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
 {
+    using namespace PothosArrayFireTests;
+
     std::random_device rd;
     std::mt19937 g(rd());
 
@@ -134,27 +160,31 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
 
     const auto dtype = Pothos::DType("float64");
 
-    auto vectorSource = Pothos::BlockRegistry::make(
-                            "/blocks/vector_source",
-                            dtype);
-    vectorSource.call("setMode", "ONCE");
-    vectorSource.call("setElements", inputs);
-
     // NaN functions will be tested elsewhere.
     const std::vector<Pothos::Proxy> arrayFireBlocks =
     {
-        Pothos::BlockRegistry::make("/arrayfire/algorithm/max", "Auto", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/algorithm/min", "Auto", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/mean", "Auto", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/median", "Auto", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", "Auto", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/var", "Auto", dtype, false, 1),
+        Pothos::BlockRegistry::make("/arrayfire/algorithm/max", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/algorithm/min", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/mean", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/median", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/var", "Auto", dtype, false),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/medabsdev", "Auto", dtype),
     };
     const size_t numBlocks = arrayFireBlocks.size();
 
+    // We need separate vector sources because Pothos doesn't support
+    // connecting to multiple blocks with custom input buffer managers.
+    std::vector<Pothos::Proxy> vectorSources;
     std::vector<Pothos::Proxy> collectorSinks;
     for(size_t blockIndex = 0; blockIndex < numBlocks; ++blockIndex)
     {
+        vectorSources.emplace_back(Pothos::BlockRegistry::make(
+                                       "/blocks/vector_source",
+                                       dtype));
+        vectorSources.back().call("setMode", "ONCE");
+        vectorSources.back().call("setElements", inputs);
+
         collectorSinks.emplace_back(Pothos::BlockRegistry::make(
                                         "/blocks/collector_sink",
                                         dtype));
@@ -167,7 +197,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
         for(size_t blockIndex = 0; blockIndex < numBlocks; ++blockIndex)
         {
             topology->connect(
-                vectorSource,
+                vectorSources[blockIndex],
                 0,
                 arrayFireBlocks[blockIndex],
                 0);

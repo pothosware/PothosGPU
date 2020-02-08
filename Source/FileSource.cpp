@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -14,7 +14,7 @@
 
 #include <arrayfire.h>
 
-#include <cassert>
+#include <cstring>
 #include <string>
 #include <typeinfo>
 
@@ -40,9 +40,11 @@ class FileSourceBlock: public ArrayFireBlock
             _filepath(filepath),
             _key(key),
             _repeat(repeat),
-            _hasPosted(false),
-            _fileContents(),
-            _numDims(0)
+            _nchans(0),
+            _rowSize(0),
+            _pos(0),
+            _afFileContents(),
+            _fileContents()
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, getFilepath));
             this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, getKey));
@@ -62,9 +64,9 @@ class FileSourceBlock: public ArrayFireBlock
                           _key);
             }
 
-            auto fileContents = af::readArray(_filepath.c_str(), _key.c_str());
-            _numDims = fileContents.numdims();
-            if((1 != _numDims) && (2 != _numDims))
+            _afFileContents = af::readArray(_filepath.c_str(), _key.c_str());
+            const auto numDims = _afFileContents.numdims();
+            if((1 != numDims) && (2 != numDims))
             {
                 throw Pothos::DataFormatException(
                           "Only arrays of 1-2 dimensions are supported.");
@@ -72,17 +74,20 @@ class FileSourceBlock: public ArrayFireBlock
 
             // Now that we know the file is valid, store the array and
             // initialize our ports.
-            _fileContents = std::move(fileContents);
-            const auto dtype = Pothos::Object(_fileContents.type()).convert<Pothos::DType>();
+            const auto dtype = Pothos::Object(_afFileContents.type()).convert<Pothos::DType>();
 
-            if(1 == _numDims)
+            if(1 == numDims)
             {
-                this->setupOutput(0, dtype);
+                _nchans = 1;
+                _rowSize = _afFileContents.bytes();
+                this->setupOutput(0, dtype, this->getPortDomain());
             }
             else
             {
-                const size_t nchans = static_cast<size_t>(_fileContents.dims(0));
-                for(size_t chan = 0; chan < nchans; ++chan)
+                _nchans = static_cast<size_t>(_afFileContents.dims(0));
+                _rowSize = _afFileContents.bytes() / _nchans;
+
+                for(size_t chan = 0; chan < _nchans; ++chan)
                 {
                     this->setupOutput(chan, dtype, this->getPortDomain());
                 }
@@ -109,33 +114,73 @@ class FileSourceBlock: public ArrayFireBlock
             _repeat = repeat;
         }
 
+        void activate() override
+        {
+            // Incur a one-time performance hit of reading the file contents
+            // into paged memory to make the work() implementation easier.
+            if(1 == _nchans)
+            {
+                _fileContents.emplace_back(Pothos::SharedBuffer::makeCirc(_afFileContents.bytes()));
+                _afFileContents.host(reinterpret_cast<void*>(_fileContents.back().getAddress()));
+            }
+            else
+            {
+                for(size_t chan = 0; chan < _nchans; ++chan)
+                {
+                    _fileContents.emplace_back(Pothos::SharedBuffer::makeCirc(_afFileContents.bytes()));
+                    _afFileContents.row(chan).host(reinterpret_cast<void*>(_fileContents.back().getAddress()));
+                }
+            }
+        }
+
         void work()
         {
-            if(!_repeat && _hasPosted)
+            const size_t elems = this->workInfo().minElements;
+            if((0 == elems) || (!_repeat && (_pos >= _rowSize)))
             {
                 return;
             }
 
-            if(1 == _numDims)
+            const auto elemsBytes = elems * this->output(0)->dtype().size();
+            size_t memcpySize = 0;
+            size_t actualElems = 0;
+
+            if(_repeat)
             {
-                this->postAfArray(0, _fileContents);
+                memcpySize = elemsBytes;
+                actualElems = elems;
             }
             else
             {
-                this->post2DAfArrayToNumberedOutputPorts(_fileContents);
+                memcpySize = std::min(elemsBytes, (_rowSize-_pos));
+                actualElems = memcpySize / this->output(0)->dtype().size();
             }
 
-            _hasPosted = true;
+            for(size_t chan = 0; chan < _nchans; ++chan)
+            {
+                auto* outputPort = this->output(chan);
+                const void* srcPtr = reinterpret_cast<const void*>(_fileContents[chan].getAddress() + _pos);
+                void* out = outputPort->buffer().as<void*>();
+
+                std::memcpy(out, srcPtr, memcpySize);
+                outputPort->produce(actualElems);
+            }
+
+            _pos += memcpySize;
+            if(_repeat && (_pos >= _rowSize)) _pos -= _rowSize;
         }
 
     private:
         std::string _filepath;
         std::string _key;
         bool _repeat;
-        bool _hasPosted;
 
-        af::array _fileContents;
-        size_t _numDims;
+        size_t _nchans;
+        size_t _rowSize;
+        size_t _pos;
+
+        af::array _afFileContents;
+        std::vector<Pothos::SharedBuffer> _fileContents;
 };
 
 /*
@@ -148,14 +193,6 @@ class FileSourceBlock: public ArrayFireBlock
  * This block supports any 1D or 2D array. 2D arrays are posted per row in
  * a given channel. The DType of each OutputPort is determined by the type
  * of the given array.
- *
- * This is potentially accelerated using one of the following implementations
- * by priority (based on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
  *
  * |category /ArrayFire/File IO
  * |keywords array file source io

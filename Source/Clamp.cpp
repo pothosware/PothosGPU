@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -32,14 +32,13 @@ class Clamp: public OneToOneBlock
             const std::string& device,
             const T& minValue,
             const T& maxValue,
-            size_t nchans
+            size_t dtypeDims
         ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(),
-                dtype,
-                dtype,
-                nchans)
+                Pothos::DType::fromDType(Class::dtype, dtypeDims),
+                Pothos::DType::fromDType(Class::dtype, dtypeDims))
         {
             validateMinMax(minValue, maxValue);
 
@@ -83,7 +82,7 @@ class Clamp: public OneToOneBlock
             this->emitSignal("maxValueChanged", maxValue);
         }
 
-        void work(const af::array& afInput) override;
+        void work() override;
 
     private:
         AFType _afMinValue;
@@ -113,82 +112,46 @@ const Pothos::DType Clamp<T>::dtype = Pothos::DType(typeid(T));
  */
 
 template <typename T>
-void Clamp<T>::work(const af::array& afInput)
+void Clamp<T>::work()
 {
+    const auto elems = this->workInfo().minElements;
+    if(0 == elems)
+    {
+        return;
+    }
+
     static const af::dtype afDType = Pothos::Object(dtype).convert<af::dtype>();
 
-    const size_t elems = this->workInfo().minElements;
-    assert(0 < elems);
+    auto afArrayMinValue = af::constant(_afMinValue, elems, afDType);
+    auto afArrayMaxValue = af::constant(_afMaxValue, elems, afDType);
 
-    af::array afArrayMinValue;
-    af::array afArrayMaxValue;
-
-    if(1 == _nchans)
-    {
-        afArrayMinValue = af::constant(_afMinValue, elems, afDType);
-        afArrayMaxValue = af::constant(_afMaxValue, elems, afDType);
-        auto afOutput = af::clamp(afInput, afArrayMinValue, afArrayMaxValue);
-
-        this->input(0)->consume(elems);
-        this->output(0)->postBuffer(Pothos::Object(afOutput)
-                                        .convert<Pothos::BufferChunk>());
-    }
-    else
-    {
-        assert(0 != _nchans);
-        assert(_nchans == static_cast<size_t>(afInput.dims(0)));
-        assert(elems == static_cast<size_t>(afInput.dims(1)));
-
-        afArrayMinValue = af::constant(_afMinValue, _nchans, elems, afDType);
-        afArrayMaxValue = af::constant(_afMaxValue, _nchans, elems, afDType);
-        auto afOutput = af::clamp(afInput, afArrayMinValue, afArrayMaxValue);
-
-        this->post2DAfArrayToNumberedOutputPorts(afOutput);
-    }
+    auto afInput = this->getInputPortAsAfArray(0);
+    auto afOutput = af::clamp(afInput, afArrayMinValue, afArrayMaxValue);
+    this->postAfArray(0, afOutput);
 };
 
 template <>
-void Clamp<double>::work(const af::array& afInput)
+void Clamp<double>::work()
 {
-    const size_t elems = this->workInfo().minElements;
-    assert(0 < elems);
-
-    if(1 == _nchans)
+    const auto elems = this->workInfo().minElements;
+    if(0 == elems)
     {
-        auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
-
-        this->input(0)->consume(elems);
-        this->output(0)->postBuffer(Pothos::Object(afOutput)
-                                        .convert<Pothos::BufferChunk>());
+        return;
     }
-    else
-    {
-        assert(0 != _nchans);
-        assert(_nchans == static_cast<size_t>(afInput.dims(0)));
-        assert(elems == static_cast<size_t>(afInput.dims(1)));
 
-        auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
-
-        this->post2DAfArrayToNumberedOutputPorts(afOutput);
-    }
+    auto afInput = this->getInputPortAsAfArray(0);
+    auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
+    this->postAfArray(0, afOutput);
 };
 
 /*
  * |PothosDoc Clamp
  *
  * Calls <b>af::clamp</b> on all inputs with given minimum and maximum values.
- * This block computes all outputs in parallel, using one of the following
- * implementations by priority (based on availability of hardware and
- * underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
  *
  * |category /ArrayFire/Arith
  * |keywords array arith clamp min max
- * |factory /arrayfire/arith/clamp(device,dtype,minValue,maxValue,numChannels)
+ * |factory /arrayfire/arith/clamp(device,dtype,minValue,maxValue)
  * |setter setMinValue(minValue)
  * |setter setMaxValue(maxValue)
  *
@@ -198,7 +161,7 @@ void Clamp<double>::work(const af::array& afInput)
  * |preview enable
  *
  * |param dtype(Data Type) The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -209,22 +172,16 @@ void Clamp<double>::work(const af::array& afInput)
  * |param maxValue(Min Value)
  * |default 10
  * |preview enable
- *
- * |param numChannels(Num Channels) The number of channels.
- * |widget SpinBox(minimum=1)
- * |default 1
- * |preview disable
  */
 static Pothos::Block* clampFactory(
     const std::string& device,
     const Pothos::DType& dtype,
     const Pothos::Object& minValue,
-    const Pothos::Object& maxValue,
-    size_t nchans)
+    const Pothos::Object& maxValue)
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new Clamp<T>(device, minValue.convert<T>(), maxValue.convert<T>(), nchans);
+            return new Clamp<T>(device, minValue.convert<T>(), maxValue.convert<T>(), dtype.dimension());
 
     // ArrayFire has no implementation for std::int8_t.
     ifTypeDeclareFactory(std::int16_t)
@@ -237,10 +194,6 @@ static Pothos::Block* clampFactory(
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     // ArrayFire has no implementation for any integral complex type.
-
-    // TODO: how does ArrayFire compare complex numbers?
-    /*ifTypeDeclareFactory(std::complex<float>)
-    ifTypeDeclareFactory(std::complex<double>)*/
 
     throw Pothos::InvalidArgumentException(
               "Unsupported type",

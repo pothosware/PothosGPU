@@ -1,9 +1,10 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "DeviceCache.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Managed.hpp>
 #include <Pothos/Object.hpp>
 #include <Pothos/Plugin.hpp>
 
@@ -67,20 +68,33 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                 devIndex
             };
 
-            if(af::isDoubleAvailable(devIndex))
-            {
-                deviceCache.emplace_back(std::move(deviceCacheEntry));
-            }
-            else
-            {
-                auto& logger = Poco::Logger::get("PothosArrayFire");
-                poco_warning_f2(
-                    logger,
-                    "Found %s device %s, which does not have 64-bit floating-point "
-                    "support through ArrayFire. This device will not be made "
-                    "available through PothosArrayFire.",
-                    Pothos::Object(backend).convert<std::string>(),
-                    deviceCacheEntry.name);
+            // Policy: some devices are supported by multiple backends. Only
+            //         store each device once, with the most efficient backend
+            //         that supports it.
+            auto devIter = std::find_if(
+                               deviceCache.begin(),
+                               deviceCache.end(),
+                               [&deviceCacheEntry](const DeviceCacheEntry& entry)
+                               {
+                                   return (deviceCacheEntry.name == entry.name);
+                               });
+            if(deviceCache.end() == devIter)
+            {            
+                if(af::isDoubleAvailable(devIndex))
+                {
+                    deviceCache.emplace_back(std::move(deviceCacheEntry));
+                }
+                else
+                {
+                    auto& logger = Poco::Logger::get("PothosArrayFire");
+                    poco_warning_f2(
+                        logger,
+                        "Found %s device %s, which does not have 64-bit floating-point "
+                        "support through ArrayFire. This device will not be made "
+                        "available through PothosArrayFire.",
+                        Pothos::Object(backend).convert<std::string>(),
+                        deviceCacheEntry.name);
+                }
             }
         }
     }
@@ -114,3 +128,42 @@ pothos_static_block(arrayFireCacheDevices)
     af::setDevice(0);
 #endif
 }
+
+//
+// Managed interface to device cache
+//
+
+// Don't expose a constructor since this should never be used outside
+// getting the cache.
+static auto managedDeviceCacheEntry = Pothos::ManagedClass()
+    .registerClass<DeviceCacheEntry>()
+    .registerField("Name", &DeviceCacheEntry::name)
+    .registerField("Platform", &DeviceCacheEntry::platform)
+    .registerField("Toolkit", &DeviceCacheEntry::toolkit)
+    .registerField("Compute", &DeviceCacheEntry::compute)
+    .registerField("Memory Step Size", &DeviceCacheEntry::memoryStepSize)
+    .commit("ArrayFire/DeviceCacheEntry");
+
+// Nicer than the error from at()
+static DeviceCacheEntry getEntry(const DeviceCache& deviceCache, size_t index)
+{
+    if(index >= deviceCache.size())
+    {
+        throw Pothos::InvalidArgumentException("Invalid index", std::to_string(index));
+    }
+
+    return deviceCache[index];
+}
+
+// The constructor will return the full list.
+static DeviceCache deviceCacheCtor()
+{
+    return getDeviceCache();
+}
+
+static auto managedDeviceCache = Pothos::ManagedClass()
+    .registerClass<DeviceCache>()
+    .registerConstructor(&deviceCacheCtor)
+    .registerMethod("getEntry", &getEntry)
+    .registerMethod(POTHOS_FCN_TUPLE(DeviceCache, size))
+    .commit("ArrayFire/DeviceCache");
