@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -35,15 +35,13 @@ class ConvolveBaseBlock: public OneToOneBlock
 
         ConvolveBaseBlock(
             const std::string& device,
-            const Pothos::Callable& callable,
-            size_t nchans
+            const Pothos::Callable& callable
         ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(callable),
                 Class::dtype,
-                Class::dtype,
-                nchans),
+                Class::dtype),
             _taps({T(1.0)}),
             _convMode(::AF_CONV_DEFAULT),
             _waitTaps(false),
@@ -140,14 +138,10 @@ class ConvolveBlock: public ConvolveBaseBlock<T>
     public:
         using Class = ConvolveBlock<T>;
 
-        ConvolveBlock(
-            const std::string& device,
-            size_t nchans
-        ):
+        ConvolveBlock(const std::string& device):
             ConvolveBaseBlock<T>(
                 device,
-                Pothos::Callable(&af::convolve1),
-                nchans),
+                Pothos::Callable(&af::convolve1)),
             _convDomain(::AF_CONV_AUTO)
         {
             // Emit the initial signal.
@@ -187,12 +181,11 @@ using FFTConvolveBlock = ConvolveBaseBlock<T>;
 
 static Pothos::Block* makeConvolve(
     const std::string& device,
-    const Pothos::DType& dtype,
-    size_t nchans)
+    const Pothos::DType& dtype)
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new ConvolveBlock<T>(device, nchans);
+            return new ConvolveBlock<T>(device);
 
     ifTypeDeclareFactory(std::int16_t)
     ifTypeDeclareFactory(std::int32_t)
@@ -214,14 +207,13 @@ static Pothos::Block* makeConvolve(
 
 static Pothos::Block* makeFFTConvolve(
     const std::string& device,
-    const Pothos::DType& dtype,
-    size_t nchans)
+    const Pothos::DType& dtype)
 {
     static const Pothos::Callable callableFFTConvolve(&af::fftConvolve1);
 
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new FFTConvolveBlock<T>(device, callableFFTConvolve, nchans);
+            return new FFTConvolveBlock<T>(device, callableFFTConvolve);
 
     ifTypeDeclareFactory(std::int16_t)
     ifTypeDeclareFactory(std::int32_t)

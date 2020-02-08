@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -40,7 +40,7 @@ class Constant: public ArrayFireBlock
 
         void work() override
         {
-            const auto elems = this->workInfo().minAllElements;
+            const auto elems = this->workInfo().minElements;
             if(0 == elems)
             {
                 return;

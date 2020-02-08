@@ -26,20 +26,17 @@ class OneToOneBlock: public ArrayFireBlock
             const std::string& device,
             const OneToOneFunc& func,
             const Pothos::DType& dtype,
-            const DTypeSupport& supportedTypes,
-            size_t numChans);
+            const DTypeSupport& supportedTypes);
 
         static Pothos::Block* makeFloatToComplex(
             const std::string& device,
             const OneToOneFunc& func,
-            const Pothos::DType& floatType,
-            size_t numChans);
+            const Pothos::DType& floatType);
 
         static Pothos::Block* makeComplexToFloat(
             const std::string& device,
             const OneToOneFunc& func,
-            const Pothos::DType& floatType,
-            size_t numChans);
+            const Pothos::DType& floatType);
 
         //
         // Class implementation
@@ -49,15 +46,13 @@ class OneToOneBlock: public ArrayFireBlock
             const std::string& device,
             const OneToOneFunc& func,
             const Pothos::DType& inputDType,
-            const Pothos::DType& outputDType,
-            size_t numChans);
+            const Pothos::DType& outputDType);
 
         OneToOneBlock(
             const std::string& device,
             const Pothos::Callable& func,
             const Pothos::DType& inputDType,
-            const Pothos::DType& outputDType,
-            size_t numChans);
+            const Pothos::DType& outputDType);
 
         virtual ~OneToOneBlock();
 
@@ -65,14 +60,8 @@ class OneToOneBlock: public ArrayFireBlock
 
     protected:
 
-        af::array getInputsAsAfArray();
-
-        virtual void work(const af::array& afInput);
-
         Pothos::Callable _func;
 
-        size_t _nchans;
-
-        // We need to store this since ArrayFire may change the output value.
+        // We need to store this since ArrayFire may change the output type.
         af::dtype _afOutputDType;
 };

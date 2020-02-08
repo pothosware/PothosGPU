@@ -8,6 +8,9 @@
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
+#include <Poco/Format.h>
+#include <Poco/NumberFormatter.h>
+
 #include <arrayfire.h>
 
 #include <cassert>
@@ -41,6 +44,38 @@ ReducedBlock::ReducedBlock(
 }
 
 ReducedBlock::~ReducedBlock() {}
+
+af::array ReducedBlock::getNumberedInputPortsAs2DAfArray()
+{
+    // Assumptions:
+    //  * We've already checked that all buffers are non-empty.
+    //  * We only have numbered ports.
+    //  * All DTypes are the same.
+    const auto& inputs = this->inputs();
+
+    const auto dim0 = static_cast<dim_t>(inputs.size());
+    const auto dim1 = static_cast<dim_t>(this->workInfo().minElements);
+    const auto afDType = Pothos::Object(inputs[0]->dtype()).convert<af::dtype>();
+
+    af::array ret(dim0, dim1, afDType);
+    for(dim_t row = 0; row < dim0; ++row)
+    {
+        auto afArray = this->getInputPortAsAfArray(row);
+        if(afArray.elements() != dim1)
+        {
+            throw Pothos::AssertionViolationException(
+                      "getInputPortAsAfArray() returned an af::array of invalid size",
+                      Poco::format(
+                          "Expected %s, got %s",
+                          Poco::NumberFormatter::format(dim1),
+                          Poco::NumberFormatter::format(afArray.elements())));
+        }
+
+        ret.row(row) = afArray;
+    }
+
+    return ret;
+}
 
 void ReducedBlock::work()
 {

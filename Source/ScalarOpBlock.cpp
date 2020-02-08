@@ -31,15 +31,13 @@ class ScalarOpBlock: public OneToOneBlock
             const AfArrayScalarOp<T>& func,
             const Pothos::DType& dtype,
             const T& scalar,
-            size_t numChans,
             bool allowZeroOperand
         ):
         OneToOneBlock(
             device,
             Pothos::Callable(func),
             dtype,
-            dtype,
-            numChans),
+            dtype),
         _allowZeroOperand(allowZeroOperand)
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getScalar));
@@ -72,19 +70,6 @@ class ScalarOpBlock: public OneToOneBlock
             this->emitSignal("scalarChanged", scalar);
         }
 
-        void work() override
-        {
-            if(0 == this->workInfo().minElements)
-            {
-                return;
-            }
-
-            auto afInput = this->getInputsAsAfArray();
-            _func.bind(afInput, 0);
-
-            OneToOneBlock::work(afInput);
-        }
-
     private:
         typename PothosToAF<T>::type _scalar;
 
@@ -114,8 +99,7 @@ static Pothos::Block* makeScalarOpBlock(
     const std::string& device,
     const std::string& operation,
     const Pothos::DType& dtype,
-    const Pothos::Object& scalarObject,
-    size_t numChans)
+    const Pothos::Object& scalarObject)
 {
     const bool allowZeroScalar = ("/" != operation) && ("%" != operation);
 
@@ -165,7 +149,6 @@ static Pothos::Block* makeScalarOpBlock(
                            func, \
                            dtype, \
                            scalarObject.convert<cType>(), \
-                           numChans, \
                            allowZeroScalar); \
         }
 

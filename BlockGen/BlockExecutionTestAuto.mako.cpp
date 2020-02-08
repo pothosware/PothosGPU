@@ -60,30 +60,14 @@ static EnableIf${k}<T, void> blockExecutionTest()
         %if (block.get("pattern", "") == "FloatToComplex") and (k == "Float"):
     testOneToOneBlockF2C<T>(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
-        1,
         ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-    testOneToOneBlockF2C<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        3,
-        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-        %elif (block.get("pattern", "") == "ComplexToFloat") and (k == "Complex"):
     testOneToOneBlockC2F<Scalar>(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
-        1,
-        ${"&verify_{0}_{1}<T, Scalar>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-    testOneToOneBlockC2F<Scalar>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        3,
         ${"&verify_{0}_{1}<T, Scalar>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
         %elif "supportedTypes" in block:
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
     testOneToOneBlock<T>(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
-        1,
-        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-    testOneToOneBlock<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        3,
         ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
             %endif
         %endif
@@ -125,7 +109,7 @@ static EnableIf${k}<T, void> blockExecutionTest()
     testCastBlockForType(dtypeName);
     testClampBlockForType(dtypeName);
     testComparatorBlockForType(dtypeName);
-    testFlatBlockForType(dtypeName);
+    //testFlatBlockForType(dtypeName);
     testSplitComplexBlockForType(dtypeName);
 }
 %endfor

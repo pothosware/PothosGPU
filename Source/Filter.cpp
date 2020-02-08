@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -26,16 +26,12 @@ class FIRBlock: public OneToOneBlock
 
         static const Pothos::DType dtype;
 
-        FIRBlock(
-            const std::string& device,
-            size_t nchans
-        ):
+        FIRBlock(const std::string& device):
             OneToOneBlock(
                 device,
                 Pothos::Callable(&af::fir),
                 Class::dtype,
-                Class::dtype,
-                nchans),
+                Class::dtype),
             _taps({T(1.0)}),
             _waitTaps(false),
             _waitTapsArmed(false)
@@ -112,16 +108,12 @@ class IIRBlock: public OneToOneBlock
 
         static const Pothos::DType dtype;
 
-        IIRBlock(
-            const std::string& device,
-            size_t nchans
-        ):
+        IIRBlock(const std::string& device):
             OneToOneBlock(
                 device,
                 Pothos::Callable(&af::iir),
                 Class::dtype,
-                Class::dtype,
-                nchans),
+                Class::dtype),
             _feedForwardCoeffs({0.0676, 0.135, 0.0676}),
             _feedbackCoeffs({1, -1.142, 0.412}),
             _waitTaps(false),
@@ -277,12 +269,11 @@ const Pothos::DType IIRBlock<T>::dtype(typeid(T));
 
 static Pothos::Block* makeFIR(
     const std::string& device,
-    const Pothos::DType& dtype,
-    size_t nchans)
+    const Pothos::DType& dtype)
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new FIRBlock<T>(device,nchans);
+            return new FIRBlock<T>(device);
 
     ifTypeDeclareFactory(std::int16_t)
     ifTypeDeclareFactory(std::int32_t)
@@ -304,12 +295,11 @@ static Pothos::Block* makeFIR(
 
 static Pothos::Block* makeIIR(
     const std::string& device,
-    const Pothos::DType& dtype,
-    size_t nchans)
+    const Pothos::DType& dtype)
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new IIRBlock<T>(device,nchans);
+            return new IIRBlock<T>(device);
 
     ifTypeDeclareFactory(std::int16_t)
     ifTypeDeclareFactory(std::int32_t)

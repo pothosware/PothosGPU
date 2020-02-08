@@ -177,39 +177,6 @@ af::array ArrayFireBlock::getInputPortAsAfArray(
     return _getInputPortAsAfArray(portName, truncateToMinLength);
 }
 
-af::array ArrayFireBlock::getNumberedInputPortsAs2DAfArray()
-{
-    // Assumptions:
-    //  * We've already checked that all buffers are non-empty.
-    //  * We only have numbered ports.
-    //  * All DTypes are the same.
-    const auto& inputs = this->inputs();
-    assert(!inputs.empty());
-
-    const auto dim0 = static_cast<dim_t>(inputs.size());
-    const auto dim1 = static_cast<dim_t>(this->workInfo().minElements);
-    const auto afDType = Pothos::Object(inputs[0]->dtype()).convert<af::dtype>();
-
-    af::array ret(dim0, dim1, afDType);
-    for(dim_t row = 0; row < dim0; ++row)
-    {
-        auto afArray = this->getInputPortAsAfArray(row);
-        if(afArray.elements() != dim1)
-        {
-            throw Pothos::AssertionViolationException(
-                      "getInputPortAsAfArray() returned an af::array of invalid size",
-                      Poco::format(
-                          "Expected %s, got %s",
-                          Poco::NumberFormatter::format(dim1),
-                          Poco::NumberFormatter::format(afArray.elements())));
-        }
-
-        ret.row(row) = afArray;
-    }
-
-    return ret;
-}
-
 //
 // Output port API
 //
@@ -226,22 +193,6 @@ void ArrayFireBlock::postAfArray(
     const af::array& afArray)
 {
     _postAfArray(portName, afArray);
-}
-
-void ArrayFireBlock::postAfArrayToNumberedOutputPorts(const af::array& afArray)
-{
-    if(1 == afArray.numdims())
-    {
-        this->postAfArray(0, afArray);
-    }
-    else
-    {
-        const auto numOutputs = static_cast<size_t>(afArray.dims(0));
-        for(size_t portIndex = 0; portIndex < numOutputs; ++portIndex)
-        {
-            this->postAfArray(portIndex, afArray.row(portIndex));
-        }
-    }
 }
 
 //

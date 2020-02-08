@@ -21,14 +21,12 @@ namespace PothosArrayFireTests
 
 static void testCastBlock(
     const std::string& type1,
-    const std::string& type2,
-    size_t numChannels)
+    const std::string& type2)
 {
     static constexpr const char* blockRegistryPath = "/arrayfire/array/cast";
 
     std::cout << "Testing " << blockRegistryPath
-              << " (types: " << type1 << " -> " << type2
-              << ", chans: " << numChannels << ")" << std::endl;
+              << " (types: " << type1 << " -> " << type2 << ")" << std::endl;
 
     Pothos::DType inputDType(type1);
     Pothos::DType outputDType(type2);
@@ -40,8 +38,7 @@ static void testCastBlock(
                 blockRegistryPath,
                 "Auto",
                 type1,
-                type2,
-                numChannels),
+                type2),
         Pothos::ProxyExceptionMessage);
     }
     else
@@ -50,64 +47,34 @@ static void testCastBlock(
                          blockRegistryPath,
                          "Auto",
                          type1,
-                         type2,
-                         numChannels);
+                         type2);
 
-        std::vector<Pothos::BufferChunk> testInputs;
-        std::vector<Pothos::Proxy> feederSources;
-        std::vector<Pothos::Proxy> collectorSinks;
+        auto testInputs = getTestInputs(inputDType.name());
 
-        for(size_t chan = 0; chan < numChannels; ++chan)
-        {
-            testInputs.emplace_back(getTestInputs(inputDType.name()));
+        auto feederSource = Pothos::BlockRegistry::make(
+                                "/blocks/feeder_source",
+                                inputDType);
+        feederSource.call("feedBuffer", testInputs);
 
-            feederSources.emplace_back(
-                Pothos::BlockRegistry::make(
-                    "/blocks/feeder_source",
-                    inputDType));
-            feederSources.back().call(
-                "feedBuffer",
-                testInputs[chan]);
-
-            collectorSinks.emplace_back(
-                Pothos::BlockRegistry::make(
-                    "/blocks/collector_sink",
-                    outputDType));
-        }
+        auto collectorSink = Pothos::BlockRegistry::make(
+                                 "/blocks/collector_sink",
+                                 outputDType);
 
         // Execute the topology.
         {
             Pothos::Topology topology;
-            for(size_t chan = 0; chan < numChannels; ++chan)
-            {
-                topology.connect(
-                    feederSources[chan],
-                    0,
-                    block,
-                    chan);
-                topology.connect(
-                    block,
-                    chan,
-                    collectorSinks[chan],
-                    0);
-            }
+            topology.connect(feederSource, 0, block, 0);
+            topology.connect(block, 0, collectorSink, 0);
 
             topology.commit();
             POTHOS_TEST_TRUE(topology.waitInactive(0.05));
         }
 
-        // Make sure the blocks output data.
         // TODO: output verification
-        for(size_t chan = 0; chan < numChannels; ++chan)
-        {
-            const auto& chanInputs = testInputs[chan];
-            const size_t numInputs = chanInputs.elements();
-
-            auto chanOutputs = collectorSinks[chan].call<Pothos::BufferChunk>("getBuffer");
-            POTHOS_TEST_EQUAL(
-                numInputs,
-                chanOutputs.elements());
-        }
+        auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
+        POTHOS_TEST_EQUAL(
+            testInputs.elements(),
+            output.elements());
     }
 }
 
@@ -125,13 +92,13 @@ void testCastBlockForType(const std::string& inputType)
         "uint64",
         "float32",
         "float64",
+        // ArrayFire doesn't support complex integral types
         "complex_float32",
         "complex_float64"
     };
     for(const auto& outputType: AllTypes)
     {
-        testCastBlock(inputType, outputType, 1);
-        testCastBlock(inputType, outputType, 3);
+        testCastBlock(inputType, outputType);
     }
 }
 

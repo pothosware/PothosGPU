@@ -18,15 +18,13 @@ class Log: public OneToOneBlock
     public:
         Log(const std::string& device,
             const Pothos::DType& dtype,
-            double base,
-            size_t nchans
+            double base
         ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(), // Will be set later
                 dtype,
-                dtype,
-                nchans)
+                dtype)
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(Log, getBase));
             this->registerCall(this, POTHOS_FCN_TUPLE(Log, setBase));

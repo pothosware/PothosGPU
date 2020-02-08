@@ -46,8 +46,6 @@ class ArrayFireBlock: public Pothos::Block
             const std::string& portName,
             bool truncateToMinLength = true);
 
-        af::array getNumberedInputPortsAs2DAfArray();
-
         //
         // Output port API
         //
@@ -59,8 +57,6 @@ class ArrayFireBlock: public Pothos::Block
         void postAfArray(
             const std::string& portName,
             const af::array& afArray);
-
-        void postAfArrayToNumberedOutputPorts(const af::array& afArray);
 
         //
         // Member variables

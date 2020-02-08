@@ -15,6 +15,7 @@
 
 using MinMaxFunction = void(*)(af::array&, af::array&, const af::array&, const int);
 
+// TODO: store last value to be probed
 class MinMax: public ArrayFireBlock
 {
     public:
@@ -23,28 +24,23 @@ class MinMax: public ArrayFireBlock
             const std::string& device,
             const MinMaxFunction& func,
             const Pothos::DType& dtype,
-            const std::string& labelName,
-            size_t nchans
+            const std::string& labelName
         ):
             ArrayFireBlock(device),
             _dtype(dtype),
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _func(func),
-            _labelName(labelName),
-            _nchans(nchans)
+            _labelName(labelName)
         {
-            for(size_t chan = 0; chan < nchans; ++chan)
-            {
-                this->setupInput(chan, _dtype);
-                this->setupOutput(chan, _dtype, this->getPortDomain());
-            }
+            this->setupInput(0, _dtype, this->getPortDomain());
+            this->setupOutput(0, _dtype, this->getPortDomain());
         }
 
         virtual ~MinMax() {}
 
         void work() override
         {
-            const size_t elems = this->workInfo().minAllElements;
+            const size_t elems = this->workInfo().minElements;
             if(0 == elems)
             {
                 return;
@@ -52,22 +48,27 @@ class MinMax: public ArrayFireBlock
 
             af::array val, idx;
 
-            auto afInput = this->getNumberedInputPortsAs2DAfArray();
+            auto afInput = this->getInputPortAsAfArray(0);
             _func(val, idx, afInput, -1);
-            assert(_nchans == static_cast<size_t>(val.elements()));
-            assert(_nchans == static_cast<size_t>(idx.elements()));
+            if(1 != idx.elements())
+            {
+                throw Pothos::AssertionViolationException(
+                          "idx: invalid size",
+                          std::to_string(idx.elements()));
+            }
+
+            std::uint32_t idxVal;
+            idx.host(&idxVal);
 
             std::vector<std::uint32_t> idxVec(idx.elements());
             idx.host(idxVec.data());
 
-            for(dim_t chan = 0; chan < static_cast<dim_t>(_nchans); ++chan)
-            {
-                this->output(chan)->postLabel(
-                    _labelName,
-                    getArrayValueOfUnknownTypeAtIndex(val, chan),
-                    idxVec[chan]);
-            }
-            this->postAfArrayToNumberedOutputPorts(afInput);
+            this->output(0)->postLabel(
+                _labelName,
+                getArrayValueOfUnknownTypeAtIndex(val, 0),
+                idxVal);
+
+            this->postAfArray(0, afInput);
         }
 
     private:
@@ -83,8 +84,7 @@ class MinMax: public ArrayFireBlock
 template <bool isMin>
 static Pothos::Block* minMaxFactory(
     const std::string& device,
-    const Pothos::DType& dtype,
-    size_t nchans)
+    const Pothos::DType& dtype)
 {
     static constexpr const char* labelName = isMin ? "MIN" : "MAX";
 
@@ -94,8 +94,7 @@ static Pothos::Block* minMaxFactory(
                            device, \
                            (isMin ? (MinMaxFunction)af::min : (MinMaxFunction)af::max), \
                            dtype, \
-                           labelName, \
-                           nchans);
+                           labelName);
 
     // ArrayFire has no implementation for int8_t, int64_t, or uint64_t.
     ifTypeDeclareFactory(std::int16_t)

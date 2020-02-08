@@ -33,28 +33,28 @@ ${block["description"]}
  * |category /ArrayFire/${block["header"].title()}
  * |keywords ${block["header"]} ${block["blockName"]}
 %if block.get("pattern", "") == "FloatToComplex":
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,floatDType,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,floatDType)
  *
  * |param floatDType(Data Type) The float type for the scalar input and complex output.
  * |widget DTypeChooser(float=1)
  * |default "float64"
  * |preview disable
 %elif block.get("pattern", "") == "ComplexToFloat":
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,floatDType,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,floatDType)
  *
  * |param floatDType(Data Type) The float type for the complex input and scalar output.
  * |widget DTypeChooser(float=1)
  * |default "float64"
  * |preview disable
 %elif "supportedTypes" in block:
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,dtype,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,dtype)
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
  * |default "${block["supportedTypes"]["defaultType"]}"
  * |preview disable
 %else:
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(deviceinputDType,outputDType,numChannels)
+ * |factory /arrayfire/${block["header"]}/${block["blockName"]}(deviceinputDType,outputDType)
  *
  * |param inputDType(Input Data Type) The input data type.
  * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
@@ -71,11 +71,6 @@ ${block["description"]}
  * |default "Auto"
  * |widget ComboBox(editable=false)
  * |preview enable
- *
- * |param numChannels[Num Channels] The number of channels.
- * |default 1
- * |widget SpinBox(minimum=1)
- * |preview disable
  */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",

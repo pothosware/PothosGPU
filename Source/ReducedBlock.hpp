@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -25,6 +25,8 @@ class ReducedBlock: public ArrayFireBlock
             size_t numChannels);
 
         virtual ~ReducedBlock();
+
+        af::array getNumberedInputPortsAs2DAfArray();
 
         void work() override;
 

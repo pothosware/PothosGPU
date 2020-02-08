@@ -31,15 +31,13 @@ class Clamp: public OneToOneBlock
         Clamp(
             const std::string& device,
             const T& minValue,
-            const T& maxValue,
-            size_t nchans
+            const T& maxValue
         ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(),
                 dtype,
-                dtype,
-                nchans)
+                dtype)
         {
             validateMinMax(minValue, maxValue);
 
@@ -83,7 +81,7 @@ class Clamp: public OneToOneBlock
             this->emitSignal("maxValueChanged", maxValue);
         }
 
-        void work(const af::array& afInput) override;
+        void work() override;
 
     private:
         AFType _afMinValue;
@@ -113,39 +111,36 @@ const Pothos::DType Clamp<T>::dtype = Pothos::DType(typeid(T));
  */
 
 template <typename T>
-void Clamp<T>::work(const af::array& afInput)
+void Clamp<T>::work()
 {
+    const auto elems = this->workInfo().minElements;
+    if(0 == elems)
+    {
+        return;
+    }
+
     static const af::dtype afDType = Pothos::Object(dtype).convert<af::dtype>();
 
-    af::array afArrayMinValue;
-    af::array afArrayMaxValue;
+    auto afArrayMinValue = af::constant(_afMinValue, elems, afDType);
+    auto afArrayMaxValue = af::constant(_afMaxValue, elems, afDType);
 
-    if(1 == _nchans)
-    {
-        const auto elems = afInput.elements();
-
-        afArrayMinValue = af::constant(_afMinValue, elems, afDType);
-        afArrayMaxValue = af::constant(_afMaxValue, elems, afDType);
-    }
-    else
-    {
-        const auto elems = afInput.dims(1);
-        
-        afArrayMinValue = af::constant(_afMinValue, _nchans, elems, afDType);
-        afArrayMaxValue = af::constant(_afMaxValue, _nchans, elems, afDType);
-    }
-
+    auto afInput = this->getInputPortAsAfArray(0);
     auto afOutput = af::clamp(afInput, afArrayMinValue, afArrayMaxValue);
-
-    this->postAfArrayToNumberedOutputPorts(afOutput);
+    this->postAfArray(0, afOutput);
 };
 
 template <>
-void Clamp<double>::work(const af::array& afInput)
+void Clamp<double>::work()
 {
-    auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
+    const auto elems = this->workInfo().minElements;
+    if(0 == elems)
+    {
+        return;
+    }
 
-    this->postAfArrayToNumberedOutputPorts(afOutput);
+    auto afInput = this->getInputPortAsAfArray(0);
+    auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
+    this->postAfArray(0, afOutput);
 };
 
 /*
@@ -194,12 +189,11 @@ static Pothos::Block* clampFactory(
     const std::string& device,
     const Pothos::DType& dtype,
     const Pothos::Object& minValue,
-    const Pothos::Object& maxValue,
-    size_t nchans)
+    const Pothos::Object& maxValue)
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new Clamp<T>(device, minValue.convert<T>(), maxValue.convert<T>(), nchans);
+            return new Clamp<T>(device, minValue.convert<T>(), maxValue.convert<T>());
 
     // ArrayFire has no implementation for std::int8_t.
     ifTypeDeclareFactory(std::int16_t)

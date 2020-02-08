@@ -45,19 +45,16 @@ static UnaryFunc<T, T> binaryFuncToUnary(
 template <typename T>
 void testOneToOneBlock(
     const std::string& blockRegistryPath,
-    size_t numChannels,
     const UnaryFunc<T, T>& verificationFunc);
 
 template <typename T>
 void testOneToOneBlockF2C(
     const std::string& blockRegistryPath,
-    size_t numChannels,
     const UnaryFunc<T, std::complex<T>>& verificationFunc);
 
 template <typename T>
 void testOneToOneBlockC2F(
     const std::string& blockRegistryPath,
-    size_t numChannels,
     const UnaryFunc<std::complex<T>, T>& verificationFunc);
 
 template <typename T>

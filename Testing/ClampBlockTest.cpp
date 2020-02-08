@@ -58,13 +58,10 @@ static void getMinMaxObjects(
     // This block has no complex implementation.
 }
 
-static void testClampBlock(
-    const std::string& type,
-    size_t numChannels)
+void testClampBlockForType(const std::string& type)
 {
     std::cout << "Testing " << blockRegistryPath
-              << " (type: " << type
-              << ", chans: " << numChannels << ")" << std::endl;
+              << " (type: " << type << ")" << std::endl;
 
     Pothos::Object minObject, maxObject;
     getMinMaxObjects(type, &minObject, &maxObject);
@@ -78,8 +75,7 @@ static void testClampBlock(
                 "Auto",
                 type,
                 minObject,
-                maxObject,
-                numChannels),
+                maxObject),
         Pothos::ProxyExceptionMessage);
     }
     else
@@ -89,71 +85,35 @@ static void testClampBlock(
                          "Auto",
                          type,
                          minObject,
-                         maxObject,
-                         numChannels);
+                         maxObject);
 
-        std::vector<Pothos::BufferChunk> testInputs;
-        std::vector<Pothos::Proxy> feederSources;
-        std::vector<Pothos::Proxy> collectorSinks;
+        auto testInputs = getTestInputs(type);
 
-        for(size_t chan = 0; chan < numChannels; ++chan)
-        {
-            testInputs.emplace_back(getTestInputs(type));
+        auto feederSource = Pothos::BlockRegistry::make(
+                                "/blocks/feeder_source",
+                                dtype);
+        feederSource.call("feedBuffer", testInputs);
 
-            feederSources.emplace_back(
-                Pothos::BlockRegistry::make(
-                    "/blocks/feeder_source",
-                    dtype));
-            feederSources.back().call(
-                "feedBuffer",
-                testInputs[chan]);
-
-            collectorSinks.emplace_back(
-                Pothos::BlockRegistry::make(
-                    "/blocks/collector_sink",
-                    dtype));
-        }
+        auto collectorSink = Pothos::BlockRegistry::make(
+                                 "/blocks/collector_sink",
+                                 dtype);
 
         // Execute the topology.
         {
             Pothos::Topology topology;
-            for(size_t chan = 0; chan < numChannels; ++chan)
-            {
-                topology.connect(
-                    feederSources[chan],
-                    0,
-                    block,
-                    chan);
-                topology.connect(
-                    block,
-                    chan,
-                    collectorSinks[chan],
-                    0);
-            }
+            topology.connect(feederSource, 0, block, 0);
+            topology.connect(block, 0, collectorSink, 0);
 
             topology.commit();
             POTHOS_TEST_TRUE(topology.waitInactive(0.05));
         }
 
-        // Make sure the blocks output data.
         // TODO: output verification
-        for(size_t chan = 0; chan < numChannels; ++chan)
-        {
-            const auto& chanInputs = testInputs[chan];
-            const size_t numInputs = chanInputs.elements();
-
-            auto chanOutputs = collectorSinks[chan].call<Pothos::BufferChunk>("getBuffer");
-            POTHOS_TEST_EQUAL(
-                numInputs,
-                chanOutputs.elements());
-        }
+        auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
+        POTHOS_TEST_EQUAL(
+            testInputs.elements(),
+            output.elements());
     }
-}
-
-void testClampBlockForType(const std::string& type)
-{
-    testClampBlock(type, 1);
-    testClampBlock(type, 3);
 }
 
 #else

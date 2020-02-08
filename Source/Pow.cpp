@@ -17,15 +17,13 @@ class Pow: public OneToOneBlock
     public:
         Pow(const std::string& device,
             const Pothos::DType& dtype,
-            double power,
-            size_t nchans
+            double power
         ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(), // Will be set later
                 dtype,
-                dtype,
-                nchans)
+                dtype)
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(Pow, getPower));
             this->registerCall(this, POTHOS_FCN_TUPLE(Pow, setPower));

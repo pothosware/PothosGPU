@@ -76,10 +76,6 @@
                         {
                             "key": "device",
                             "value": "\"Auto\""
-                        },
-                        {
-                            "key": "numChannels",
-                            "value": "1"
                         }
                     ],
                     "rotation": 0,

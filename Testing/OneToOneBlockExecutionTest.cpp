@@ -25,48 +25,26 @@ static void testOneToOneBlockCommon(
     static const Pothos::DType inputDType(typeid(In));
     static const Pothos::DType outputDType(typeid(Out));
 
-    const size_t numChannels = block.call<InputPortVector>("inputs").size();
+    auto testInputs = getTestInputs<In>();
 
-    std::vector<std::vector<In>> testInputs(numChannels);
-    std::vector<Pothos::Proxy> feederSources;
-    std::vector<Pothos::Proxy> collectorSinks;
+    auto feederSource = Pothos::BlockRegistry::make(
+                            "/blocks/feeder_source",
+                            inputDType);
+    feederSource.call(
+        "feedBuffer",
+        stdVectorToBufferChunk<In>(
+            inputDType,
+            testInputs));
 
-    for(size_t chan = 0; chan < numChannels; ++chan)
-    {
-        testInputs[chan] = getTestInputs<In>();
-
-        feederSources.emplace_back(
-            Pothos::BlockRegistry::make(
-                "/blocks/feeder_source",
-                inputDType));
-        feederSources.back().call(
-            "feedBuffer",
-            stdVectorToBufferChunk<In>(
-                inputDType,
-                testInputs[chan]));
-
-        collectorSinks.emplace_back(
-            Pothos::BlockRegistry::make(
-                "/blocks/collector_sink",
-                outputDType));
-    }
+    auto collectorSink = Pothos::BlockRegistry::make(
+                             "/blocks/collector_sink",
+                             outputDType);
 
     // Execute the topology.
     {
         Pothos::Topology topology;
-        for(size_t chan = 0; chan < numChannels; ++chan)
-        {
-            topology.connect(
-                feederSources[chan],
-                0,
-                block,
-                chan);
-            topology.connect(
-                block,
-                chan,
-                collectorSinks[chan],
-                0);
-        }
+        topology.connect(feederSource, 0, block, 0);
+        topology.connect(block, 0, collectorSink, 0);
 
         topology.commit();
         POTHOS_TEST_TRUE(topology.waitInactive(0.05));
@@ -74,52 +52,39 @@ static void testOneToOneBlockCommon(
 
     // Make sure the blocks output data and, if the caller provided a
     // verification function, that the outputs are valid.
-    for(size_t chan = 0; chan < numChannels; ++chan)
+    auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
+    POTHOS_TEST_EQUAL(
+        testInputs.size(),
+        static_cast<size_t>(output.elements()));
+    if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("getArrayFireBackend")))
     {
-        const auto& chanInputs = testInputs[chan];
-        const size_t numInputs = chanInputs.size();
+        std::vector<Out> expectedOutputs;
+        std::transform(
+            testInputs.begin(),
+            testInputs.end(),
+            std::back_inserter(expectedOutputs),
+            verificationFunc);
 
-        auto chanOutputs = collectorSinks[chan].call<Pothos::BufferChunk>("getBuffer");
-        POTHOS_TEST_EQUAL(
-            numInputs,
-            chanOutputs.elements());
-        if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("getArrayFireBackend")))
-        {
-            std::vector<Out> expectedOutputs;
-            std::transform(
-                chanInputs.begin(),
-                chanInputs.end(),
-                std::back_inserter(expectedOutputs),
-                verificationFunc);
-
-            testBufferChunk<Out>(
-                chanOutputs,
-                expectedOutputs);
-        }
+        testBufferChunk<Out>(
+            output,
+            expectedOutputs);
     }
 }
 
 template <typename T>
 void testOneToOneBlock(
     const std::string& blockRegistryPath,
-    size_t numChannels,
     const UnaryFunc<T, T>& verificationFunc)
 {
     static const Pothos::DType dtype(typeid(T));
 
     std::cout << "Testing " << blockRegistryPath << " (type: " << dtype.name()
-                            << ", " << "chans: " << numChannels << ")" << std::endl;
+                            << ")" << std::endl;
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
                      "Auto",
-                     dtype,
-                     numChannels);
-    auto inputs = block.call<InputPortVector>("inputs");
-    auto outputs = block.call<OutputPortVector>("outputs");
-    POTHOS_TEST_EQUAL(numChannels, inputs.size());
-    POTHOS_TEST_EQUAL(numChannels, outputs.size());
-
+                     dtype);
     testOneToOneBlockCommon<T, T>(
         block,
         verificationFunc);
@@ -128,7 +93,6 @@ void testOneToOneBlock(
 template <typename T>
 void testOneToOneBlockF2C(
     const std::string& blockRegistryPath,
-    size_t numChannels,
     const UnaryFunc<T, std::complex<T>>& verificationFunc)
 {
     static const Pothos::DType floatDType(typeid(T));
@@ -136,18 +100,12 @@ void testOneToOneBlockF2C(
 
     std::cout << "Testing " << blockRegistryPath
                             << " (types: " << floatDType.name() << " -> " << complexDType.name()
-                            << ", " << "chans: " << numChannels << ")" << std::endl;
+                            << ")" << std::endl;
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
                      "Auto",
-                     floatDType,
-                     numChannels);
-    auto inputs = block.call<InputPortVector>("inputs");
-    auto outputs = block.call<OutputPortVector>("outputs");
-    POTHOS_TEST_EQUAL(numChannels, inputs.size());
-    POTHOS_TEST_EQUAL(numChannels, outputs.size());
-
+                     floatDType);
     testOneToOneBlockCommon<T, std::complex<T>>(
         block,
         verificationFunc);
@@ -156,7 +114,6 @@ void testOneToOneBlockF2C(
 template <typename T>
 void testOneToOneBlockC2F(
     const std::string& blockRegistryPath,
-    size_t numChannels,
     const UnaryFunc<std::complex<T>, T>& verificationFunc)
 {
     static const Pothos::DType floatDType(typeid(T));
@@ -164,17 +121,12 @@ void testOneToOneBlockC2F(
 
     std::cout << "Testing " << blockRegistryPath
                             << " (types: " << complexDType.name() << " -> " << floatDType.name()
-                            << ", " << "chans: " << numChannels << ")" << std::endl;
+                            << ")" << std::endl;
 
     auto block = Pothos::BlockRegistry::make(
                      blockRegistryPath,
                      "Auto",
-                     floatDType,
-                     numChannels);
-    auto inputs = block.call<InputPortVector>("inputs");
-    auto outputs = block.call<OutputPortVector>("outputs");
-    POTHOS_TEST_EQUAL(numChannels, inputs.size());
-    POTHOS_TEST_EQUAL(numChannels, outputs.size());
+                     floatDType);
 
     testOneToOneBlockCommon<std::complex<T>, T>(
         block,
@@ -184,7 +136,6 @@ void testOneToOneBlockC2F(
 template <typename T>
 void testScalarOpBlock(
     const std::string& blockRegistryPath,
-    size_t numChannels,
     const BinaryFunc<T, T>& verificationFunc,
     bool allowZeroScalar)
 {
@@ -192,7 +143,7 @@ void testScalarOpBlock(
     static const T zero(0);
 
     std::cout << "Testing " << blockRegistryPath << " (type: " << dtype.name()
-                            << ", " << "chans: " << numChannels << ")" << std::endl;
+                            << ")" << std::endl;
 
     T scalar;
     do
@@ -204,8 +155,7 @@ void testScalarOpBlock(
                      blockRegistryPath,
                      "Auto",
                      dtype,
-                     scalar,
-                     numChannels);
+                     scalar);
     testEqual(scalar, block.template call<T>("getScalar"));
 
     // Test explicit getter+setter.
@@ -221,12 +171,10 @@ void testScalarOpBlock(
     template \
     void testOneToOneBlock<T>( \
         const std::string& blockRegistryPath, \
-        size_t numChannels, \
         const UnaryFunc<T, T>& verificationFunc); \
     template \
     void testScalarOpBlock<T>( \
         const std::string& blockRegistryPath, \
-        size_t numChannels, \
         const BinaryFunc<T, T>& verificationFunc, \
         bool allowZeroScalar);
 
@@ -234,12 +182,10 @@ void testScalarOpBlock(
     template \
     void testOneToOneBlockF2C<T>( \
         const std::string& blockRegistryPath, \
-        size_t numChannels, \
         const UnaryFunc<T, std::complex<T>>& verificationFunc); \
     template \
     void testOneToOneBlockC2F<T>( \
         const std::string& blockRegistryPath, \
-        size_t numChannels, \
         const UnaryFunc<std::complex<T>, T>& verificationFunc);
 
 SPECIALIZE_TEMPLATE_TEST(std::int8_t)

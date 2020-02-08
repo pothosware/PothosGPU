@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -160,28 +160,31 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
 
     const auto dtype = Pothos::DType("float64");
 
-    auto vectorSource = Pothos::BlockRegistry::make(
-                            "/blocks/vector_source",
-                            dtype);
-    vectorSource.call("setMode", "ONCE");
-    vectorSource.call("setElements", inputs);
-
     // NaN functions will be tested elsewhere.
     const std::vector<Pothos::Proxy> arrayFireBlocks =
     {
-        Pothos::BlockRegistry::make("/arrayfire/algorithm/max", "Auto", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/algorithm/min", "Auto", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/mean", "Auto", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/median", "Auto", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", "Auto", dtype, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/var", "Auto", dtype, false, 1),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/medabsdev", "Auto", dtype, 1),
+        Pothos::BlockRegistry::make("/arrayfire/algorithm/max", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/algorithm/min", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/mean", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/median", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/var", "Auto", dtype, false),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/medabsdev", "Auto", dtype),
     };
     const size_t numBlocks = arrayFireBlocks.size();
 
+    // We need separate vector sources because Pothos doesn't support
+    // connecting to multiple blocks with custom input buffer managers.
+    std::vector<Pothos::Proxy> vectorSources;
     std::vector<Pothos::Proxy> collectorSinks;
     for(size_t blockIndex = 0; blockIndex < numBlocks; ++blockIndex)
     {
+        vectorSources.emplace_back(Pothos::BlockRegistry::make(
+                                       "/blocks/vector_source",
+                                       dtype));
+        vectorSources.back().call("setMode", "ONCE");
+        vectorSources.back().call("setElements", inputs);
+
         collectorSinks.emplace_back(Pothos::BlockRegistry::make(
                                         "/blocks/collector_sink",
                                         dtype));
@@ -194,7 +197,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_labels)
         for(size_t blockIndex = 0; blockIndex < numBlocks; ++blockIndex)
         {
             topology->connect(
-                vectorSource,
+                vectorSources[blockIndex],
                 0,
                 arrayFireBlocks[blockIndex],
                 0);

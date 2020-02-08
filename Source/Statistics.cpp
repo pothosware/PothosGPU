@@ -59,7 +59,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
             OneArrayStatsFuncPtr func,
             const Pothos::DType& dtype,
             const std::string& labelName,
-            size_t nchans,
             bool searchForIndex)
         {
             return new OneArrayStatsBlock(
@@ -67,7 +66,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
                            func,
                            dtype,
                            labelName,
-                           nchans,
                            searchForIndex);
         }
 
@@ -76,7 +74,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
             OneArrayStatsFunction func,
             const Pothos::DType& dtype,
             const std::string& labelName,
-            size_t nchans,
             bool searchForIndex
         ):
             ArrayFireBlock(device),
@@ -85,16 +82,12 @@ class OneArrayStatsBlock: public ArrayFireBlock
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _lastValue(),
             _labelName(labelName),
-            _nchans(nchans),
             _searchForIndex(searchForIndex)
         {
             validateDType(dtype, floatOnlyDTypeSupport);
 
-            for(size_t chan = 0; chan < _nchans; ++chan)
-            {
-                this->setupInput(chan, _dtype);
-                this->setupOutput(chan, _dtype, this->getPortDomain());
-            }
+            this->setupInput(0, _dtype, this->getPortDomain());
+            this->setupOutput(0, _dtype, this->getPortDomain());
 
             this->registerProbe("lastValue");
         }
@@ -104,7 +97,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
             OneArrayStatsFuncPtr func,
             const Pothos::DType& dtype,
             const std::string& labelName,
-            size_t nchans,
             bool searchForIndex
         ):
             OneArrayStatsBlock(
@@ -112,7 +104,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 OneArrayStatsFunction(func),
                 dtype,
                 labelName,
-                nchans,
                 searchForIndex)
         {}
 
@@ -129,39 +120,41 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 return;
             }
 
-            auto afArray = this->getNumberedInputPortsAs2DAfArray();
+            auto afArray = this->getInputPortAsAfArray(0);
             auto afLabelValues = _func(afArray, defaultDim);
-            assert(afLabelValues.elements() == static_cast<dim_t>(_nchans));
-
-            for(dim_t chan = 0; chan < static_cast<dim_t>(_nchans); ++chan)
+            if(1 != afLabelValues.elements())
             {
-                _lastValue = getArrayValueOfUnknownTypeAtIndex(afLabelValues, chan);
-
-                size_t index = 0;
-                if(_searchForIndex)
-                {
-                    ssize_t sIndex = findValueOfUnknownTypeInArray(
-                                         afArray.row(chan),
-                                         _lastValue);
-                    if(0 > sIndex)
-                    {
-                        throw Pothos::AssertionViolationException(
-                                  Poco::format(
-                                      "We couldn't find the %s in the array, "
-                                      "but by definition, it should be present.",
-                                      Poco::toLower(_labelName)));
-                    }
-
-                    index = static_cast<size_t>(sIndex);
-                }
-
-                this->output(chan)->postLabel(
-                    _labelName,
-                    std::move(_lastValue),
-                    index);
+                throw Pothos::AssertionViolationException(
+                          "afLabelValues: invalid size",
+                          std::to_string(afLabelValues.elements()));
             }
 
-            this->postAfArrayToNumberedOutputPorts(afArray);
+            _lastValue = getArrayValueOfUnknownTypeAtIndex(afLabelValues, 0);
+
+            size_t index = 0;
+            if(_searchForIndex)
+            {
+                ssize_t sIndex = findValueOfUnknownTypeInArray(
+                                     afArray,
+                                     _lastValue);
+                if(0 > sIndex)
+                {
+                    throw Pothos::AssertionViolationException(
+                              Poco::format(
+                                  "We couldn't find the %s in the array, "
+                                  "but by definition, it should be present.",
+                                  Poco::toLower(_labelName)));
+                }
+
+                index = static_cast<size_t>(sIndex);
+            }
+
+            this->output(0)->postLabel(
+                _labelName,
+                std::move(_lastValue),
+                index);
+
+            this->postAfArray(0, afArray);
         }
 
     protected:
@@ -171,7 +164,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
         af::dtype _afDType;
         Pothos::Object _lastValue;
         std::string _labelName;
-        size_t _nchans;
         bool _searchForIndex;
 };
 
@@ -182,24 +174,21 @@ class VarianceBlock: public OneArrayStatsBlock
         static Pothos::Block* make(
             const std::string& device,
             const Pothos::DType& dtype,
-            bool isBiased,
-            size_t nchans)
+            bool isBiased)
         {
-            return new VarianceBlock(device, dtype, isBiased, nchans);
+            return new VarianceBlock(device, dtype, isBiased);
         }
 
         VarianceBlock(
             const std::string& device,
             const Pothos::DType& dtype,
-            bool isBiased,
-            size_t nchans
+            bool isBiased
         ):
             OneArrayStatsBlock(
                 device,
                 getAfVarBoundFunction(isBiased),
                 dtype,
                 "VAR",
-                nchans,
                 false /*searchForIndex*/),
             _isBiased(isBiased)
         {
@@ -239,7 +228,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&af::mean, 1)
             .bind<std::string>("MEAN", 3)
-            .bind<bool>(false /*searchForIndex*/, 5)),
+            .bind<bool>(false /*searchForIndex*/, 4)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/var",
         Pothos::Callable(&VarianceBlock::make)),
@@ -248,17 +237,17 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
             .bind<std::string>("STDDEV", 3)
-            .bind<bool>(false /*searchForIndex*/, 5)),
+            .bind<bool>(false /*searchForIndex*/, 4)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/median",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&af::median, 1)
             .bind<std::string>("MEDIAN", 3)
-            .bind<bool>(true /*searchForIndex*/, 5)),
+            .bind<bool>(true /*searchForIndex*/, 4)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/medabsdev",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
             .bind("MEDABSDEV", 3)
-            .bind<bool>(false /*searchForIndex*/, 5))
+            .bind<bool>(false /*searchForIndex*/, 4))
 };

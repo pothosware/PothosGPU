@@ -15,8 +15,7 @@
 static Pothos::Block* makeIsInfNaN(
     const std::string& device,
     const Pothos::DType& dtype,
-    OneToOneFunc func,
-    size_t nchans)
+    OneToOneFunc func)
 {
     static const Pothos::DType Int8DType("int8");
     static const DTypeSupport DTypeSupport{false,false,true,false};
@@ -27,8 +26,7 @@ static Pothos::Block* makeIsInfNaN(
                    device,
                    func,
                    dtype,
-                   Int8DType,
-                   nchans);
+                   Int8DType);
 }
 
 static Pothos::BlockRegistry registerArithIsInf(

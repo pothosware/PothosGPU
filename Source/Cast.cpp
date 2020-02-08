@@ -33,35 +33,37 @@ class CastBlock: public OneToOneBlock
         static Pothos::Block* make(
             const std::string& device,
             const Pothos::DType& inputDType,
-            const Pothos::DType& outputDType,
-            size_t nchans)
+            const Pothos::DType& outputDType)
         {
             // Validate here to avoid the ArrayFireBlock overhead.
             validateCastTypes(inputDType, outputDType);
 
-            return new CastBlock(device, inputDType, outputDType, nchans);
+            return new CastBlock(device, inputDType, outputDType);
         }
 
         CastBlock(
             const std::string& device,
             const Pothos::DType& inputDType,
-            const Pothos::DType& outputDType,
-            size_t nchans
+            const Pothos::DType& outputDType
         ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(),
                 inputDType,
-                outputDType,
-                nchans)
+                outputDType)
         {
         }
 
-        void work(const af::array& afInput) override
+        void work() override
         {
-            auto afOutput = afInput.as(_afOutputDType);
+            const size_t elems = this->workInfo().minElements;
+            if(0 == elems)
+            {
+                return;
+            }
 
-            this->postAfArrayToNumberedOutputPorts(afOutput);
+            auto afOutput = this->getInputPortAsAfArray(0).as(_afOutputDType);
+            this->postAfArray(0, afOutput);
         }
 };
 

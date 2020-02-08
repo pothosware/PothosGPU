@@ -27,19 +27,17 @@ Pothos::Block* OneToOneBlock::makeFromOneType(
     const std::string& device,
     const OneToOneFunc& func,
     const Pothos::DType& dtype,
-    const DTypeSupport& supportedTypes,
-    size_t numChans)
+    const DTypeSupport& supportedTypes)
 {
     validateDType(dtype, supportedTypes);
 
-    return new OneToOneBlock(device, func, dtype, dtype, numChans);
+    return new OneToOneBlock(device, func, dtype, dtype);
 }
 
 Pothos::Block* OneToOneBlock::makeFloatToComplex(
     const std::string& device,
     const OneToOneFunc& func,
-    const Pothos::DType& floatType,
-    size_t numChans)
+    const Pothos::DType& floatType)
 {
     if(!isDTypeFloat(floatType))
     {
@@ -54,15 +52,13 @@ Pothos::Block* OneToOneBlock::makeFloatToComplex(
                    device,
                    func,
                    floatType,
-                   complexDType,
-                   numChans);
+                   complexDType);
 }
 
 Pothos::Block* OneToOneBlock::makeComplexToFloat(
     const std::string& device,
     const OneToOneFunc& func,
-    const Pothos::DType& floatType,
-    size_t numChans)
+    const Pothos::DType& floatType)
 {
     if(!isDTypeFloat(floatType))
     {
@@ -77,8 +73,7 @@ Pothos::Block* OneToOneBlock::makeComplexToFloat(
                    device,
                    func,
                    complexDType,
-                   floatType,
-                   numChans);
+                   floatType);
 }
 
 //
@@ -89,14 +84,12 @@ OneToOneBlock::OneToOneBlock(
     const std::string& device,
     const OneToOneFunc& func,
     const Pothos::DType& inputDType,
-    const Pothos::DType& outputDType,
-    size_t numChans
+    const Pothos::DType& outputDType
 ): OneToOneBlock(
        device,
        Pothos::Callable(func),
        inputDType,
-       outputDType,
-       numChans)
+       outputDType)
 {
 }
 
@@ -104,64 +97,16 @@ OneToOneBlock::OneToOneBlock(
     const std::string& device,
     const Pothos::Callable& func,
     const Pothos::DType& inputDType,
-    const Pothos::DType& outputDType,
-    size_t numChans
+    const Pothos::DType& outputDType
 ): ArrayFireBlock(device),
    _func(func),
-   _nchans(numChans),
    _afOutputDType(Pothos::Object(outputDType).convert<af::dtype>())
 {
-    for(size_t chan = 0; chan < _nchans; ++chan)
-    {
-        this->setupInput(chan, inputDType);
-        this->setupOutput(chan, outputDType);
-    }
+    this->setupInput(0, inputDType);
+    this->setupOutput(0, outputDType);
 }
 
 OneToOneBlock::~OneToOneBlock() {}
-
-af::array OneToOneBlock::getInputsAsAfArray()
-{
-    af::array afInput;
-    if(1 == _nchans)
-    {
-        afInput = this->getInputPortAsAfArray(0);
-    }
-    else
-    {
-        afInput = getNumberedInputPortsAs2DAfArray();
-        if(_nchans != static_cast<size_t>(afInput.dims(0)))
-        {
-            throw Pothos::AssertionViolationException(
-                      "getNumberedInputPortsAs2DAfArray() returned an af::array of invalid dimensions",
-                      Poco::format(
-                          "Expected %s, got %s",
-                          Poco::NumberFormatter::format(_nchans),
-                          Poco::NumberFormatter::format(afInput.dims(0))));
-        }
-    }
-
-    return afInput;
-}
-
-void OneToOneBlock::work(const af::array& afInput)
-{
-    const size_t elems = this->workInfo().minElements;
-    if(0 == elems)
-    {
-        throw Pothos::AssertionViolationException(
-                  "work(const af::array&) called when elems = 0",
-                  __FUNCTION__);
-    }
-
-    auto afOutput = _func.call(afInput).extract<af::array>();
-    if(afOutput.type() != _afOutputDType)
-    {
-        afOutput = afOutput.as(_afOutputDType);
-    }
-
-    this->postAfArrayToNumberedOutputPorts(afOutput);
-}
 
 // Default behavior, can be overridden
 void OneToOneBlock::work()
@@ -179,5 +124,13 @@ void OneToOneBlock::work()
         return;
     }
 
-    this->work(getInputsAsAfArray());
+    auto afInput = this->getInputPortAsAfArray(0);
+
+    auto afOutput = _func.call(afInput).extract<af::array>();
+    if(afOutput.type() != _afOutputDType)
+    {
+        afOutput = afOutput.as(_afOutputDType);
+    }
+
+    this->postAfArray(0, afOutput);
 }

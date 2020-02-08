@@ -17,15 +17,13 @@ class Root: public OneToOneBlock
     public:
         Root(const std::string& device,
             const Pothos::DType& dtype,
-            double root,
-            size_t nchans
+            double root
         ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(), // Will be set later
                 dtype,
-                dtype,
-                nchans)
+                dtype)
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(Root, getRoot));
             this->registerCall(this, POTHOS_FCN_TUPLE(Root, setRoot));

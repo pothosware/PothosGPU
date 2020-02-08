@@ -28,20 +28,17 @@ class RandomBlock: public ArrayFireBlock
         static Pothos::Block* make(
             const std::string& device,
             const Pothos::DType& dtype,
-            const std::string& distribution,
-            size_t numOutputs)
+            const std::string& distribution)
         {
-            return new RandomBlock(device, dtype, distribution, numOutputs);
+            return new RandomBlock(device, dtype, distribution);
         }
 
         RandomBlock(
             const std::string& device,
             const Pothos::DType& dtype,
-            const std::string& distribution,
-            size_t numOutputs
+            const std::string& distribution
         ):
             ArrayFireBlock(device),
-            _numOutputs(static_cast<dim_t>(numOutputs)),
             _afRandomFunc(nullptr), // Set in constructor
             _distribution(), // Set in constructor
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
@@ -71,10 +68,7 @@ class RandomBlock: public ArrayFireBlock
                 "randomEngineTypeChanged",
                 "setRandomEngineType");
 
-            for(size_t chan = 0; chan < numOutputs; ++chan)
-            {
-                this->setupOutput(chan, dtype, this->getPortDomain());
-            }
+            this->setupOutput(0, dtype, this->getPortDomain());
 
             this->setDistribution(distribution);
             this->reseedRandomEngineWithTime();
@@ -137,15 +131,13 @@ class RandomBlock: public ArrayFireBlock
                 return;
             }
 
-            const af::dim4 dims(_numOutputs, static_cast<dim_t>(elems));
+            const af::dim4 dims(static_cast<dim_t>(elems));
 
             auto afOutput = _afRandomFunc(dims, _afDType, _afRandomEngine);
-            this->postAfArrayToNumberedOutputPorts(afOutput);
+            this->postAfArray(0, afOutput);
         }
 
     private:
-
-        dim_t _numOutputs;
 
         AfRandomFunc _afRandomFunc;
         std::string _distribution;
@@ -169,7 +161,7 @@ class RandomBlock: public ArrayFireBlock
  *
  * |category /ArrayFire/Random
  * |keywords array random uniform normal philox threefry mersenne source
- * |factory /arrayfire/random/source(device,dtype,distribution,numOutputs)
+ * |factory /arrayfire/random/source(device,dtype,distribution)
  * |setter setDistribution(distribution)
  * |setter setRandomEngineType(randomEngineType)
  *
@@ -189,11 +181,6 @@ class RandomBlock: public ArrayFireBlock
  * |option [Uniform] "UNIFORM"
  * |default "NORMAL"
  * |preview enable
- *
- * |param numOutputs(Num Outputs) The number of output channels.
- * |widget SpinBox(minimum=1)
- * |default 1
- * |preview disable
  *
  * |param randomEngineType(Random Engine Type)
  * |widget ComboBox(editable=False)
