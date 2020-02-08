@@ -84,7 +84,7 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getInputBufferManager(
         args.numBuffers = 16;
         args.bufferSize = (2 << 20);
         
-        return Pothos::BufferManager::make("pinned", args);
+        return makePinnedBufferManager(_afBackend, args);
     }
 
     throw Pothos::PortDomainError(domain);
@@ -101,7 +101,7 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getOutputBufferManager(
         args.numBuffers = 16;
         args.bufferSize = (2 << 20);
         
-        return Pothos::BufferManager::make("pinned", args);
+        return makePinnedBufferManager(_afBackend, args);
     }
 
     throw Pothos::PortDomainError(domain);

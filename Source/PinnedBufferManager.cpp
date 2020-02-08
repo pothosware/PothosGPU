@@ -110,32 +110,25 @@ private:
 /***********************************************************************
  * factory and registration
  **********************************************************************/
-static Pothos::BufferManager::Sptr makePinnedBufferManager(void)
+Pothos::BufferManager::Sptr makePinnedBufferManager(
+    af::Backend backend,
+    const Pothos::BufferManagerArgs& args)
 {
-    af::Backend backend;
-    
-    const auto& availableBackends = getAvailableBackends();
-    if(doesVectorContainValue(availableBackends, ::AF_BACKEND_CUDA))
-    {
-        backend = ::AF_BACKEND_CUDA;
-    }
-    else if(doesVectorContainValue(availableBackends, ::AF_BACKEND_OPENCL))
-    {
-        backend = ::AF_BACKEND_OPENCL;
-    }
-    else
-    {
-        throw Pothos::RuntimeException(
-                "ArrayFire was not built with CUDA or OpenCL support "
-                "and cannot allocate pinned memory.");
-    }
-    
-    return std::make_shared<PinnedBufferManager>(backend);
+    auto bufferManager = std::make_shared<PinnedBufferManager>(backend);
+    bufferManager->init(args);
+    return bufferManager;
 }
 
+static Pothos::BufferManager::Sptr makePinnedBufferManagerNoBackend()
+{
+    return std::make_shared<PinnedBufferManager>(getAvailableBackends()[0]);
+}
+
+// ArrayFire blocks will use their own backends, but let's expose a buffer
+// manager that uses the best implementation for outside usage, just because.
 pothos_static_block(pothosFrameworkRegisterPinnedBufferManager)
 {
     Pothos::PluginRegistry::addCall(
         "/framework/buffer_manager/pinned",
-        &makePinnedBufferManager);
+        &makePinnedBufferManagerNoBackend);
 }
