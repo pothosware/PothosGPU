@@ -31,7 +31,7 @@ class CorrCoefBlock: public ArrayFireBlock
         {
             for(size_t i = 0; i < 2; ++i)
             {
-                this->setupInput(i, dtype);
+                this->setupInput(i, dtype, this->getPortDomain());
                 this->setupOutput(i, dtype, this->getPortDomain());
             }
         }
@@ -58,7 +58,6 @@ class CorrCoefBlock: public ArrayFireBlock
                 corrcoef,
                 0);
 
-            // TODO: forward input since we're bringing memory to host anyway
             this->postAfArray(0, afInput0);
             this->postAfArray(1, afInput1);
         }

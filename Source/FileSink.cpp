@@ -206,6 +206,7 @@ class FileSinkBlock: public ArrayFireBlock
         std::vector<Pothos::BufferChunk> _buffers;
 };
 
+// TODO: setKey initializer
 /*
  * |PothosDoc ArrayFire File Sink
  *

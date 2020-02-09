@@ -28,7 +28,8 @@ class Root: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Root, getRoot));
             this->registerCall(this, POTHOS_FCN_TUPLE(Root, setRoot));
 
-            this->registerProbe("getRoot", "rootChanged", "setRoot");
+            this->registerProbe("getRoot");
+            this->registerSignal("rootChanged");
 
             this->setRoot(root);
         }

@@ -16,6 +16,8 @@
 #include <string>
 #include <typeinfo>
 
+// TODO: make numBins an initializer
+
 //
 // Misc
 //
@@ -81,10 +83,8 @@ class FFTBaseBlock: public ArrayFireBlock
                 Pothos::DType::fromDType(outDType, dtypeDims),
                 this->getPortDomain());
 
-            this->registerProbe(
-                "getNormalizationFactor",
-                "normalizationFactorChanged",
-                "setNormalizationFactor");
+            this->registerProbe("getNormalizationFactor");
+            this->registerSignal("normalizationFactorChanged");
 
             this->setNormalizationFactor(norm);
 

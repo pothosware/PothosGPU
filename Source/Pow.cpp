@@ -28,7 +28,8 @@ class Pow: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Pow, getPower));
             this->registerCall(this, POTHOS_FCN_TUPLE(Pow, setPower));
 
-            this->registerProbe("getPower", "powerChanged", "setPower");
+            this->registerProbe("getPower");
+            this->registerSignal("powerChanged");
 
             this->setPower(power);
         }

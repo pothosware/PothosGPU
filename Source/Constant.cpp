@@ -35,7 +35,8 @@ class Constant: public ArrayFireBlock
                 Pothos::DType::fromDType(Class::dtype, dtypeDims),
                 this->getPortDomain());
 
-            this->registerProbe("getConstant", "constantChanged", "setConstant");
+            this->registerProbe("getConstant");
+            this->registerSignal("constantChanged");
 
             this->setConstant(constant);
         }

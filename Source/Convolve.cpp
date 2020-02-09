@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+// TODO: dtype dimensions
+
 // Resolve overloads
 using FFTConvolveFuncPtr = af::array(*)(
                                const af::array&,
@@ -58,9 +60,11 @@ class ConvolveBaseBlock: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getWaitTaps));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setWaitTaps));
 
-            this->registerProbe("getTaps", "tapsChanged", "setTaps");
-            this->registerProbe("getMode", "modeChanged", "setMode");
-            this->registerProbe("getWaitTaps", "waitTapsChanged", "setWaitTaps");
+            this->registerProbe("getTaps");
+            this->registerProbe("getMode");
+
+            this->registerSignal("tapsChanged");
+            this->registerSignal("modeChanged");
         }
 
         virtual ~ConvolveBaseBlock() = default;
@@ -107,11 +111,10 @@ class ConvolveBaseBlock: public OneToOneBlock
             return _waitTaps;
         }
 
+        // TODO: make this an initializer
         void setWaitTaps(bool waitTaps)
         {
             _waitTaps = waitTaps;
-
-            this->emitSignal("waitTapsChanged", waitTaps);
         }
 
         void work() override
@@ -150,7 +153,8 @@ class ConvolveBlock: public ConvolveBaseBlock<T>
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getDomain));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setDomain));
 
-            this->registerProbe("getDomain", "domainChanged", "setDomain");
+            this->registerProbe("getDomain");
+            this->registerSignal("domainChanged");
         }
 
         virtual ~ConvolveBlock() = default;

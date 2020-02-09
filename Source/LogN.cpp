@@ -29,7 +29,8 @@ class Log: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Log, getBase));
             this->registerCall(this, POTHOS_FCN_TUPLE(Log, setBase));
 
-            this->registerProbe("getBase", "baseChanged", "setBase");
+            this->registerProbe("getBase");
+            this->registerSignal("baseChanged");
 
             this->setBase(base);
         }

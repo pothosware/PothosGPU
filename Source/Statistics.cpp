@@ -89,7 +89,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
             this->setupInput(0, _dtype, this->getPortDomain());
             this->setupOutput(0, _dtype, this->getPortDomain());
 
-            this->registerProbe("lastValue");
+            this->registerProbe("getLastValue");
         }
 
         OneArrayStatsBlock(
@@ -107,7 +107,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 searchForIndex)
         {}
 
-        Pothos::Object lastValue() const
+        Pothos::Object getLastValue() const
         {
             return _lastValue;
         }
@@ -192,14 +192,16 @@ class VarianceBlock: public OneArrayStatsBlock
                 false /*searchForIndex*/),
             _isBiased(isBiased)
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(VarianceBlock, getIsBiased));
+            this->registerCall(this, POTHOS_FCN_TUPLE(VarianceBlock, isBiased));
             this->registerCall(this, POTHOS_FCN_TUPLE(VarianceBlock, setIsBiased));
 
-            this->registerProbe("isBiased", "isBiasedChanged", "setIsBiased");
-            this->emitSignal("isBiasedChanged", isBiased);
+            this->registerProbe("isBiased");
+            this->registerSignal("isBiasedChanged");
+
+            this->setIsBiased(isBiased);
         }
 
-        bool getIsBiased() const
+        bool isBiased() const
         {
             return _isBiased;
         };

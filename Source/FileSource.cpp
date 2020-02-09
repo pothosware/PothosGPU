@@ -183,6 +183,7 @@ class FileSourceBlock: public ArrayFireBlock
         std::vector<Pothos::SharedBuffer> _fileContents;
 };
 
+// TODO: setKey initializer
 /*
  * |PothosDoc ArrayFire File Source
  *
