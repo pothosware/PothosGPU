@@ -176,13 +176,6 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        - func: log
-          niceName: Logarithm
-          header: arith
-          verify: std::log
-          supportedTypes:
-                  supportFloat: true
-
         - func: log1p
           niceName: log(1 + x)
           header: arith
