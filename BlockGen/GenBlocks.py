@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-import datetime
 from mako.template import Template
 import mako.exceptions
+
+import datetime
+import json
 import os
 import sys
 import yaml
@@ -49,12 +51,6 @@ def setBlockNames(blockTypeYAML):
         if "blockName" not in block:
             block["blockName"] = block["func"]
 
-# In place
-def commentizeBlockDescriptions(blockTypeYAML):
-    for block in blockTypeYAML:
-        if "description" in block:
-            block["description"] = " * {0}".format(block["description"])
-
 def filterBlockYAML(blockTypeYAML, printSkippedBlocks=False):
     apiVersion = afVersionToAPI(ArrayFireVersion)
     filteredYAML = [entry for entry in blockTypeYAML if entry.get("minAPIVersion", 0) <= apiVersion]
@@ -76,7 +72,6 @@ def processYAMLFile(yamlPath):
 
     for _,v in yml.items():
         setBlockNames(v)
-        commentizeBlockDescriptions(v)
 
     return yml
 
@@ -98,23 +93,25 @@ def generateDTypeDictEntries(supportedTypes):
 
 def generatePothosDoc(category,blockYAML):
     desc = dict()
-    desc["name"] = blockYAML("niceName", blockYAML["func"].title())
+    desc["name"] = blockYAML.get("niceName", blockYAML["func"].title())
     desc["path"] = "/arrayfire/{0}/{1}".format(blockYAML["header"], blockYAML["func"])
-    desc["categories"] = "/ArrayFire/" + blockYAML["header"].title()
+    desc["categories"] = ["/ArrayFire/" + blockYAML["header"].title()]
     desc["keywords"] = [blockYAML["header"], blockYAML["func"]]
     if "keywords" in blockYAML:
         desc["keywords"] += blockYAML["keywords"]
         desc["keywords"] = list(set(desc["keywords"]))
     if "description" in blockYAML:
-        desc["docs"] = blockYAML
+        desc["docs"] = [blockYAML["description"]]
+    else:
+        desc["docs"] = []
+
+    desc["docs"] += ["<p>Corresponding ArrayFire function: <b>af::{0}</b></p>".format(blockYAML["func"])]
 
     # Common args for all auto-generated blocks
 
     desc["params"] = [dict(key="device",
                            name="Device",
                            desc=["ArrayFire device"],
-                           widgetType="ComboBox",
-                           widgetKwargs=dict(editable="false"),
                            preview="enable",
                            default="\"Auto\"")]
 
@@ -143,8 +140,10 @@ def generatePothosDoc(category,blockYAML):
                 dtypeArg["widgetKwargs"]["float"] = 1
             if ("supportComplex" in supportedTypes) or ("supportAll" in supportedTypes):
                 dtypeArg["widgetKwargs"]["cfloat"] = 1
+            dtypeArg["widgetKwargs"]["dim"] = 1
 
     desc["params"] += [dtypeArg]
+    desc["args"] = ["device","dtype"]
 
     if category == "ScalarOpBlocks":
         desc["params"] += [dict(key="scalar",
@@ -152,25 +151,27 @@ def generatePothosDoc(category,blockYAML):
                                 desc=["The scalar value to apply to all inputs."],
                                 default="0" if blockYAML.get("allowZeroScalar",True) else "1",
                                 preview="enable")]
-    if category != "TwoToOneBlocks":
+    if category == "NToOneBlocks":
         desc["params"] += [dict(key="numInputs",
                                 name="Num Inputs",
                                 desc=["The number of inputs for this block."],
                                 default="2" if category == "NToOneBlocks" else "1",
                                 preview="disable")]
 
-    return desc
+    # Encode the block description into escaped JSON
+    descEscaped = "".join([hex(ord(ch)).replace("0x", "\\x") for ch in json.dumps(desc)])
+    return "Pothos::PluginRegistry::add(\"/blocks/docs{0}\", std::string(\"{1}\"));".format(desc["path"], descEscaped)
 
 def generateFactory(allBlockYAML):
     # Generate the type support strings here (easier to do than in the Mako
     # template files).
+    docs = []
     for category,blocks in allBlockYAML.items():
         for block in blocks:
             for key in ["supportedTypes", "supportedInputTypes", "supportedOutputTypes"]:
                 if key in block:
                     generateDTypeDictEntries(block[key])
-
-    docs = []
+            docs += [generatePothosDoc(category,block)]
 
     try:
         rendered = Template(FactoryTemplate).render(

@@ -15,58 +15,6 @@
 static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 {
 %for block in oneToOneBlocks:
-/*
- * |PothosDoc ${block.get("niceName", block["blockName"].title())}
-%if "description" in block:
- *
-${block["description"]}
-%else:
- *
- * Calls <b>af::${block["func"]}</b> on all inputs.
-%endif
- *
- * |category /ArrayFire/${block["header"].title()}
- * |keywords ${block["header"]} ${block["blockName"]}
-%if block.get("pattern", "") == "FloatToComplex":
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,floatDType)
- *
- * |param floatDType(Data Type) The float type for the scalar input and complex output.
- * |widget DTypeChooser(float=1)
- * |default "float64"
- * |preview disable
-%elif block.get("pattern", "") == "ComplexToFloat":
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,floatDType)
- *
- * |param floatDType(Data Type) The float type for the complex input and scalar output.
- * |widget DTypeChooser(float=1)
- * |default "float64"
- * |preview disable
-%elif "supportedTypes" in block:
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,dtype)
- *
- * |param dtype(Data Type) The block data type.
- * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
- * |default "${block["supportedTypes"]["defaultType"]}"
- * |preview disable
-%else:
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(deviceinputDType,outputDType)
- *
- * |param inputDType(Input Data Type) The input data type.
- * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
- * |default "${block["supportedInputTypes"]["defaultType"]}"
- * |preview disable
- *
- * |param outputDType(Output Data Type) The output data type.
- * |widget DTypeChooser(${block["supportedOutputTypes"]["dtypeString"]})
- * |default "${block["supportedOutputTypes"]["defaultType"]}"
- * |preview disable
-%endif
- *
- * |param device[Device] ArrayFire device to use.
- * |default "Auto"
- * |widget ComboBox(editable=false)
- * |preview enable
- */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
     %if block.get("pattern", "") == "FloatToComplex":
@@ -88,51 +36,6 @@ ${block["description"]}
     ),
 %endfor
 %for block in twoToOneBlocks:
-/*
- * |PothosDoc ${block.get("niceName", block["blockName"].title())}
-%if "description" in block:
- *
-${block["description"]}
-%else:
- *
- * Calls <b>af::${block["func"]}</b> on all inputs.
-%endif
- *
- * |category /ArrayFire/${block["header"].title()}
- * |keywords ${block["header"]} ${block["blockName"]}
-%if block.get("pattern", "") == "FloatToComplex":
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,floatDType)
- *
- * |param floatDType(Data Type) The float type for the scalar input and complex output.
- * |widget DTypeChooser(float=1)
- * |default "float64"
- * |preview disable
-%elif "supportedTypes" in block:
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,dtype)
- *
- * |param dtype(Data Type) The block data type.
- * |widget DTypeChooser(${block["supportedTypes"]["dtypeString"]})
- * |default "${block["supportedTypes"]["defaultType"]}"
- * |preview disable
-%else:
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,inputDType,outputDType)
- *
- * |param inputDType(Input Data Type) The input data type.
- * |widget DTypeChooser(${block["supportedInputTypes"]["dtypeString"]})
- * |default "${block["supportedInputTypes"]["defaultType"]}"
- * |preview disable
- *
- * |param outputDType(Output Data Type) The output data type.
- * |widget DTypeChooser(${block["supportedOutputTypes"]["dtypeString"]})
- * |default "${block["supportedOutputTypes"]["defaultType"]}"
- * |preview disable
-%endif
- *
- * |param device[Device] ArrayFire device to use.
- * |default "Auto"
- * |widget ComboBox(editable=false)
- * |preview enable
- */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
     %if block.get("pattern", "") == "FloatToComplex":
@@ -153,36 +56,6 @@ ${block["description"]}
     ),
 %endfor
 %for block in NToOneBlocks:
-/*
- * |PothosDoc ${block.get("niceName", block["blockName"].title())}
-    %if "description" in block:
- *
-${block["description"]}
-    %elif "operator" in block:
- *
- * Applies the <b>${block["operator"]}</b> operator to all inputs, resulting
- * in a single output.
-   %endif
- *
- * |category /ArrayFire/${block["header"].title()}
- * |keywords ${block["header"]} ${block["blockName"]}
- * |factory /arrayfire/${block["header"]}/${block["blockName"]}(device,dtype,numChannels)
- *
- * |param device[Device] ArrayFire device to use.
- * |default "Auto"
- * |widget ComboBox(editable=false)
- * |preview enable
- *
- * |param dtype(Data Type) The block data type.
- * |widget DTypeChooser(${"int16=1,int32=1,int64=1,uint=1" if block.get("intOnly", False) else "int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1"})
- * |default ${"\"uint64\"" if block.get("intOnly", False) else "\"float64\""}
- * |preview disable
- *
- * |param numChannels[Num Channels] The number of channels.
- * |default 2
- * |widget SpinBox(minimum=2)
- * |preview disable
- */
     Pothos::BlockRegistry(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
         Pothos::Callable(&NToOneBlock::make)
@@ -204,5 +77,6 @@ ${block["description"]}
 pothos_static_block(register_pothos_arrayfire_docs)
 {
 %for doc in docs:
+    ${doc}
 %endfor
 }

@@ -119,6 +119,5 @@ POTHOS_MODULE_UTIL(
         Testing/TestUtility.cpp
     LIBRARIES
         ArrayFire::af
-    ENABLE_DOCS ON
     DESTINATION arrayfire
 )
