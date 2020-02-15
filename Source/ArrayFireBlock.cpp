@@ -146,10 +146,7 @@ std::string ArrayFireBlock::overlay() const
     for(const auto& entry: getDeviceCache())
     {
         nlohmann::json option;
-        option["name"] = Poco::format(
-                             "%s (%s)",
-                             entry.name,
-                             Pothos::Object(entry.afBackendEnum).convert<std::string>());
+        option["name"] = entry.name;
         option["value"] = Poco::format("\"%s\"", entry.name);
         deviceParamOpts.push_back(option);
     }
