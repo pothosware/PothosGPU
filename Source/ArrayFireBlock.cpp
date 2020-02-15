@@ -30,11 +30,6 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
         _afBackend = deviceCache[0].afBackendEnum;
         _afDevice = deviceCache[0].afDeviceIndex;
         _afDeviceName = deviceCache[0].name;
-
-#if IS_AF_CONFIG_PER_THREAD
-        af::setBackend(_afBackend);
-        af::setDevice(_afDevice);
-#endif
     }
     else
     {
@@ -49,11 +44,6 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
         {
             _afBackend = deviceCacheIter->afBackendEnum;
             _afDevice = deviceCacheIter->afDeviceIndex;
-
-#if IS_AF_CONFIG_PER_THREAD
-            af::setBackend(_afBackend);
-            af::setDevice(_afDevice);
-#endif
         }
         else
         {
@@ -63,6 +53,8 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
                           device));
         }
     }
+
+    this->configArrayFire();
 
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getArrayFireBackend));
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getArrayFireDevice));
@@ -105,6 +97,11 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getOutputBufferManager(
     }
 
     throw Pothos::PortDomainError(domain);
+}
+
+void ArrayFireBlock::activate()
+{
+    this->configArrayFire();
 }
 
 std::string ArrayFireBlock::getArrayFireBackend() const
@@ -190,6 +187,22 @@ void ArrayFireBlock::postAfArray(
     const af::array& afArray)
 {
     _postAfArray(portName, afArray);
+}
+
+//
+// Misc
+//
+
+void ArrayFireBlock::configArrayFire()
+{
+    if(af::getActiveBackend() != _afBackend)
+    {
+        af::setBackend(_afBackend);
+    }
+    if(af::getDevice() != _afDevice)
+    {
+        af::setDevice(_afDevice);
+    }
 }
 
 //

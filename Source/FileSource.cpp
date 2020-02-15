@@ -116,6 +116,8 @@ class FileSourceBlock: public ArrayFireBlock
 
         void activate() override
         {
+            ArrayFireBlock::activate();
+
             // Incur a one-time performance hit of reading the file contents
             // into paged memory to make the work() implementation easier.
             if(1 == _nchans)

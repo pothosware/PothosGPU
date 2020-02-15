@@ -94,7 +94,7 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                 else
                 {
                     auto& logger = Poco::Logger::get("PothosArrayFire");
-                    poco_warning_f2(
+                    poco_information_f2(
                         logger,
                         "Found %s device %s, which does not have 64-bit floating-point "
                         "support through ArrayFire. This device will not be made "
@@ -104,6 +104,19 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                 }
             }
         }
+    }
+
+    if(!IS_AF_CONFIG_PER_THREAD)
+    {
+        deviceCache.resize(1);
+
+        auto& logger = Poco::Logger::get("PothosArrayFire");
+        poco_information_f2(
+            logger,
+            "ArrayFire %s only supports a single global device, so PothosArrayFire "
+            "will use the most efficient available device: %s",
+            std::string(AF_VERSION),
+            deviceCache[0].name);
     }
 
     return deviceCache;

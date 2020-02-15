@@ -50,6 +50,8 @@ class FIRBlock: public OneToOneBlock
 
         void activate() override
         {
+            ArrayFireBlock::activate();
+
             _waitTapsArmed = _waitTaps;
         }
 
@@ -139,6 +141,8 @@ class IIRBlock: public OneToOneBlock
 
         void activate() override
         {
+            ArrayFireBlock::activate();
+
             _waitTapsArmed = _waitTaps;
         }
 

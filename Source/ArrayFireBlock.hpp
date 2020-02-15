@@ -26,6 +26,8 @@ class ArrayFireBlock: public Pothos::Block
             const std::string& name,
             const std::string& domain) override;
 
+        void activate() override;
+
         std::string getArrayFireBackend() const;
 
         std::string getArrayFireDevice() const;
@@ -57,6 +59,12 @@ class ArrayFireBlock: public Pothos::Block
         void postAfArray(
             const std::string& portName,
             const af::array& afArray);
+
+        //
+        // Misc
+        //
+
+        void configArrayFire();
 
         //
         // Member variables

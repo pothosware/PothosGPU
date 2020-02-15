@@ -71,6 +71,8 @@ class ConvolveBaseBlock: public OneToOneBlock
 
         void activate() override
         {
+            ArrayFireBlock::activate();
+
             _waitTapsArmed = _waitTaps;
         }
 
