@@ -68,6 +68,13 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                 devIndex
             };
 
+            // ArrayFire only returns the vendor for CPU entry names, so if
+            // we support it, replace this with the full name.
+            if((::AF_BACKEND_CPU == backend) && isCPUIDSupported())
+            {
+                deviceCacheEntry.name = getProcessorName();
+            }
+
             // Policy: some devices are supported by multiple backends. Only
             //         store each device once, with the most efficient backend
             //         that supports it.

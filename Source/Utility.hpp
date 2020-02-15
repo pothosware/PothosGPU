@@ -220,6 +220,10 @@ static inline bool isDTypeComplexFloat(const Pothos::DType& dtype)
     return (dtype.isFloat() && dtype.isComplex());
 }
 
+bool isCPUIDSupported();
+
+std::string getProcessorName();
+
 //
 // Formatting
 //
