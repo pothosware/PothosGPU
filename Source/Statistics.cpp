@@ -36,16 +36,21 @@ static OneArrayStatsFunction getAfVarBoundFunction(bool isBiased)
                std::placeholders::_2);
 }
 
-// TODO: do we need to #ifdef the batchFunc call?
 static af::array afMedAbsDev(const af::array& afInput, const dim_t)
 {
-    auto afMedian = af::median(afInput);
+    af::array afMedian = af::median(afInput);
+    af::array afInputSubMedian;
 
+#if IS_AF_CONFIG_PER_THREAD
     auto afAbsSub = [](const af::array& arr0, const af::array& arr1) -> af::array
     {
         return af::abs(arr0 - arr1);
     };
-    auto afInputSubMedian = af::batchFunc(afInput, afMedian, afAbsSub);
+    afInputSubMedian = af::batchFunc(afInput, afMedian, afAbsSub);
+#else
+    auto afMedianConstant = getArrayFromSingleElement(afMedian, afInput.elements());
+    afInputSubMedian = af::abs(afInput - afMedianConstant);
+#endif
 
     return af::median(afInputSubMedian);
 }

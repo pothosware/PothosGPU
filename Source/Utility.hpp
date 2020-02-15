@@ -150,6 +150,10 @@ ssize_t findValueOfUnknownTypeInArray(
     const af::array& afArray,
     const Pothos::Object& value);
 
+af::array getArrayFromSingleElement(
+    const af::array& afArray,
+    size_t newArraySize);
+
 //
 // ArrayFire requires taps to be specific types for different inputs.
 //
