@@ -183,6 +183,13 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
+        - func: rsqrt
+          niceName: Reciprocal Square Root
+          header: arith
+          minAPIVersion: 37
+          supportedTypes:
+                  supportFloat: true
+
         - func: factorial
           header: arith
           verify: testFactorial

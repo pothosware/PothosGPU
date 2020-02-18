@@ -15,6 +15,18 @@
 class Root: public OneToOneBlock
 {
     public:
+        static Pothos::Block* make(
+            const std::string& device,
+            const Pothos::DType& dtype,
+            double root)
+        {
+            // Supports float, complex
+            static const DTypeSupport dtypeSupport{false,false,true,true};
+            validateDType(dtype, dtypeSupport);
+
+            return new Root(device, dtype, root);
+        }
+
         Root(const std::string& device,
             const Pothos::DType& dtype,
             double root
