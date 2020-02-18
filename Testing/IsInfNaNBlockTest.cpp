@@ -13,9 +13,6 @@
 #include <string>
 #include <vector>
 
-namespace PothosArrayFireTests
-{
-
 template <typename T>
 static Pothos::BufferChunk getIsInfNaNTestInputs()
 {
@@ -27,12 +24,12 @@ static Pothos::BufferChunk getIsInfNaNTestInputs()
         5.0,
         std::numeric_limits<T>::quiet_NaN(),
     };
-    return stdVectorToBufferChunk(
+    return PothosArrayFireTests::stdVectorToBufferChunk(
                Pothos::DType(typeid(T)),
                testInputs);
 }
 
-void testIsInfNaNBlockForType(const std::string& type)
+static void testIsInfNaNBlockForType(const std::string& type)
 {
     static constexpr const char* isInfBlockRegistryPath = "/arrayfire/arith/isinf";
     static constexpr const char* isNaNBlockRegistryPath = "/arrayfire/arith/isnan";
@@ -40,9 +37,7 @@ void testIsInfNaNBlockForType(const std::string& type)
     const Pothos::DType dtype(type);
     if(isDTypeFloat(dtype))
     {
-        std::cout << "Testing " << isInfBlockRegistryPath
-                  << " and " << isNaNBlockRegistryPath
-                  << " (type: " << type << ")" << std::endl;
+        std::cout << "Testing " << type << std::endl;
 
         static const Pothos::DType Int8DType("int8");
 
@@ -81,11 +76,11 @@ void testIsInfNaNBlockForType(const std::string& type)
         }
 
         std::cout << " * Testing isinf..." << std::endl;
-        testBufferChunk<std::int8_t>(
+        PothosArrayFireTests::testBufferChunk<std::int8_t>(
             isInfCollectorSink.call("getBuffer"),
             expectedIsInfOutput);
         std::cout << " * Testing isnan..." << std::endl;
-        testBufferChunk<std::int8_t>(
+        PothosArrayFireTests::testBufferChunk<std::int8_t>(
             isNaNCollectorSink.call("getBuffer"),
             expectedIsNaNOutput);
     }
@@ -106,4 +101,10 @@ void testIsInfNaNBlockForType(const std::string& type)
     }
 }
 
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_isinf_isnan)
+{
+    for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
+    {
+        testIsInfNaNBlockForType(type);
+    }
 }

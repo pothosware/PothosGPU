@@ -19,12 +19,9 @@
 #include <typeinfo>
 #include <vector>
 
-namespace PothosArrayFireTests
-{
-
 // Test this block by comparing the outputs to blocks that individually output
 // the real and imaginary components.
-void testSplitComplexBlockForType(const std::string& type)
+static void testSplitComplexBlockForType(const std::string& type)
 {
     static constexpr const char* blockRegistryPath = "/arrayfire/arith/split_complex";
 
@@ -48,7 +45,7 @@ void testSplitComplexBlockForType(const std::string& type)
                              "Auto",
                              type);
 
-        auto testInputs = getTestInputs(complexType);
+        auto testInputs = PothosArrayFireTests::getTestInputs(complexType);
 
         auto feederSource = Pothos::BlockRegistry::make(
                                 "/blocks/feeder_source",
@@ -110,4 +107,10 @@ void testSplitComplexBlockForType(const std::string& type)
     }
 }
 
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_split_complex)
+{
+    for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
+    {
+        testSplitComplexBlockForType(type);
+    }
 }

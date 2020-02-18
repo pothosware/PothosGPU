@@ -32,4 +32,25 @@ Pothos::BufferChunk getTestInputs(const std::string& type)
     return Pothos::BufferChunk();
 }
 
+const std::vector<std::string>& getAllDTypeNames()
+{
+    static const std::vector<std::string> AllTypes =
+    {
+        // ArrayFire doesn't support int8
+        "int16",
+        "int32",
+        "int64",
+        "uint8",
+        "uint16",
+        "uint32",
+        "uint64",
+        "float32",
+        "float64",
+        // ArrayFire doesn't support complex integral types
+        "complex_float32",
+        "complex_float64"
+    };
+    return AllTypes;
+}
+
 }

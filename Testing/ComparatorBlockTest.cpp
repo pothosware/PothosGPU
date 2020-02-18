@@ -19,9 +19,6 @@
 #include <typeinfo>
 #include <vector>
 
-namespace PothosArrayFireTests
-{
-
 static constexpr const char* blockRegistryPath = "/arrayfire/array/comparator";
 
 template <typename T, typename ComparatorFcn>
@@ -31,8 +28,8 @@ static void getTestValues(
     std::vector<T>* pinput1,
     std::vector<std::int8_t>* pOutput)
 {
-    (*pinput0) = getTestInputs<T>(true /*shuffle*/);
-    (*pinput1) = getTestInputs<T>(true /*shuffle*/);
+    (*pinput0) = PothosArrayFireTests::getTestInputs<T>(true /*shuffle*/);
+    (*pinput1) = PothosArrayFireTests::getTestInputs<T>(true /*shuffle*/);
     POTHOS_TEST_EQUAL(pinput0->size(), pinput1->size());
 
     for(size_t i = 0; i < pinput0->size(); ++i)
@@ -72,9 +69,9 @@ static void getTestValues(
         GET_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
         GET_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
  \
-        (*pinput0) = stdVectorToBufferChunk(dtype, input0); \
-        (*pinput1) = stdVectorToBufferChunk(dtype, input1); \
-        (*pOutput) = stdVectorToBufferChunk(Int8DType, output); \
+        (*pinput0) = PothosArrayFireTests::stdVectorToBufferChunk(dtype, input0); \
+        (*pinput1) = PothosArrayFireTests::stdVectorToBufferChunk(dtype, input1); \
+        (*pOutput) = PothosArrayFireTests::stdVectorToBufferChunk(Int8DType, output); \
         return; \
     }
 
@@ -168,7 +165,7 @@ static void testComparatorBlockForTypeAndOperation(
     }
 }
 
-void testComparatorBlockForType(const std::string& type)
+static void testComparatorBlockForType(const std::string& type)
 {
     static const std::vector<std::string> operations{"<","<=",">",">=","==","!="};
     for(const std::string& operation: operations)
@@ -177,4 +174,10 @@ void testComparatorBlockForType(const std::string& type)
     }
 }
 
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_comparators)
+{
+    for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
+    {
+        testComparatorBlockForType(type);
+    }
 }

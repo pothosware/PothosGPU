@@ -16,9 +16,6 @@
 #include <typeinfo>
 #include <vector>
 
-namespace PothosArrayFireTests
-{
-
 static void testCastBlock(
     const std::string& type1,
     const std::string& type2)
@@ -49,7 +46,7 @@ static void testCastBlock(
                          type1,
                          type2);
 
-        auto testInputs = getTestInputs(inputDType.name());
+        auto testInputs = PothosArrayFireTests::getTestInputs(inputDType.name());
 
         auto feederSource = Pothos::BlockRegistry::make(
                                 "/blocks/feeder_source",
@@ -78,28 +75,15 @@ static void testCastBlock(
     }
 }
 
-void testCastBlockForType(const std::string& inputType)
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_cast)
 {
-    static const std::vector<std::string> AllTypes =
-    {
-        // ArrayFire doesn't support int8
-        "int16",
-        "int32",
-        "int64",
-        "uint8",
-        "uint16",
-        "uint32",
-        "uint64",
-        "float32",
-        "float64",
-        // ArrayFire doesn't support complex integral types
-        "complex_float32",
-        "complex_float64"
-    };
-    for(const auto& outputType: AllTypes)
-    {
-        testCastBlock(inputType, outputType);
-    }
-}
+    const auto& dtypeNames = PothosArrayFireTests::getAllDTypeNames();
 
+    for(const auto& inputType: dtypeNames)
+    {
+        for(const auto& outputType: dtypeNames)
+        {
+            testCastBlock(inputType, outputType);
+        }
+    }
 }
