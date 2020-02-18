@@ -104,6 +104,7 @@ POTHOS_MODULE_UTIL(
         Testing/ClampBlockTest.cpp
         Testing/ComparatorBlockTest.cpp
         Testing/FlatBlockTest.cpp
+        Testing/IsInfNaNBlockTest.cpp
         Testing/SplitComplexBlockTest.cpp
         Testing/FileIOTests.cpp
         Testing/NToOneBlockExecutionTest.cpp

@@ -110,6 +110,7 @@ static EnableIf${k}<T, void> blockExecutionTest()
     testClampBlockForType(dtypeName);
     testComparatorBlockForType(dtypeName);
     //testFlatBlockForType(dtypeName);
+    testIsInfNaNBlockForType(dtypeName);
     testSplitComplexBlockForType(dtypeName);
 }
 %endfor

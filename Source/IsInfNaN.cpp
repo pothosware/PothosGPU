@@ -32,9 +32,9 @@ static Pothos::Block* makeIsInfNaN(
 static Pothos::BlockRegistry registerArithIsInf(
     "/arrayfire/arith/isinf",
     Pothos::Callable(&makeIsInfNaN)
-        .bind<OneToOneFunc>(&af::isInf, 1));
+        .bind<OneToOneFunc>(&af::isInf, 2));
 
 static Pothos::BlockRegistry registerArithIsNaN(
     "/arrayfire/arith/isnan",
     Pothos::Callable(&makeIsInfNaN)
-        .bind<OneToOneFunc>(&af::isNaN, 1));
+        .bind<OneToOneFunc>(&af::isNaN, 2));

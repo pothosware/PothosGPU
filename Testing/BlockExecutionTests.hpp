@@ -90,6 +90,8 @@ void testComparatorBlockForType(const std::string& type);
 
 void testFlatBlockForType(const std::string& type);
 
+void testIsInfNaNBlockForType(const std::string& type);
+
 void testSplitComplexBlockForType(const std::string& floatType);
 
 //
