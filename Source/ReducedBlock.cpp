@@ -38,9 +38,9 @@ ReducedBlock::ReducedBlock(
     // Set up ports
     for(size_t chan = 0; chan < _nchans; ++chan)
     {
-        this->setupInput(chan, inputDType, this->getPortDomain());
+        this->setupInput(chan, inputDType);
     }
-    this->setupOutput(0, outputDType, this->getPortDomain());
+    this->setupOutput(0, outputDType);
 }
 
 ReducedBlock::~ReducedBlock() {}

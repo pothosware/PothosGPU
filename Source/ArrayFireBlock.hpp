@@ -32,8 +32,6 @@ class ArrayFireBlock: public Pothos::Block
 
         std::string getArrayFireDevice() const;
 
-        std::string getPortDomain() const;
-
         virtual std::string overlay() const;
 
         //

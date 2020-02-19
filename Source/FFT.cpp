@@ -76,12 +76,10 @@ class FFTBaseBlock: public ArrayFireBlock
 
             this->setupInput(
                 0,
-                Pothos::DType::fromDType(inDType, dtypeDims),
-                this->getPortDomain());
+                Pothos::DType::fromDType(inDType, dtypeDims));
             this->setupOutput(
                 0,
-                Pothos::DType::fromDType(outDType, dtypeDims),
-                this->getPortDomain());
+                Pothos::DType::fromDType(outDType, dtypeDims));
 
             this->registerProbe("getNormalizationFactor");
             this->registerSignal("normalizationFactorChanged");

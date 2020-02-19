@@ -32,8 +32,8 @@ class MinMax: public ArrayFireBlock
             _func(func),
             _labelName(labelName)
         {
-            this->setupInput(0, _dtype, this->getPortDomain());
-            this->setupOutput(0, _dtype, this->getPortDomain());
+            this->setupInput(0, _dtype);
+            this->setupOutput(0, _dtype);
         }
 
         virtual ~MinMax() {}

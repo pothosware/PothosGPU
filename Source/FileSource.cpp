@@ -80,7 +80,7 @@ class FileSourceBlock: public ArrayFireBlock
             {
                 _nchans = 1;
                 _rowSize = _afFileContents.bytes();
-                this->setupOutput(0, dtype, this->getPortDomain());
+                this->setupOutput(0, dtype);
             }
             else
             {
@@ -89,7 +89,7 @@ class FileSourceBlock: public ArrayFireBlock
 
                 for(size_t chan = 0; chan < _nchans; ++chan)
                 {
-                    this->setupOutput(chan, dtype, this->getPortDomain());
+                    this->setupOutput(chan, dtype);
                 }
             }
         }

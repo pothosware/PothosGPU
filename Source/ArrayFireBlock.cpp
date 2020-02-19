@@ -69,7 +69,7 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getInputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
-    if((domain == this->getPortDomain()) || domain.empty())
+    if(domain.empty())
     {
         // We always want to operate on pinned memory, as GPUs can access this via DMA.
         Pothos::BufferManagerArgs args;
@@ -86,7 +86,7 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getOutputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
-    if((domain == this->getPortDomain()) || domain.empty())
+    if(domain.empty())
     {
         // We always want to operate on pinned memory, as GPUs can access this via DMA.
         Pothos::BufferManagerArgs args;
@@ -112,13 +112,6 @@ std::string ArrayFireBlock::getArrayFireBackend() const
 std::string ArrayFireBlock::getArrayFireDevice() const
 {
     return _afDeviceName;
-}
-
-std::string ArrayFireBlock::getPortDomain() const
-{
-    return Poco::format(
-               "ArrayFire_%s",
-               Pothos::Object(_afBackend).convert<std::string>());
 }
 
 std::string ArrayFireBlock::overlay() const

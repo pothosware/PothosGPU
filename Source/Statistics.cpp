@@ -91,8 +91,8 @@ class OneArrayStatsBlock: public ArrayFireBlock
         {
             validateDType(dtype, floatOnlyDTypeSupport);
 
-            this->setupInput(0, _dtype, this->getPortDomain());
-            this->setupOutput(0, _dtype, this->getPortDomain());
+            this->setupInput(0, _dtype);
+            this->setupOutput(0, _dtype);
 
             this->registerProbe("getLastValue");
         }

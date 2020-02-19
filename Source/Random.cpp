@@ -65,7 +65,7 @@ class RandomBlock: public ArrayFireBlock
             this->registerSignal("distributionChanged");
             this->registerSignal("randomEngineTypeChanged");
 
-            this->setupOutput(0, dtype, this->getPortDomain());
+            this->setupOutput(0, dtype);
 
             this->setDistribution(distribution);
             this->reseedRandomEngineWithTime();

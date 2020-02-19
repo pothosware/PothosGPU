@@ -31,8 +31,8 @@ class CorrCoefBlock: public ArrayFireBlock
         {
             for(size_t i = 0; i < 2; ++i)
             {
-                this->setupInput(i, dtype, this->getPortDomain());
-                this->setupOutput(i, dtype, this->getPortDomain());
+                this->setupInput(i, dtype);
+                this->setupOutput(i, dtype);
             }
         }
 
