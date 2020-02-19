@@ -34,6 +34,8 @@ class CorrCoefBlock: public ArrayFireBlock
                 this->setupInput(i, dtype);
                 this->setupOutput(i, dtype);
             }
+
+            this->registerProbe("getLastValue");
         }
 
         void work() override
@@ -47,25 +49,21 @@ class CorrCoefBlock: public ArrayFireBlock
             auto afInput0 = this->getInputPortAsAfArray(0);
             auto afInput1 = this->getInputPortAsAfArray(1);
 
-            const auto corrcoef = af::corrcoef<double>(afInput0, afInput1);
-
-            this->output(0)->postLabel(
-                LabelName,
-                corrcoef,
-                0);
-            this->output(1)->postLabel(
-                LabelName,
-                corrcoef,
-                0);
+            _lastValue = af::corrcoef<double>(afInput0, afInput1);
 
             this->postAfArray(0, afInput0);
             this->postAfArray(1, afInput1);
         }
 
-        static const std::string LabelName;
-};
+        double getLastValue() const
+        {
+            return _lastValue;
+        }
 
-const std::string CorrCoefBlock::LabelName = "CORRCOEF";
+    private:
+
+        double _lastValue;
+};
 
 static Pothos::BlockRegistry registerStatisticsCorrCoef(
     "/arrayfire/statistics/corrcoef",

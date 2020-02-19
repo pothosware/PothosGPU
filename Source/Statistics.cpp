@@ -156,7 +156,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
 
             this->output(0)->postLabel(
                 _labelName,
-                std::move(_lastValue),
+                _lastValue,
                 index);
 
             this->postAfArray(0, afArray);
