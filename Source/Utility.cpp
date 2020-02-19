@@ -135,7 +135,7 @@ Pothos::Object getArrayValueOfUnknownTypeAtIndex(
 
     #define SwitchCase(afDType, ctype) \
         case afDType: \
-            ret = Pothos::Object(arrIndex.scalar<PothosToAF<ctype>::type>()).convert(typeid(ctype)); \
+            ret = Pothos::Object(arrIndex.scalar<PothosToAF<ctype>::type>()); \
             break;
 
     switch(afArray.type())

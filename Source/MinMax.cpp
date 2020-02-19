@@ -15,7 +15,6 @@
 
 using MinMaxFunction = void(*)(af::array&, af::array&, const af::array&, const int);
 
-// TODO: store last value to be probed
 class MinMax: public ArrayFireBlock
 {
     public:
@@ -34,9 +33,17 @@ class MinMax: public ArrayFireBlock
         {
             this->setupInput(0, _dtype);
             this->setupOutput(0, _dtype);
+
+            this->registerCall(this, POTHOS_FCN_TUPLE(MinMax, lastValue));
+            this->registerProbe("lastValue");
         }
 
         virtual ~MinMax() {}
+
+        Pothos::Object lastValue() const
+        {
+            return _lastValue;
+        }
 
         void work() override
         {
@@ -50,23 +57,8 @@ class MinMax: public ArrayFireBlock
 
             auto afInput = this->getInputPortAsAfArray(0);
             _func(val, idx, afInput, -1);
-            if(1 != idx.elements())
-            {
-                throw Pothos::AssertionViolationException(
-                          "idx: invalid size",
-                          std::to_string(idx.elements()));
-            }
 
-            std::uint32_t idxVal;
-            idx.host(&idxVal);
-
-            std::vector<std::uint32_t> idxVec(idx.elements());
-            idx.host(idxVec.data());
-
-            this->output(0)->postLabel(
-                _labelName,
-                getArrayValueOfUnknownTypeAtIndex(val, 0),
-                idxVal);
+            _lastValue = getArrayValueOfUnknownTypeAtIndex(val, 0);
 
             this->postAfArray(0, afInput);
         }
@@ -79,6 +71,8 @@ class MinMax: public ArrayFireBlock
         MinMaxFunction _func;
         std::string _labelName;
         size_t _nchans;
+
+        Pothos::Object _lastValue;
 };
 
 template <bool isMin>

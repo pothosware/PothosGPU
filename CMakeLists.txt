@@ -113,10 +113,10 @@ POTHOS_MODULE_UTIL(
         Testing/TestArrayFireConfig.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
-        Testing/TestLabels.cpp
         Testing/TestManagedDeviceCache.cpp
         Testing/TestNumericConversions.cpp
         Testing/TestPortDomainCombos.cpp
+        Testing/TestStatistics.cpp
         Testing/TestUtility.cpp
     LIBRARIES
         ArrayFire::af

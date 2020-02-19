@@ -35,7 +35,8 @@ class CorrCoefBlock: public ArrayFireBlock
                 this->setupOutput(i, dtype);
             }
 
-            this->registerProbe("getLastValue");
+            this->registerCall(this, POTHOS_FCN_TUPLE(CorrCoefBlock, lastValue));
+            this->registerProbe("lastValue");
         }
 
         void work() override
@@ -55,7 +56,7 @@ class CorrCoefBlock: public ArrayFireBlock
             this->postAfArray(1, afInput1);
         }
 
-        double getLastValue() const
+        double lastValue() const
         {
             return _lastValue;
         }

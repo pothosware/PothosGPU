@@ -94,7 +94,8 @@ class OneArrayStatsBlock: public ArrayFireBlock
             this->setupInput(0, _dtype);
             this->setupOutput(0, _dtype);
 
-            this->registerProbe("getLastValue");
+            this->registerCall(this, POTHOS_FCN_TUPLE(OneArrayStatsBlock, lastValue));
+            this->registerProbe("lastValue");
         }
 
         OneArrayStatsBlock(
@@ -112,7 +113,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 searchForIndex)
         {}
 
-        Pothos::Object getLastValue() const
+        Pothos::Object lastValue() const
         {
             return _lastValue;
         }
@@ -135,29 +136,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
             }
 
             _lastValue = getArrayValueOfUnknownTypeAtIndex(afLabelValues, 0);
-
-            size_t index = 0;
-            if(_searchForIndex)
-            {
-                ssize_t sIndex = findValueOfUnknownTypeInArray(
-                                     afArray,
-                                     _lastValue);
-                if(0 > sIndex)
-                {
-                    throw Pothos::AssertionViolationException(
-                              Poco::format(
-                                  "We couldn't find the %s in the array, "
-                                  "but by definition, it should be present.",
-                                  Poco::toLower(_labelName)));
-                }
-
-                index = static_cast<size_t>(sIndex);
-            }
-
-            this->output(0)->postLabel(
-                _labelName,
-                _lastValue,
-                index);
 
             this->postAfArray(0, afArray);
         }
