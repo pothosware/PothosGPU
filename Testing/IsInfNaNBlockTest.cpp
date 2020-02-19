@@ -103,6 +103,8 @@ static void testIsInfNaNBlockForType(const std::string& type)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_isinf_isnan)
 {
+    PothosArrayFireTests::setupTestEnv();
+    
     for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
     {
         testIsInfNaNBlockForType(type);

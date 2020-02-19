@@ -138,6 +138,8 @@ static void testClampBlockForType(const std::string&)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_clamp)
 {
+    PothosArrayFireTests::setupTestEnv();
+
     for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
     {
         testClampBlockForType(type);

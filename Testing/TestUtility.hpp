@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -18,6 +18,12 @@
 
 namespace PothosArrayFireTests
 {
+
+//
+// Should be called at the beginning of each test
+//
+
+void setupTestEnv();
 
 //
 // Useful typedefs

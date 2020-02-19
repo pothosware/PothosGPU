@@ -109,6 +109,8 @@ static void testSplitComplexBlockForType(const std::string& type)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_split_complex)
 {
+    PothosArrayFireTests::setupTestEnv();
+    
     for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
     {
         testSplitComplexBlockForType(type);

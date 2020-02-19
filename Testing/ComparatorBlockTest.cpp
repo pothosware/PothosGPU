@@ -176,6 +176,8 @@ static void testComparatorBlockForType(const std::string& type)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_comparators)
 {
+    PothosArrayFireTests::setupTestEnv();
+
     for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
     {
         testComparatorBlockForType(type);

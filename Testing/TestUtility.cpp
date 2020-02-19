@@ -1,6 +1,7 @@
 // Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "DeviceCache.hpp"
 #include "TestUtility.hpp"
 
 #include <Pothos/Framework.hpp>
@@ -10,6 +11,11 @@
 
 namespace PothosArrayFireTests
 {
+
+void setupTestEnv()
+{
+    af::setBackend(getAvailableBackends()[0]);
+}
 
 void testBufferChunk(
     const Pothos::BufferChunk& expectedBufferChunk,

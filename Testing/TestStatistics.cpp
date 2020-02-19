@@ -145,6 +145,8 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_statistics)
 {
     using namespace PothosArrayFireTests;
 
+    setupTestEnv();
+
     std::random_device rd;
     std::mt19937 g(rd());
 

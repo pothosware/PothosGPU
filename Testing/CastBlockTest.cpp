@@ -77,6 +77,8 @@ static void testCastBlock(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_cast)
 {
+    PothosArrayFireTests::setupTestEnv();
+    
     const auto& dtypeNames = PothosArrayFireTests::getAllDTypeNames();
 
     for(const auto& inputType: dtypeNames)
