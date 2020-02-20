@@ -22,14 +22,12 @@ class MinMax: public ArrayFireBlock
         MinMax(
             const std::string& device,
             const MinMaxFunction& func,
-            const Pothos::DType& dtype,
-            const std::string& labelName
+            const Pothos::DType& dtype
         ):
             ArrayFireBlock(device),
             _dtype(dtype),
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
-            _func(func),
-            _labelName(labelName)
+            _func(func)
         {
             this->setupInput(0, _dtype);
             this->setupOutput(0, _dtype);
@@ -69,7 +67,6 @@ class MinMax: public ArrayFireBlock
         af::dtype _afDType;
 
         MinMaxFunction _func;
-        std::string _labelName;
         size_t _nchans;
 
         Pothos::Object _lastValue;
@@ -80,15 +77,12 @@ static Pothos::Block* minMaxFactory(
     const std::string& device,
     const Pothos::DType& dtype)
 {
-    static constexpr const char* labelName = isMin ? "MIN" : "MAX";
-
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new MinMax( \
                            device, \
                            (isMin ? (MinMaxFunction)af::min : (MinMaxFunction)af::max), \
-                           dtype, \
-                           labelName);
+                           dtype);
 
     // ArrayFire has no implementation for int8_t, int64_t, or uint64_t.
     ifTypeDeclareFactory(std::int16_t)
@@ -109,8 +103,7 @@ static Pothos::Block* minMaxFactory(
  *
  * Calls <b>af::min</b> on all inputs.
  *
- * For each output, this block posts a <b>"MIN"</b> label, whose position
- * and value match the element of the minimum value.
+ * The most recent minimum value can be queried using the "lastValue" probe.
  *
  * |category /ArrayFire/Algorithm
  * |keywords algorithm min
@@ -135,8 +128,7 @@ static Pothos::BlockRegistry registerMin(
  *
  * Calls <b>af::max</b> on all inputs.
  *
- * For each output, this block posts a <b>"MAX"</b> label, whose position
- * and value match the element of the maximum value.
+ * The most recent minimum value can be queried using the "lastValue" probe.
  *
  * |category /ArrayFire/Algorithm
  * |keywords algorithm max

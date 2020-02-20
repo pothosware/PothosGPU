@@ -81,7 +81,7 @@ POTHOS_MODULE_UTIL(
         Source/FileSource.cpp
         Source/Filter.cpp
         #Source/Flat.cpp
-        Source/IsInfNaN.cpp
+        Source/IsX.cpp
         Source/LogN.cpp
         Source/MinMax.cpp
         Source/NToOneBlock.cpp
@@ -104,7 +104,7 @@ POTHOS_MODULE_UTIL(
         Testing/ClampBlockTest.cpp
         Testing/ComparatorBlockTest.cpp
         Testing/FlatBlockTest.cpp
-        Testing/IsInfNaNBlockTest.cpp
+        Testing/IsXBlockTest.cpp
         Testing/SplitComplexBlockTest.cpp
         Testing/FileIOTests.cpp
         Testing/NToOneBlockExecutionTest.cpp

@@ -63,14 +63,12 @@ class OneArrayStatsBlock: public ArrayFireBlock
             const std::string& device,
             OneArrayStatsFuncPtr func,
             const Pothos::DType& dtype,
-            const std::string& labelName,
             bool searchForIndex)
         {
             return new OneArrayStatsBlock(
                            device,
                            func,
                            dtype,
-                           labelName,
                            searchForIndex);
         }
 
@@ -78,7 +76,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
             const std::string& device,
             OneArrayStatsFunction func,
             const Pothos::DType& dtype,
-            const std::string& labelName,
             bool searchForIndex
         ):
             ArrayFireBlock(device),
@@ -86,7 +83,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
             _dtype(dtype),
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _lastValue(),
-            _labelName(labelName),
             _searchForIndex(searchForIndex)
         {
             validateDType(dtype, floatOnlyDTypeSupport);
@@ -102,14 +98,12 @@ class OneArrayStatsBlock: public ArrayFireBlock
             const std::string& device,
             OneArrayStatsFuncPtr func,
             const Pothos::DType& dtype,
-            const std::string& labelName,
             bool searchForIndex
         ):
             OneArrayStatsBlock(
                 device,
                 OneArrayStatsFunction(func),
                 dtype,
-                labelName,
                 searchForIndex)
         {}
 
@@ -146,7 +140,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
         Pothos::DType _dtype;
         af::dtype _afDType;
         Pothos::Object _lastValue;
-        std::string _labelName;
         bool _searchForIndex;
 };
 
@@ -171,7 +164,6 @@ class VarianceBlock: public OneArrayStatsBlock
                 device,
                 getAfVarBoundFunction(isBiased),
                 dtype,
-                "VAR",
                 false /*searchForIndex*/),
             _isBiased(isBiased)
         {
@@ -212,8 +204,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
         "/arrayfire/statistics/mean",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&af::mean, 1)
-            .bind<std::string>("MEAN", 3)
-            .bind<bool>(false /*searchForIndex*/, 4)),
+            .bind<bool>(false /*searchForIndex*/, 3)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/var",
         Pothos::Callable(&VarianceBlock::make)),
@@ -221,18 +212,15 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
         "/arrayfire/statistics/stdev",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
-            .bind<std::string>("STDDEV", 3)
-            .bind<bool>(false /*searchForIndex*/, 4)),
+            .bind<bool>(false /*searchForIndex*/, 3)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/median",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&af::median, 1)
-            .bind<std::string>("MEDIAN", 3)
-            .bind<bool>(true /*searchForIndex*/, 4)),
+            .bind<bool>(true /*searchForIndex*/, 3)),
     Pothos::BlockRegistry(
         "/arrayfire/statistics/medabsdev",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
-            .bind("MEDABSDEV", 3)
-            .bind<bool>(false /*searchForIndex*/, 4))
+            .bind<bool>(false /*searchForIndex*/, 3))
 };

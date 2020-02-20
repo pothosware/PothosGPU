@@ -12,15 +12,15 @@
 
 #include <vector>
 
-static Pothos::Block* makeIsInfNaN(
+static Pothos::Block* makeisX(
     const std::string& device,
     const Pothos::DType& dtype,
+    const DTypeSupport& dtypeSupport,
     OneToOneFunc func)
 {
     static const Pothos::DType Int8DType("int8");
-    static const DTypeSupport DTypeSupport{false,false,true,false};
 
-    validateDType(dtype, DTypeSupport);
+    validateDType(dtype, dtypeSupport);
 
     return new OneToOneBlock(
                    device,
@@ -31,10 +31,18 @@ static Pothos::Block* makeIsInfNaN(
 
 static Pothos::BlockRegistry registerArithIsInf(
     "/arrayfire/arith/isinf",
-    Pothos::Callable(&makeIsInfNaN)
-        .bind<OneToOneFunc>(&af::isInf, 2));
+    Pothos::Callable(&makeisX)
+        .bind<DTypeSupport>({false,false,true,false}, 2)
+        .bind<OneToOneFunc>(&af::isInf, 3));
 
 static Pothos::BlockRegistry registerArithIsNaN(
     "/arrayfire/arith/isnan",
-    Pothos::Callable(&makeIsInfNaN)
-        .bind<OneToOneFunc>(&af::isNaN, 2));
+    Pothos::Callable(&makeisX)
+        .bind<DTypeSupport>({false,false,true,false}, 2)
+        .bind<OneToOneFunc>(&af::isNaN, 3));
+
+static Pothos::BlockRegistry registerArithIsZero(
+    "/arrayfire/arith/iszero",
+    Pothos::Callable(&makeisX)
+        .bind<DTypeSupport>({true,true,true,true}, 2)
+        .bind<OneToOneFunc>(&af::iszero, 3));
