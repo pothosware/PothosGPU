@@ -32,9 +32,7 @@ static void testOneToOneBlockCommon(
                             inputDType);
     feederSource.call(
         "feedBuffer",
-        stdVectorToBufferChunk<In>(
-            inputDType,
-            testInputs));
+        stdVectorToBufferChunk<In>(testInputs));
 
     auto collectorSink = Pothos::BlockRegistry::make(
                              "/blocks/collector_sink",

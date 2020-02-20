@@ -69,9 +69,9 @@ static void getTestValues(
         GET_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
         GET_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
  \
-        (*pinput0) = PothosArrayFireTests::stdVectorToBufferChunk(dtype, input0); \
-        (*pinput1) = PothosArrayFireTests::stdVectorToBufferChunk(dtype, input1); \
-        (*pOutput) = PothosArrayFireTests::stdVectorToBufferChunk(Int8DType, output); \
+        (*pinput0) = PothosArrayFireTests::stdVectorToBufferChunk(input0); \
+        (*pinput1) = PothosArrayFireTests::stdVectorToBufferChunk(input1); \
+        (*pOutput) = PothosArrayFireTests::stdVectorToBufferChunk(output); \
         return; \
     }
 

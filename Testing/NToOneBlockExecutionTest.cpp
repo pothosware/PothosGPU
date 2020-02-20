@@ -89,9 +89,7 @@ static void testNToOneBlockCommon(
     {
         feederSources[chan].call(
             "feedBuffer",
-            stdVectorToBufferChunk<In>(
-                inputDType,
-                testInputs[chan]));
+            stdVectorToBufferChunk<In>(testInputs[chan]));
     }
 
     collectorSink = Pothos::BlockRegistry::make(

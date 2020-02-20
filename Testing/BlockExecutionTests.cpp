@@ -10,7 +10,7 @@ namespace PothosArrayFireTests
 
 #define RETURN_BUFFERCHUNK(typeStr, cType) \
     if(type == typeStr) \
-        return stdVectorToBufferChunk(Pothos::DType(typeStr), getTestInputs<cType>());
+        return stdVectorToBufferChunk(getTestInputs<cType>());
 
 Pothos::BufferChunk getTestInputs(const std::string& type)
 {

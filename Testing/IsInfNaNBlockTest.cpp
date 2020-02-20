@@ -24,9 +24,7 @@ static Pothos::BufferChunk getIsInfNaNTestInputs()
         5.0,
         std::numeric_limits<T>::quiet_NaN(),
     };
-    return PothosArrayFireTests::stdVectorToBufferChunk(
-               Pothos::DType(typeid(T)),
-               testInputs);
+    return PothosArrayFireTests::stdVectorToBufferChunk(testInputs);
 }
 
 static void testIsInfNaNBlockForType(const std::string& type)
