@@ -13,8 +13,24 @@
 #include <string>
 #include <vector>
 
+// TODO: complex overload
+
 template <typename T>
-static Pothos::BufferChunk getisXTestInputs()
+static PothosArrayFireTests::EnableIfAnyInt<T, Pothos::BufferChunk> getIsXTestInputs()
+{
+    const std::vector<T> testInputs =
+    {
+        0,
+        std::numeric_limits<T>::max(),
+        std::numeric_limits<T>::min(),
+        5,
+        std::numeric_limits<T>::max() / 2,
+    };
+    return PothosArrayFireTests::stdVectorToBufferChunk(testInputs);
+}
+
+template <typename T>
+static PothosArrayFireTests::EnableIfFloat<T, Pothos::BufferChunk> getIsXTestInputs()
 {
     const std::vector<T> testInputs =
     {
@@ -27,98 +43,104 @@ static Pothos::BufferChunk getisXTestInputs()
     return PothosArrayFireTests::stdVectorToBufferChunk(testInputs);
 }
 
-static void testisXBlockForType(const std::string& type)
+template <typename T>
+static void testIsX(
+    const std::string& blockRegistryPath,
+    const std::vector<std::int8_t>& expectedOutput)
 {
-    static constexpr const char* isInfBlockRegistryPath = "/arrayfire/arith/isinf";
-    static constexpr const char* isNaNBlockRegistryPath = "/arrayfire/arith/isnan";
-    static constexpr const char* isZeroBlockRegistryPath = "/arrayfire/arith/iszero";
+    static const Pothos::DType dtype(typeid(T));
+    static const Pothos::DType Int8DType(typeid(std::int8_t));
 
-    const Pothos::DType dtype(type);
-    if(isDTypeFloat(dtype))
-    {
-        std::cout << "Testing " << type << std::endl;
+    std::cout << "Testing " << dtype.name() << std::endl;
 
-        static const Pothos::DType Int8DType("int8");
+    auto feederSource = Pothos::BlockRegistry::make("/blocks/feeder_source", dtype);
+    feederSource.call("feedBuffer", getIsXTestInputs<T>());
 
-        auto testInputs = ("float32" == type) ? getisXTestInputs<float>()
-                                              : getisXTestInputs<double>();
-
-        static const auto expectedIsInfOutput = std::vector<std::int8_t>{0,1,1,0,0};
-        static const auto expectedIsNaNOutput = std::vector<std::int8_t>{0,0,0,0,1};
-        static const auto expectedIsZeroOutput = std::vector<std::int8_t>{1,0,0,0,0};
-
-        auto feederSource = Pothos::BlockRegistry::make("/blocks/feeder_source", type);
-        feederSource.call("feedBuffer", testInputs);
-
-        auto isInf = Pothos::BlockRegistry::make(
-                         isInfBlockRegistryPath,
+    auto testBlock = Pothos::BlockRegistry::make(
+                         blockRegistryPath,
                          "Auto",
-                         type);
-        auto isNaN = Pothos::BlockRegistry::make(
-                         isNaNBlockRegistryPath,
-                         "Auto",
-                         type);
-        auto isZero = Pothos::BlockRegistry::make(
-                          isZeroBlockRegistryPath,
-                          "Auto",
-                          type);
-        
-        auto isInfCollectorSink = Pothos::BlockRegistry::make("/blocks/collector_sink", Int8DType);
-        auto isNaNCollectorSink = Pothos::BlockRegistry::make("/blocks/collector_sink", Int8DType);
-        auto isZeroCollectorSink = Pothos::BlockRegistry::make("/blocks/collector_sink", Int8DType);
+                         dtype);
 
-        {
-            Pothos::Topology topology;
+    auto collectorSink = Pothos::BlockRegistry::make("/blocks/collector_sink", Int8DType);
 
-            topology.connect(feederSource, 0, isInf, 0);
-            topology.connect(isInf, 0, isInfCollectorSink, 0);
-
-            topology.connect(feederSource, 0, isNaN, 0);
-            topology.connect(isNaN, 0, isNaNCollectorSink, 0);
-
-            topology.connect(feederSource, 0, isZero, 0);
-            topology.connect(isZero, 0, isZeroCollectorSink, 0);
-
-            topology.commit();
-            POTHOS_TEST_TRUE(topology.waitInactive(0.05));
-        }
-
-        std::cout << " * Testing isinf..." << std::endl;
-        PothosArrayFireTests::testBufferChunk<std::int8_t>(
-            isInfCollectorSink.call("getBuffer"),
-            expectedIsInfOutput);
-        std::cout << " * Testing isnan..." << std::endl;
-        PothosArrayFireTests::testBufferChunk<std::int8_t>(
-            isNaNCollectorSink.call("getBuffer"),
-            expectedIsNaNOutput);
-        std::cout << " * Testing iszero..." << std::endl;
-        PothosArrayFireTests::testBufferChunk<std::int8_t>(
-            isZeroCollectorSink.call("getBuffer"),
-            expectedIsZeroOutput);
-    }
-    else
     {
-        POTHOS_TEST_THROWS(
-            Pothos::BlockRegistry::make(
-                isInfBlockRegistryPath,
-                "Auto",
-                type),
-        Pothos::ProxyExceptionMessage);
-        POTHOS_TEST_THROWS(
-            Pothos::BlockRegistry::make(
-                isNaNBlockRegistryPath,
-                "Auto",
-                type),
-        Pothos::ProxyExceptionMessage);
+        Pothos::Topology topology;
+
+        topology.connect(feederSource, 0, testBlock, 0);
+        topology.connect(testBlock, 0, collectorSink, 0);
+
+        topology.commit();
+        POTHOS_TEST_TRUE(topology.waitInactive(0.05));
     }
+
+    PothosArrayFireTests::testBufferChunk(
+        collectorSink.call("getBuffer"),
+        expectedOutput);
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_isx)
+template <typename T>
+static void testIsXBlockFailsForType(const std::string& blockRegistryPath)
+{
+    static const Pothos::DType dtype(typeid(T));
+    
+    POTHOS_TEST_THROWS(
+        Pothos::BlockRegistry::make(
+            blockRegistryPath,
+            "Auto",
+            dtype),
+    Pothos::ProxyExceptionMessage);
+}
+
+static void testFloatOnlyBlock(
+    const std::string& blockRegistryPath,
+    const std::vector<std::int8_t>& expectedOutput)
+{
+    testIsX<float>(blockRegistryPath, expectedOutput);
+    testIsX<double>(blockRegistryPath, expectedOutput);
+    
+    testIsXBlockFailsForType<std::int16_t>(blockRegistryPath);
+    testIsXBlockFailsForType<std::int32_t>(blockRegistryPath);
+    testIsXBlockFailsForType<std::int64_t>(blockRegistryPath);
+    testIsXBlockFailsForType<std::uint8_t>(blockRegistryPath);
+    testIsXBlockFailsForType<std::uint16_t>(blockRegistryPath);
+    testIsXBlockFailsForType<std::uint32_t>(blockRegistryPath);
+    testIsXBlockFailsForType<std::uint64_t>(blockRegistryPath);
+}
+
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_isinf)
 {
     PothosArrayFireTests::setupTestEnv();
-    
-    for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
-    {
-        testisXBlockForType(type);
-    }
+
+    testFloatOnlyBlock(
+        "/arrayfire/arith/isinf",
+        {0,1,1,0,0});
+}
+
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_isnan)
+{
+    PothosArrayFireTests::setupTestEnv();
+
+    testFloatOnlyBlock(
+        "/arrayfire/arith/isnan",
+        {0,0,0,0,1});
+}
+
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_iszero)
+{
+    PothosArrayFireTests::setupTestEnv();
+
+    const std::string blockRegistryPath = "/arrayfire/arith/iszero";
+    const std::vector<std::int8_t> signedOutput = {1,0,0,0,0};
+    const std::vector<std::int8_t> unsignedOutput = {1,0,1,0,0};
+
+    // TODO: test complex
+    testIsX<std::int16_t>(blockRegistryPath, signedOutput);
+    testIsX<std::int32_t>(blockRegistryPath, signedOutput);
+    testIsX<std::int64_t>(blockRegistryPath, signedOutput);
+    testIsX<std::uint8_t>(blockRegistryPath, unsignedOutput);
+    testIsX<std::uint16_t>(blockRegistryPath, unsignedOutput);
+    testIsX<std::uint32_t>(blockRegistryPath, unsignedOutput);
+    testIsX<std::uint64_t>(blockRegistryPath, unsignedOutput);
+    testIsX<float>(blockRegistryPath, signedOutput);
+    testIsX<double>(blockRegistryPath, signedOutput);
 }
