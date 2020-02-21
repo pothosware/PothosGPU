@@ -106,13 +106,14 @@ POTHOS_MODULE_UTIL(
         Testing/FlatBlockTest.cpp
         Testing/IsXBlockTest.cpp
         Testing/SplitComplexBlockTest.cpp
-        Testing/FileIOTests.cpp
         Testing/NToOneBlockExecutionTest.cpp
         Testing/OneToOneBlockExecutionTest.cpp
         Testing/TwoToOneBlockExecutionTest.cpp
         Testing/TestArrayFireConfig.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
+        Testing/TestFileSink.cpp
+        Testing/TestFileSource.cpp
         Testing/TestManagedDeviceCache.cpp
         Testing/TestNumericConversions.cpp
         Testing/TestPortDomainCombos.cpp

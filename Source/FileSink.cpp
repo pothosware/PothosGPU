@@ -140,23 +140,29 @@ class FileSinkBlock: public ArrayFireBlock
                     return (buf1.elements() < buf2.elements());
                 };
 
-            auto afDType = Pothos::Object(this->input(0)->dtype()).convert<af::dtype>();
-            auto maxElementsIter = std::max_element(
-                                       _buffers.begin(),
-                                       _buffers.end(),
-                                       bufElemCmp);
-            const auto maxElements = maxElementsIter->elements();
-
-            af::array afArray(
-                          static_cast<dim_t>(_nchans),
-                          static_cast<dim_t>(maxElements),
-                          afDType);
-            for(size_t chan = 0; chan < _nchans; ++chan)
+            af::array afArray;
+            if(1 == _nchans)
             {
-                af::array afArray(maxElements, 0);
-                afArray.write(
-                    _buffers[chan].as<const std::uint8_t*>(),
-                    _buffers[chan].length);
+                afArray = Pothos::Object(_buffers[0]).convert<af::array>();
+            }
+            else
+            {
+                auto afDType = Pothos::Object(this->input(0)->dtype()).convert<af::dtype>();
+                auto maxElementsIter = std::max_element(
+                                           _buffers.begin(),
+                                           _buffers.end(),
+                                           bufElemCmp);
+                const auto maxElements = maxElementsIter->elements();
+
+                afArray = af::array(
+                              static_cast<dim_t>(_nchans),
+                              static_cast<dim_t>(maxElements),
+                              afDType);
+                for(size_t chan = 0; chan < _nchans; ++chan)
+                {
+                    afArray.row(chan) = Pothos::Object(_buffers[chan]).convert<af::array>();
+                }
+
             }
 
             af::saveArray(
