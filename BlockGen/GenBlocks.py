@@ -105,7 +105,8 @@ def generatePothosDoc(category,blockYAML):
     else:
         desc["docs"] = []
 
-    desc["docs"] += ["<p>Corresponding ArrayFire function: <b>af::{0}</b></p>".format(blockYAML["func"])]
+    if not blockYAML.get("testOnly", False):
+        desc["docs"] += ["<p>Corresponding ArrayFire function: <b>af::{0}</b></p>".format(blockYAML["func"])]
 
     # Common args for all auto-generated blocks
 
