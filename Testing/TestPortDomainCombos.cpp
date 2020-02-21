@@ -187,7 +187,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_multiple_backends_into_one_sink)
             }
 
             topology.commit();
-            Poco::Thread::sleep(0.5);
+            Poco::Thread::sleep(SleepTimeMs);
         }
 
         // No matter the backend, the value should be the same.
@@ -251,7 +251,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_multiple_backends)
             topology.connect(afBlocks.back(), 0, collectorSink, 0);
 
             topology.commit();
-            Poco::Thread::sleep(0.5);
+            Poco::Thread::sleep(SleepTimeMs);
         }
 
         // No matter the backend, the value should be the same.

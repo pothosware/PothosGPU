@@ -135,7 +135,7 @@ class FileSourceBlock: public ArrayFireBlock
             }
         }
 
-        void work()
+        void work() override
         {
             const size_t elems = this->workInfo().minElements;
             if((0 == elems) || (!_repeat && (_pos >= _rowSize)))

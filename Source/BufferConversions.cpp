@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BufferConversions.hpp"
@@ -97,7 +97,9 @@ static af::array convertStdVectorToAfArray(const std::vector<T>& vec)
 {
     // If this is ever used for types where type and PothosToAF::type are
     // different, we need two versions.
-    static_assert(sizeof(T) == sizeof(typename PothosToAF<T>::type));
+    static_assert(
+        sizeof(T) == sizeof(typename PothosToAF<T>::type),
+        "sizeof(T) != sizeof(typename PothosToAF<T>::type");
 
     return af::array(
                static_cast<dim_t>(vec.size()),

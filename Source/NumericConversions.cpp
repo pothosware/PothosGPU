@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "Utility.hpp"
@@ -25,7 +25,9 @@ static const std::string convertPluginSubpath("/object/convert/arrayfire");
 template <typename In, typename Out>
 static inline Out reinterpretCastEqual(const In& input)
 {
-    static_assert(sizeof(In) == sizeof(Out));
+    static_assert(
+        sizeof(In) == sizeof(Out),
+        "sizeof(In) != sizeof(Out)");
     return *reinterpret_cast<const Out*>(&input);
 }
 
