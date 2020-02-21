@@ -211,6 +211,27 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
+        - func: sec
+          niceName: Secant
+          header: arith
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: csc
+          niceName: Cosecant
+          header: arith
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: cot
+          niceName: Cotangent
+          header: arith
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
 TwoToOneBlocks:
         #
         # af/arith.h
@@ -247,12 +268,18 @@ TwoToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        - blockName: complex2
+        - blockName: combine_complex
           niceName: Combine Complex
           func: complex
           description: Combine real and imaginary inputs into complex outputs.
           header: arith
           verify: Out # std::complex constructor
+          pattern: FloatToComplex
+
+        - func: polar_to_complex
+          niceName: Polar to Complex
+          header: arith
+          testOnly: true
           pattern: FloatToComplex
 
 NToOneBlocks:
