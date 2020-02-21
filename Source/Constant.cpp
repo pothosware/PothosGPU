@@ -32,10 +32,10 @@ class Constant: public ArrayFireBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setConstant));
             this->setupOutput(
                 0,
-                Pothos::DType::fromDType(Class::dtype, dtypeDims),
-                this->getPortDomain());
+                Pothos::DType::fromDType(Class::dtype, dtypeDims));
 
-            this->registerProbe("getConstant", "constantChanged", "setConstant");
+            this->registerProbe("getConstant");
+            this->registerSignal("constantChanged");
 
             this->setConstant(constant);
         }

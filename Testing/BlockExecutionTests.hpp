@@ -11,6 +11,7 @@
 #include <cmath>
 #include <functional>
 #include <random>
+#include <vector>
 
 namespace PothosArrayFireTests
 {
@@ -81,16 +82,6 @@ void testScalarOpBlock(
     size_t numChannels,
     const BinaryFunc<T, T>& verificationFunc,
     bool allowZeroScalar);
-
-void testCastBlockForType(const std::string& inputType);
-
-void testClampBlockForType(const std::string& inputType);
-
-void testComparatorBlockForType(const std::string& type);
-
-void testFlatBlockForType(const std::string& type);
-
-void testSplitComplexBlockForType(const std::string& floatType);
 
 //
 // Getting random inputs
@@ -207,5 +198,11 @@ static inline EnableIfFloat<T, T> testFactorial(const T& val)
 {
     return std::tgamma(val + T(1.0));
 }
+
+//
+// Misc
+//
+
+const std::vector<std::string>& getAllDTypeNames();
 
 }

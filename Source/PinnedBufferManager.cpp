@@ -35,6 +35,9 @@ public:
 
     void init(const Pothos::BufferManagerArgs &args)
     {
+        af::setBackend(_backend);
+        af::setDevice(0);
+
         Pothos::BufferManager::init(args);
         _bufferSize = args.bufferSize;
         _readyBuffs = Pothos::Util::OrderedQueue<Pothos::ManagedBuffer>(args.numBuffers);

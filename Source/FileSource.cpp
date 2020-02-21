@@ -80,7 +80,7 @@ class FileSourceBlock: public ArrayFireBlock
             {
                 _nchans = 1;
                 _rowSize = _afFileContents.bytes();
-                this->setupOutput(0, dtype, this->getPortDomain());
+                this->setupOutput(0, dtype);
             }
             else
             {
@@ -89,7 +89,7 @@ class FileSourceBlock: public ArrayFireBlock
 
                 for(size_t chan = 0; chan < _nchans; ++chan)
                 {
-                    this->setupOutput(chan, dtype, this->getPortDomain());
+                    this->setupOutput(chan, dtype);
                 }
             }
         }
@@ -116,6 +116,8 @@ class FileSourceBlock: public ArrayFireBlock
 
         void activate() override
         {
+            ArrayFireBlock::activate();
+
             // Incur a one-time performance hit of reading the file contents
             // into paged memory to make the work() implementation easier.
             if(1 == _nchans)
@@ -183,6 +185,7 @@ class FileSourceBlock: public ArrayFireBlock
         std::vector<Pothos::SharedBuffer> _fileContents;
 };
 
+// TODO: setKey initializer
 /*
  * |PothosDoc ArrayFire File Source
  *

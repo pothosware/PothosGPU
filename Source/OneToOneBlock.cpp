@@ -102,8 +102,8 @@ OneToOneBlock::OneToOneBlock(
    _func(func),
    _afOutputDType(Pothos::Object(outputDType).convert<af::dtype>())
 {
-    this->setupInput(0, inputDType, this->getPortDomain());
-    this->setupOutput(0, outputDType, this->getPortDomain());
+    this->setupInput(0, inputDType);
+    this->setupOutput(0, outputDType);
 }
 
 OneToOneBlock::~OneToOneBlock() {}

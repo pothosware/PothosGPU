@@ -30,11 +30,6 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
         _afBackend = deviceCache[0].afBackendEnum;
         _afDevice = deviceCache[0].afDeviceIndex;
         _afDeviceName = deviceCache[0].name;
-
-#if IS_AF_CONFIG_PER_THREAD
-        af::setBackend(_afBackend);
-        af::setDevice(_afDevice);
-#endif
     }
     else
     {
@@ -49,11 +44,6 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
         {
             _afBackend = deviceCacheIter->afBackendEnum;
             _afDevice = deviceCacheIter->afDeviceIndex;
-
-#if IS_AF_CONFIG_PER_THREAD
-            af::setBackend(_afBackend);
-            af::setDevice(_afDevice);
-#endif
         }
         else
         {
@@ -63,6 +53,8 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
                           device));
         }
     }
+
+    this->configArrayFire();
 
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getArrayFireBackend));
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, getArrayFireDevice));
@@ -77,7 +69,7 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getInputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
-    if((domain == this->getPortDomain()) || domain.empty())
+    if(domain.empty())
     {
         // We always want to operate on pinned memory, as GPUs can access this via DMA.
         Pothos::BufferManagerArgs args;
@@ -94,7 +86,7 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getOutputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
-    if((domain == this->getPortDomain()) || domain.empty())
+    if(domain.empty())
     {
         // We always want to operate on pinned memory, as GPUs can access this via DMA.
         Pothos::BufferManagerArgs args;
@@ -107,6 +99,11 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getOutputBufferManager(
     throw Pothos::PortDomainError(domain);
 }
 
+void ArrayFireBlock::activate()
+{
+    this->configArrayFire();
+}
+
 std::string ArrayFireBlock::getArrayFireBackend() const
 {
     return Pothos::Object(_afBackend).convert<std::string>();
@@ -115,13 +112,6 @@ std::string ArrayFireBlock::getArrayFireBackend() const
 std::string ArrayFireBlock::getArrayFireDevice() const
 {
     return _afDeviceName;
-}
-
-std::string ArrayFireBlock::getPortDomain() const
-{
-    return Poco::format(
-               "ArrayFire_%s",
-               Pothos::Object(_afBackend).convert<std::string>());
 }
 
 std::string ArrayFireBlock::overlay() const
@@ -146,10 +136,7 @@ std::string ArrayFireBlock::overlay() const
     for(const auto& entry: getDeviceCache())
     {
         nlohmann::json option;
-        option["name"] = Poco::format(
-                             "%s (%s)",
-                             entry.name,
-                             Pothos::Object(entry.afBackendEnum).convert<std::string>());
+        option["name"] = entry.name;
         option["value"] = Poco::format("\"%s\"", entry.name);
         deviceParamOpts.push_back(option);
     }
@@ -193,6 +180,22 @@ void ArrayFireBlock::postAfArray(
     const af::array& afArray)
 {
     _postAfArray(portName, afArray);
+}
+
+//
+// Misc
+//
+
+void ArrayFireBlock::configArrayFire()
+{
+    if(af::getActiveBackend() != _afBackend)
+    {
+        af::setBackend(_afBackend);
+    }
+    if(af::getDevice() != _afDevice)
+    {
+        af::setDevice(_afDevice);
+    }
 }
 
 //

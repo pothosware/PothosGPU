@@ -50,8 +50,11 @@ class Clamp: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getMaxValue));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setMaxValue));
 
-            this->registerProbe("getMinValue", "minValueChanged", "setMinValue");
-            this->registerProbe("getMaxValue", "maxValueChanged", "setMaxValue");
+            this->registerProbe("getMinValue");
+            this->registerProbe("getMaxValue");
+
+            this->registerSignal("minValueChanged");
+            this->registerSignal("maxValueChanged");
         }
 
         virtual ~Clamp() = default;

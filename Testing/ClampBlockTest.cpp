@@ -19,9 +19,6 @@
 #include <typeinfo>
 #include <vector>
 
-namespace PothosArrayFireTests
-{
-
 static constexpr const char* blockRegistryPath = "/arrayfire/arith/clamp";
 static constexpr const char* pluginPath = "/blocks/arrayfire/arith/clamp";
 
@@ -30,7 +27,7 @@ static constexpr const char* pluginPath = "/blocks/arrayfire/arith/clamp";
 #define GET_MINMAX_OBJECTS(typeStr, cType) \
     if(type == typeStr) \
     { \
-        const auto sortedInputs = getTestInputs<cType>(false /*shuffle*/); \
+        const auto sortedInputs = PothosArrayFireTests::getTestInputs<cType>(false /*shuffle*/); \
         assert(sortedInputs.size() >= 6); \
  \
         (*pMinObjectOut) = Pothos::Object(sortedInputs[2]); \
@@ -87,7 +84,7 @@ void testClampBlockForType(const std::string& type)
                          minObject,
                          maxObject);
 
-        auto testInputs = getTestInputs(type);
+        auto testInputs = PothosArrayFireTests::getTestInputs(type);
 
         auto feederSource = Pothos::BlockRegistry::make(
                                 "/blocks/feeder_source",
@@ -118,11 +115,9 @@ void testClampBlockForType(const std::string& type)
 
 #else
 
-// TODO: consolidate tests for non-existent blocks into single location
-
 // If this build of ArrayFire doesn't have af::clamp, the block shouldn't be
 // included in the build.
-void testClampBlockForType(const std::string&)
+static void testClampBlockForType(const std::string&)
 {
     // This is safe, this will only be called by a single thread.
     static bool hasExecuted = false;
@@ -141,4 +136,12 @@ void testClampBlockForType(const std::string&)
 
 #endif
 
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_clamp)
+{
+    PothosArrayFireTests::setupTestEnv();
+
+    for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
+    {
+        testClampBlockForType(type);
+    }
 }

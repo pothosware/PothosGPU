@@ -15,6 +15,18 @@
 class Pow: public OneToOneBlock
 {
     public:
+        static Pothos::Block* make(
+            const std::string& device,
+            const Pothos::DType& dtype,
+            double power)
+        {
+            // Supports float, complex
+            static const DTypeSupport dtypeSupport{false,false,true,true};
+            validateDType(dtype, dtypeSupport);
+
+            return new Pow(device, dtype, power);
+        }
+
         Pow(const std::string& device,
             const Pothos::DType& dtype,
             double power
@@ -28,7 +40,8 @@ class Pow: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Pow, getPower));
             this->registerCall(this, POTHOS_FCN_TUPLE(Pow, setPower));
 
-            this->registerProbe("getPower", "powerChanged", "setPower");
+            this->registerProbe("getPower");
+            this->registerSignal("powerChanged");
 
             this->setPower(power);
         }
@@ -63,3 +76,7 @@ class Pow: public OneToOneBlock
     private:
         double _power;
 };
+
+static Pothos::BlockRegistry registerLogN(
+    "/arrayfire/arith/pow",
+    Pothos::Callable(&Pow::make));

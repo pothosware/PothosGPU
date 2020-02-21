@@ -59,16 +59,13 @@ class RandomBlock: public ArrayFireBlock
                 "reseedRandomEngine",
                 &RandomBlock::reseedRandomEngine);
 
-            this->registerProbe(
-                "getDistribution",
-                "distributionChanged",
-                "setDistribution");
-            this->registerProbe(
-                "getRandomEngineType",
-                "randomEngineTypeChanged",
-                "setRandomEngineType");
+            this->registerProbe("getDistribution");
+            this->registerProbe("getRandomEngineType");
 
-            this->setupOutput(0, dtype, this->getPortDomain());
+            this->registerSignal("distributionChanged");
+            this->registerSignal("randomEngineTypeChanged");
+
+            this->setupOutput(0, dtype);
 
             this->setDistribution(distribution);
             this->reseedRandomEngineWithTime();

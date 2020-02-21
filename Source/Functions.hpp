@@ -15,3 +15,18 @@ inline af::array logN(const af::array& afArray, double base)
 {
     return af::log(afArray) / af::log(af::constant(base, afArray.elements()));
 }
+
+inline af::array sec(const af::array& afArray)
+{
+    return af::constant(1.0, afArray.elements(), afArray.type()) / af::cos(afArray);
+}
+
+inline af::array csc(const af::array& afArray)
+{
+    return af::constant(1.0, afArray.elements(), afArray.type()) / af::sin(afArray);
+}
+
+inline af::array cot(const af::array& afArray)
+{
+    return af::constant(1.0, afArray.elements(), afArray.type()) / af::tan(afArray);
+}

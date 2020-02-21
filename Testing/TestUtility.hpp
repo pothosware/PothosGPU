@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -18,6 +18,12 @@
 
 namespace PothosArrayFireTests
 {
+
+//
+// Should be called at the beginning of each test
+//
+
+void setupTestEnv();
 
 //
 // Useful typedefs
@@ -95,18 +101,16 @@ static inline EnableIfComplex<T, void> testEqual(T x, T y)
 }
 
 template <typename T>
-static Pothos::BufferChunk stdVectorToBufferChunk(
-    const Pothos::DType& dtype,
-    const std::vector<T>& vectorIn)
+static Pothos::BufferChunk stdVectorToBufferChunk(const std::vector<T>& vectorIn)
 {
-    auto ret = Pothos::BufferChunk(
-                   dtype,
-                   (vectorIn.size() / dtype.dimension()));
+    static Pothos::DType dtype(typeid(T));
+    
+    auto ret = Pothos::BufferChunk(dtype, vectorIn.size());
     auto buf = ret.as<T*>();
-    for(size_t i = 0; i < vectorIn.size(); ++i)
-    {
-        buf[i] = vectorIn[i];
-    }
+    std::memcpy(
+        buf,
+        vectorIn.data(),
+        ret.length);
 
     return ret;
 }

@@ -36,12 +36,10 @@ class SplitComplex: public ArrayFireBlock
 
             this->setupOutput(
                 "re",
-                Pothos::DType(typeid(T), dtypeDimensions),
-                this->getPortDomain());
+                Pothos::DType(typeid(T), dtypeDimensions));
             this->setupOutput(
                 "im",
-                Pothos::DType(typeid(T), dtypeDimensions),
-                this->getPortDomain());
+                Pothos::DType(typeid(T), dtypeDimensions));
         }
 
         virtual ~SplitComplex() = default;

@@ -16,6 +16,18 @@
 class Log: public OneToOneBlock
 {
     public:
+        static Pothos::Block* make(
+            const std::string& device,
+            const Pothos::DType& dtype,
+            double base)
+        {
+            // Supports float, complex
+            static const DTypeSupport dtypeSupport{false,false,true,true};
+            validateDType(dtype, dtypeSupport);
+
+            return new Log(device, dtype, base);
+        }
+
         Log(const std::string& device,
             const Pothos::DType& dtype,
             double base
@@ -29,7 +41,8 @@ class Log: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Log, getBase));
             this->registerCall(this, POTHOS_FCN_TUPLE(Log, setBase));
 
-            this->registerProbe("getBase", "baseChanged", "setBase");
+            this->registerProbe("getBase");
+            this->registerSignal("baseChanged");
 
             this->setBase(base);
         }
@@ -65,3 +78,7 @@ class Log: public OneToOneBlock
     private:
         double _base;
 };
+
+static Pothos::BlockRegistry registerLogN(
+    "/arrayfire/arith/log",
+    Pothos::Callable(&Log::make));

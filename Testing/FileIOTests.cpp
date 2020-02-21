@@ -187,6 +187,8 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_source)
 {
     using namespace PothosArrayFireTests;
 
+    setupTestEnv();
+
     constexpr dim_t numChannels = 4;
     constexpr dim_t numElements = 50;
 

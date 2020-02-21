@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(PothosArrayFire CXX)
 
-find_package(Pothos CONFIG REQUIRED)
+find_package(Pothos 0.7 CONFIG REQUIRED)
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -76,19 +76,19 @@ POTHOS_MODULE_UTIL(
         Source/CorrCoef.cpp
         Source/DeviceCache.cpp
         Source/EnumConversions.cpp
+        Source/FactoryOnly.cpp
         Source/FFT.cpp
         Source/FileSink.cpp
         Source/FileSource.cpp
         Source/Filter.cpp
         #Source/Flat.cpp
-        Source/IsInfNaN.cpp
+        Source/IsX.cpp
         Source/LogN.cpp
         Source/MinMax.cpp
         Source/NToOneBlock.cpp
         Source/NumericConversions.cpp
         Source/OneToOneBlock.cpp
         Source/PinnedBufferManager.cpp
-        Source/PolarToComplex.cpp
         Source/Pow.cpp
         Source/Random.cpp
         Source/ReducedBlock.cpp
@@ -104,6 +104,7 @@ POTHOS_MODULE_UTIL(
         Testing/ClampBlockTest.cpp
         Testing/ComparatorBlockTest.cpp
         Testing/FlatBlockTest.cpp
+        Testing/IsXBlockTest.cpp
         Testing/SplitComplexBlockTest.cpp
         Testing/FileIOTests.cpp
         Testing/NToOneBlockExecutionTest.cpp
@@ -112,10 +113,10 @@ POTHOS_MODULE_UTIL(
         Testing/TestArrayFireConfig.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
-        Testing/TestLabels.cpp
         Testing/TestManagedDeviceCache.cpp
         Testing/TestNumericConversions.cpp
         Testing/TestPortDomainCombos.cpp
+        Testing/TestStatistics.cpp
         Testing/TestUtility.cpp
     LIBRARIES
         ArrayFire::af

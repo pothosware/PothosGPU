@@ -176,17 +176,17 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        - func: log
-          niceName: Logarithm
-          header: arith
-          verify: std::log
-          supportedTypes:
-                  supportFloat: true
-
         - func: log1p
           niceName: log(1 + x)
           header: arith
           verify: std::log1p
+          supportedTypes:
+                  supportFloat: true
+
+        - func: rsqrt
+          niceName: Reciprocal Square Root
+          header: arith
+          minAPIVersion: 37
           supportedTypes:
                   supportFloat: true
 
@@ -208,6 +208,27 @@ OneToOneBlocks:
           description: Logarithm of absolute values of Gamma function.
           header: arith
           verify: std::lgamma
+          supportedTypes:
+                  supportFloat: true
+
+        - func: sec
+          niceName: Secant
+          header: arith
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: csc
+          niceName: Cosecant
+          header: arith
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: cot
+          niceName: Cotangent
+          header: arith
+          testOnly: true
           supportedTypes:
                   supportFloat: true
 
@@ -247,12 +268,18 @@ TwoToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        - blockName: complex2
+        - blockName: combine_complex
           niceName: Combine Complex
           func: complex
           description: Combine real and imaginary inputs into complex outputs.
           header: arith
           verify: Out # std::complex constructor
+          pattern: FloatToComplex
+
+        - func: polar_to_complex
+          niceName: Polar to Complex
+          header: arith
+          testOnly: true
           pattern: FloatToComplex
 
 NToOneBlocks:

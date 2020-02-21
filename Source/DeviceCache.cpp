@@ -9,8 +9,68 @@
 #include <Pothos/Plugin.hpp>
 
 #include <Poco/Logger.h>
+#include <Poco/RegularExpression.h>
 
 #include <algorithm>
+#include <sstream>
+
+static Poco::Logger& getLogger()
+{
+    auto& logger = Poco::Logger::get("PothosArrayFire");
+    return logger;
+}
+
+template <typename T>
+static T castString(const std::string& str)
+{
+    T ret;
+    std::istringstream stream(str);
+    stream >> ret;
+
+    return ret;
+}
+
+static bool isCUDAVersionValid(const std::string& toolkitStr)
+{
+    using RE = Poco::RegularExpression;
+
+    bool isValid = false;
+    
+    constexpr int options = RE::RE_CASELESS;
+    const RE cudaVersionRE("([0-9]+).([0-9]+)", options);
+
+    RE::MatchVec matches;
+    const auto numMatches = cudaVersionRE.match(toolkitStr, 0, matches);
+
+    if(3 == numMatches)
+    {
+        // The first match includes the . between the two numbers, so only
+        // look at the other two.
+        const auto majorVersionStr = toolkitStr.substr(matches[1].offset, matches[1].length);
+        const auto minorVersionStr = toolkitStr.substr(matches[2].offset, matches[2].length);
+
+        const auto majorVersion = castString<size_t>(majorVersionStr);
+        const auto minorVersion = castString<size_t>(minorVersionStr);
+
+        const auto versionForComp = (majorVersion * 1000) + minorVersion;
+
+        // 2020/02/18: Currently, the latest CUDA runtime has the crash we're
+        // guarding against, so this check will always fail. This should be
+        // updated when a CUDA runtime version is released that fixes this.
+        constexpr size_t minValidVersion = std::numeric_limits<size_t>::max();
+
+        isValid = (versionForComp >= minValidVersion);
+    }
+    else
+    {
+        poco_error_f1(
+            getLogger(),
+            "Failed to parse CUDA version string %s. Considering invalid for safety.",
+            toolkitStr);
+    }
+    
+    return isValid;
+}
 
 static std::vector<af::Backend> _getAvailableBackends()
 {
@@ -23,14 +83,44 @@ static std::vector<af::Backend> _getAvailableBackends()
     const int afAvailableBackends = af::getAvailableBackends();
 
     std::vector<af::Backend> availableBackends;
-    std::copy_if(
-        AllBackends.begin(),
-        AllBackends.end(),
-        std::back_inserter(availableBackends),
-        [&afAvailableBackends](af::Backend backend)
+    for(const auto& backend: AllBackends)
+    {
+        if(afAvailableBackends & backend)
         {
-            return (afAvailableBackends & backend);
-        });
+            if(::AF_BACKEND_CUDA == backend)
+            {
+                af::setBackend(backend);
+                if(af::getDeviceCount() > 0)
+                {
+                    static constexpr size_t bufferLen = 1024;
+                    char name[bufferLen] = {0};
+                    char platform[bufferLen] = {0};
+                    char toolkit[bufferLen] = {0};
+                    char compute[bufferLen] = {0};
+                    af::deviceInfo(name, platform, toolkit, compute);
+
+                    if(isCUDAVersionValid(toolkit))
+                    {
+                        availableBackends.emplace_back(backend);
+                    }
+                    else
+                    {
+                        // See: https://github.com/arrayfire/arrayfire/issues/2707
+                        poco_information_f1(
+                            getLogger(),
+                            "Detected CUDA %s, which has a bug resulting in a crash on exit. "
+                            "All CUDA-compatible devices will fall back on ArrayFire's OpenCL "
+                            "backend, if present.",
+                            std::string(toolkit));
+                    }
+                }
+            }
+            else
+            {
+                availableBackends.emplace_back(backend);
+            }
+        }
+    }
 
     return availableBackends;
 }
@@ -68,6 +158,13 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                 devIndex
             };
 
+            // ArrayFire only returns the vendor for CPU entry names, so if
+            // we support it, replace this with the full name.
+            if((::AF_BACKEND_CPU == backend) && isCPUIDSupported())
+            {
+                deviceCacheEntry.name = getProcessorName();
+            }
+
             // Policy: some devices are supported by multiple backends. Only
             //         store each device once, with the most efficient backend
             //         that supports it.
@@ -86,9 +183,8 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                 }
                 else
                 {
-                    auto& logger = Poco::Logger::get("PothosArrayFire");
-                    poco_warning_f2(
-                        logger,
+                    poco_information_f2(
+                        getLogger(),
                         "Found %s device %s, which does not have 64-bit floating-point "
                         "support through ArrayFire. This device will not be made "
                         "available through PothosArrayFire.",
@@ -97,6 +193,18 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                 }
             }
         }
+    }
+
+    if(!IS_AF_CONFIG_PER_THREAD)
+    {
+        deviceCache.resize(1);
+
+        poco_information_f2(
+            getLogger(),
+            "ArrayFire %s only supports a single global device, so PothosArrayFire "
+            "will use the most efficient available device: %s",
+            std::string(AF_VERSION),
+            deviceCache[0].name);
     }
 
     return deviceCache;

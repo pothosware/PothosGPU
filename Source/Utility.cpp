@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "DeviceCache.hpp"
@@ -9,8 +9,11 @@
 #include <Pothos/Object.hpp>
 
 #include <Poco/Format.h>
+#include <Poco/String.h>
 
 #include <algorithm>
+#include <iostream>
+#include <sstream>
 #include <vector>
 
 void setThreadAFBackend(af::Backend backend)
@@ -132,7 +135,7 @@ Pothos::Object getArrayValueOfUnknownTypeAtIndex(
 
     #define SwitchCase(afDType, ctype) \
         case afDType: \
-            ret = Pothos::Object(arrIndex.scalar<PothosToAF<ctype>::type>()).convert(typeid(ctype)); \
+            ret = Pothos::Object(arrIndex.scalar<PothosToAF<ctype>::type>()); \
             break;
 
     switch(afArray.type())
@@ -198,3 +201,110 @@ ssize_t findValueOfUnknownTypeInArray(
 
     return -1;
 }
+
+af::array getArrayFromSingleElement(
+    const af::array& afArray,
+    size_t newArraySize)
+{
+    #define SwitchCase(afDType, ctype) \
+        case afDType: \
+        { \
+            return af::constant(afArray.scalar<ctype>(), static_cast<dim_t>(newArraySize), afDType); \
+        }
+
+    switch(afArray.type())
+    {
+        SwitchCase(::s16, std::int16_t)
+        SwitchCase(::s32, std::int32_t)
+        SwitchCase(::s64, long long)
+        SwitchCase(::u8,  std::uint8_t)
+        SwitchCase(::u16, std::uint16_t)
+        SwitchCase(::u32, std::uint32_t)
+        SwitchCase(::u64, unsigned long long)
+        SwitchCase(::f32, float)
+        SwitchCase(::f64, double)
+        SwitchCase(::c32, af::cfloat)
+        SwitchCase(::c64, af::cdouble)
+
+        default:
+            throw Pothos::AssertionViolationException("Invalid dtype");
+            break;
+    }
+    #undef SwitchCase
+
+    return af::array();
+}
+
+#if defined(__GNUG__) || defined(__clang__) || defined(_MSC_VER)
+
+#if defined(__GNUG__) || defined(__clang__)
+#include <cpuid.h>
+#elif defined (_MSC_VER)
+#include <intrin.h>
+#endif
+
+// Based on: https://github.com/culb/cpuid
+
+static void regToString(
+    uint32_t reg,
+    std::ostringstream& sstr)
+{
+    auto* cstr = reinterpret_cast<const char*>(&reg);
+    sstr << std::string(cstr, 4);
+}
+
+static void cpuIDToString(
+    uint32_t leaf,
+    std::ostringstream& sstr)
+{
+    uint32_t eax = 0;
+    uint32_t ebx = 0;
+    uint32_t ecx = 0;
+    uint32_t edx = 0;
+
+#if defined(__GNUG__) || defined(__clang__)
+	__cpuid(leaf, eax, ebx, ecx, edx);
+#elif defined(_MSC_VER)
+	int32_t registers[4];
+	__cpuid(registers, leaf);
+	eax = registers[0];
+	ebx = registers[1];
+	ecx = registers[2];
+	edx = registers[3];
+#endif
+
+    regToString(eax, sstr);
+    regToString(ebx, sstr);
+    regToString(ecx, sstr);
+    regToString(edx, sstr);
+}
+
+bool isCPUIDSupported() {return true;}
+
+static std::string cleanupProcessorName(const std::string& str)
+{
+    // Scanning the registers results in odd termination behavior,
+    // but strlen gives us what we need.
+    auto ret = str;
+    ret.resize(strlen(ret.c_str()));
+
+    return ret;
+}
+
+std::string getProcessorName()
+{
+    std::ostringstream sstr;
+    cpuIDToString(0x80000002, sstr);
+    cpuIDToString(0x80000003, sstr);
+    cpuIDToString(0x80000004, sstr);
+
+    return cleanupProcessorName(sstr.str());
+}
+
+#else
+
+bool isCPUIDSupported() {return false;}
+
+std::string getProcessorName() {return "";}
+
+#endif

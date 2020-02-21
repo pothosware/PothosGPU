@@ -175,13 +175,13 @@ def generateFactory(allBlockYAML):
 
     try:
         rendered = Template(FactoryTemplate).render(
-                       oneToOneBlocks=filterBlockYAML(allBlockYAML["OneToOneBlocks"]),
+                       oneToOneBlocks=filterBlockYAML([block for block in allBlockYAML["OneToOneBlocks"] if not block.get("testOnly", False)]),
                        scalarOpBlocks=[],
                        singleOutputSources=[],
-                       #scalarOpBlocks=filterBlockYAML(allBlockYAML["ScalarOpBlocks"]),
-                       #singleOutputSources=filterBlockYAML(allBlockYAML["SingleOutputSources"]),
-                       twoToOneBlocks=filterBlockYAML(allBlockYAML["TwoToOneBlocks"]),
-                       NToOneBlocks=filterBlockYAML(allBlockYAML["NToOneBlocks"]),
+                       #scalarOpBlocks=filterBlockYAML([block for block in allBlockYAML["ScalarOpBlocks"] if not block.get("testOnly", False)]),
+                       #singleOutputSources=filterBlockYAML([block for block in allBlockYAML["SingleOutputSources"] if not block.get("testOnly", False)]),
+                       twoToOneBlocks=filterBlockYAML([block for block in allBlockYAML["TwoToOneBlocks"] if not block.get("testOnly", False)]),
+                       NToOneBlocks=filterBlockYAML([block for block in allBlockYAML["NToOneBlocks"] if not block.get("testOnly", False)]),
                        docs=docs)
     except:
         print(mako.exceptions.text_error_template().render())
@@ -192,7 +192,6 @@ def generateFactory(allBlockYAML):
     with open(outputFilepath, 'w') as f:
         f.write(output)
 
-# TODO: make OneToOneBlock test support different types
 def generateBlockExecutionTest(allBlockYAML):
     sfinaeMap = dict(
         Integer="Int",

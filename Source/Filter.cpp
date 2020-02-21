@@ -42,14 +42,16 @@ class FIRBlock: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getTaps));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setTaps));
 
-            this->registerProbe("getTaps", "tapsChanged", "setTaps");
-            this->registerProbe("getWaitTaps", "waitTapsChanged", "setWaitTaps");
+            this->registerProbe("getTaps");
+            this->registerSignal("tapsChanged");
         }
 
         virtual ~FIRBlock() = default;
 
         void activate() override
         {
+            ArrayFireBlock::activate();
+
             _waitTapsArmed = _waitTaps;
         }
 
@@ -77,11 +79,10 @@ class FIRBlock: public OneToOneBlock
             return _waitTaps;
         }
 
+        // TODO: initializer
         void setWaitTaps(bool waitTaps)
         {
             _waitTaps = waitTaps;
-
-            this->emitSignal("waitTapsChanged", waitTaps);
         }
 
         void work() override
@@ -132,14 +133,16 @@ class IIRBlock: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getTaps));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setTaps));
 
-            this->registerProbe("getTaps", "tapsChanged", "setTaps");
-            this->registerProbe("getWaitTaps", "waitTapsChanged", "setWaitTaps");
+            this->registerProbe("getTaps");
+            this->registerSignal("tapsChanged");
         }
 
         virtual ~IIRBlock() = default;
 
         void activate() override
         {
+            ArrayFireBlock::activate();
+
             _waitTapsArmed = _waitTaps;
         }
 
@@ -237,8 +240,6 @@ class IIRBlock: public OneToOneBlock
         void setWaitTaps(bool waitTaps)
         {
             _waitTaps = waitTaps;
-
-            this->emitSignal("waitTapsChanged", waitTaps);
         }
 
         void work() override

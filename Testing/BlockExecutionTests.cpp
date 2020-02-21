@@ -10,7 +10,7 @@ namespace PothosArrayFireTests
 
 #define RETURN_BUFFERCHUNK(typeStr, cType) \
     if(type == typeStr) \
-        return stdVectorToBufferChunk(Pothos::DType(typeStr), getTestInputs<cType>());
+        return stdVectorToBufferChunk(getTestInputs<cType>());
 
 Pothos::BufferChunk getTestInputs(const std::string& type)
 {
@@ -30,6 +30,27 @@ Pothos::BufferChunk getTestInputs(const std::string& type)
 
     // Should never happen
     return Pothos::BufferChunk();
+}
+
+const std::vector<std::string>& getAllDTypeNames()
+{
+    static const std::vector<std::string> AllTypes =
+    {
+        // ArrayFire doesn't support int8
+        "int16",
+        "int32",
+        "int64",
+        "uint8",
+        "uint16",
+        "uint32",
+        "uint64",
+        "float32",
+        "float64",
+        // ArrayFire doesn't support complex integral types
+        "complex_float32",
+        "complex_float64"
+    };
+    return AllTypes;
 }
 
 }
