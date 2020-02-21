@@ -76,6 +76,7 @@ POTHOS_MODULE_UTIL(
         Source/CorrCoef.cpp
         Source/DeviceCache.cpp
         Source/EnumConversions.cpp
+        Source/FactoryOnly.cpp
         Source/FFT.cpp
         Source/FileSink.cpp
         Source/FileSource.cpp
@@ -88,7 +89,6 @@ POTHOS_MODULE_UTIL(
         Source/NumericConversions.cpp
         Source/OneToOneBlock.cpp
         Source/PinnedBufferManager.cpp
-        Source/PolarToComplex.cpp
         Source/Pow.cpp
         Source/Random.cpp
         Source/ReducedBlock.cpp
