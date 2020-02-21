@@ -92,8 +92,6 @@ static Pothos::Block* splitComplexFactory(
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
- * |widget ComboBox(editable=false)
- * |preview enable
  *
  * |param dtype(Data Type) The block data type. The input type will be the complex form of this type.
  * |widget DTypeChooser(float=1,dim=1)

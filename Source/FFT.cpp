@@ -265,8 +265,6 @@ static Pothos::Block* makeRFFT(
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
- * |widget ComboBox(editable=false)
- * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
  * |widget DTypeChooser(cfloat=1,dim=1)
@@ -310,8 +308,6 @@ static Pothos::BlockRegistry registerFFT(
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
- * |widget ComboBox(editable=false)
- * |preview enable
  *
  * |param dtype[Data Type] The floating-type underlying the input types.
  * |widget DTypeChooser(float=1,dim=1)

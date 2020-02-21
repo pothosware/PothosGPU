@@ -107,16 +107,14 @@ static Pothos::Block* minMaxFactory(
  *
  * |category /ArrayFire/Algorithm
  * |keywords algorithm min
- * |factory /arrayfire/algorithm/min(dtype,nchans)
+ * |factory /arrayfire/algorithm/min(device,dtype)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1,dim=1)
  * |default "float64"
- * |preview disable
- *
- * |param nchans[Num Channels] The number of channels.
- * |default 1
- * |widget SpinBox(minimum=1)
  * |preview disable
  */
 static Pothos::BlockRegistry registerMin(
@@ -132,21 +130,14 @@ static Pothos::BlockRegistry registerMin(
  *
  * |category /ArrayFire/Algorithm
  * |keywords algorithm max
- * |factory /arrayfire/algorithm/max(device,dtype,nchans)
+ * |factory /arrayfire/algorithm/max(device,dtype)
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
- * |widget ComboBox(editable=false)
- * |preview enable
  *
  * |param dtype(Data Type) The block data type.
  * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1,dim=1)
  * |default "float64"
- * |preview disable
- *
- * |param nchans[Num Channels] The number of channels.
- * |default 1
- * |widget SpinBox(minimum=1)
  * |preview disable
  */
 static Pothos::BlockRegistry registerMax(

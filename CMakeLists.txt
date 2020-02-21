@@ -120,5 +120,15 @@ POTHOS_MODULE_UTIL(
         Testing/TestUtility.cpp
     LIBRARIES
         ArrayFire::af
+    DOC_SOURCES
+        Source/Cast.cpp
+        Source/Clamp.cpp
+        Source/Constant.cpp
+        Source/FFT.cpp
+        Source/FileSink.cpp
+        Source/FileSource.cpp
+        Source/MinMax.cpp
+        Source/Random.cpp
+        Source/SplitComplex.cpp
     DESTINATION arrayfire
 )

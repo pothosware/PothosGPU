@@ -226,8 +226,6 @@ class FileSinkBlock: public ArrayFireBlock
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
- * |widget ComboBox(editable=false)
- * |preview enable
  *
  * |param filepath[Filepath] The path of the ArrayFire binary file.
  * |widget FileEntry(mode=save)
