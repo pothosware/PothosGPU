@@ -18,7 +18,7 @@ namespace PothosArrayFireTests
 {
 
 template <typename In, typename Out>
-static std::vector<Out> getExpectedOutputs(
+static EnableIfTypeMatches<In, Out, std::vector<Out>> getExpectedOutputs(
     const std::vector<std::vector<In>>& inputs,
     const BinaryFunc<In, Out>& verificationFunc)
 {
@@ -40,7 +40,14 @@ static std::vector<Out> getExpectedOutputs(
     return expectedOutputs;
 }
 
-// TODO: TwoToOneBlocks can likely use this code
+template <typename In, typename Out>
+static EnableIfTypeDoesNotMatch<In, Out, std::vector<Out>> getExpectedOutputs(
+    const std::vector<std::vector<In>>&,
+    const BinaryFunc<In, Out>&)
+{
+    return std::vector<Out>();
+}
+
 template <typename In, typename Out>
 static void testNToOneBlockCommon(
     const Pothos::Proxy& block,
@@ -165,21 +172,66 @@ void testNToOneBlock(
         false /*removeZerosInBuffer1*/);
 }
 
+template <typename T1, typename T2>
+void testReducedBlock(
+    const std::string& blockRegistryPath,
+    size_t numInputChannels,
+    const BinaryFunc<T1, T2>& verificationFunc)
+{
+    static const Pothos::DType dtype1(typeid(T1));
+    static const Pothos::DType dtype2(typeid(T2));
+
+    std::cout << "Testing " << blockRegistryPath
+              << " (types: " << dtype1.name()
+              << " -> " << dtype2.name()
+              << ", nchans: " << numInputChannels
+              << ")" << std::endl;
+
+    auto block = Pothos::BlockRegistry::make(
+                     blockRegistryPath,
+                     "Auto",
+                     dtype1,
+                     numInputChannels);
+    auto inputs = block.call<InputPortVector>("inputs");
+    auto outputs = block.call<OutputPortVector>("outputs");
+    POTHOS_TEST_EQUAL(numInputChannels, inputs.size());
+    POTHOS_TEST_EQUAL(1, outputs.size());
+
+    testNToOneBlockCommon<T1, T2>(
+        block,
+        numInputChannels,
+        verificationFunc,
+        false /*removeZerosInBuffer1*/);
+}
+
 #define SPECIALIZE_TEMPLATE_TEST(T) \
     template \
     void testNToOneBlock<T>( \
-        const std::string& blockRegistryPath, \
-        size_t numChannels, \
-        const BinaryFunc<T, T>& verificationFunc);
+        const std::string&, \
+        size_t, \
+        const BinaryFunc<T, T>&); \
+    template \
+    void testReducedBlock<T, T>( \
+        const std::string&, \
+        size_t, \
+        const BinaryFunc<T, T>&); \
+
+#define SPECIALIZE_TEMPLATE_TEST_WITH_REDUCEDINT8OUT(T) \
+    SPECIALIZE_TEMPLATE_TEST(T) \
+    template \
+    void testReducedBlock<T, std::int8_t>( \
+        const std::string&, \
+        size_t, \
+        const BinaryFunc<T, std::int8_t>&); \
 
 SPECIALIZE_TEMPLATE_TEST(std::int8_t)
-SPECIALIZE_TEMPLATE_TEST(std::int16_t)
-SPECIALIZE_TEMPLATE_TEST(std::int32_t)
-SPECIALIZE_TEMPLATE_TEST(std::int64_t)
-SPECIALIZE_TEMPLATE_TEST(std::uint8_t)
-SPECIALIZE_TEMPLATE_TEST(std::uint16_t)
-SPECIALIZE_TEMPLATE_TEST(std::uint32_t)
-SPECIALIZE_TEMPLATE_TEST(std::uint64_t)
+SPECIALIZE_TEMPLATE_TEST_WITH_REDUCEDINT8OUT(std::int16_t)
+SPECIALIZE_TEMPLATE_TEST_WITH_REDUCEDINT8OUT(std::int32_t)
+SPECIALIZE_TEMPLATE_TEST_WITH_REDUCEDINT8OUT(std::int64_t)
+SPECIALIZE_TEMPLATE_TEST_WITH_REDUCEDINT8OUT(std::uint8_t)
+SPECIALIZE_TEMPLATE_TEST_WITH_REDUCEDINT8OUT(std::uint16_t)
+SPECIALIZE_TEMPLATE_TEST_WITH_REDUCEDINT8OUT(std::uint32_t)
+SPECIALIZE_TEMPLATE_TEST_WITH_REDUCEDINT8OUT(std::uint64_t)
 SPECIALIZE_TEMPLATE_TEST(float)
 SPECIALIZE_TEMPLATE_TEST(double)
 SPECIALIZE_TEMPLATE_TEST(std::complex<float>)

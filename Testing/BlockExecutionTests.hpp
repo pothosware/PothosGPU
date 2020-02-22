@@ -76,6 +76,12 @@ void testNToOneBlock(
     size_t numChannels,
     const BinaryFunc<T, T>& verificationFunc);
 
+template <typename T1, typename T2>
+void testReducedBlock(
+    const std::string& blockRegistryPath,
+    size_t numChannels,
+    const BinaryFunc<T1, T2>& verificationFunc);
+
 template <typename T>
 void testScalarOpBlock(
     const std::string& blockRegistryPath,
