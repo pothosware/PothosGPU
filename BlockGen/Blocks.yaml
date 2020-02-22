@@ -48,40 +48,40 @@ OneToOneBlocks:
 
         - func: sin
           niceName: Sine
-          header: arith
+          header: trig
           verify: std::sin
           supportedTypes:
                   supportFloat: true
 
         - func: cos
           niceName: Cosine
-          header: arith
+          header: trig
           verify: std::cos
           supportedTypes:
                   supportFloat: true
 
         - func: tan
           niceName: Tangent
-          header: arith
+          header: trig
           verify: std::tan
           supportedTypes:
                   supportFloat: true
 
         - func: asin
           niceName: Arc Sine
-          header: arith
+          header: trig
           supportedTypes:
                   supportFloat: true
 
         - func: acos
           niceName: Arc Cosine
-          header: arith
+          header: trig
           supportedTypes:
                   supportFloat: true
 
         - func: atan
           niceName: Arc Tangent
-          header: arith
+          header: trig
           supportedTypes:
                   supportFloat: true
 
@@ -106,40 +106,40 @@ OneToOneBlocks:
 
         - func: sinh
           niceName: Hyperbolic Sine
-          header: arith
+          header: trig
           verify: std::sinh
           supportedTypes:
                   supportFloat: true
 
         - func: cosh
           niceName: Hyperbolic Cosine
-          header: arith
+          header: trig
           verify: std::cosh
           supportedTypes:
                   supportFloat: true
 
         - func: tanh
           niceName: Hyperbolic Tangent
-          header: arith
+          header: trig
           verify: std::tanh
           supportedTypes:
                   supportFloat: true
 
         - func: asinh
           niceName: Hyperbolic Arc Sine
-          header: arith
+          header: trig
           supportedTypes:
                   supportFloat: true
 
         - func: acosh
           niceName: Hyperbolic Arc Cosine
-          header: arith
+          header: trig
           supportedTypes:
                   supportFloat: true
 
         - func: atanh
           niceName: Hyperbolic Arc Tangent
-          header: arith
+          header: trig
           supportedTypes:
                   supportFloat: true
 
@@ -213,21 +213,84 @@ OneToOneBlocks:
 
         - func: sec
           niceName: Secant
-          header: arith
+          header: trig
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: csc
           niceName: Cosecant
-          header: arith
+          header: trig
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: cot
           niceName: Cotangent
-          header: arith
+          header: trig
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: asec
+          niceName: Arc Secant
+          header: trig
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: acsc
+          niceName: Arc Cosecant
+          header: trig
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: acot
+          niceName: Arc Cotangent
+          header: trig
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: sech
+          niceName: Hyperbolic Secant
+          header: trig
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: csch
+          niceName: Hyperbolic Cosecant
+          header: trig
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: coth
+          niceName: Hyperbolic Cotangent
+          header: trig
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: asech
+          niceName: Hyperbolic Arc Secant
+          header: trig
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: acsch
+          niceName: Hyperbolic Arc Cosecant
+          header: trig
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
+        - func: acoth
+          niceName: Hyperbolic Arc Cotangent
+          header: trig
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -282,23 +345,13 @@ TwoToOneBlocks:
           testOnly: true
           pattern: FloatToComplex
 
+        - func: hypotenuse
+          header: arith
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
 NToOneBlocks:
-
-        - func: add
-          niceName: Add
-          header: arith
-          operator: "+"
-          verify: std::plus<In>()
-          supportedTypes:
-                  supportAll: true
-
-        - func: multiply
-          niceName: Multiply
-          header: arith
-          operator: "*"
-          verify: std::multiplies<In>()
-          supportedTypes:
-                  supportAll: true
 
         - func: min
           niceName: Minimum
