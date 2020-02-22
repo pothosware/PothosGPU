@@ -370,3 +370,73 @@ NToOneBlocks:
                   supportInt: true
                   supportUInt: true
                   supportFloat: true
+
+        - func: subtract
+          operator: "-"
+          header: arith
+          supportedTypes:
+              supportAll: true
+
+        - func: divide
+          operator: "/"
+          header: arith
+          supportedTypes:
+              supportAll: true
+
+        - func: bitwise_and
+          niceName: And (Bitwise)
+          operator: "&"
+          header: arith
+          supportedTypes:
+              supportInt: true
+              supportUInt: true
+
+        - func: bitwise_or
+          niceName: Or (Bitwise)
+          operator: "|"
+          header: arith
+          supportedTypes:
+              supportInt: true
+              supportUInt: true
+
+        - func: bitwise_xor
+          niceName: XOR
+          operator: "^"
+          header: arith
+          supportedTypes:
+              supportInt: true
+              supportUInt: true
+
+ReducedBlocks:
+
+        - func: sum
+          blockName: add
+          niceName: Add
+          header: arith
+          supportedTypes:
+              supportAll: true
+
+        - func: product
+          blockName: multiply
+          niceName: Multiply
+          header: arith
+          supportedTypes:
+              supportAll: true
+
+        - blockName: logical_and
+          func: allTrue
+          niceName: And (Logical)
+          header: arith
+          int8Out: true
+          supportedTypes:
+              supportInt: true
+              supportUInt: true
+
+        - blockName: logical_or
+          func: anyTrue
+          niceName: Or (Logical)
+          header: arith
+          int8Out: true
+          supportedTypes:
+              supportInt: true
+              supportUInt: true
