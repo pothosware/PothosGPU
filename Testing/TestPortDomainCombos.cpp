@@ -51,7 +51,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
                       type);
 
     auto afCos = Pothos::BlockRegistry::make(
-                     "/arrayfire/arith/cos",
+                     "/arrayfire/trig/cos",
                      "Auto",
                      type);
 
