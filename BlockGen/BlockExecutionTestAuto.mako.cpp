@@ -103,29 +103,6 @@ static EnableIf${k}<T, void> blockExecutionTest()
             %endif
         %endif
     %endfor
-
-    %for block in ReducedBlocks:
-        %if "supportedTypes" in block:
-            %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
-                %if block.get("int8Out", False):
-    testReducedBlock<T, std::int8_t>(
-                %else:
-    testReducedBlock<T, T>(
-                %endif
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        2,
-        nullptr);
-                %if block.get("int8Out", False):
-    testReducedBlock<T, std::int8_t>(
-                %else:
-    testReducedBlock<T, T>(
-                %endif
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        5,
-        nullptr);
-            %endif
-        %endif
-    %endfor
 }
 %endfor
 
