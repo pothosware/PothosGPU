@@ -17,28 +17,6 @@ using ReducedFunc = af::array(*)(const af::array&, const int);
 class ReducedBlock: public ArrayFireBlock
 {
     public:
-        //
-        // Factories
-        //
-
-        static Pothos::Block* makeFromOneType(
-            const std::string& device,
-            const ReducedFunc& func,
-            const Pothos::DType& dtype,
-            size_t numChannels,
-            const DTypeSupport& supportedTypes);
-
-        static Pothos::Block* makeInt8Out(
-            const std::string& device,
-            const ReducedFunc& func,
-            const Pothos::DType& dtype,
-            size_t numChannels,
-            const DTypeSupport& supportedTypes);
-
-        //
-        // Class implementation
-        //
-
         ReducedBlock(
             const std::string& device,
             const ReducedFunc& func,

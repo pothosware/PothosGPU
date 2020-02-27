@@ -1,6 +1,5 @@
 #include "OneToOneBlock.hpp"
 #include "NToOneBlock.hpp"
-#include "ReducedBlock.hpp"
 #include "TwoToOneBlock.hpp"
 #include "Utility.hpp"
 
@@ -65,23 +64,6 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
     %else:
             .bind<NToOneFunc>(&af::${block["func"]}, 1)
     %endif
-            .bind<DTypeSupport>({
-                ${"true" if block["supportedTypes"].get("supportInt", block["supportedTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedTypes"].get("supportUInt", block["supportedTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedTypes"].get("supportFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
-                ${"true" if block["supportedTypes"].get("supportComplexFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
-            }, 4)
-    ),
-%endfor
-%for block in ReducedBlocks:
-    Pothos::BlockRegistry(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-    %if block.get("int8Out", false):
-        Pothos::Callable(&ReducedBlock::makeInt8Out)
-    %else:
-        Pothos::Callable(&ReducedBlock::makeFromOneType)
-    %endif
-            .bind<ReducedFunc>(&af::${block["func"]}, 1)
             .bind<DTypeSupport>({
                 ${"true" if block["supportedTypes"].get("supportInt", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportUInt", block["supportedTypes"].get("supportAll", False)) else "false"},

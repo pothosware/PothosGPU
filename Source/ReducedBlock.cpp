@@ -17,50 +17,6 @@
 #include <string>
 #include <typeinfo>
 
-//
-// Factories
-//
-
-Pothos::Block* ReducedBlock::makeFromOneType(
-    const std::string& device,
-    const ReducedFunc& func,
-    const Pothos::DType& dtype,
-    size_t numChannels,
-    const DTypeSupport& supportedTypes)
-{
-    validateDType(dtype, supportedTypes);
-
-    return new ReducedBlock(
-                   device,
-                   func,
-                   dtype,
-                   dtype,
-                   numChannels);
-}
-
-Pothos::Block* ReducedBlock::makeInt8Out(
-    const std::string& device,
-    const ReducedFunc& func,
-    const Pothos::DType& dtype,
-    size_t numChannels,
-    const DTypeSupport& supportedTypes)
-{
-    validateDType(dtype, supportedTypes);
-
-    static const Pothos::DType Int8DType("int8");
-
-    return new ReducedBlock(
-                   device,
-                   func,
-                   dtype,
-                   Int8DType,
-                   numChannels);
-}
-
-//
-// Class implementation
-//
-
 ReducedBlock::ReducedBlock(
     const std::string& device,
     const ReducedFunc& func,
