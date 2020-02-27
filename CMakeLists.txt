@@ -11,7 +11,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 ########################################################################
 # Find ArrayFire
 ########################################################################
-find_package(ArrayFire 3.3.0 REQUIRED)
+find_package(ArrayFire 3.5.0 REQUIRED)
 
 ########################################################################
 # Find Python modules used to implement blocks

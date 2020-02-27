@@ -27,9 +27,6 @@ using namespace PothosArrayFireTests;
 
 static constexpr long SleepTimeMs = 500;
 
-// Currently, our only non-file source needs ArrayFire 3.4.0+.
-#if AF_API_VERSION_CURRENT >= 34
-
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
 {
     const std::string type = "float64";
@@ -88,8 +85,6 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
 
     POTHOS_TEST_TRUE(collectorSink.call("getBuffer").call<int>("elements") > 0);
 }
-
-#endif
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_from_different_domains)
 {

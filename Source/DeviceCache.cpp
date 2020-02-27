@@ -195,18 +195,6 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
         }
     }
 
-    if(!IS_AF_CONFIG_PER_THREAD)
-    {
-        deviceCache.resize(1);
-
-        poco_information_f2(
-            getLogger(),
-            "ArrayFire %s only supports a single global device, so PothosArrayFire "
-            "will use the most efficient available device: %s",
-            std::string(AF_VERSION),
-            deviceCache[0].name);
-    }
-
     return deviceCache;
 }
 
@@ -229,12 +217,7 @@ const std::vector<DeviceCacheEntry>& getDeviceCache()
 // Force device caching on init
 pothos_static_block(arrayFireCacheDevices)
 {
-#if !IS_AF_CONFIG_PER_THREAD
-    // Set the global backend and device on init.
-    // TODO: smarter logic to use most powerful device
-    af::setBackend(getAvailableBackends()[0]);
-    af::setDevice(0);
-#endif
+    (void)getDeviceCache();
 }
 
 //

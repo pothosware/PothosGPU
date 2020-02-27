@@ -17,8 +17,6 @@
 #include <iostream>
 #include <typeinfo>
 
-#if AF_API_VERSION_CURRENT >= 34
-
 template <typename T>
 class Clamp: public OneToOneBlock
 {
@@ -204,5 +202,3 @@ static Pothos::Block* clampFactory(
 static Pothos::BlockRegistry registerClamp(
     "/arrayfire/arith/clamp",
     Pothos::Callable(&clampFactory));
-
-#endif

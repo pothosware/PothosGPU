@@ -15,8 +15,6 @@
 #include <string>
 #include <typeinfo>
 
-#if AF_API_VERSION_CURRENT >= 34
-
 using AfRandomFunc = af::array(*)(const af::dim4&, const af::dtype, af::randomEngine&);
 
 class RandomBlock: public ArrayFireBlock
@@ -184,5 +182,3 @@ class RandomBlock: public ArrayFireBlock
 static Pothos::BlockRegistry registerRandomSource(
     "/arrayfire/random/source",
     Pothos::Callable(&RandomBlock::make));
-
-#endif

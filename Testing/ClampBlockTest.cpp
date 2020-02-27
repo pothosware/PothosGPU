@@ -22,8 +22,6 @@
 static constexpr const char* blockRegistryPath = "/arrayfire/arith/clamp";
 static constexpr const char* pluginPath = "/blocks/arrayfire/arith/clamp";
 
-#if AF_API_VERSION_CURRENT >= 34
-
 #define GET_MINMAX_OBJECTS(typeStr, cType) \
     if(type == typeStr) \
     { \
@@ -112,29 +110,6 @@ void testClampBlockForType(const std::string& type)
             output.elements());
     }
 }
-
-#else
-
-// If this build of ArrayFire doesn't have af::clamp, the block shouldn't be
-// included in the build.
-static void testClampBlockForType(const std::string&)
-{
-    // This is safe, this will only be called by a single thread.
-    static bool hasExecuted = false;
-
-    if(!hasExecuted)
-    {
-        std::cout << "Testing that " << blockRegistryPath << " doesn't exist." << std::endl;
-
-        POTHOS_TEST_THROWS(
-            (void)Pothos::PluginRegistry::get(pluginPath);
-        , Pothos::PluginRegistryError);
-
-        hasExecuted = true;
-    }
-}
-
-#endif
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_clamp)
 {

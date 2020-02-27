@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "Utility.hpp"
@@ -79,7 +79,6 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_convdomain_conversion)
     PothosArrayFireTests::testEnumValueConversion("Freq",    ::AF_CONV_FREQ);
 }
 
-#if AF_API_VERSION_CURRENT >= 34
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_randomenginetype_conversion)
 {
     PothosArrayFireTests::testTypesCanConvert<std::string, af::randomEngineType>();
@@ -87,7 +86,6 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_randomenginetype_conversion)
     PothosArrayFireTests::testEnumValueConversion("Threefry", ::AF_RANDOM_ENGINE_THREEFRY);
     PothosArrayFireTests::testEnumValueConversion("Mersenne", ::AF_RANDOM_ENGINE_MERSENNE);
 }
-#endif
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_dtype_conversion)
 {

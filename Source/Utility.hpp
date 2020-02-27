@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -15,18 +15,6 @@
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
-
-//
-// Before version 3.5, ArrayFire used a single global backend and device. Starting
-// with 3.5, these values are set per thread. We need this behavior to support
-// different backends per block, so we check for it here.
-//
-
-#define IS_AF_CONFIG_PER_THREAD (AF_API_VERSION_CURRENT >= 35)
-
-void setThreadAFBackend(af::Backend backend);
-
-void setThreadAFDevice(const std::string& device);
 
 //
 // These helper functions will be used for registering enum conversions.

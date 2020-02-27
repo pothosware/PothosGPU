@@ -37,12 +37,10 @@ static std::string _enumerateArrayFireDevices()
     arrayFireInfo["Library Version"] = AF_VERSION;
     arrayFireInfo["Revision"] = af_get_revision();
     arrayFireInfo["API Version"] = AF_API_VERSION;
-    arrayFireInfo["Per-thread backend?"] = bool(IS_AF_CONFIG_PER_THREAD);
 
     const auto& deviceCache = getDeviceCache();
     const auto& afAvailableBackends = getAvailableBackends();
 
-#if IS_AF_CONFIG_PER_THREAD
     json devicesJSON(json::array());
     std::transform(
         std::begin(deviceCache),
@@ -63,10 +61,6 @@ static std::string _enumerateArrayFireDevices()
                                               std::string(", "),
                                               std::begin(availableBackends),
                                               std::end(availableBackends));
-#else
-    topObject["ArrayFire Device"] = deviceCacheEntryToJSON(deviceCache[0]);
-    arrayFireInfo["AvailableBackends"] = afAvailableBackends[0];
-#endif
 
     return topObject.dump();
 }
