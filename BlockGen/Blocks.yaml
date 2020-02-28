@@ -48,51 +48,59 @@ OneToOneBlocks:
 
         - func: sin
           niceName: Sine
-          header: trig
+          category: Trigonometry
+          header: arith
           verify: std::sin
           supportedTypes:
                   supportFloat: true
 
         - func: cos
           niceName: Cosine
-          header: trig
+          category: Trigonometry
+          header: arith
           verify: std::cos
           supportedTypes:
                   supportFloat: true
 
         - func: tan
           niceName: Tangent
-          header: trig
+          category: Trigonometry
+          header: arith
           verify: std::tan
           supportedTypes:
                   supportFloat: true
 
         - func: asin
           niceName: Arc Sine
-          header: trig
+          category: Trigonometry
+          header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: acos
           niceName: Arc Cosine
-          header: trig
+          category: Trigonometry
+          header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: atan
           niceName: Arc Tangent
-          header: trig
+          category: Trigonometry
+          header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: real
           niceName: Complex to Real
+          category: Convert
           header: arith
           verify: testReal
           pattern: ComplexToFloat
 
         - func: imag
           niceName: Complex to Imaginary
+          category: Convert
           header: arith
           verify: testImag
           pattern: ComplexToFloat
@@ -106,40 +114,46 @@ OneToOneBlocks:
 
         - func: sinh
           niceName: Hyperbolic Sine
-          header: trig
+          category: Trigonometry
+          header: arith
           verify: std::sinh
           supportedTypes:
                   supportFloat: true
 
         - func: cosh
           niceName: Hyperbolic Cosine
-          header: trig
+          category: Trigonometry
+          header: arith
           verify: std::cosh
           supportedTypes:
                   supportFloat: true
 
         - func: tanh
           niceName: Hyperbolic Tangent
-          header: trig
+          category: Trigonometry
+          header: arith
           verify: std::tanh
           supportedTypes:
                   supportFloat: true
 
         - func: asinh
           niceName: Hyperbolic Arc Sine
-          header: trig
+          category: Trigonometry
+          header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: acosh
           niceName: Hyperbolic Arc Cosine
-          header: trig
+          category: Trigonometry
+          header: arith
           supportedTypes:
                   supportFloat: true
 
         - func: atanh
           niceName: Hyperbolic Arc Tangent
-          header: trig
+          category: Trigonometry
+          header: arith
           supportedTypes:
                   supportFloat: true
 
@@ -213,84 +227,96 @@ OneToOneBlocks:
 
         - func: sec
           niceName: Secant
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: csc
           niceName: Cosecant
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: cot
           niceName: Cotangent
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: asec
           niceName: Arc Secant
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: acsc
           niceName: Arc Cosecant
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: acot
           niceName: Arc Cotangent
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: sech
           niceName: Hyperbolic Secant
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: csch
           niceName: Hyperbolic Cosecant
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: coth
           niceName: Hyperbolic Cotangent
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: asech
           niceName: Hyperbolic Arc Secant
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: acsch
           niceName: Hyperbolic Arc Cosecant
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
 
         - func: acoth
           niceName: Hyperbolic Arc Cotangent
-          header: trig
+          category: Trigonometry
+          header: arith
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -334,6 +360,7 @@ TwoToOneBlocks:
         - blockName: combine_complex
           niceName: Combine Complex
           func: complex
+          category: Convert
           description: Combine real and imaginary inputs into complex outputs.
           header: arith
           verify: Out # std::complex constructor
@@ -342,14 +369,9 @@ TwoToOneBlocks:
         - func: polar_to_complex
           niceName: Polar to Complex
           header: arith
+          category: Convert
           testOnly: true
           pattern: FloatToComplex
-
-        - func: hypotenuse
-          header: arith
-          testOnly: true
-          supportedTypes:
-                  supportFloat: true
 
 NToOneBlocks:
 

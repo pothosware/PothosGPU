@@ -32,6 +32,30 @@ Pothos::BufferChunk getTestInputs(const std::string& type)
     return Pothos::BufferChunk();
 }
 
+#define RETURN_OBJECT(typeStr, cType) \
+    if(type == typeStr) \
+        return Pothos::Object(getSingleTestInput<cType>());
+
+Pothos::Object getSingleTestInput(const std::string& type)
+{
+    // ArrayFire doesn't support int8
+    RETURN_OBJECT("int16", std::int16_t)
+    RETURN_OBJECT("int32", std::int32_t)
+    RETURN_OBJECT("int64", std::int64_t)
+    RETURN_OBJECT("uint8", std::uint8_t)
+    RETURN_OBJECT("uint16", std::uint16_t)
+    RETURN_OBJECT("uint32", std::uint32_t)
+    RETURN_OBJECT("uint64", std::uint64_t)
+    RETURN_OBJECT("float32", float)
+    RETURN_OBJECT("float64", double)
+    // ArrayFire doesn't support any integral complex type
+    RETURN_OBJECT("complex_float32", std::complex<float>)
+    RETURN_OBJECT("complex_float64", std::complex<double>)
+
+    // Should never happen
+    return Pothos::Object();
+}
+
 const std::vector<std::string>& getAllDTypeNames()
 {
     static const std::vector<std::string> AllTypes =

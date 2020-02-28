@@ -106,11 +106,11 @@ static Pothos::Block* constantFactory(
 }
 
 /*
- * |PothosDoc Constant
+ * |PothosDoc Constant Source
  *
  * Calls <b>af::constant</b> to fill all outgoing buffers with a given value.
  *
- * |category /ArrayFire/Data
+ * |category /ArrayFire/Sources
  * |keywords data constant
  * |factory /arrayfire/data/constant(device,dtype,constant)
  * |setter setConstant(constant)

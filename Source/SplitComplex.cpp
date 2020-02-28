@@ -86,7 +86,7 @@ static Pothos::Block* splitComplexFactory(
  * Calls <b>af::real</b> and <b>af::imag</b> on all inputs and outputs results
  * in "re" and "im" output channels.
  *
- * |category /ArrayFire/Arith
+ * |category /ArrayFire/Convert
  * |keywords arith complex real imag imaginary
  * |factory /arrayfire/arith/split_complex(device,dtype)
  *

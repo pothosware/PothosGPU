@@ -150,7 +150,7 @@ class RandomBlock: public ArrayFireBlock
  * The underlying random generation scheme can also be customized, although for
  * most purposes, leaving this value as its default will be fine.
  *
- * |category /ArrayFire/Random
+ * |category /ArrayFire/Sources
  * |keywords array random uniform normal philox threefry mersenne source
  * |factory /arrayfire/random/source(device,dtype,distribution)
  * |setter setDistribution(distribution)

@@ -99,12 +99,14 @@ POTHOS_MODULE_UTIL(
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
 
+        Testing/ArrayOpBlockTests.cpp
         Testing/BlockExecutionTests.cpp
         Testing/CastBlockTest.cpp
         Testing/ClampBlockTest.cpp
         Testing/ComparatorBlockTest.cpp
         Testing/FlatBlockTest.cpp
         Testing/IsXBlockTest.cpp
+        Testing/ScalarOpBlockTests.cpp
         Testing/SplitComplexBlockTest.cpp
         Testing/NToOneBlockExecutionTest.cpp
         Testing/OneToOneBlockExecutionTest.cpp

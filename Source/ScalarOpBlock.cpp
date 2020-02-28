@@ -82,6 +82,7 @@ class ScalarOpBlock: public OneToOneBlock
 // Factories
 //
 // These blocks have the same implementation but make sense to separate.
+// TODO: better error messages
 //
 
 enum class ScalarBlockType
@@ -171,8 +172,15 @@ static Pothos::Block* makeScalarOpBlock(
     }
     if(ScalarBlockType::ARITHMETIC == blockType)
     {
-        IfTypeDeclareFactory(std::complex<float>)
-        IfTypeDeclareFactory(std::complex<double>)
+        if("MODULUS" != operation)
+        {
+            IfTypeDeclareFactory(std::complex<float>)
+            IfTypeDeclareFactory(std::complex<double>)
+        }
+        else
+        {
+            throw Pothos::InvalidArgumentException("Invalid operation for type", operation);
+        }
     }
 
     throw Pothos::InvalidArgumentException("Invalid type", dtype.name());

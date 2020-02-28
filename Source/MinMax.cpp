@@ -105,7 +105,7 @@ static Pothos::Block* minMaxFactory(
  *
  * The most recent minimum value can be queried using the "lastValue" probe.
  *
- * |category /ArrayFire/Algorithm
+ * |category /ArrayFire/Statistics
  * |keywords algorithm min
  * |factory /arrayfire/algorithm/min(device,dtype)
  *
@@ -128,7 +128,7 @@ static Pothos::BlockRegistry registerMin(
  *
  * The most recent minimum value can be queried using the "lastValue" probe.
  *
- * |category /ArrayFire/Algorithm
+ * |category /ArrayFire/Statistics
  * |keywords algorithm max
  * |factory /arrayfire/algorithm/max(device,dtype)
  *

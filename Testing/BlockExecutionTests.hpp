@@ -97,6 +97,8 @@ void testScalarOpBlock(
 // explode
 Pothos::BufferChunk getTestInputs(const std::string& type);
 
+Pothos::Object getSingleTestInput(const std::string& type);
+
 template <typename T>
 static EnableIfInteger<T, std::vector<T>> getTestInputs(bool shuffle = true)
 {

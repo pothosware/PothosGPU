@@ -133,7 +133,7 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param operation[Operation] The arithmetic operation to perform.
+ * |param operation[Operation] The bitwise operation to perform.
  * |widget ComboBox(editable=false)
  * |option [And] "AND"
  * |option [Or] "OR"
@@ -146,7 +146,7 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  * |default "uint64"
  * |preview disable
  *
- * |param nchans(Num Channels) The number of arithmetic inputs.
+ * |param nchans(Num Channels) The number of inputs.
  * |widget SpinBox(minimum=2)
  * |default 2
  * |preview disable
@@ -169,7 +169,7 @@ static Pothos::BlockRegistry registerArrayBitwise(
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param operation[Operation] The arithmetic operation to perform.
+ * |param operation[Operation] The logical operation to perform.
  * |widget ComboBox(editable=false)
  * |option [And] "AND"
  * |option [Or] "OR"
@@ -181,7 +181,7 @@ static Pothos::BlockRegistry registerArrayBitwise(
  * |default "uint64"
  * |preview disable
  *
- * |param nchans(Num Channels) The number of arithmetic inputs.
+ * |param nchans(Num Channels) The number of inputs.
  * |widget SpinBox(minimum=2)
  * |default 2
  * |preview disable

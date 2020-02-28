@@ -72,7 +72,7 @@ class CastBlock: public OneToOneBlock
  *
  * Calls <b>af::array::as</b> on all inputs to cast to a given type.
  *
- * |category /ArrayFire/Stream
+ * |category /ArrayFire/Convert
  * |keywords array cast
  * |factory /arrayfire/array/cast(device,inputDType,outputDType)
  *
