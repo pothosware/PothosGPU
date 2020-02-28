@@ -122,6 +122,7 @@ POTHOS_MODULE_UTIL(
     LIBRARIES
         ArrayFire::af
     DOC_SOURCES
+        Source/ArrayOpBlock.cpp
         Source/Cast.cpp
         Source/Clamp.cpp
         Source/Constant.cpp
@@ -130,6 +131,7 @@ POTHOS_MODULE_UTIL(
         Source/FileSource.cpp
         Source/MinMax.cpp
         Source/Random.cpp
+        Source/ScalarOpBlock.cpp
         Source/SplitComplex.cpp
     DESTINATION arrayfire
 )
