@@ -50,6 +50,13 @@ static af::array afMedAbsDev(const af::array& afInput, const dim_t)
     return af::median(afInputSubMedian);
 }
 
+static af::array afRMS(const af::array& afInput, const dim_t)
+{
+    const auto arrLen = static_cast<double>(afInput.elements());
+
+    return af::sqrt(af::sum(af::pow(afInput, 2.0)) / arrLen);
+}
+
 class OneArrayStatsBlock: public ArrayFireBlock
 {
     public:
@@ -217,5 +224,10 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
         "/arrayfire/statistics/medabsdev",
         Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
             .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
+            .bind<bool>(false /*searchForIndex*/, 3)),
+    Pothos::BlockRegistry(
+        "/arrayfire/statistics/rms",
+        Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
+            .bind<OneArrayStatsFuncPtr>(&afRMS, 1)
             .bind<bool>(false /*searchForIndex*/, 3))
 };

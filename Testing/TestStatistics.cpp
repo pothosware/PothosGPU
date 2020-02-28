@@ -103,6 +103,18 @@ static T medAbsDev(const std::vector<T>& inputs)
     return median(diffs);
 }
 
+template <typename T>
+static T RMS(const std::vector<T>& inputs)
+{
+    auto addPow = [](T val1, T val2)
+    {
+        return (val1 + (val2*val2));
+    };
+    const T accum = std::accumulate(inputs.begin(), inputs.end(), T(0), addPow);
+
+    return std::sqrt(accum / static_cast<T>(inputs.size()));
+}
+
 //
 // Get test values.
 //
@@ -117,7 +129,8 @@ static std::vector<double> getExpectedOutputs(const std::vector<double>& inputs)
         median(inputs),
         stddev(inputs),
         variance(inputs),
-        medAbsDev(inputs)
+        medAbsDev(inputs),
+        RMS(inputs)
     };
 }
 
@@ -166,6 +179,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_statistics)
         Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", "Auto", dtype),
         Pothos::BlockRegistry::make("/arrayfire/statistics/var", "Auto", dtype, false),
         Pothos::BlockRegistry::make("/arrayfire/statistics/medabsdev", "Auto", dtype),
+        Pothos::BlockRegistry::make("/arrayfire/statistics/rms", "Auto", dtype),
     };
     const size_t numBlocks = arrayFireBlocks.size();
 
