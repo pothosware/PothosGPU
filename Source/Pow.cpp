@@ -57,18 +57,11 @@ class Pow: public OneToOneBlock
         {
             _power = power;
 
-            if(2.0 == power)
-            {
-                _func = Pothos::Callable(&af::pow2);
-            }
-            else
-            {
-                // To disambiguate an overloaded function
-                using PowType = af::array(*)(const af::array&, const double);
+            // To disambiguate an overloaded function
+            using PowType = af::array(*)(const af::array&, const double);
 
-                _func = Pothos::Callable(PowType(af::pow));
-                _func.bind(_power, 1);
-            }
+            _func = Pothos::Callable(PowType(af::pow));
+            _func.bind(_power, 1);
 
             this->emitSignal("powerChanged", power);
         }
