@@ -158,7 +158,7 @@ OneToOneBlocks:
                   supportFloat: true
 
         - func: pow2
-          niceName: 2^x
+          niceName: Powers of 2
           header: arith
           supportedTypes:
                   supportFloat: true
