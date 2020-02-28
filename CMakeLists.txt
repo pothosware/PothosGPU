@@ -135,5 +135,6 @@ POTHOS_MODULE_UTIL(
         Source/Random.cpp
         Source/ScalarOpBlock.cpp
         Source/SplitComplex.cpp
+        Source/Statistics.cpp
     DESTINATION arrayfire
 )

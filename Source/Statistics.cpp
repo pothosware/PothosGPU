@@ -200,34 +200,167 @@ class VarianceBlock: public OneArrayStatsBlock
 // Factories
 //
 
-static const std::vector<Pothos::BlockRegistry> BlockRegistries =
-{
-    Pothos::BlockRegistry(
-        "/arrayfire/statistics/mean",
-        Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-            .bind<OneArrayStatsFuncPtr>(&af::mean, 1)
-            .bind<bool>(false /*searchForIndex*/, 3)),
-    Pothos::BlockRegistry(
-        "/arrayfire/statistics/var",
-        Pothos::Callable(&VarianceBlock::make)),
-    Pothos::BlockRegistry(
-        "/arrayfire/statistics/stdev",
-        Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-            .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
-            .bind<bool>(false /*searchForIndex*/, 3)),
-    Pothos::BlockRegistry(
-        "/arrayfire/statistics/median",
-        Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-            .bind<OneArrayStatsFuncPtr>(&af::median, 1)
-            .bind<bool>(true /*searchForIndex*/, 3)),
-    Pothos::BlockRegistry(
-        "/arrayfire/statistics/medabsdev",
-        Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-            .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
-            .bind<bool>(false /*searchForIndex*/, 3)),
-    Pothos::BlockRegistry(
-        "/arrayfire/statistics/rms",
-        Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-            .bind<OneArrayStatsFuncPtr>(&afRMS, 1)
-            .bind<bool>(false /*searchForIndex*/, 3))
-};
+/*
+ * |PothosDoc Mean
+ *
+ * Calls <b>af::mean</b> on each input buffer to calculate the
+ * arithmetic mean of the given values. The result of the last calculation
+ * can be queried with the <b>lastValue</b> probe.
+ *
+ * The incoming buffer is forwarded to the output port with no changes.
+ *
+ * |category /ArrayFire/Statistics
+ * |keywords statistics stats mean average
+ * |factory /arrayfire/statistics/mean(device,dtype)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(float=1,dim=1)
+ * |default "float64"
+ * |preview disable
+ */
+static Pothos::BlockRegistry registerMean(
+    "/arrayfire/statistics/mean",
+    Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
+        .bind<OneArrayStatsFuncPtr>(&af::mean, 1)
+        .bind<bool>(false /*searchForIndex*/, 3));
+
+/*
+ * |PothosDoc Median
+ *
+ * Calls <b>af::median</b> on each input buffer to calculate the
+ * median of the given values. The result of the last calculation
+ * can be queried with the <b>lastValue</b> probe.
+ *
+ * The incoming buffer is forwarded to the output port with no changes.
+ *
+ * |category /ArrayFire/Statistics
+ * |keywords statistics stats
+ * |factory /arrayfire/statistics/median(device,dtype)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |default "float64"
+ * |preview disable
+ */
+static Pothos::BlockRegistry registerMedian(
+    "/arrayfire/statistics/median",
+    Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
+        .bind<OneArrayStatsFuncPtr>(&af::median, 1)
+        .bind<bool>(true /*searchForIndex*/, 3));
+
+/*
+ * |PothosDoc RMS
+ *
+ * Calculates the root mean square (RMS) of the given values.
+ * The result of the last calculation can be queried with the
+ * <b>lastValue</b> probe.
+ *
+ * The incoming buffer is forwarded to the output port with no changes.
+ *
+ * |category /ArrayFire/Statistics
+ * |keywords statistics stats root mean square
+ * |factory /arrayfire/statistics/rms(device,dtype)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |default "float64"
+ * |preview disable
+ */
+static Pothos::BlockRegistry registerRMS(
+    "/arrayfire/statistics/rms",
+    Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
+        .bind<OneArrayStatsFuncPtr>(&afRMS, 1)
+        .bind<bool>(false /*searchForIndex*/, 3));
+
+/*
+ * |PothosDoc Variance
+ *
+ * Calls <b>af::var</b> on each input buffer to calculate the
+ * median of the given values. The result of the last calculation
+ * can be queried with the <b>lastValue</b> probe.
+ *
+ * The incoming buffer is forwarded to the output port with no changes.
+ *
+ * |category /ArrayFire/Statistics
+ * |keywords statistics stats root mean square
+ * |factory /arrayfire/statistics/var(device,dtype,isBiased)
+ * |setter setIsBiased(isBiased)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |default "float64"
+ * |preview disable
+ *
+ * |param isBiased[Is Biased?] Whether or not the input values contain sample bias.
+ * |widget ToggleSwitch(on="True", off="False")
+ * |default False
+ */
+static Pothos::BlockRegistry registerVar(
+    "/arrayfire/statistics/var",
+    Pothos::Callable(&VarianceBlock::make));
+
+/*
+ * |PothosDoc Standard Deviation
+ *
+ * Calls <b>af::stdev</b> on each input buffer to calculate the
+ * standard deviation of the given values. The result of the last calculation
+ * can be queried with the <b>lastValue</b> probe.
+ *
+ * The incoming buffer is forwarded to the output port with no changes.
+ *
+ * |category /ArrayFire/Statistics
+ * |keywords statistics stats stddev
+ * |factory /arrayfire/statistics/stdev(device,dtype)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(float=1,dim=1)
+ * |default "float64"
+ * |preview disable
+ */
+static Pothos::BlockRegistry registerStdev(
+    "/arrayfire/statistics/stdev",
+    Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
+        .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
+        .bind<bool>(false /*searchForIndex*/, 3));
+
+/*
+ * |PothosDoc Median Absolute Deviation
+ *
+ * Calculates the median absolute deviation of the given values.
+ * The result of the last calculation can be queried with the
+ * <b>lastValue</b> probe.
+ *
+ * The incoming buffer is forwarded to the output port with no changes.
+ *
+ * |category /ArrayFire/Statistics
+ * |keywords statistics stats mad
+ * |factory /arrayfire/statistics/medabsdev(device,dtype)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |default "float64"
+ * |preview disable
+ */
+static Pothos::BlockRegistry registerMedAbsDev(
+    "/arrayfire/statistics/medabsdev",
+    Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
+        .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
+        .bind<bool>(false /*searchForIndex*/, 3));
