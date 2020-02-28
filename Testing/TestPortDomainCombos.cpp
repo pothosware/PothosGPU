@@ -25,7 +25,7 @@
 
 using namespace PothosArrayFireTests;
 
-static constexpr long SleepTimeMs = 500;
+static constexpr long SleepTimeMs = 1000;
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
 {
@@ -48,7 +48,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
                       type);
 
     auto afCos = Pothos::BlockRegistry::make(
-                     "/arrayfire/trig/cos",
+                     "/arrayfire/arith/cos",
                      "Auto",
                      type);
 
@@ -227,7 +227,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_multiple_backends)
                 afBlocks.emplace_back(Pothos::BlockRegistry::make(
                                           "/arrayfire/scalar/arithmetic",
                                           device,
-                                          "*",
+                                          "MULTIPLY",
                                           "float64",
                                           multiplier));
             }

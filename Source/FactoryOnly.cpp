@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -8,76 +8,74 @@
 
 #include <Pothos/Framework.hpp>
 
-// TODO: add tests
-
 static Pothos::BlockRegistry registerSec(
-    "/arrayfire/trig/sec",
+    "/arrayfire/arith/sec",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(sec, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerCsc(
-    "/arrayfire/trig/csc",
+    "/arrayfire/arith/csc",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(csc, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerCot(
-    "/arrayfire/trig/cot",
+    "/arrayfire/arith/cot",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(cot, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerASec(
-    "/arrayfire/trig/asec",
+    "/arrayfire/arith/asec",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(asec, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerACsc(
-    "/arrayfire/trig/acsc",
+    "/arrayfire/arith/acsc",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(acsc, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerACot(
-    "/arrayfire/trig/acot",
+    "/arrayfire/arith/acot",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(acot, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerSecH(
-    "/arrayfire/trig/sech",
+    "/arrayfire/arith/sech",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(sech, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerCscH(
-    "/arrayfire/trig/csch",
+    "/arrayfire/arith/csch",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(csch, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerCotH(
-    "/arrayfire/trig/coth",
+    "/arrayfire/arith/coth",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(coth, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerASecH(
-    "/arrayfire/trig/asech",
+    "/arrayfire/arith/asech",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(asech, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerACscH(
-    "/arrayfire/trig/acsch",
+    "/arrayfire/arith/acsch",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(acsch, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
 
 static Pothos::BlockRegistry registerACotH(
-    "/arrayfire/trig/acoth",
+    "/arrayfire/arith/acoth",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(acoth, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
@@ -87,10 +85,3 @@ static Pothos::BlockRegistry registerPolarToComplex(
     Pothos::Callable(&TwoToOneBlock::makeFloatToComplex)
         .bind(polarToComplex, 1)
         .bind(false, 3));
-
-static Pothos::BlockRegistry registerHypot(
-    "/arrayfire/arith/hypotenuse",
-    Pothos::Callable(&TwoToOneBlock::makeFromOneType)
-        .bind(hypotenuse, 1)
-        .bind<DTypeSupport>({false,false,true,false}, 3)
-        .bind(true, 4 /*allowZeroInBuffer1*/));

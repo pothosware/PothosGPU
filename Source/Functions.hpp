@@ -75,8 +75,3 @@ inline af::array acoth(const af::array& afArray)
 {
     return af::atanh(1.0 / afArray);
 }
-
-inline af::array hypotenuse(const af::array& afArray0, const af::array& afArray1)
-{
-    return af::sqrt(af::pow2(afArray0) + af::pow2(afArray1));
-}
