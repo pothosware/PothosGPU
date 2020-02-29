@@ -64,28 +64,24 @@ class OneArrayStatsBlock: public ArrayFireBlock
         static Pothos::Block* makeFromFuncPtr(
             const std::string& device,
             OneArrayStatsFuncPtr func,
-            const Pothos::DType& dtype,
-            bool searchForIndex)
+            const Pothos::DType& dtype)
         {
             return new OneArrayStatsBlock(
                            device,
                            func,
-                           dtype,
-                           searchForIndex);
+                           dtype);
         }
 
         OneArrayStatsBlock(
             const std::string& device,
             OneArrayStatsFunction func,
-            const Pothos::DType& dtype,
-            bool searchForIndex
+            const Pothos::DType& dtype
         ):
             ArrayFireBlock(device),
             _func(std::move(func)),
             _dtype(dtype),
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
-            _lastValue(),
-            _searchForIndex(searchForIndex)
+            _lastValue()
         {
             validateDType(dtype, floatOnlyDTypeSupport);
 
@@ -99,14 +95,12 @@ class OneArrayStatsBlock: public ArrayFireBlock
         OneArrayStatsBlock(
             const std::string& device,
             OneArrayStatsFuncPtr func,
-            const Pothos::DType& dtype,
-            bool searchForIndex
+            const Pothos::DType& dtype
         ):
             OneArrayStatsBlock(
                 device,
                 OneArrayStatsFunction(func),
-                dtype,
-                searchForIndex)
+                dtype)
         {}
 
         Pothos::Object lastValue() const
@@ -142,7 +136,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
         Pothos::DType _dtype;
         af::dtype _afDType;
         Pothos::Object _lastValue;
-        bool _searchForIndex;
 };
 
 class VarianceBlock: public OneArrayStatsBlock
@@ -165,8 +158,7 @@ class VarianceBlock: public OneArrayStatsBlock
             OneArrayStatsBlock(
                 device,
                 getAfVarBoundFunction(isBiased),
-                dtype,
-                false /*searchForIndex*/),
+                dtype),
             _isBiased(isBiased)
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(VarianceBlock, isBiased));
@@ -224,8 +216,7 @@ class VarianceBlock: public OneArrayStatsBlock
 static Pothos::BlockRegistry registerMean(
     "/arrayfire/statistics/mean",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&af::mean, 1)
-        .bind<bool>(false /*searchForIndex*/, 3));
+        .bind<OneArrayStatsFuncPtr>(&af::mean, 1));
 
 /*
  * |PothosDoc Median
@@ -251,8 +242,7 @@ static Pothos::BlockRegistry registerMean(
 static Pothos::BlockRegistry registerMedian(
     "/arrayfire/statistics/median",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&af::median, 1)
-        .bind<bool>(true /*searchForIndex*/, 3));
+        .bind<OneArrayStatsFuncPtr>(&af::median, 1));
 
 /*
  * |PothosDoc RMS
@@ -278,8 +268,7 @@ static Pothos::BlockRegistry registerMedian(
 static Pothos::BlockRegistry registerRMS(
     "/arrayfire/statistics/rms",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&afRMS, 1)
-        .bind<bool>(false /*searchForIndex*/, 3));
+        .bind<OneArrayStatsFuncPtr>(&afRMS, 1));
 
 /*
  * |PothosDoc Variance
@@ -335,8 +324,7 @@ static Pothos::BlockRegistry registerVar(
 static Pothos::BlockRegistry registerStdev(
     "/arrayfire/statistics/stdev",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
-        .bind<bool>(false /*searchForIndex*/, 3));
+        .bind<OneArrayStatsFuncPtr>(&af::stdev, 1));
 
 /*
  * |PothosDoc Median Absolute Deviation
@@ -362,5 +350,4 @@ static Pothos::BlockRegistry registerStdev(
 static Pothos::BlockRegistry registerMedAbsDev(
     "/arrayfire/statistics/medabsdev",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
-        .bind<bool>(false /*searchForIndex*/, 3));
+        .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1));

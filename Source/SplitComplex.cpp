@@ -58,8 +58,6 @@ class SplitComplex: public ArrayFireBlock
         }
 
     private:
-        size_t _nchans;
-
         af::dtype _afComplexDType;
         af::dtype _afDType;
 };

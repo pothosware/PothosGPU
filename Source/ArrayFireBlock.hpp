@@ -12,7 +12,8 @@
 class ArrayFireBlock: public Pothos::Block
 {
     public:
-        ArrayFireBlock(const std::string& device);
+        ArrayFireBlock() = delete;
+        explicit ArrayFireBlock(const std::string& device);
 
         virtual ~ArrayFireBlock();
 
