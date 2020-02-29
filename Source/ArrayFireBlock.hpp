@@ -59,6 +59,14 @@ class ArrayFireBlock: public Pothos::Block
             const std::string& portName,
             const af::array& afArray);
 
+        void postAfArray(
+            size_t portNum,
+            const af::array& afArray);
+
+        void postAfArray(
+            const std::string& portName,
+            const af::array& afArray);
+
         //
         // Misc
         //
@@ -82,6 +90,11 @@ class ArrayFireBlock: public Pothos::Block
 
         template <typename PortIdType, typename AfArrayType>
         void _produceFromAfArray(
+            const PortIdType& portId,
+            const AfArrayType& afArray);
+
+        template <typename PortIdType, typename AfArrayType>
+        void _postAfArray(
             const PortIdType& portId,
             const AfArrayType& afArray);
 };

@@ -182,6 +182,20 @@ void ArrayFireBlock::produceFromAfArray(
     _produceFromAfArray(portName, afArray);
 }
 
+void ArrayFireBlock::postAfArray(
+    size_t portNum,
+    const af::array& afArray)
+{
+    _postAfArray(portNum, afArray);
+}
+
+void ArrayFireBlock::postAfArray(
+    const std::string& portName,
+    const af::array& afArray)
+{
+    _postAfArray(portName, afArray);
+}
+
 //
 // Misc
 //
@@ -239,4 +253,12 @@ void ArrayFireBlock::_produceFromAfArray(
 
     afArray.host(outputPort->buffer());
     outputPort->produce(afArray.elements());
+}
+
+template <typename PortIdType, typename AfArrayType>
+void ArrayFireBlock::_postAfArray(
+    const PortIdType& portId,
+    const AfArrayType& afArray)
+{
+    this->output(portId)->postBuffer(Pothos::Object(afArray).convert<Pothos::BufferChunk>());
 }
