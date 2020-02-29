@@ -14,9 +14,6 @@
 #include <string>
 #include <vector>
 
-namespace PothosArrayFireTests
-{
-
 static Pothos::BufferChunk concatBufferChunks(
     const std::vector<Pothos::BufferChunk>& bufferChunks)
 {
@@ -57,7 +54,7 @@ static void testFlatBlock(
 
     for(size_t chan = 0; chan < numChannels; ++chan)
     {
-        testInputs.emplace_back(getTestInputs(type));
+        testInputs.emplace_back(PothosArrayFireTests::getTestInputs(type));
 
         feederSources.emplace_back(
             Pothos::BlockRegistry::make(
@@ -95,10 +92,18 @@ static void testFlatBlock(
         collectorSink.call<Pothos::BufferChunk>("getBuffer"));
 }
 
-void testFlatBlockForType(const std::string& type)
+static void testFlatBlockForType(const std::string& type)
 {
     testFlatBlock(type, 1);
     testFlatBlock(type, 3);
 }
 
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_flat)
+{
+    PothosArrayFireTests::setupTestEnv();
+
+    for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
+    {
+        testFlatBlockForType(type);
+    }
 }

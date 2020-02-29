@@ -29,13 +29,15 @@ class FlatBlock: public ArrayFireBlock
             const Pothos::DType& dtype,
             size_t numChannels
         ):
-            ArrayFireBlock(device)
+            ArrayFireBlock(device),
+            _nchans(numChannels),
+            _afDType(Pothos::Object(dtype).convert<af::dtype>())
         {
-            for(size_t chan = 0; chan < numChannels; ++chan)
+            for(size_t chan = 0; chan < _nchans; ++chan)
             {
                 this->setupInput(chan, dtype);
             }
-            this->setupOutput(0, dtype, this->getPortDomain());
+            this->setupOutput(0, dtype);
         }
 
         void work() override
@@ -45,7 +47,12 @@ class FlatBlock: public ArrayFireBlock
                 return;
             }
 
-            auto afInput = this->getNumberedInputPortsAs2DAfArray();
+            af::array afInput(static_cast<dim_t>(_nchans), this->workInfo().minElements, _afDType);
+            for(dim_t chan = 0; chan < static_cast<dim_t>(_nchans); ++chan)
+            {
+                afInput.row(chan) = this->getInputPortAsAfArray(chan);
+            }
+
             auto afOutput = af::flat(afInput.T());
             if(1 != afOutput.numdims())
             {
@@ -56,8 +63,12 @@ class FlatBlock: public ArrayFireBlock
                               Poco::NumberFormatter::format(afOutput.numdims())));
             }
 
-            this->produceFromAfArray(0, afOutput);
+            this->postAfArray(0, afOutput);
         }
+
+    private:
+        size_t _nchans;
+        af::dtype _afDType;
 };
 
 /*
@@ -65,14 +76,6 @@ class FlatBlock: public ArrayFireBlock
  *
  * Calls <b>af::flat</b> on all inputs, resulting in a single concatenated
  * output.
- *
- * This block uses one of the following implementations by priority (based
- * on availability of hardware and underlying libraries).
- * <ol>
- * <li>CUDA (if GPU present)</li>
- * <li>OpenCL (if GPU present)</li>
- * <li>Standard C++ (if no GPU present)</li>
- * </ol>
  *
  * |category /ArrayFire/Data
  * |keywords array data flat
