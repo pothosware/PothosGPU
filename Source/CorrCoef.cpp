@@ -41,7 +41,7 @@ class CorrCoefBlock: public ArrayFireBlock
 
         void work() override
         {
-            const auto elems = this->workInfo().minAllInElements;
+            const auto elems = this->workInfo().minAllElements;
             if(0 == elems)
             {
                 return;
@@ -66,6 +66,30 @@ class CorrCoefBlock: public ArrayFireBlock
         double _lastValue;
 };
 
+
+//
+// Block registries
+//
+
+/*
+ * |PothosDoc Correlate
+ *
+ * Uses <b>af::corrcoef</b> to calculate the correlation coefficents of two
+ * input streams. The last calculated value can be queried with the <b>lastValue</b>
+ * probe.
+ *
+ * |category /ArrayFire/Statistics
+ * |keywords array coefficient
+ * |factory /arrayfire/statistics/corrcoef(device,dtype)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |default "float64"
+ * |preview disable
+ */
 static Pothos::BlockRegistry registerStatisticsCorrCoef(
     "/arrayfire/statistics/corrcoef",
     Pothos::Callable(&CorrCoefBlock::make));

@@ -154,6 +154,7 @@ static void waitUntilMessagesReceived(const std::vector<Pothos::Proxy>& collecto
     }
 }
 
+// TODO: test expected value for corrcoef
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_statistics)
 {
     using namespace PothosArrayFireTests;

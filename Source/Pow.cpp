@@ -37,10 +37,10 @@ class Pow: public OneToOneBlock
                 dtype,
                 dtype)
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(Pow, getPower));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Pow, power));
             this->registerCall(this, POTHOS_FCN_TUPLE(Pow, setPower));
 
-            this->registerProbe("getPower");
+            this->registerProbe("power");
             this->registerSignal("powerChanged");
 
             this->setPower(power);
@@ -48,7 +48,7 @@ class Pow: public OneToOneBlock
 
         virtual ~Pow() {};
 
-        double getPower() const
+        double power() const
         {
             return _power;
         }
@@ -70,6 +70,30 @@ class Pow: public OneToOneBlock
         double _power;
 };
 
-static Pothos::BlockRegistry registerLogN(
+/*
+ * |PothosDoc Pow
+ *
+ * Uses <b>af::pow</b> to calculate the power of each input element
+ * to the given scalar power value.
+ *
+ * |category /ArrayFire/Arith
+ * |keywords exponent power
+ * |factory /arrayfire/arith/pow(device,dtype,power)
+ * |setter setPower(power)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(float=1,cfloat=1,dim=1)
+ * |default "complex_float64"
+ * |preview disable
+ *
+ * |param power[Power] The exponent value.
+ * |widget DoubleSpinBox()
+ * |default 0.0
+ * |preview enable
+ */
+static Pothos::BlockRegistry registerPow(
     "/arrayfire/arith/pow",
     Pothos::Callable(&Pow::make));

@@ -128,12 +128,16 @@ POTHOS_MODULE_UTIL(
         Source/Cast.cpp
         Source/Clamp.cpp
         Source/Constant.cpp
+        Source/Convolve.cpp
+        Source/CorrCoef.cpp
         Source/FFT.cpp
         Source/FileSink.cpp
         Source/FileSource.cpp
         Source/Filter.cpp
         Source/MinMax.cpp
+        Source/Pow.cpp
         Source/Random.cpp
+        Source/Root.cpp
         Source/ScalarOpBlock.cpp
         Source/SplitComplex.cpp
         Source/Statistics.cpp
