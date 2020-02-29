@@ -168,18 +168,18 @@ af::array ArrayFireBlock::getInputPortAsAfArray(
 // Output port API
 //
 
-void ArrayFireBlock::postAfArray(
+void ArrayFireBlock::produceFromAfArray(
     size_t portNum,
     const af::array& afArray)
 {
-    _postAfArray(portNum, afArray);
+    _produceFromAfArray(portNum, afArray);
 }
 
-void ArrayFireBlock::postAfArray(
+void ArrayFireBlock::produceFromAfArray(
     const std::string& portName,
     const af::array& afArray)
 {
-    _postAfArray(portName, afArray);
+    _produceFromAfArray(portName, afArray);
 }
 
 //
@@ -222,7 +222,7 @@ af::array ArrayFireBlock::_getInputPortAsAfArray(
 }
 
 template <typename PortIdType, typename AfArrayType>
-void ArrayFireBlock::_postAfArray(
+void ArrayFireBlock::_produceFromAfArray(
     const PortIdType& portId,
     const AfArrayType& afArray)
 {

@@ -51,11 +51,11 @@ class ArrayFireBlock: public Pothos::Block
         // Output port API
         //
 
-        void postAfArray(
+        void produceFromAfArray(
             size_t portNum,
             const af::array& afArray);
 
-        void postAfArray(
+        void produceFromAfArray(
             const std::string& portName,
             const af::array& afArray);
 
@@ -81,7 +81,7 @@ class ArrayFireBlock: public Pothos::Block
             bool truncateToMinLength);
 
         template <typename PortIdType, typename AfArrayType>
-        void _postAfArray(
+        void _produceFromAfArray(
             const PortIdType& portId,
             const AfArrayType& afArray);
 };

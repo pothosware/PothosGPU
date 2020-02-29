@@ -140,7 +140,7 @@ class FFTBlock: public FFTBaseBlock<T,T>
 
             auto afArray = this->getInputPortAsAfArray(0);
             _func(afArray, this->_norm);
-            this->postAfArray(0, afArray);
+            this->produceFromAfArray(0, afArray);
         }
 
     private:
@@ -175,7 +175,7 @@ class RFFTBlock: public FFTBaseBlock<In,Out>
 
             auto afInput = this->getInputPortAsAfArray(0);
             auto afOutput = _func(afInput, this->_norm);
-            this->postAfArray(0, afOutput);
+            this->produceFromAfArray(0, afOutput);
         }
 
     private:

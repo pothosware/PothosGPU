@@ -128,7 +128,7 @@ void Clamp<T>::work()
 
     auto afInput = this->getInputPortAsAfArray(0);
     auto afOutput = af::clamp(afInput, afArrayMinValue, afArrayMaxValue);
-    this->postAfArray(0, afOutput);
+    this->produceFromAfArray(0, afOutput);
 };
 
 template <>
@@ -142,7 +142,7 @@ void Clamp<double>::work()
 
     auto afInput = this->getInputPortAsAfArray(0);
     auto afOutput = af::clamp(afInput, _afMinValue, _afMaxValue);
-    this->postAfArray(0, afOutput);
+    this->produceFromAfArray(0, afOutput);
 };
 
 /*

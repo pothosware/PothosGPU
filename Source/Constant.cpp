@@ -50,7 +50,7 @@ class Constant: public ArrayFireBlock
                 return;
             }
             
-            this->postAfArray(
+            this->produceFromAfArray(
                 0,
                 af::constant(_constant, elems, _afDType));
         }

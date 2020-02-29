@@ -129,7 +129,7 @@ class RandomBlock: public ArrayFireBlock
             const af::dim4 dims(static_cast<dim_t>(elems));
 
             auto afOutput = _afRandomFunc(dims, _afDType, _afRandomEngine);
-            this->postAfArray(0, afOutput);
+            this->produceFromAfArray(0, afOutput);
         }
 
     private:

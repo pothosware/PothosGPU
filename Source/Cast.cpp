@@ -63,7 +63,7 @@ class CastBlock: public OneToOneBlock
             }
 
             auto afOutput = this->getInputPortAsAfArray(0).as(_afOutputDType);
-            this->postAfArray(0, afOutput);
+            this->produceFromAfArray(0, afOutput);
         }
 };
 

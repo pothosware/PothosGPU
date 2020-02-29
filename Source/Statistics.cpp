@@ -127,7 +127,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
 
             _lastValue = getArrayValueOfUnknownTypeAtIndex(afLabelValues, 0);
 
-            this->postAfArray(0, afArray);
+            this->produceFromAfArray(0, afArray);
         }
 
     protected:

@@ -114,7 +114,7 @@ void TwoToOneBlock::work()
     }
 
     auto outputAfArray = _func(inputAfArray0, inputAfArray1);
-    this->postAfArray(0, outputAfArray);
+    this->produceFromAfArray(0, outputAfArray);
 }
 
 //

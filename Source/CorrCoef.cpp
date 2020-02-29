@@ -52,8 +52,8 @@ class CorrCoefBlock: public ArrayFireBlock
 
             _lastValue = af::corrcoef<double>(afInput0, afInput1);
 
-            this->postAfArray(0, afInput0);
-            this->postAfArray(1, afInput1);
+            this->produceFromAfArray(0, afInput0);
+            this->produceFromAfArray(1, afInput1);
         }
 
         double lastValue() const

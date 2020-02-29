@@ -132,5 +132,5 @@ void OneToOneBlock::work()
         afOutput = afOutput.as(_afOutputDType);
     }
 
-    this->postAfArray(0, afOutput);
+    this->produceFromAfArray(0, afOutput);
 }

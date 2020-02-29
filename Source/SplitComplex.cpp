@@ -53,8 +53,8 @@ class SplitComplex: public ArrayFireBlock
             }
 
             auto afInput = this->getInputPortAsAfArray(0);
-            this->postAfArray("re", af::real(afInput));
-            this->postAfArray("im", af::imag(afInput));
+            this->produceFromAfArray("re", af::real(afInput));
+            this->produceFromAfArray("im", af::imag(afInput));
         }
 
     private:

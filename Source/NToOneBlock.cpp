@@ -79,5 +79,5 @@ void NToOneBlock::work()
     {
         outputAfArray = _func(outputAfArray, afArray);
     }
-    this->postAfArray(0, outputAfArray);
+    this->produceFromAfArray(0, outputAfArray);
 }

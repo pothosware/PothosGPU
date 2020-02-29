@@ -58,7 +58,7 @@ class MinMax: public ArrayFireBlock
 
             _lastValue = getArrayValueOfUnknownTypeAtIndex(val, 0);
 
-            this->postAfArray(0, afInput);
+            this->produceFromAfArray(0, afInput);
         }
 
     private:
