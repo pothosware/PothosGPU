@@ -8,6 +8,9 @@
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
+#include <Poco/Format.h>
+#include <Poco/NumberFormatter.h>
+
 #include <arrayfire.h>
 
 #include <vector>
@@ -39,11 +42,9 @@ class FIRBlock: public OneToOneBlock
             _waitTaps(false),
             _waitTapsArmed(false)
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getTaps));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setTaps));
-
-            this->registerProbe("getTaps");
-            this->registerSignal("tapsChanged");
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, waitTaps));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, setWaitTaps));
         }
 
         virtual ~FIRBlock() = default;
@@ -55,7 +56,7 @@ class FIRBlock: public OneToOneBlock
             _waitTapsArmed = _waitTaps;
         }
 
-        std::vector<TapType> getTaps() const
+        std::vector<TapType> taps() const
         {
             return _taps;
         }
@@ -67,19 +68,16 @@ class FIRBlock: public OneToOneBlock
                 throw Pothos::InvalidArgumentException("Taps cannot be empty.");
             }
 
-            _taps = std::move(taps);
+            _taps = taps;
             _func.bind(Pothos::Object(_taps).convert<af::array>(), 0);
             _waitTapsArmed = false; // We have taps
-
-            this->emitSignal("tapsChanged", _taps);
         }
 
-        bool getWaitTaps() const
+        bool waitTaps() const
         {
             return _waitTaps;
         }
 
-        // TODO: initializer
         void setWaitTaps(bool waitTaps)
         {
             _waitTaps = waitTaps;
@@ -112,6 +110,10 @@ class IIRBlock: public OneToOneBlock
 
         static const Pothos::DType dtype;
 
+        // TODO: this is the case as of ArrayFire 3.7.0.
+        //       #ifdef this if it changes.
+        static const size_t MaxFFCoeffLength = 512;
+
         IIRBlock(
             const std::string& device,
             size_t dtypeDims
@@ -126,15 +128,11 @@ class IIRBlock: public OneToOneBlock
             _waitTaps(false),
             _waitTapsArmed(false)
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getFeedForwardCoeffs));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, waitTaps));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, setWaitTaps));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setFeedForwardCoeffs));
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getFeedbackCoeffs));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setFeedbackCoeffs));
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getTaps));
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, setTaps));
-
-            this->registerProbe("getTaps");
-            this->registerSignal("tapsChanged");
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, setTapsFromCommsIIRDesigner));
         }
 
         virtual ~IIRBlock() = default;
@@ -146,34 +144,25 @@ class IIRBlock: public OneToOneBlock
             _waitTapsArmed = _waitTaps;
         }
 
-        std::vector<TapType> getFeedForwardCoeffs() const
-        {
-            return _feedForwardCoeffs;
-        }
-
         void setFeedForwardCoeffs(const std::vector<TapType>& feedForwardCoeffs)
         {
             if(feedForwardCoeffs.empty())
             {
                 throw Pothos::InvalidArgumentException("Coefficients cannot be empty.");
             }
-            else if(feedForwardCoeffs.size() != _feedbackCoeffs.size())
+            else if(feedForwardCoeffs.size() > MaxFFCoeffLength)
             {
                 throw Pothos::InvalidArgumentException(
-                          "Feed-forward and feedback coefficients "
-                          "must be the same size.");
+                          Poco::format(
+                              "In ArrayFire %s, af::iir only accepts feed-forward "
+                              "coefficients up to length %s",
+                              std::string(AF_VERSION),
+                              Poco::NumberFormatter::format(MaxFFCoeffLength)));
             }
 
             _feedForwardCoeffs = feedForwardCoeffs;
             _func.bind(Pothos::Object(_feedForwardCoeffs).convert<af::array>(), 0);
-            _waitTapsArmed = false; // We have taps
-
-            this->emitAllCoeffsChanged();
-        }
-
-        std::vector<TapType> getFeedbackCoeffs() const
-        {
-            return _feedbackCoeffs;
+            _disarmWaitTapsIfCoeffsPopulated();
         }
 
         void setFeedbackCoeffs(const std::vector<TapType>& feedbackCoeffs)
@@ -191,20 +180,15 @@ class IIRBlock: public OneToOneBlock
 
             _feedbackCoeffs = feedbackCoeffs;
             _func.bind(Pothos::Object(_feedbackCoeffs).convert<af::array>(), 1);
-            _waitTapsArmed = false; // We have taps
-
-            this->emitAllCoeffsChanged();
+            _disarmWaitTapsIfCoeffsPopulated();
         }
 
-        std::vector<TapType> getTaps() const
-        {
-            std::vector<TapType> taps = _feedForwardCoeffs;
-            taps.insert(taps.end(), _feedbackCoeffs.begin(), _feedbackCoeffs.end());
-
-            return taps;
-        }
-
-        void setTaps(const std::vector<TapType>& taps)
+        /*
+         * /comms/iir_designer emits a single tap vector that contains both the
+         * feed-forward and feedback taps in a flattened array. This is restricted
+         * to the taps being the same length.
+         */
+        void setTapsFromCommsIIRDesigner(const std::vector<TapType>& taps)
         {
             if(taps.empty())
             {
@@ -217,22 +201,20 @@ class IIRBlock: public OneToOneBlock
                           "the input must be of an even size.");
             }
 
-            _feedForwardCoeffs = _feedbackCoeffs = taps;
-            _feedForwardCoeffs.erase(
-                _feedForwardCoeffs.begin() + (_feedForwardCoeffs.size()/2),
-                _feedForwardCoeffs.end());
-            _feedbackCoeffs.erase(
-                _feedbackCoeffs.begin(),
-                _feedbackCoeffs.begin() + (_feedbackCoeffs.size()/2));
+            auto feedForwardCoeffs = taps;
+            auto feedbackCoeffs = taps;
+            feedForwardCoeffs.erase(
+                feedForwardCoeffs.begin() + (feedForwardCoeffs.size()/2),
+                feedForwardCoeffs.end());
+            feedbackCoeffs.erase(
+                feedbackCoeffs.begin(),
+                feedbackCoeffs.begin() + (feedbackCoeffs.size()/2));
 
-            _func.bind(Pothos::Object(_feedForwardCoeffs).convert<af::array>(), 0);
-            _func.bind(Pothos::Object(_feedbackCoeffs).convert<af::array>(), 1);
-            _waitTapsArmed = false; // We have taps
-
-            this->emitAllCoeffsChanged();
+            this->setFeedForwardCoeffs(feedForwardCoeffs);
+            this->setFeedbackCoeffs(feedbackCoeffs);
         }
 
-        bool getWaitTaps() const
+        bool waitTaps() const
         {
             return _waitTaps;
         }
@@ -256,14 +238,9 @@ class IIRBlock: public OneToOneBlock
         bool _waitTaps;
         bool _waitTapsArmed;
 
-        void emitAllCoeffsChanged()
+        void _disarmWaitTapsIfCoeffsPopulated()
         {
-            this->emitSignal("feedForwardCoeffsChanged", _feedForwardCoeffs);
-            this->emitSignal("feedbackCoeffsChanged", _feedbackCoeffs);
-
-            std::vector<TapType> taps = _feedForwardCoeffs;
-            taps.insert(taps.end(), _feedbackCoeffs.begin(), _feedbackCoeffs.end());
-            this->emitSignal("tapsChanged", taps);
+            _waitTapsArmed = _feedForwardCoeffs.empty() || _feedbackCoeffs.empty();
         }
 };
 
@@ -282,13 +259,6 @@ static Pothos::Block* makeFIR(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new FIRBlock<T>(device,dtype.dimension());
 
-    ifTypeDeclareFactory(std::int16_t)
-    ifTypeDeclareFactory(std::int32_t)
-    ifTypeDeclareFactory(std::int64_t)
-    ifTypeDeclareFactory(std::uint8_t)
-    ifTypeDeclareFactory(std::uint16_t)
-    ifTypeDeclareFactory(std::uint32_t)
-    ifTypeDeclareFactory(std::uint64_t)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     ifTypeDeclareFactory(std::complex<float>)
@@ -308,13 +278,6 @@ static Pothos::Block* makeIIR(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new IIRBlock<T>(device,dtype.dimension());
 
-    ifTypeDeclareFactory(std::int16_t)
-    ifTypeDeclareFactory(std::int32_t)
-    ifTypeDeclareFactory(std::int64_t)
-    ifTypeDeclareFactory(std::uint8_t)
-    ifTypeDeclareFactory(std::uint16_t)
-    ifTypeDeclareFactory(std::uint32_t)
-    ifTypeDeclareFactory(std::uint64_t)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     ifTypeDeclareFactory(std::complex<float>)
@@ -326,9 +289,95 @@ static Pothos::Block* makeIIR(
               dtype.name());
 }
 
+//
+// Block registries
+//
+
+/*
+ * |PothosDoc FIR Filter
+ *
+ * Uses <b>af::fir</b> to convolve the input stream with user-provided filter
+ * taps. The taps can be set at runtime by connecting the output of a FIR Designer
+ * block to <b>"setTaps"</b>.
+ *
+ * |category /ArrayFire/Signal
+ * |keywords array tap taps fir
+ * |factory /arrayfire/signal/fir_filter(device,dtype)
+ * |setter setTaps(taps)
+ * |setter setWaitTaps(waitTaps)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(float=1,cfloat=1,dim=1)
+ * |default "complex_float64"
+ * |preview disable
+ *
+ * |param taps[Taps] The FIR filter taps used in convolution.
+ * |widget LineEdit()
+ * |default [1.0]
+ * |preview enable
+ *
+ * |param waitTaps[Wait Taps] Wait for the taps to be set before allowing operation.
+ * Use this mode when taps are set exclusively at runtime by the setTaps() slot.
+ * |widget ToggleSwitch(on="True", off="False")
+ * |default false
+ * |preview disable
+ */
 static Pothos::BlockRegistry registerFIR(
-    "/arrayfire/signal/fir",
+    "/arrayfire/signal/fir_filter",
     Pothos::Callable(&makeFIR));
+
+
+/*
+ * |PothosDoc IIR Filter
+ *
+ * Uses <b>af::iir</b> to convolve the input stream with user-provided filter
+ * taps. The individual coefficient parts can be set at runtime by connecting
+ * the outputs of a designer block to <b>"setFeedForwardCoeffs"</b> and
+ * <b>"setFeedbackCoeffs"</b>. Alternatively, the output of <b>/comms/iir_designer</b>
+ * can be connected to <b>setTapsFromCommsIIRDesigner</b> to set both sets of
+ * coefficients simultaneously.
+ *
+ * |category /ArrayFire/Signal
+ * |keywords array tap taps iir
+ * |factory /arrayfire/signal/iir_filter(device,dtype)
+ * |setter setFeedForwardCoeffs(feedForwardCoeffs)
+ * |setter setFeedbackCoeffs(feedbackCoeffs)
+ * |setter setTapsFromCommsIIRDesigner(taps)
+ * |setter setWaitTaps(waitTaps)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(float=1,cfloat=1,dim=1)
+ * |default "complex_float64"
+ * |preview disable
+ *
+ * |param feedForwardCoeffs[Feed-Forward Coefficients]
+ * |widget LineEdit()
+ * |default [0.0676, 0.135, 0.0676]
+ * |preview enable
+ *
+ * |param feedbackCoeffs[Feedback Coefficients]
+ * |widget LineEdit()
+ * |default [1, -1.142, 0.412]
+ * |preview enable
+ *
+ * |param taps[Taps] The combined feed-forward and feedback coefficients.
+ * This parameter is only intended to be used with <b>/comms/iir_designer</b>.
+ * |widget LineEdit()
+ * |default [0.0676, 0.135, 0.0676, 1, -1.142, 0.412]
+ * |preview disable
+ *
+ * |param waitTaps[Wait Taps] Wait for the taps to be set before allowing operation.
+ * Use this mode when taps are set exclusively at runtime by the setTaps() slot.
+ * |widget ToggleSwitch(on="True", off="False")
+ * |default false
+ * |preview disable
+ */
 static Pothos::BlockRegistry registerIIR(
-    "/arrayfire/signal/iir",
+    "/arrayfire/signal/iir_filter",
     Pothos::Callable(&makeIIR));

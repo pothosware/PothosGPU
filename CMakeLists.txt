@@ -131,6 +131,7 @@ POTHOS_MODULE_UTIL(
         Source/FFT.cpp
         Source/FileSink.cpp
         Source/FileSource.cpp
+        Source/Filter.cpp
         Source/MinMax.cpp
         Source/Random.cpp
         Source/ScalarOpBlock.cpp

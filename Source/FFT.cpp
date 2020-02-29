@@ -254,7 +254,7 @@ static Pothos::Block* makeRFFT(
 /*
  * |PothosDoc FFT
  *
- * Calculates the FFT of all input streams. For the forward FFT, this
+ * Calculates the FFT of the input stream. For the forward FFT, this
  * block uses <b>af::fftInPlace</b> For the reverse FFT, this block
  * uses <b>af::ifftInPlace</b>.
  *
@@ -297,7 +297,7 @@ static Pothos::BlockRegistry registerFFT(
 /*
  * |PothosDoc Real FFT
  *
- * Calculates the real FFT of all input streams. For the forward FFT, this
+ * Calculates the real FFT of the input stream. For the forward FFT, this
  * block uses <b>af::fftR2C\<1\></b>. For the reverse FFT, this block uses
  * <b>af::fftC2R\<1\></b>.
  *
