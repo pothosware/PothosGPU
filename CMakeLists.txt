@@ -90,6 +90,7 @@ POTHOS_MODULE_UTIL(
         Source/OneToOneBlock.cpp
         Source/PinnedBufferManager.cpp
         Source/Pow.cpp
+        Source/PowersOfN.cpp
         Source/Random.cpp
         Source/ReducedBlock.cpp
         Source/Root.cpp
@@ -134,8 +135,10 @@ POTHOS_MODULE_UTIL(
         Source/FileSink.cpp
         Source/FileSource.cpp
         Source/Filter.cpp
+        Source/IsX.cpp
         Source/MinMax.cpp
         Source/Pow.cpp
+        Source/PowersOfN.cpp
         Source/Random.cpp
         Source/Root.cpp
         Source/ScalarOpBlock.cpp

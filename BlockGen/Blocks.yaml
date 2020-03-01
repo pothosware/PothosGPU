@@ -157,12 +157,6 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        - func: pow2
-          niceName: Powers of 2
-          header: arith
-          supportedTypes:
-                  supportFloat: true
-
         - func: sigmoid
           niceName: Sigmoid
           header: arith
