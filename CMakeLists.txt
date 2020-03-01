@@ -135,7 +135,9 @@ POTHOS_MODULE_UTIL(
         Source/FileSink.cpp
         Source/FileSource.cpp
         Source/Filter.cpp
+        Source/Flat.cpp
         Source/IsX.cpp
+        Source/LogN.cpp
         Source/MinMax.cpp
         Source/Pow.cpp
         Source/PowersOfN.cpp

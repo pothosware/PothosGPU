@@ -79,6 +79,31 @@ class Log: public OneToOneBlock
         double _base;
 };
 
+/*
+ * |PothosDoc Log N
+ *
+ * Calculates the logarithm of each value in the input stream with the
+ * scalar caller-given base. Uses <b>af::log2</b> and <b>af::log10</b>
+ * to optimize the log-2 and log-10 cases.
+ *
+ * |category /ArrayFire/Arith
+ * |keywords exponent power
+ * |factory /arrayfire/arith/log(device,dtype,base)
+ * |setter setBase(base)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(float=1,cfloat=1,dim=1)
+ * |default "complex_float64"
+ * |preview disable
+ *
+ * |param base[Base] The logarithm base.
+ * |widget DoubleSpinBox()
+ * |default 0.0
+ * |preview enable
+ */
 static Pothos::BlockRegistry registerLogN(
     "/arrayfire/arith/log",
     Pothos::Callable(&Log::make));
