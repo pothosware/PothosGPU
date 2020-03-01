@@ -94,7 +94,7 @@ def generateDTypeDictEntries(supportedTypes):
 def generatePothosDoc(category,blockYAML):
     desc = dict()
     desc["name"] = blockYAML.get("niceName", blockYAML["func"].title())
-    desc["path"] = "/arrayfire/{0}/{1}".format(blockYAML["header"], blockYAML["func"])
+    desc["path"] = "/arrayfire/{0}/{1}".format(blockYAML["header"], blockYAML.get("blockName", blockYAML["func"]))
     desc["categories"] = ["/ArrayFire/" + blockYAML.get("category", blockYAML["header"].title())]
     desc["keywords"] = [blockYAML["header"], blockYAML["func"]]
     if "keywords" in blockYAML:

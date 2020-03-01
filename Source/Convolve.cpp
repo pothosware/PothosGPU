@@ -49,22 +49,22 @@ class ConvolveBaseBlock: public OneToOneBlock
             _waitTaps(false),
             _waitTapsArmed(false)
         {
-            // Emit the initial signals.
-            this->setTaps(_taps);
-            this->setMode(_convMode);
-
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getTaps));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, taps));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setTaps));
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getMode));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, mode));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setMode));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, getWaitTaps));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setWaitTaps));
 
-            this->registerProbe("getTaps");
-            this->registerProbe("getMode");
+            this->registerProbe("taps");
+            this->registerProbe("mode");
 
             this->registerSignal("tapsChanged");
             this->registerSignal("modeChanged");
+
+            // Emit the initial signals.
+            this->setTaps(_taps);
+            this->setMode(_convMode);
         }
 
         virtual ~ConvolveBaseBlock() = default;
@@ -76,7 +76,7 @@ class ConvolveBaseBlock: public OneToOneBlock
             _waitTapsArmed = _waitTaps;
         }
 
-        std::vector<TapType> getTaps() const
+        std::vector<TapType> taps() const
         {
             return _taps;
         }
@@ -95,7 +95,7 @@ class ConvolveBaseBlock: public OneToOneBlock
             this->emitSignal("tapsChanged", _taps);
         }
 
-        std::string getMode() const
+        std::string mode() const
         {
             return Pothos::Object(_convMode).convert<std::string>();
         }
@@ -113,7 +113,6 @@ class ConvolveBaseBlock: public OneToOneBlock
             return _waitTaps;
         }
 
-        // TODO: make this an initializer
         void setWaitTaps(bool waitTaps)
         {
             _waitTaps = waitTaps;
@@ -149,19 +148,19 @@ class ConvolveBlock: public ConvolveBaseBlock<T>
                 Pothos::Callable(&af::convolve1)),
             _convDomain(::AF_CONV_AUTO)
         {
-            // Emit the initial signal.
-            this->setDomain(_convDomain);
-
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getDomain));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, domain));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setDomain));
 
-            this->registerProbe("getDomain");
+            this->registerProbe("domain");
             this->registerSignal("domainChanged");
+
+            // Emit the initial signal.
+            this->setDomain(_convDomain);
         }
 
         virtual ~ConvolveBlock() = default;
 
-        std::string getDomain() const
+        std::string domain() const
         {
             return Pothos::Object(_convDomain).convert<std::string>();
         }
@@ -239,9 +238,116 @@ static Pothos::Block* makeFFTConvolve(
               dtype.name());
 }
 
+//
+// Block registries
+//
+
+/*
+ * |PothosDoc Convolve
+ *
+ * Uses <b>af::convolve1</b> to convolve the input stream with user-provided filter
+ * taps. The taps can be set at runtime by connecting the output of a FIR Designer
+ * block to <b>"setTaps"</b>.
+ *
+ * |category /ArrayFire/Signal
+ * |keywords array tap taps convolution
+ * |factory /arrayfire/signal/convolve(device,dtype)
+ * |setter setTaps(taps)
+ * |setter setMode(mode)
+ * |setter setDomain(domain)
+ * |setter setWaitTaps(waitTaps)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(float=1,cfloat=1,dim=1)
+ * |default "complex_float64"
+ * |preview disable
+ *
+ * |param taps[Taps] The filter taps used in convolution.
+ * |widget LineEdit()
+ * |default [1.0]
+ * |preview enable
+ *
+ * |param mode[Convolution Mode] Options:
+ * <ul>
+ * <li><b>"Default"</b>: don't expand convolution output</li>
+ * <li><b>"Expand"</b>: expand convolution output to match input size</li>
+ * </ul>
+ * |widget ComboBox(editable=false)
+ * |option [Default] "Default"
+ * |option [Expand] "Expand"
+ * |default "Default"
+ * |preview enable
+ *
+ * |param domain[Domain] The domain in which to convolve (frequency vs. spatial). Options:
+ * <ul>
+ * <li><b>Auto:</b> Let ArrayFire choose domain based on input</li>
+ * <li><b>Spatial:</b> Convolve signals in the spatial domain.</li>
+ * <li><b>Frequency:</b> Convolve signals in the frequency domain.</li>
+ * </ul>
+ * |widget ComboBox(editable=false)
+ * |option [Auto] "Auto"
+ * |option [Spatial] "Spatial"
+ * |option [Frequency] "Freq"
+ * |default "Auto"
+ * |preview enable
+ *
+ * |param waitTaps[Wait Taps] Wait for the taps to be set before allowing operation.
+ * Use this mode when taps are set exclusively at runtime by the setTaps() slot.
+ * |widget ToggleSwitch(on="True", off="False")
+ * |default false
+ * |preview disable
+ */
 static Pothos::BlockRegistry registerConvolve(
     "/arrayfire/signal/convolve",
     Pothos::Callable(&makeConvolve));
+
+/*
+ * |PothosDoc FFT Convolve
+ *
+ * Uses <b>af::fftConvolve1</b> to convolve the input stream with user-provided filter
+ * taps using an FFT. The taps can be set at runtime by connecting the output of a FIR Designer
+ * block to <b>"setTaps"</b>.
+ *
+ * |category /ArrayFire/Signal
+ * |keywords array tap taps convolution
+ * |factory /arrayfire/signal/fftconvolve(device,dtype)
+ * |setter setTaps(taps)
+ * |setter setMode(mode)
+ * |setter setWaitTaps(waitTaps)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param dtype[Data Type] The output's data type.
+ * |widget DTypeChooser(float=1,cfloat=1,dim=1)
+ * |default "complex_float64"
+ * |preview disable
+ *
+ * |param taps[Taps] The filter taps used in convolution.
+ * |widget LineEdit()
+ * |default [1.0]
+ * |preview enable
+ *
+ * |param mode[Convolution Mode] Options:
+ * <ul>
+ * <li><b>"Default"</b>: don't expand convolution output</li>
+ * <li><b>"Expand"</b>: expand convolution output to match input size</li>
+ * </ul>
+ * |widget ComboBox(editable=false)
+ * |option [Default] "Default"
+ * |option [Expand] "Expand"
+ * |default "Default"
+ * |preview enable
+ *
+ * |param waitTaps[Wait Taps] Wait for the taps to be set before allowing operation.
+ * Use this mode when taps are set exclusively at runtime by the setTaps() slot.
+ * |widget ToggleSwitch(on="True", off="False")
+ * |default false
+ * |preview disable
+ */
 static Pothos::BlockRegistry registerFFTConvolve(
     "/arrayfire/signal/fftconvolve",
     Pothos::Callable(&makeFFTConvolve));
