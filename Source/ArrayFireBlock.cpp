@@ -223,7 +223,7 @@ af::array ArrayFireBlock::_getInputPortAsAfArray(
     bool truncateToMinLength)
 {
     auto bufferChunk = this->input(portId)->buffer();
-    const size_t minLength = this->workInfo().minElements;
+    const size_t minLength = this->workInfo().minAllElements;
     assert(minLength <= bufferChunk.elements());
 
     if(truncateToMinLength && (minLength < bufferChunk.elements()))
@@ -250,6 +250,12 @@ void ArrayFireBlock::_produceFromAfArray(
                       Poco::NumberFormatter::format(afArray.elements()),
                       Poco::NumberFormatter::format(outputPort->elements())));
     }
+    else if(afArray.elements() == 0)
+    {
+        throw Pothos::AssertionViolationException(
+                "Attempted to output an empty af::array,",
+                "Port: "+Pothos::Object(portId).convert<std::string>());
+    }
 
     afArray.host(outputPort->buffer());
     outputPort->produce(afArray.elements());
@@ -260,5 +266,11 @@ void ArrayFireBlock::_postAfArray(
     const PortIdType& portId,
     const AfArrayType& afArray)
 {
+    if(afArray.elements() == 0)
+    {
+        throw Pothos::AssertionViolationException(
+                "Attempted to output an empty af::array,",
+                "Port: "+Pothos::Object(portId).convert<std::string>());
+    }
     this->output(portId)->postBuffer(Pothos::Object(afArray).convert<Pothos::BufferChunk>());
 }

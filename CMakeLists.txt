@@ -71,6 +71,7 @@ POTHOS_MODULE_UTIL(
         Source/BufferConversions.cpp
         Source/Cast.cpp
         Source/Clamp.cpp
+        Source/Complex.cpp
         Source/Constant.cpp
         Source/Convolve.cpp
         Source/CorrCoef.cpp
@@ -95,7 +96,6 @@ POTHOS_MODULE_UTIL(
         Source/ReducedBlock.cpp
         Source/Root.cpp
         Source/ScalarOpBlock.cpp
-        Source/SplitComplex.cpp
         Source/Statistics.cpp
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
@@ -105,10 +105,10 @@ POTHOS_MODULE_UTIL(
         Testing/CastBlockTest.cpp
         Testing/ClampBlockTest.cpp
         Testing/ComparatorBlockTest.cpp
+        Testing/ComplexBlockTest.cpp
         Testing/FlatBlockTest.cpp
         Testing/IsXBlockTest.cpp
         Testing/ScalarOpBlockTests.cpp
-        Testing/SplitComplexBlockTest.cpp
         Testing/NToOneBlockExecutionTest.cpp
         Testing/OneToOneBlockExecutionTest.cpp
         Testing/TwoToOneBlockExecutionTest.cpp
@@ -128,6 +128,7 @@ POTHOS_MODULE_UTIL(
         Source/ArrayOpBlock.cpp
         Source/Cast.cpp
         Source/Clamp.cpp
+        Source/Complex.cpp
         Source/Constant.cpp
         Source/Convolve.cpp
         Source/CorrCoef.cpp
@@ -144,7 +145,6 @@ POTHOS_MODULE_UTIL(
         Source/Random.cpp
         Source/Root.cpp
         Source/ScalarOpBlock.cpp
-        Source/SplitComplex.cpp
         Source/Statistics.cpp
     DESTINATION arrayfire
 )

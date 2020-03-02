@@ -357,15 +357,6 @@ TwoToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        - blockName: combine_complex
-          niceName: Combine Complex
-          func: complex
-          category: Convert
-          description: Combine real and imaginary inputs into complex outputs.
-          header: arith
-          verify: Out # std::complex constructor
-          pattern: FloatToComplex
-
         - func: polar_to_complex
           niceName: Polar to Complex
           header: arith
