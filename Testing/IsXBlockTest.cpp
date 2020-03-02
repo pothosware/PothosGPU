@@ -144,3 +144,18 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_iszero)
     testIsX<float>(blockRegistryPath, signedOutput);
     testIsX<double>(blockRegistryPath, signedOutput);
 }
+
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_sign)
+{
+    PothosArrayFireTests::setupTestEnv();
+
+    const std::string blockRegistryPath = "/arrayfire/arith/sign";
+    const std::vector<std::int8_t> expectedOutput = {0,0,1,0,0};
+
+    // TODO: test complex
+    testIsX<std::int16_t>(blockRegistryPath, expectedOutput);
+    testIsX<std::int32_t>(blockRegistryPath, expectedOutput);
+    testIsX<std::int64_t>(blockRegistryPath, expectedOutput);
+    testIsX<float>(blockRegistryPath, expectedOutput);
+    testIsX<double>(blockRegistryPath, expectedOutput);
+}
