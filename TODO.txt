@@ -4,5 +4,4 @@ Short-term:
  * data: range (optionally tracking across multiple works), iota(?), join, shift, flip
  * signal: interp?
  * statistics: topk
- * Consistency in if strings are all upper-case or title-case
  * Test pinned buffer manager that chooses own backend

@@ -76,11 +76,11 @@ class RandomBlock: public ArrayFireBlock
 
         void setDistribution(const std::string& distribution)
         {
-            if("UNIFORM" == distribution)
+            if("Uniform" == distribution)
             {
                 this->_afRandomFunc = &af::randu;
             }
-            else if("NORMAL" == distribution)
+            else if("Normal" == distribution)
             {
                 this->_afRandomFunc = &af::randn;
             }
@@ -166,9 +166,9 @@ class RandomBlock: public ArrayFireBlock
  *
  * |param distribution[Distribution]
  * |widget ComboBox(editable=False)
- * |option [Normal] "NORMAL"
- * |option [Uniform] "UNIFORM"
- * |default "NORMAL"
+ * |option [Normal] "Normal"
+ * |option [Uniform] "Uniform"
+ * |default "Normal"
  * |preview enable
  *
  * |param randomEngineType[Random Engine Type]

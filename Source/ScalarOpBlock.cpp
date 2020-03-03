@@ -88,7 +88,7 @@ class ScalarOpBlock: public OneToOneBlock
 enum class ScalarBlockType
 {
     ARITHMETIC,
-    COMPARATOR,
+    COMPARATOr,
     BITWISE,
     LOGICAL
 };
@@ -114,14 +114,14 @@ static Pothos::Block* makeScalarOpBlock(
             switch(blockType) \
             { \
                 case ScalarBlockType::ARITHMETIC: \
-                    IfTypeThenLambda(+, "ADD", operation, cType, func) \
-                    else IfTypeThenLambda(-, "SUBTRACT", operation, cType, func) \
-                    else IfTypeThenLambda(*, "MULTIPLY", operation, cType, func) \
-                    else IfTypeThenLambda(/, "DIVIDE", operation, cType, func) \
-                    else IfTypeThenLambda(%, "MODULUS", operation, cType, func) \
+                    IfTypeThenLambda(+, "Add", operation, cType, func) \
+                    else IfTypeThenLambda(-, "Subtract", operation, cType, func) \
+                    else IfTypeThenLambda(*, "Multiply", operation, cType, func) \
+                    else IfTypeThenLambda(/, "Divide", operation, cType, func) \
+                    else IfTypeThenLambda(%, "Modulus", operation, cType, func) \
                     else throw Pothos::InvalidArgumentException("Invalid operation", operation); \
                     break; \
-                case ScalarBlockType::COMPARATOR: \
+                case ScalarBlockType::COMPARATOr: \
                     IfTypeThenLambda(>, ">", operation, cType, func) \
                     else IfTypeThenLambda(>=, ">=", operation, cType, func) \
                     else IfTypeThenLambda(<, "<", operation, cType, func) \
@@ -131,16 +131,16 @@ static Pothos::Block* makeScalarOpBlock(
                     else throw Pothos::InvalidArgumentException("Invalid operation", operation); \
                     break; \
                 case ScalarBlockType::BITWISE: \
-                    IfTypeThenLambda(&, "AND", operation, cType, func) \
-                    else IfTypeThenLambda(|, "OR", operation, cType, func) \
-                    else IfTypeThenLambda(^, "XOR", operation, cType, func) \
-                    else IfTypeThenLambda(<<, "LEFTSHIFT", operation, cType, func) \
-                    else IfTypeThenLambda(>>, "RIGHTSHIFT", operation, cType, func) \
+                    IfTypeThenLambda(&, "And", operation, cType, func) \
+                    else IfTypeThenLambda(|, "Or", operation, cType, func) \
+                    else IfTypeThenLambda(^, "XOr", operation, cType, func) \
+                    else IfTypeThenLambda(<<, "Left Shift", operation, cType, func) \
+                    else IfTypeThenLambda(>>, "Right Shift", operation, cType, func) \
                     else throw Pothos::InvalidArgumentException("Invalid operation", operation); \
                     break; \
                 case ScalarBlockType::LOGICAL: \
-                    IfTypeThenLambda(&&, "AND", operation, cType, func) \
-                    else IfTypeThenLambda(||, "OR", operation, cType, func) \
+                    IfTypeThenLambda(&&, "And", operation, cType, func) \
+                    else IfTypeThenLambda(||, "Or", operation, cType, func) \
                     else throw Pothos::InvalidArgumentException("Invalid operation", operation); \
                     break; \
                 default: \
@@ -152,7 +152,7 @@ static Pothos::Block* makeScalarOpBlock(
                            device, \
                            func, \
                            dtype, \
-                           ((ScalarBlockType::COMPARATOR == blockType) || (ScalarBlockType::LOGICAL == blockType)) ? Int8DType : dtype, \
+                           ((ScalarBlockType::COMPARATOr == blockType) || (ScalarBlockType::LOGICAL == blockType)) ? Int8DType : dtype, \
                            scalarObject.convert<cType>(), \
                            allowZeroScalar); \
         }
@@ -165,14 +165,14 @@ static Pothos::Block* makeScalarOpBlock(
     IfTypeDeclareFactory(std::uint32_t)
     IfTypeDeclareFactory(std::uint64_t)
 
-    if((ScalarBlockType::ARITHMETIC == blockType) || (ScalarBlockType::COMPARATOR == blockType))
+    if((ScalarBlockType::ARITHMETIC == blockType) || (ScalarBlockType::COMPARATOr == blockType))
     {
         IfTypeDeclareFactory(float)
         IfTypeDeclareFactory(double)
     }
     if(ScalarBlockType::ARITHMETIC == blockType)
     {
-        if("MODULUS" != operation)
+        if("Modulus" != operation)
         {
             IfTypeDeclareFactory(std::complex<float>)
             IfTypeDeclareFactory(std::complex<double>)
@@ -207,12 +207,12 @@ static Pothos::Block* makeScalarOpBlock(
  *
  * |param operation[Operation] The arithmetic operation to perform.
  * |widget ComboBox(editable=false)
- * |option [Add] "ADD"
- * |option [Subtract] "SUBTRACT"
- * |option [Multiply] "MULTIPLY"
- * |option [Divide] "DIVIDE"
- * |option [Modulus] "MODULUS"
- * |default "ADD"
+ * |option [Add] "Add"
+ * |option [Subtract] "Subtract"
+ * |option [Multiply] "Multiply"
+ * |option [Divide] "Divide"
+ * |option [Modulus] "Modulus"
+ * |default "Add"
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
@@ -267,7 +267,7 @@ static Pothos::BlockRegistry registerScalarArithmetic(
  */
 static Pothos::BlockRegistry registerScalarComparator(
     "/arrayfire/scalar/comparator",
-    Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::COMPARATOR, 0));
+    Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::COMPARATOr, 0));
 
 /*
  * |PothosDoc Scalar Bitwise
@@ -285,11 +285,11 @@ static Pothos::BlockRegistry registerScalarComparator(
  *
  * |param operation[Operation] The bitwise operation to perform.
  * |widget ComboBox(editable=false)
- * |option [And] "AND"
- * |option [Or] "OR"
- * |option [Left Shift] "LEFTSHIFT"
- * |option [Right Shift] "RIGHTSHIFT"
- * |default "AND"
+ * |option [And] "And"
+ * |option [Or] "Or"
+ * |option [Left Shift] "Left Shift"
+ * |option [Right Shift] "Right Shift"
+ * |default "And"
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
@@ -323,9 +323,9 @@ static Pothos::BlockRegistry registerScalarBitwise(
  *
  * |param operation[Operation] The bitwise operation to perform.
  * |widget ComboBox(editable=false)
- * |option [And] "AND"
- * |option [Or] "OR"
- * |default "AND"
+ * |option [And] "And"
+ * |option [Or] "Or"
+ * |default "And"
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.

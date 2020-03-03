@@ -35,10 +35,10 @@ static Pothos::Block* makeArrayArithmetic(
     const Pothos::DType& dtype,
     size_t numChans)
 {
-    IfOpThenReducedBlock("ADD", af::sum)
-    else IfOpThenNToOneBlock(-, "SUBTRACT")
-    else IfOpThenReducedBlock("MULTIPLY", af::product)
-    else IfOpThenNToOneBlock(/, "DIVIDE")
+    IfOpThenReducedBlock("Add", af::sum)
+    else IfOpThenNToOneBlock(-, "Subtract")
+    else IfOpThenReducedBlock("Multiply", af::product)
+    else IfOpThenNToOneBlock(/, "Divide")
 
     throw Pothos::InvalidArgumentException("Invalid operation", operation);
 }
@@ -51,9 +51,9 @@ static Pothos::Block* makeArrayBitwise(
 {
     if(isDTypeAnyInt(dtype))
     {
-        IfOpThenNToOneBlock(&, "AND")
-        else IfOpThenNToOneBlock(|, "OR")
-        else IfOpThenNToOneBlock(^, "XOR")
+        IfOpThenNToOneBlock(&, "And")
+        else IfOpThenNToOneBlock(|, "Or")
+        else IfOpThenNToOneBlock(^, "XOr")
 
         throw Pothos::InvalidArgumentException("Invalid operation", operation);
     }
@@ -69,8 +69,8 @@ static Pothos::Block* makeArrayLogical(
 {
     if(isDTypeAnyInt(dtype))
     {
-        IfOpThenReducedBlockInt8("AND", af::allTrue)
-        else IfOpThenReducedBlockInt8("OR", af::anyTrue)
+        IfOpThenReducedBlockInt8("And", af::allTrue)
+        else IfOpThenReducedBlockInt8("Or", af::anyTrue)
 
         throw Pothos::InvalidArgumentException("Invalid operation", operation);
     }
@@ -99,11 +99,11 @@ static Pothos::Block* makeArrayLogical(
  *
  * |param operation[Operation] The arithmetic operation to perform.
  * |widget ComboBox(editable=false)
- * |option [Add] "ADD"
- * |option [Subtract] "SUBTRACT"
- * |option [Multiply] "MULTIPLY"
- * |option [Divide] "DIVIDE"
- * |default "ADD"
+ * |option [Add] "Add"
+ * |option [Subtract] "Subtract"
+ * |option [Multiply] "Multiply"
+ * |option [Divide] "Divide"
+ * |default "Add"
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
@@ -135,10 +135,10 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  *
  * |param operation[Operation] The bitwise operation to perform.
  * |widget ComboBox(editable=false)
- * |option [And] "AND"
- * |option [Or] "OR"
- * |option [XOR] "XOR"
- * |default "AND"
+ * |option [And] "And"
+ * |option [Or] "Or"
+ * |option [XOr] "XOr"
+ * |default "And"
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
@@ -171,9 +171,9 @@ static Pothos::BlockRegistry registerArrayBitwise(
  *
  * |param operation[Operation] The logical operation to perform.
  * |widget ComboBox(editable=false)
- * |option [And] "AND"
- * |option [Or] "OR"
- * |default "AND"
+ * |option [And] "And"
+ * |option [Or] "Or"
+ * |default "And"
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
