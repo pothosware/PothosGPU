@@ -4,4 +4,3 @@ Short-term:
  * data: range (optionally tracking across multiple works), iota(?), join, shift, flip
  * signal: interp?
  * statistics: topk
- * Test pinned buffer manager that chooses own backend

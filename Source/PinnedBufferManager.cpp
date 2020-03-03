@@ -111,7 +111,7 @@ private:
 };
 
 /***********************************************************************
- * factory and registration
+ * Factory
  **********************************************************************/
 Pothos::BufferManager::Sptr makePinnedBufferManager(
     af::Backend backend,
@@ -120,18 +120,4 @@ Pothos::BufferManager::Sptr makePinnedBufferManager(
     auto bufferManager = std::make_shared<PinnedBufferManager>(backend);
     bufferManager->init(args);
     return bufferManager;
-}
-
-static Pothos::BufferManager::Sptr makePinnedBufferManagerNoBackend()
-{
-    return std::make_shared<PinnedBufferManager>(getAvailableBackends()[0]);
-}
-
-// ArrayFire blocks will use their own backends, but let's expose a buffer
-// manager that uses the best implementation for outside usage, just because.
-pothos_static_block(pothosFrameworkRegisterPinnedBufferManager)
-{
-    Pothos::PluginRegistry::addCall(
-        "/framework/buffer_manager/pinned",
-        &makePinnedBufferManagerNoBackend);
 }
