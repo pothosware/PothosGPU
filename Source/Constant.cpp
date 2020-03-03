@@ -118,12 +118,12 @@ static Pothos::Block* constantFactory(
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param dtype(Data Type) The block data type.
+ * |param dtype[Data Type] The block data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *
- * |param constant(Constant) Which constant to fill the buffer with.
+ * |param constant[Constant] Which constant to fill the buffer with.
  * |widget LineEdit()
  * |default 0
  * |preview enable

@@ -159,19 +159,19 @@ class RandomBlock: public ArrayFireBlock
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param dtype(Data Type) The output's data type.
+ * |param dtype[Data Type] The output's data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *
- * |param distribution(Distribution)
+ * |param distribution[Distribution]
  * |widget ComboBox(editable=False)
  * |option [Normal] "NORMAL"
  * |option [Uniform] "UNIFORM"
  * |default "NORMAL"
  * |preview enable
  *
- * |param randomEngineType(Random Engine Type)
+ * |param randomEngineType[Random Engine Type]
  * |widget ComboBox(editable=False)
  * |option [Philox] "Philox"
  * |option [Threefry] "Threefry"

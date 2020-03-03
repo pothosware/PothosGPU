@@ -111,7 +111,7 @@ static Pothos::Block* makeArrayLogical(
  * |default "float64"
  * |preview disable
  *
- * |param nchans(Num Channels) The number of arithmetic inputs.
+ * |param nchans[Num Channels] The number of arithmetic inputs.
  * |widget SpinBox(minimum=2)
  * |default 2
  * |preview disable
@@ -146,7 +146,7 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  * |default "uint64"
  * |preview disable
  *
- * |param nchans(Num Channels) The number of inputs.
+ * |param nchans[Num Channels] The number of inputs.
  * |widget SpinBox(minimum=2)
  * |default 2
  * |preview disable
@@ -181,7 +181,7 @@ static Pothos::BlockRegistry registerArrayBitwise(
  * |default "uint64"
  * |preview disable
  *
- * |param nchans(Num Channels) The number of inputs.
+ * |param nchans[Num Channels] The number of inputs.
  * |widget SpinBox(minimum=2)
  * |default 2
  * |preview disable

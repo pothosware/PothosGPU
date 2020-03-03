@@ -117,7 +117,7 @@ class CovarianceBlock: public ArrayFireBlock
  * |preview disable
  *
  * |param isBiased[Is Biased?] Whether or not biased estimate should be taken
- * |widget ToggleSwitch(on="true",off="false")
+ * |widget ToggleSwitch(on="True",off="False")
  * |default false
  */
 static Pothos::BlockRegistry registerStatisticsCorrCoef(

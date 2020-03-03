@@ -112,7 +112,7 @@ static Pothos::Block* minMaxFactory(
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param dtype(Data Type) The block data type.
+ * |param dtype[Data Type] The block data type.
  * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
@@ -135,7 +135,7 @@ static Pothos::BlockRegistry registerMin(
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param dtype(Data Type) The block data type.
+ * |param dtype[Data Type] The block data type.
  * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1,dim=1)
  * |default "float64"
  * |preview disable

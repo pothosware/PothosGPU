@@ -204,16 +204,16 @@ class FileSourceBlock: public ArrayFireBlock
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param filepath(Filepath) The path of the ArrayFire binary file.
+ * |param filepath[Filepath] The path of the ArrayFire binary file.
  * |widget FileEntry(mode=open)
  * |preview enable
  *
- * |param key(Key) The key of the array stored in the ArrayFire binary file.
+ * |param key[Key] The key of the array stored in the ArrayFire binary file.
  * |widget StringEntry()
  * |preview enable
  *
- * |param repeat(Repeat) Whether to continuously post the file contents or once.
- * |widget ToggleSwitch()
+ * |param repeat[Repeat] Whether to continuously post the file contents or once.
+ * |widget ToggleSwitch(on="True",off="False")
  * |preview enable
  * |default true
  */

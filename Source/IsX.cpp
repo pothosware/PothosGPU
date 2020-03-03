@@ -43,7 +43,7 @@ static Pothos::Block* makeIsX(
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param dtype(Data Type) The output's data type.
+ * |param dtype[Data Type] The output's data type.
  * |widget DTypeChooser(float=1,dim=1)
  * |default "float64"
  * |preview disable
@@ -68,7 +68,7 @@ static Pothos::BlockRegistry registerArithIsInf(
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param dtype(Data Type) The output's data type.
+ * |param dtype[Data Type] The output's data type.
  * |widget DTypeChooser(float=1,dim=1)
  * |default "float64"
  * |preview disable
@@ -93,7 +93,7 @@ static Pothos::BlockRegistry registerArithIsNaN(
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param dtype(Data Type) The output's data type.
+ * |param dtype[Data Type] The output's data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
@@ -118,7 +118,7 @@ static Pothos::BlockRegistry registerArithIsZero(
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param dtype(Data Type) The output's data type.
+ * |param dtype[Data Type] The output's data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable

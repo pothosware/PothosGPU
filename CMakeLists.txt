@@ -75,6 +75,7 @@ POTHOS_MODULE_UTIL(
         Source/Constant.cpp
         Source/Convolve.cpp
         Source/CorrCoef.cpp
+        Source/Covariance.cpp
         Source/DeviceCache.cpp
         Source/EnumConversions.cpp
         Source/FactoryOnly.cpp
@@ -132,6 +133,7 @@ POTHOS_MODULE_UTIL(
         Source/Constant.cpp
         Source/Convolve.cpp
         Source/CorrCoef.cpp
+        Source/Covariance.cpp
         Source/FFT.cpp
         Source/FileSink.cpp
         Source/FileSource.cpp

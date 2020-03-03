@@ -259,7 +259,7 @@ class FileSinkBlock: public ArrayFireBlock
  *
  * |param append[Append?]
  * |default false
- * |widget ToggleSwitch()
+ * |widget ToggleSwitch(on="True",off="False")
  * |preview enable
  */
 static Pothos::BlockRegistry registerFileSink(

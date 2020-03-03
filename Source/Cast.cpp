@@ -79,12 +79,12 @@ class CastBlock: public OneToOneBlock
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param inputDType(Input Data Type) The block data type.
+ * |param inputDType[Input Data Type] The block data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
  * |default "float64"
  * |preview disable
  *
- * |param outputDType(Output Data Type) The block data type.
+ * |param outputDType[Output Data Type] The block data type.
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
  * |default "complex_float64"
  * |preview disable

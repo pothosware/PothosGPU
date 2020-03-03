@@ -286,7 +286,7 @@ static Pothos::Block* makeRFFT(
  * |preview enable
  *
  * |param inverse[Inverse?]
- * |widget ToggleSwitch()
+ * |widget ToggleSwitch(on="True",off="False")
  * |preview enable
  * |default false
  */
@@ -329,7 +329,7 @@ static Pothos::BlockRegistry registerFFT(
  * |preview enable
  *
  * |param inverse[Inverse?]
- * |widget ToggleSwitch()
+ * |widget ToggleSwitch(on="True",off="False")
  * |preview enable
  * |default false
  */
