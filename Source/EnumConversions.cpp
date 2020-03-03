@@ -55,6 +55,20 @@ static const std::unordered_map<std::string, af::randomEngineType> RandomEngineT
     {"Mersenne", ::AF_RANDOM_ENGINE_MERSENNE},
 };
 
+static const std::unordered_map<std::string, af::interpType> InterpTypeEnumMap =
+{
+    {"Nearest",         ::AF_INTERP_NEAREST},
+    {"Linear",          ::AF_INTERP_LINEAR},
+    {"Bilinear",        ::AF_INTERP_BILINEAR},
+    {"Cubic",           ::AF_INTERP_CUBIC},
+    {"Lower",           ::AF_INTERP_LOWER},
+    {"Linear Cosine",   ::AF_INTERP_LINEAR_COSINE},
+    {"Bilinear Cosine", ::AF_INTERP_BILINEAR_COSINE},
+    {"Bicubic",         ::AF_INTERP_BICUBIC},
+    {"Cubic Spline",    ::AF_INTERP_CUBIC_SPLINE},
+    {"Bicubic Spline",  ::AF_INTERP_BICUBIC_SPLINE},
+};
+
 static af::dtype pothosDTypeToAfDType(const Pothos::DType& pothosDType)
 {
     return getValForKey(DTypeEnumMap, pothosDType.name());
@@ -108,6 +122,10 @@ pothos_static_block(registerArrayFireEnumConversions)
         RandomEngineTypeEnumMap,
         "std_string_to_af_randomenginetype",
         "af_randomenginetype_to_std_string");
+    registerEnumConversion(
+        InterpTypeEnumMap,
+        "std_string_to_af_interptype",
+        "af_interptype_to_std_string");
 
     // Different enough to not use helper function
     Pothos::PluginRegistry::add(

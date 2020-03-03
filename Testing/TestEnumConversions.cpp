@@ -103,3 +103,18 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_dtype_conversion)
     PothosArrayFireTests::testDTypeEnumUsage("complex_float32", ::c32);
     PothosArrayFireTests::testDTypeEnumUsage("complex_float64", ::c64);
 }
+
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_interptype_conversion)
+{
+    PothosArrayFireTests::testTypesCanConvert<std::string, af::interpType>();
+    PothosArrayFireTests::testEnumValueConversion("Nearest",         ::AF_INTERP_NEAREST);
+    PothosArrayFireTests::testEnumValueConversion("Linear",          ::AF_INTERP_LINEAR);
+    PothosArrayFireTests::testEnumValueConversion("Bilinear",        ::AF_INTERP_BILINEAR);
+    PothosArrayFireTests::testEnumValueConversion("Cubic",           ::AF_INTERP_CUBIC);
+    PothosArrayFireTests::testEnumValueConversion("Lower",           ::AF_INTERP_LOWER);
+    PothosArrayFireTests::testEnumValueConversion("Linear Cosine",   ::AF_INTERP_LINEAR_COSINE);
+    PothosArrayFireTests::testEnumValueConversion("Bilinear Cosine", ::AF_INTERP_BILINEAR_COSINE);
+    PothosArrayFireTests::testEnumValueConversion("Bicubic",         ::AF_INTERP_BICUBIC);
+    PothosArrayFireTests::testEnumValueConversion("Cubic Spline",    ::AF_INTERP_CUBIC_SPLINE);
+    PothosArrayFireTests::testEnumValueConversion("Bicubic Spline",  ::AF_INTERP_BICUBIC_SPLINE);
+}
