@@ -5,6 +5,7 @@
 
 #include <Pothos/Exception.hpp>
 #include <Pothos/Framework.hpp>
+#include <Pothos/Object.hpp>
 #include <Pothos/Proxy.hpp>
 #include <Pothos/Testing.hpp>
 
@@ -19,78 +20,148 @@
 #include <typeinfo>
 #include <vector>
 
-static constexpr const char* blockRegistryPath = "/arrayfire/array/comparator";
+static constexpr const char* arrayBlockRegistryPath = "/arrayfire/array/comparator";
+static constexpr const char* scalarBlockRegistryPath = "/arrayfire/scalar/comparator";
 
 template <typename T, typename ComparatorFcn>
-static void getTestValues(
+static void getScalarTestValues(
     ComparatorFcn comparatorFcn,
-    std::vector<T>* pinput0,
-    std::vector<T>* pinput1,
+    std::vector<T>* pInput,
+    T* pScalar,
     std::vector<std::int8_t>* pOutput)
 {
-    (*pinput0) = PothosArrayFireTests::getTestInputs<T>(true /*shuffle*/);
-    (*pinput1) = PothosArrayFireTests::getTestInputs<T>(true /*shuffle*/);
-    POTHOS_TEST_EQUAL(pinput0->size(), pinput1->size());
+    (*pInput) = PothosArrayFireTests::getTestInputs<T>(true /*shuffle*/);
+    (*pScalar) = PothosArrayFireTests::getSingleTestInput<T>();
 
-    for(size_t i = 0; i < pinput0->size(); ++i)
-    {
-        pOutput->emplace_back(comparatorFcn(pinput0->at(i), pinput1->at(i)) ? 1 : 0);
-    }
-    POTHOS_TEST_EQUAL(pOutput->size(), pinput0->size());
+    std::transform(
+        pInput->begin(),
+        pInput->end(),
+        std::back_inserter(*pOutput),
+        [&](T input)
+        {
+            return comparatorFcn(input, (*pScalar)) ? 1 : 0;
+        });
+    POTHOS_TEST_EQUAL(pOutput->size(), pInput->size());
 }
 
-static void getTestValues(
+template <typename T, typename ComparatorFcn>
+static void getArrayTestValues(
+    ComparatorFcn comparatorFcn,
+    std::vector<T>* pInput0,
+    std::vector<T>* pInput1,
+    std::vector<std::int8_t>* pOutput)
+{
+    (*pInput0) = PothosArrayFireTests::getTestInputs<T>(true /*shuffle*/);
+    (*pInput1) = PothosArrayFireTests::getTestInputs<T>(true /*shuffle*/);
+    POTHOS_TEST_EQUAL(pInput0->size(), pInput1->size());
+
+    for(size_t i = 0; i < pInput0->size(); ++i)
+    {
+        pOutput->emplace_back(comparatorFcn(pInput0->at(i), pInput1->at(i)) ? 1 : 0);
+    }
+    POTHOS_TEST_EQUAL(pOutput->size(), pInput0->size());
+}
+
+static void getScalarTestValues(
     const std::string& type,
     const std::string& operation,
-    Pothos::BufferChunk* pinput0,
-    Pothos::BufferChunk* pinput1,
+    Pothos::BufferChunk* pInput,
+    Pothos::Object* pScalar,
     Pothos::BufferChunk* pOutput)
 {
     static const Pothos::DType Int8DType("int8");
 
     const Pothos::DType dtype(type);
 
-#define GET_TEST_VALUES_FOR_OP(op, func) \
+#define GET_SCALAR_TEST_VALUES_FOR_OP(op, func) \
     if(operation == op) \
     { \
-        getTestValues(func, &input0, &input1, &output); \
+        getScalarTestValues(func, &input, &scalar, &output); \
     } \
 
-#define GET_TEST_VALUES(typeStr, cType) \
+#define GET_SCALAR_TEST_VALUES(typeStr, cType) \
+    if(type == typeStr) \
+    { \
+        std::vector<cType> input; \
+        cType scalar(0); \
+        std::vector<std::int8_t> output; \
+ \
+        GET_SCALAR_TEST_VALUES_FOR_OP(">",  std::greater<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP(">=", std::greater_equal<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP("<",  std::less<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP("<=", std::less_equal<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
+ \
+        (*pInput) = PothosArrayFireTests::stdVectorToBufferChunk(input); \
+        (*pScalar) = Pothos::Object(scalar); \
+        (*pOutput) = PothosArrayFireTests::stdVectorToBufferChunk(output); \
+        return; \
+    }
+
+    GET_SCALAR_TEST_VALUES("int16",   std::int16_t)
+    GET_SCALAR_TEST_VALUES("int32",   std::int32_t)
+    GET_SCALAR_TEST_VALUES("int64",   std::int64_t)
+    GET_SCALAR_TEST_VALUES("uint8",   std::uint8_t)
+    GET_SCALAR_TEST_VALUES("uint16",  std::uint16_t)
+    GET_SCALAR_TEST_VALUES("uint32",  std::uint32_t)
+    GET_SCALAR_TEST_VALUES("uint64",  std::uint64_t)
+    GET_SCALAR_TEST_VALUES("float32", float)
+    GET_SCALAR_TEST_VALUES("float64", double)
+}
+
+static void getArrayTestValues(
+    const std::string& type,
+    const std::string& operation,
+    Pothos::BufferChunk* pInput0,
+    Pothos::BufferChunk* pInput1,
+    Pothos::BufferChunk* pOutput)
+{
+    static const Pothos::DType Int8DType("int8");
+
+    const Pothos::DType dtype(type);
+
+#define GET_ARRAY_TEST_VALUES_FOR_OP(op, func) \
+    if(operation == op) \
+    { \
+        getArrayTestValues(func, &input0, &input1, &output); \
+    } \
+
+#define GET_ARRAY_TEST_VALUES(typeStr, cType) \
     if(type == typeStr) \
     { \
         std::vector<cType> input0, input1; \
         std::vector<std::int8_t> output; \
  \
-        GET_TEST_VALUES_FOR_OP(">",  std::greater<cType>()); \
-        GET_TEST_VALUES_FOR_OP(">=", std::greater_equal<cType>()); \
-        GET_TEST_VALUES_FOR_OP("<",  std::less<cType>()); \
-        GET_TEST_VALUES_FOR_OP("<=", std::less_equal<cType>()); \
-        GET_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
-        GET_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP(">",  std::greater<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP(">=", std::greater_equal<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP("<",  std::less<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP("<=", std::less_equal<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
  \
-        (*pinput0) = PothosArrayFireTests::stdVectorToBufferChunk(input0); \
-        (*pinput1) = PothosArrayFireTests::stdVectorToBufferChunk(input1); \
+        (*pInput0) = PothosArrayFireTests::stdVectorToBufferChunk(input0); \
+        (*pInput1) = PothosArrayFireTests::stdVectorToBufferChunk(input1); \
         (*pOutput) = PothosArrayFireTests::stdVectorToBufferChunk(output); \
         return; \
     }
 
-    GET_TEST_VALUES("int16",   std::int16_t)
-    GET_TEST_VALUES("int32",   std::int32_t)
-    GET_TEST_VALUES("int64",   std::int64_t)
-    GET_TEST_VALUES("uint8",   std::uint8_t)
-    GET_TEST_VALUES("uint16",  std::uint16_t)
-    GET_TEST_VALUES("uint32",  std::uint32_t)
-    GET_TEST_VALUES("uint64",  std::uint64_t)
-    GET_TEST_VALUES("float32", float)
-    GET_TEST_VALUES("float64", double)
+    GET_ARRAY_TEST_VALUES("int16",   std::int16_t)
+    GET_ARRAY_TEST_VALUES("int32",   std::int32_t)
+    GET_ARRAY_TEST_VALUES("int64",   std::int64_t)
+    GET_ARRAY_TEST_VALUES("uint8",   std::uint8_t)
+    GET_ARRAY_TEST_VALUES("uint16",  std::uint16_t)
+    GET_ARRAY_TEST_VALUES("uint32",  std::uint32_t)
+    GET_ARRAY_TEST_VALUES("uint64",  std::uint64_t)
+    GET_ARRAY_TEST_VALUES("float32", float)
+    GET_ARRAY_TEST_VALUES("float64", double)
 }
 
-static void testComparatorBlockForTypeAndOperation(
+static void testScalarComparatorBlockForTypeAndOperation(
     const std::string& type,
     const std::string& operation)
 {
-    std::cout << "Testing " << blockRegistryPath
+    std::cout << "Testing " << scalarBlockRegistryPath
               << " (type: " << type
               << ", operation: " << operation << ")" << std::endl;
 
@@ -98,19 +169,95 @@ static void testComparatorBlockForTypeAndOperation(
     {
         POTHOS_TEST_THROWS(
             Pothos::BlockRegistry::make(
-                blockRegistryPath,
+                scalarBlockRegistryPath,
                 "Auto",
+                operation,
                 type,
-                operation),
+                0),
             Pothos::ProxyExceptionMessage);
     }
     else
     {
         auto afComparator = Pothos::BlockRegistry::make(
-                                blockRegistryPath,
+                                scalarBlockRegistryPath,
                                 "Auto",
+                                operation,
                                 type,
-                                operation);
+                                0);
+        POTHOS_TEST_EQUAL(
+            type,
+            afComparator.call("input", 0).call("dtype").call<std::string>("name"));
+        POTHOS_TEST_EQUAL(
+            "int8",
+            afComparator.call("output", 0).call("dtype").call<std::string>("name"));
+
+        Pothos::BufferChunk input;
+        Pothos::Object scalar;
+        Pothos::BufferChunk output;
+        getScalarTestValues(
+            type,
+            operation,
+            &input,
+            &scalar,
+            &output);
+        POTHOS_TEST_TRUE(input.elements() > 0);
+        POTHOS_TEST_TRUE(scalar);
+        POTHOS_TEST_EQUAL(input.elements(), output.elements());
+
+        afComparator.call("setScalar", scalar);
+        POTHOS_TEST_EQUAL(0, scalar.compareTo(afComparator.call("scalar")));
+
+        auto feederSource = Pothos::BlockRegistry::make(
+                                "/blocks/feeder_source",
+                                type);
+        auto collectorSink = Pothos::BlockRegistry::make(
+                                 "/blocks/collector_sink",
+                                 "int8");
+
+        feederSource.call("feedBuffer", input);
+
+        // Execute the topology.
+        {
+            Pothos::Topology topology;
+
+            topology.connect(feederSource, 0, afComparator, 0);
+            topology.connect(afComparator, 0, collectorSink, 0);
+
+            topology.commit();
+            POTHOS_TEST_TRUE(topology.waitInactive(0.05));
+        }
+
+        PothosArrayFireTests::testBufferChunk(
+            output,
+            collectorSink.call<Pothos::BufferChunk>("getBuffer"));
+    }
+}
+
+static void testArrayComparatorBlockForTypeAndOperation(
+    const std::string& type,
+    const std::string& operation)
+{
+    std::cout << "Testing " << arrayBlockRegistryPath
+              << " (type: " << type
+              << ", operation: " << operation << ")" << std::endl;
+
+    if(isDTypeComplexFloat(Pothos::DType(type)))
+    {
+        POTHOS_TEST_THROWS(
+            Pothos::BlockRegistry::make(
+                arrayBlockRegistryPath,
+                "Auto",
+                operation,
+                type),
+            Pothos::ProxyExceptionMessage);
+    }
+    else
+    {
+        auto afComparator = Pothos::BlockRegistry::make(
+                                arrayBlockRegistryPath,
+                                "Auto",
+                                operation,
+                                type);
         POTHOS_TEST_EQUAL(
             type,
             afComparator.call("input", 0).call("dtype").call<std::string>("name"));
@@ -124,7 +271,7 @@ static void testComparatorBlockForTypeAndOperation(
         Pothos::BufferChunk input0;
         Pothos::BufferChunk input1;
         Pothos::BufferChunk output;
-        getTestValues(
+        getArrayTestValues(
             type,
             operation,
             &input0,
@@ -165,12 +312,13 @@ static void testComparatorBlockForTypeAndOperation(
     }
 }
 
-static void testComparatorBlockForType(const std::string& type)
+static void testComparatorBlocksForType(const std::string& type)
 {
     static const std::vector<std::string> operations{"<","<=",">",">=","==","!="};
     for(const std::string& operation: operations)
     {
-        testComparatorBlockForTypeAndOperation(type, operation);
+        testScalarComparatorBlockForTypeAndOperation(type, operation);
+        testArrayComparatorBlockForTypeAndOperation(type, operation);
     }
 }
 
@@ -180,6 +328,6 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_comparators)
 
     for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
     {
-        testComparatorBlockForType(type);
+        testComparatorBlocksForType(type);
     }
 }

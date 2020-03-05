@@ -3,6 +3,7 @@
 
 #include "NToOneBlock.hpp"
 #include "ReducedBlock.hpp"
+#include "TwoToOneBlock.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Framework.hpp>
@@ -29,6 +30,10 @@
     if(opStr == operation) \
         return new NToOneBlock(device, NToOneLambda(op), dtype, numChans);
 
+#define IfOpThenTwoToOneBlock(op, opStr) \
+    if(opStr == operation) \
+        return new TwoToOneBlock(device, NToOneLambda(op), dtype, dtype, true);
+
 static Pothos::Block* makeArrayArithmetic(
     const std::string& device,
     const std::string& operation,
@@ -39,6 +44,27 @@ static Pothos::Block* makeArrayArithmetic(
     else IfOpThenNToOneBlock(-, "Subtract")
     else IfOpThenReducedBlock("Multiply", af::product)
     else IfOpThenNToOneBlock(/, "Divide")
+
+    throw Pothos::InvalidArgumentException("Invalid operation", operation);
+}
+
+static Pothos::Block* makeComparator(
+    const std::string& device,
+    const std::string& operation,
+    const Pothos::DType& dtype)
+{
+    static const DTypeSupport dtypeSupport{true,true,true,false};
+
+    #define IfOpThenComparator(op) \
+        if(#op == operation) \
+            return TwoToOneBlock::makeComparator(device, NToOneLambda(op), dtype, dtypeSupport);
+
+    IfOpThenComparator(<)
+    else IfOpThenComparator(<=)
+    else IfOpThenComparator(>)
+    else IfOpThenComparator(>=)
+    else IfOpThenComparator(==)
+    else IfOpThenComparator(!=)
 
     throw Pothos::InvalidArgumentException("Invalid operation", operation);
 }
@@ -54,6 +80,8 @@ static Pothos::Block* makeArrayBitwise(
         IfOpThenNToOneBlock(&, "And")
         else IfOpThenNToOneBlock(|, "Or")
         else IfOpThenNToOneBlock(^, "XOr")
+        else IfOpThenTwoToOneBlock(<<, "Left Shift")
+        else IfOpThenTwoToOneBlock(>>, "Right Shift")
 
         throw Pothos::InvalidArgumentException("Invalid operation", operation);
     }
@@ -77,8 +105,6 @@ static Pothos::Block* makeArrayLogical(
 
     throw Pothos::InvalidArgumentException("Invalid type", dtype.name());
 }
-
-// TODO: TwoToOne: comparators, << >>
 
 //
 // Block registries
@@ -121,13 +147,51 @@ static Pothos::BlockRegistry registerArrayArithmetic(
     Pothos::Callable(&makeArrayArithmetic));
 
 /*
+ * |PothosDoc Comparator
+ *
+ * Perform the specified comparison, using port <b>0</b> for the first
+ * operand and port <b>1</b> for the second operand, resulting in
+ * a single output stream of type <b>int8</b>, where <b>0</b>
+ * corresponds to false and <b>1</b> corresponds to true.
+ *
+ * |category /ArrayFire/Array
+ * |keywords array less greater equal
+ * |factory /arrayfire/array/comparator(device,operation,dtype)
+ *
+ * |param device[Device] ArrayFire device to use.
+ * |default "Auto"
+ *
+ * |param operation[Operation] The arithmetic operation to perform.
+ * |widget ComboBox(editable=false)
+ * |option [<] "<"
+ * |option [<=] "<="
+ * |option [>] ">"
+ * |option [>=] ">="
+ * |option [==] "=="
+ * |option [!=] "!="
+ * |default "<"
+ * |preview enable
+ *
+ * |param dtype[Data Type] The input's data type.
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1)
+ * |default "float64"
+ * |preview disable
+ */
+static Pothos::BlockRegistry registerComparator(
+    "/arrayfire/array/comparator",
+    Pothos::Callable(&makeComparator));
+
+/*
  * |PothosDoc Bitwise
  *
  * Perform the specified bitwise operation on all given inputs, resulting
  * in a single output stream.
  *
+ * <b>Note:</b> the <b>Left Shift</b> and <b>Right Shift</b> operations
+ * automatically use two inputs.
+ *
  * |category /ArrayFire/Array
- * |keywords array and or xor
+ * |keywords array and or xor left right shift
  * |factory /arrayfire/array/bitwise(device,operation,dtype,nchans)
  *
  * |param device[Device] ArrayFire device to use.
@@ -138,6 +202,8 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  * |option [And] "And"
  * |option [Or] "Or"
  * |option [XOr] "XOr"
+ * |option [Left Shift] "Left Shift"
+ * |option [Right Shift] "Right Shift"
  * |default "And"
  * |preview enable
  *
