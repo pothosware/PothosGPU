@@ -35,7 +35,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
                               "/arrayfire/random/source",
                               "Auto",
                               type,
-                              "NORMAL");
+                              "Normal");
 
     auto afAbs = Pothos::BlockRegistry::make(
                      "/arrayfire/arith/abs",
@@ -94,7 +94,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_from_different_domains)
                               "/arrayfire/random/source",
                               "Auto",
                               type,
-                              "NORMAL");
+                              "Normal");
 
     auto infiniteSource = Pothos::BlockRegistry::make("/blocks/infinite_source");
     infiniteSource.call("enableBuffers", true);
@@ -227,7 +227,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_multiple_backends)
                 afBlocks.emplace_back(Pothos::BlockRegistry::make(
                                           "/arrayfire/scalar/arithmetic",
                                           device,
-                                          "MULTIPLY",
+                                          "Multiply",
                                           "float64",
                                           multiplier));
             }

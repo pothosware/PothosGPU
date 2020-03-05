@@ -90,7 +90,7 @@ static void testArrayOpBlock(
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_arithmetic)
 {
     const auto& allDTypeNames = PothosArrayFireTests::getAllDTypeNames();
-    const std::vector<std::string> allOperations = {"ADD", "SUBTRACT", "MULTIPLY", "DIVIDE"};
+    const std::vector<std::string> allOperations = {"Add", "Subtract", "Multiply", "Divide"};
 
     for(const auto& dtype: allDTypeNames)
     {
@@ -109,7 +109,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_arithmetic)
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_bitwise)
 {
     const std::vector<std::string> validDTypeNames = {"int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"};
-    const std::vector<std::string> allOperations = {"AND", "OR", "XOR"};
+    const std::vector<std::string> allOperations = {"And", "Or", "XOr"};
 
     for(const auto& dtype: validDTypeNames)
     {
@@ -128,7 +128,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_bitwise)
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_logical)
 {
     const std::vector<std::string> validDTypeNames = {"int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"};
-    const std::vector<std::string> allOperations = {"AND", "OR"};
+    const std::vector<std::string> allOperations = {"And", "Or"};
 
     for(const auto& dtype: validDTypeNames)
     {

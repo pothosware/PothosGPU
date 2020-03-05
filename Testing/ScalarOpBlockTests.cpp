@@ -79,13 +79,13 @@ static void testScalarOpBlock(
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_arithmetic)
 {
     const auto& allDTypeNames = PothosArrayFireTests::getAllDTypeNames();
-    const std::vector<std::string> allOperations = {"ADD", "SUBTRACT", "MULTIPLY", "DIVIDE", "MODULUS"};
+    const std::vector<std::string> allOperations = {"Add", "Subtract", "Multiply", "Divide", "Modulus"};
 
     for(const auto& dtype: allDTypeNames)
     {
         for(const auto& operation: allOperations)
         {
-            if(("MODULUS" != operation) || !isDTypeComplexFloat(Pothos::DType(dtype)))
+            if(("Modulus" != operation) || !isDTypeComplexFloat(Pothos::DType(dtype)))
             {
                 testScalarOpBlock(
                     "/arrayfire/scalar/arithmetic",
@@ -123,7 +123,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_comparator)
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_bitwise)
 {
     const std::vector<std::string> validDTypeNames = {"int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"};
-    const std::vector<std::string> allOperations = {"AND", "OR", "XOR", "LEFTSHIFT", "RIGHTSHIFT"};
+    const std::vector<std::string> allOperations = {"And", "Or", "XOr", "Left Shift", "Right Shift"};
 
     for(const auto& dtype: validDTypeNames)
     {
@@ -141,7 +141,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_bitwise)
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_logical)
 {
     const std::vector<std::string> validDTypeNames = {"int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"};
-    const std::vector<std::string> allOperations = {"AND", "OR"};
+    const std::vector<std::string> allOperations = {"And", "Or"};
 
     for(const auto& dtype: validDTypeNames)
     {

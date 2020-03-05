@@ -88,7 +88,7 @@ class ScalarOpBlock: public OneToOneBlock
 enum class ScalarBlockType
 {
     ARITHMETIC,
-    COMPARATOr,
+    COMPARATOR,
     BITWISE,
     LOGICAL
 };
@@ -121,7 +121,7 @@ static Pothos::Block* makeScalarOpBlock(
                     else IfTypeThenLambda(%, "Modulus", operation, cType, func) \
                     else throw Pothos::InvalidArgumentException("Invalid operation", operation); \
                     break; \
-                case ScalarBlockType::COMPARATOr: \
+                case ScalarBlockType::COMPARATOR: \
                     IfTypeThenLambda(>, ">", operation, cType, func) \
                     else IfTypeThenLambda(>=, ">=", operation, cType, func) \
                     else IfTypeThenLambda(<, "<", operation, cType, func) \
@@ -152,7 +152,7 @@ static Pothos::Block* makeScalarOpBlock(
                            device, \
                            func, \
                            dtype, \
-                           ((ScalarBlockType::COMPARATOr == blockType) || (ScalarBlockType::LOGICAL == blockType)) ? Int8DType : dtype, \
+                           ((ScalarBlockType::COMPARATOR == blockType) || (ScalarBlockType::LOGICAL == blockType)) ? Int8DType : dtype, \
                            scalarObject.convert<cType>(), \
                            allowZeroScalar); \
         }
@@ -165,7 +165,7 @@ static Pothos::Block* makeScalarOpBlock(
     IfTypeDeclareFactory(std::uint32_t)
     IfTypeDeclareFactory(std::uint64_t)
 
-    if((ScalarBlockType::ARITHMETIC == blockType) || (ScalarBlockType::COMPARATOr == blockType))
+    if((ScalarBlockType::ARITHMETIC == blockType) || (ScalarBlockType::COMPARATOR == blockType))
     {
         IfTypeDeclareFactory(float)
         IfTypeDeclareFactory(double)
@@ -267,7 +267,7 @@ static Pothos::BlockRegistry registerScalarArithmetic(
  */
 static Pothos::BlockRegistry registerScalarComparator(
     "/arrayfire/scalar/comparator",
-    Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::COMPARATOr, 0));
+    Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::COMPARATOR, 0));
 
 /*
  * |PothosDoc Scalar Bitwise
