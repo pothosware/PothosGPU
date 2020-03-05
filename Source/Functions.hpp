@@ -75,3 +75,12 @@ inline af::array acoth(const af::array& afArray)
 {
     return af::atanh(1.0 / afArray);
 }
+
+inline af::array sinc(const af::array& afArray)
+{
+    af::array ret(afArray);
+    ret(afArray != 0) = (af::sin(afArray) / afArray)(afArray != 0);
+    ret(afArray == 0) = 1;
+
+    return ret;
+}

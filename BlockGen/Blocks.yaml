@@ -321,6 +321,14 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
+        - func: sinc
+          niceName: Sinc
+          category: Signal
+          header: signal
+          testOnly: true
+          supportedTypes:
+                  supportFloat: true
+
 TwoToOneBlocks:
         #
         # af/arith.h

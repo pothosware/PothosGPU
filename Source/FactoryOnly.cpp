@@ -85,3 +85,9 @@ static Pothos::BlockRegistry registerPolarToComplex(
     Pothos::Callable(&TwoToOneBlock::makeFloatToComplex)
         .bind(polarToComplex, 1)
         .bind(false, 3));
+
+static Pothos::BlockRegistry registerSinc(
+    "/arrayfire/signal/sinc",
+    Pothos::Callable(&OneToOneBlock::makeFromOneType)
+        .bind(sinc, 1)
+        .bind<DTypeSupport>({false,false,true,false}, 3));
