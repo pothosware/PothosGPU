@@ -20,10 +20,34 @@
 #include <algorithm>
 #include <string>
 
+static void checkVersion()
+{
+    static constexpr size_t buildAPIVersion = AF_API_VERSION_CURRENT;
+
+    int runtimeMajor, runtimeMinor, runtimePatch;
+    ::af_get_version(&runtimeMajor, &runtimeMinor, &runtimePatch);
+
+    const size_t runtimeAPIVersion = static_cast<size_t>((runtimeMajor*10) + runtimeMinor);
+
+    if(buildAPIVersion != runtimeAPIVersion)
+    {
+        throw Pothos::Exception(
+                  "Incompatible buildtime and runtime ArrayFire versions",
+                  Poco::format(
+                      "Buildtime=%s, Runtime=%d.%d.%d",
+                      std::string(AF_VERSION),
+                      runtimeMajor,
+                      runtimeMinor,
+                      runtimePatch));
+    }
+}
+
 ArrayFireBlock::ArrayFireBlock(const std::string& device):
     Pothos::Block(),
     _afDeviceName(device)
 {
+    checkVersion();
+
     const auto& deviceCache = getDeviceCache();
     if(device == "Auto")
     {
