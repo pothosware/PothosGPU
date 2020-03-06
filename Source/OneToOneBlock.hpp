@@ -28,6 +28,12 @@ class OneToOneBlock: public ArrayFireBlock
             const Pothos::DType& dtype,
             const DTypeSupport& supportedTypes);
 
+        static Pothos::Block* makeFromOneTypeCallable(
+            const std::string& device,
+            const Pothos::Callable& func,
+            const Pothos::DType& dtype,
+            const DTypeSupport& supportedTypes);
+
         static Pothos::Block* makeFloatToComplex(
             const std::string& device,
             const OneToOneFunc& func,

@@ -329,6 +329,17 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
+        - func: setUnique
+          blockName: set_unique
+          niceName: Unique
+          category: Stream
+          header: algorithm
+          testOnly: true
+          supportedTypes:
+                  supportInt: true
+                  supportUInt: true
+                  supportFloat: true
+
 TwoToOneBlocks:
         #
         # af/arith.h

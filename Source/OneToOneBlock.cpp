@@ -34,6 +34,17 @@ Pothos::Block* OneToOneBlock::makeFromOneType(
     return new OneToOneBlock(device, func, dtype, dtype);
 }
 
+Pothos::Block* OneToOneBlock::makeFromOneTypeCallable(
+    const std::string& device,
+    const Pothos::Callable& func,
+    const Pothos::DType& dtype,
+    const DTypeSupport& supportedTypes)
+{
+    validateDType(dtype, supportedTypes);
+
+    return new OneToOneBlock(device, func, dtype, dtype);
+}
+
 Pothos::Block* OneToOneBlock::makeFloatToComplex(
     const std::string& device,
     const OneToOneFunc& func,

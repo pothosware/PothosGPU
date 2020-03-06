@@ -91,3 +91,9 @@ static Pothos::BlockRegistry registerSinc(
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind(sinc, 1)
         .bind<DTypeSupport>({false,false,true,false}, 3));
+
+static Pothos::BlockRegistry registerSetUnique(
+    "/arrayfire/algorithm/set_unique",
+    Pothos::Callable(&OneToOneBlock::makeFromOneTypeCallable)
+        .bind(Pothos::Callable(af::setUnique).bind(false, 1), 1)
+        .bind<DTypeSupport>({true,true,true,false}, 3));

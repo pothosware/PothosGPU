@@ -98,6 +98,7 @@ POTHOS_MODULE_UTIL(
         Source/ReducedBlock.cpp
         Source/Root.cpp
         Source/ScalarOpBlock.cpp
+        Source/Sort.cpp
         Source/Statistics.cpp
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
@@ -149,6 +150,7 @@ POTHOS_MODULE_UTIL(
         Source/Random.cpp
         Source/Root.cpp
         Source/ScalarOpBlock.cpp
+        Source/Sort.cpp
         Source/Statistics.cpp
     DESTINATION arrayfire
 )
