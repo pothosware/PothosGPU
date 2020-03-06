@@ -35,6 +35,22 @@ Pothos::Block* NToOneBlock::make(
                    numChannels);
 }
 
+Pothos::Block* NToOneBlock::makeCallable(
+    const std::string& device,
+    const Pothos::Callable& func,
+    const Pothos::DType& dtype,
+    size_t numChannels,
+    const DTypeSupport& supportedTypes)
+{
+    validateDType(dtype, supportedTypes);
+
+    return new NToOneBlock(
+                   device,
+                   func,
+                   dtype,
+                   numChannels);
+}
+
 //
 // Class implementation
 //
@@ -42,6 +58,19 @@ Pothos::Block* NToOneBlock::make(
 NToOneBlock::NToOneBlock(
     const std::string& device,
     const NToOneFunc& func,
+    const Pothos::DType& dtype,
+    size_t numChannels
+): NToOneBlock(
+       device,
+       Pothos::Callable(func),
+       dtype,
+       numChannels)
+{
+}
+
+NToOneBlock::NToOneBlock(
+    const std::string& device,
+    const Pothos::Callable& func,
     const Pothos::DType& dtype,
     size_t numChannels
 ): ArrayFireBlock(device),
@@ -77,7 +106,7 @@ void NToOneBlock::work()
 
     for(size_t chan = 1; chan < _nchans; ++chan)
     {
-        outputAfArray = _func(outputAfArray, afArray);
+        outputAfArray = _func.call(outputAfArray, afArray).template extract<af::array>();
     }
     this->produceFromAfArray(0, outputAfArray);
 }

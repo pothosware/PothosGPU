@@ -3,6 +3,7 @@
 
 #include "OneToOneBlock.hpp"
 #include "TwoToOneBlock.hpp"
+#include "NToOneBlock.hpp"
 
 #include "Functions.hpp"
 
@@ -97,3 +98,9 @@ static Pothos::BlockRegistry registerSetUnique(
     Pothos::Callable(&OneToOneBlock::makeFromOneTypeCallable)
         .bind(Pothos::Callable(af::setUnique).bind(false, 1), 1)
         .bind<DTypeSupport>({true,true,true,false}, 3));
+
+static Pothos::BlockRegistry registerSetUnion(
+    "/arrayfire/algorithm/set_union",
+    Pothos::Callable(&NToOneBlock::makeCallable)
+        .bind(Pothos::Callable(af::setUnion).bind(false, 2), 1)
+        .bind<DTypeSupport>({true,true,true,false}, 4));

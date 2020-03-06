@@ -402,3 +402,14 @@ NToOneBlocks:
                   supportInt: true
                   supportUInt: true
                   supportFloat: true
+
+        - func: setUnion
+          blockName: set_union
+          niceName: Set Union
+          category: Stream
+          header: algorithm
+          testOnly: true
+          supportedTypes:
+                  supportInt: true
+                  supportUInt: true
+                  supportFloat: true

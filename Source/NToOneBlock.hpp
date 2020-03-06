@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -6,6 +6,7 @@
 #include "ArrayFireBlock.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Callable.hpp>
 #include <Pothos/Framework.hpp>
 
 #include <arrayfire.h>
@@ -26,6 +27,13 @@ class NToOneBlock: public ArrayFireBlock
             size_t numChannels,
             const DTypeSupport& supportedTypes);
 
+        static Pothos::Block* makeCallable(
+            const std::string& device,
+            const Pothos::Callable& func,
+            const Pothos::DType& dtype,
+            size_t numChannels,
+            const DTypeSupport& supportedTypes);
+
         //
         // Class implementation
         //
@@ -36,12 +44,18 @@ class NToOneBlock: public ArrayFireBlock
             const Pothos::DType& dtype,
             size_t numChannels);
 
+        NToOneBlock(
+            const std::string& device,
+            const Pothos::Callable& func,
+            const Pothos::DType& dtype,
+            size_t numChannels);
+
         virtual ~NToOneBlock();
 
         void work() override;
 
     private:
-        NToOneFunc _func;
+        Pothos::Callable _func;
         size_t _nchans;
 };
 
