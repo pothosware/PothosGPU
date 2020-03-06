@@ -55,6 +55,15 @@ static const std::unordered_map<std::string, af::randomEngineType> RandomEngineT
     {"Mersenne", ::AF_RANDOM_ENGINE_MERSENNE},
 };
 
+#if AF_API_VERSION_CURRENT >= 36
+static const std::unordered_map<std::string, af::topkFunction> TopKFunctionEnumMap =
+{
+    {"Min",     ::AF_TOPK_MIN},
+    {"Max",     ::AF_TOPK_MAX},
+    {"Default", ::AF_TOPK_DEFAULT},
+};
+#endif
+
 static af::dtype pothosDTypeToAfDType(const Pothos::DType& pothosDType)
 {
     return getValForKey(DTypeEnumMap, pothosDType.name());
@@ -108,6 +117,12 @@ pothos_static_block(registerArrayFireEnumConversions)
         RandomEngineTypeEnumMap,
         "std_string_to_af_randomenginetype",
         "af_randomenginetype_to_std_string");
+#if AF_API_VERSION_CURRENT >= 36
+    registerEnumConversion(
+        TopKFunctionEnumMap,
+        "std_string_to_af_topkfunction",
+        "af_topkfunction_to_std_string");
+#endif
 
     // Different enough to not use helper function
     Pothos::PluginRegistry::add(
