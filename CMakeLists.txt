@@ -100,6 +100,7 @@ POTHOS_MODULE_UTIL(
         Source/ScalarOpBlock.cpp
         Source/Sort.cpp
         Source/Statistics.cpp
+        Source/TopK.cpp
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
 
@@ -152,5 +153,6 @@ POTHOS_MODULE_UTIL(
         Source/ScalarOpBlock.cpp
         Source/Sort.cpp
         Source/Statistics.cpp
+        Source/TopK.cpp
     DESTINATION arrayfire
 )

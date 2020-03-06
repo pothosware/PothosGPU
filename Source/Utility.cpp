@@ -170,6 +170,40 @@ af::array getArrayFromSingleElement(
     return af::array();
 }
 
+Pothos::Object afArrayToStdVector(const af::array& afArray)
+{
+    Pothos::Object ret;
+
+    #define SwitchCase(afDType, ctype) \
+        case afDType: \
+        { \
+            std::vector<ctype> vec(afArray.elements()); \
+            afArray.host(vec.data()); \
+            ret = Pothos::Object(vec); \
+        }
+
+    switch(afArray.type())
+    {
+        SwitchCase(::s16, std::int16_t)
+        SwitchCase(::s32, std::int32_t)
+        SwitchCase(::s64, long long)
+        SwitchCase(::u8,  std::uint8_t)
+        SwitchCase(::u16, std::uint16_t)
+        SwitchCase(::u32, std::uint32_t)
+        SwitchCase(::u64, unsigned long long)
+        SwitchCase(::f32, float)
+        SwitchCase(::f64, double)
+        SwitchCase(::c32, std::complex<float>)
+        SwitchCase(::c64, std::complex<double>)
+
+        default:
+            throw Pothos::AssertionViolationException("Invalid dtype");
+            break;
+    }
+
+    return ret;
+}
+
 #if defined(__GNUG__) || defined(__clang__) || defined(_MSC_VER)
 
 #if defined(__GNUG__) || defined(__clang__)
