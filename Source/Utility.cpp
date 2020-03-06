@@ -180,6 +180,7 @@ Pothos::Object afArrayToStdVector(const af::array& afArray)
             std::vector<ctype> vec(afArray.elements()); \
             afArray.host(vec.data()); \
             ret = Pothos::Object(vec); \
+            break; \
         }
 
     switch(afArray.type())
