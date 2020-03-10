@@ -224,7 +224,7 @@ void ArrayFireBlock::postAfArray(
 // Misc
 //
 
-void ArrayFireBlock::configArrayFire()
+void ArrayFireBlock::configArrayFire() const
 {
     if(af::getActiveBackend() != _afBackend)
     {

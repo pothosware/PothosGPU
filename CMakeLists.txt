@@ -96,6 +96,7 @@ POTHOS_MODULE_UTIL(
         Source/PowersOfN.cpp
         Source/Random.cpp
         Source/ReducedBlock.cpp
+        Source/Replace.cpp
         Source/Root.cpp
         Source/ScalarOpBlock.cpp
         Source/Sort.cpp
@@ -113,6 +114,7 @@ POTHOS_MODULE_UTIL(
         Testing/FlatBlockTest.cpp
         Testing/IsXBlockTest.cpp
         Testing/ScalarOpBlockTests.cpp
+        Testing/ReplaceBlockTest.cpp
         Testing/NToOneBlockExecutionTest.cpp
         Testing/OneToOneBlockExecutionTest.cpp
         Testing/TwoToOneBlockExecutionTest.cpp
@@ -149,6 +151,7 @@ POTHOS_MODULE_UTIL(
         Source/Pow.cpp
         Source/PowersOfN.cpp
         Source/Random.cpp
+        Source/Replace.cpp
         Source/Root.cpp
         Source/ScalarOpBlock.cpp
         Source/Sort.cpp

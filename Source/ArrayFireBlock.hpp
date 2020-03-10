@@ -71,7 +71,7 @@ class ArrayFireBlock: public Pothos::Block
         // Misc
         //
 
-        void configArrayFire();
+        void configArrayFire() const;
 
         //
         // Member variables
