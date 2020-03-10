@@ -340,6 +340,13 @@ OneToOneBlocks:
                   supportUInt: true
                   supportFloat: true
 
+        - func: flip
+          category: Stream
+          header: data
+          testOnly: true
+          supportedTypes:
+                  supportAll: true
+
 TwoToOneBlocks:
         #
         # af/arith.h

@@ -104,3 +104,9 @@ static Pothos::BlockRegistry registerSetUnion(
     Pothos::Callable(&NToOneBlock::makeCallable)
         .bind(Pothos::Callable(af::setUnion).bind(false, 2), 1)
         .bind<DTypeSupport>({true,true,true,false}, 4));
+
+static Pothos::BlockRegistry registerFlip(
+    "/arrayfire/data/flip",
+    Pothos::Callable(&OneToOneBlock::makeFromOneTypeCallable)
+        .bind(Pothos::Callable(af::flip).bind(0, 1), 1)
+        .bind<DTypeSupport>({true,true,true,true}, 3));
