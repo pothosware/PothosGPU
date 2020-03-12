@@ -1,5 +1,3 @@
-Short-term:
- * Test probes and "changed" signals
+Pre-release:
+ * Consistency in getter names ("getFoo" vs "foo"), affects probes
  * AF 3.7+: turn off stacktraces for release build (not linking for some reason)
- * data: range (optionally tracking across multiple works), iota(?), join, shift
- * signal: interp?
