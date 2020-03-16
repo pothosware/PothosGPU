@@ -43,13 +43,13 @@ class Clamp: public OneToOneBlock
             _afMinValue = PothosToAF<T>::to(minValue);
             _afMaxValue = PothosToAF<T>::to(maxValue);
 
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getMinValue));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, minValue));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setMinValue));
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getMaxValue));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, maxValue));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setMaxValue));
 
-            this->registerProbe("getMinValue");
-            this->registerProbe("getMaxValue");
+            this->registerProbe("minValue");
+            this->registerProbe("maxValue");
 
             this->registerSignal("minValueChanged");
             this->registerSignal("maxValueChanged");
@@ -57,27 +57,27 @@ class Clamp: public OneToOneBlock
 
         virtual ~Clamp() = default;
 
-        T getMinValue() const
+        T minValue() const
         {
             return PothosToAF<T>::from(_afMinValue);
         }
 
         void setMinValue(const T& minValue)
         {
-            validateMinMax(minValue, getMaxValue());
+            validateMinMax(minValue, maxValue());
 
             _afMinValue = PothosToAF<T>::to(minValue);
             this->emitSignal("minValueChanged", minValue);
         }
 
-        T getMaxValue() const
+        T maxValue() const
         {
             return PothosToAF<T>::from(_afMaxValue);
         }
 
         void setMaxValue(const T& maxValue)
         {
-            validateMinMax(getMinValue(), maxValue);
+            validateMinMax(minValue(), maxValue);
 
             _afMaxValue = PothosToAF<T>::to(maxValue);
             this->emitSignal("maxValueChanged", maxValue);

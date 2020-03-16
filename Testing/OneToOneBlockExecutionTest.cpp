@@ -54,7 +54,7 @@ static void testOneToOneBlockCommon(
     POTHOS_TEST_EQUAL(
         testInputs.size(),
         static_cast<size_t>(output.elements()));
-    if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("getArrayFireBackend")))
+    if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("arrayFireBackend")))
     {
         std::vector<Out> expectedOutputs;
         std::transform(

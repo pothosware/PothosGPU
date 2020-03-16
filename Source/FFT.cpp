@@ -16,8 +16,6 @@
 #include <string>
 #include <typeinfo>
 
-// TODO: make numBins an initializer
-
 //
 // Misc
 //
@@ -81,12 +79,12 @@ class FFTBaseBlock: public ArrayFireBlock
                 0,
                 Pothos::DType::fromDType(outDType, dtypeDims));
 
-            this->registerProbe("getNormalizationFactor");
+            this->registerProbe("normalizationFactor");
             this->registerSignal("normalizationFactorChanged");
 
             this->setNormalizationFactor(norm);
 
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getNormalizationFactor));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, normalizationFactor));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setNormalizationFactor));
         }
 
@@ -94,7 +92,7 @@ class FFTBaseBlock: public ArrayFireBlock
 
         virtual void work() = 0;
 
-        double getNormalizationFactor() const
+        double normalizationFactor() const
         {
             return _norm;
         }

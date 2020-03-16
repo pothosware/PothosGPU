@@ -42,9 +42,9 @@ class RandomBlock: public ArrayFireBlock
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _afRandomEngine()
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, getDistribution));
+            this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, distribution));
             this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, setDistribution));
-            this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, getRandomEngineType));
+            this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, randomEngineType));
             this->registerCall(this, POTHOS_FCN_TUPLE(RandomBlock, setRandomEngineType));
 
             // This call is overloaded, so no macro for us.
@@ -57,8 +57,8 @@ class RandomBlock: public ArrayFireBlock
                 "reseedRandomEngine",
                 &RandomBlock::reseedRandomEngine);
 
-            this->registerProbe("getDistribution");
-            this->registerProbe("getRandomEngineType");
+            this->registerProbe("distribution");
+            this->registerProbe("randomEngineType");
 
             this->registerSignal("distributionChanged");
             this->registerSignal("randomEngineTypeChanged");
@@ -69,7 +69,7 @@ class RandomBlock: public ArrayFireBlock
             this->reseedRandomEngineWithTime();
         }
 
-        std::string getDistribution() const
+        std::string distribution() const
         {
             return _distribution;
         }
@@ -95,7 +95,7 @@ class RandomBlock: public ArrayFireBlock
             this->emitSignal("distributionChanged", distribution);
         }
 
-        std::string getRandomEngineType() const
+        std::string randomEngineType() const
         {
             return Pothos::Object(_afRandomEngine.getType()).convert<std::string>();
         }

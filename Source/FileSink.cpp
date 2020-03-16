@@ -48,9 +48,9 @@ class FileSinkBlock: public ArrayFireBlock
             _append(append),
             _nchans(numChannels)
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, getFilepath));
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, getKey));
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, getAppend));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, filepath));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, key));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, append));
 
             const Poco::File pocoFile(_filepath);
             if(pocoFile.exists())
@@ -172,17 +172,17 @@ class FileSinkBlock: public ArrayFireBlock
                 _append);
         }
 
-        std::string getFilepath() const
+        std::string filepath() const
         {
             return _filepath;
         };
 
-        std::string getKey() const
+        std::string key() const
         {
             return _key;
         }
 
-        bool getAppend() const
+        bool append() const
         {
             return _append;
         }
@@ -212,7 +212,6 @@ class FileSinkBlock: public ArrayFireBlock
         std::vector<Pothos::BufferChunk> _buffers;
 };
 
-// TODO: setKey initializer
 /*
  * |PothosDoc ArrayFire File Sink
  *

@@ -38,10 +38,10 @@ class Log: public OneToOneBlock
                 dtype,
                 dtype)
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(Log, getBase));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Log, base));
             this->registerCall(this, POTHOS_FCN_TUPLE(Log, setBase));
 
-            this->registerProbe("getBase");
+            this->registerProbe("base");
             this->registerSignal("baseChanged");
 
             this->setBase(base);
@@ -49,7 +49,7 @@ class Log: public OneToOneBlock
 
         virtual ~Log() {};
 
-        double getBase() const
+        double base() const
         {
             return _base;
         }

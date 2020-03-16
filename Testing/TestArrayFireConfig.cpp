@@ -25,10 +25,10 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_arrayfire_config)
 
     POTHOS_TEST_EQUAL(
         deviceCache[0].afBackendEnum,
-        abs.call<af::Backend>("getArrayFireBackend"));
+        abs.call<af::Backend>("arrayFireBackend"));
     POTHOS_TEST_EQUAL(
         deviceCache[0].name,
-        abs.call<std::string>("getArrayFireDevice"));
+        abs.call<std::string>("arrayFireDevice"));
 
     for(const auto& entry: deviceCache)
     {
@@ -39,9 +39,9 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_arrayfire_config)
 
         POTHOS_TEST_EQUAL(
             entry.afBackendEnum,
-            abs.call<af::Backend>("getArrayFireBackend"));
+            abs.call<af::Backend>("arrayFireBackend"));
         POTHOS_TEST_EQUAL(
             entry.name,
-            abs.call<std::string>("getArrayFireDevice"));
+            abs.call<std::string>("arrayFireDevice"));
     }
 }

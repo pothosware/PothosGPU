@@ -53,7 +53,7 @@ class ConvolveBaseBlock: public OneToOneBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setTaps));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, mode));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setMode));
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getWaitTaps));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, waitTaps));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setWaitTaps));
 
             this->registerProbe("taps");
@@ -108,7 +108,7 @@ class ConvolveBaseBlock: public OneToOneBlock
             this->emitSignal("modeChanged", _convMode);
         }
 
-        bool getWaitTaps() const
+        bool waitTaps() const
         {
             return _waitTaps;
         }

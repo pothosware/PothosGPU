@@ -29,9 +29,9 @@ class ArrayFireBlock: public Pothos::Block
 
         void activate() override;
 
-        std::string getArrayFireBackend() const;
+        std::string arrayFireBackend() const;
 
-        std::string getArrayFireDevice() const;
+        std::string arrayFireDevice() const;
 
         virtual std::string overlay() const;
 

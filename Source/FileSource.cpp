@@ -46,9 +46,9 @@ class FileSourceBlock: public ArrayFireBlock
             _afFileContents(),
             _fileContents()
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, getFilepath));
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, getKey));
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, getRepeat));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, filepath));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, key));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, repeat));
             this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, setRepeat));
 
             const Poco::File pocoFile(_filepath);
@@ -94,17 +94,17 @@ class FileSourceBlock: public ArrayFireBlock
             }
         }
 
-        std::string getFilepath() const
+        std::string filepath() const
         {
             return _filepath;
         };
 
-        std::string getKey() const
+        std::string key() const
         {
             return _key;
         }
 
-        bool getRepeat() const
+        bool repeat() const
         {
             return _repeat;
         }

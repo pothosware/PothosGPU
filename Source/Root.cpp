@@ -37,10 +37,10 @@ class Root: public OneToOneBlock
                 dtype,
                 dtype)
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(Root, getRoot));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Root, root));
             this->registerCall(this, POTHOS_FCN_TUPLE(Root, setRoot));
 
-            this->registerProbe("getRoot");
+            this->registerProbe("root");
             this->registerSignal("rootChanged");
 
             this->setRoot(root);
@@ -48,7 +48,7 @@ class Root: public OneToOneBlock
 
         virtual ~Root() {};
 
-        double getRoot() const
+        double root() const
         {
             return _root;
         }

@@ -85,11 +85,11 @@ static void testFileSource1D(
 
     POTHOS_TEST_EQUAL(
         filepath,
-        oneDimBlock.call<std::string>("getFilepath"));
+        oneDimBlock.call<std::string>("filepath"));
     POTHOS_TEST_EQUAL(
         testData.oneDimKey,
-        oneDimBlock.call<std::string>("getKey"));
-    POTHOS_TEST_TRUE(!oneDimBlock.call<bool>("getRepeat"));
+        oneDimBlock.call<std::string>("key"));
+    POTHOS_TEST_TRUE(!oneDimBlock.call<bool>("repeat"));
     POTHOS_TEST_EQUAL(0, oneDimBlock.call<InputPortVector>("inputs").size());
 
     const auto outputs = oneDimBlock.call<OutputPortVector>("outputs");
@@ -136,11 +136,11 @@ static void testFileSource2D(
 
     POTHOS_TEST_EQUAL(
         filepath,
-        twoDimBlock.call<std::string>("getFilepath"));
+        twoDimBlock.call<std::string>("filepath"));
     POTHOS_TEST_EQUAL(
         testData.twoDimKey,
-        twoDimBlock.call<std::string>("getKey"));
-    POTHOS_TEST_TRUE(!twoDimBlock.call<bool>("getRepeat"));
+        twoDimBlock.call<std::string>("key"));
+    POTHOS_TEST_TRUE(!twoDimBlock.call<bool>("repeat"));
     POTHOS_TEST_EQUAL(0, twoDimBlock.call<InputPortVector>("inputs").size());
 
     const auto outputs = twoDimBlock.call<OutputPortVector>("outputs");

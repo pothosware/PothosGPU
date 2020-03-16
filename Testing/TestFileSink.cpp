@@ -66,11 +66,11 @@ static void testFileSink1D(
 
     POTHOS_TEST_EQUAL(
         filepath,
-        oneDimBlock.call<std::string>("getFilepath"));
+        oneDimBlock.call<std::string>("filepath"));
     POTHOS_TEST_EQUAL(
         testData.oneDimKey,
-        oneDimBlock.call<std::string>("getKey"));
-    POTHOS_TEST_TRUE(!oneDimBlock.call<bool>("getAppend"));
+        oneDimBlock.call<std::string>("key"));
+    POTHOS_TEST_TRUE(!oneDimBlock.call<bool>("append"));
     POTHOS_TEST_EQUAL(0, oneDimBlock.call("outputs").call<size_t>("size"));
 
     const auto inputs = oneDimBlock.call<InputPortVector>("inputs");
@@ -138,11 +138,11 @@ static void testFileSink2D(
 
     POTHOS_TEST_EQUAL(
         filepath,
-        twoDimBlock.call<std::string>("getFilepath"));
+        twoDimBlock.call<std::string>("filepath"));
     POTHOS_TEST_EQUAL(
         testData.twoDimKey,
-        twoDimBlock.call<std::string>("getKey"));
-    POTHOS_TEST_TRUE(!twoDimBlock.call<bool>("getAppend"));
+        twoDimBlock.call<std::string>("key"));
+    POTHOS_TEST_TRUE(!twoDimBlock.call<bool>("append"));
     POTHOS_TEST_EQUAL(0, twoDimBlock.call("outputs").call<size_t>("size"));
 
     const auto inputs = twoDimBlock.call<InputPortVector>("inputs");

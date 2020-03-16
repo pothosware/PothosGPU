@@ -28,13 +28,13 @@ class Constant: public ArrayFireBlock
             ArrayFireBlock(device),
             _afDType(Pothos::Object(Class::dtype).convert<af::dtype>())
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(Class, getConstant));
+            this->registerCall(this, POTHOS_FCN_TUPLE(Class, constant));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setConstant));
             this->setupOutput(
                 0,
                 Pothos::DType::fromDType(Class::dtype, dtypeDims));
 
-            this->registerProbe("getConstant");
+            this->registerProbe("constant");
             this->registerSignal("constantChanged");
 
             this->setConstant(constant);
@@ -55,7 +55,7 @@ class Constant: public ArrayFireBlock
                 af::constant(_constant, elems, _afDType));
         }
 
-        T getConstant() const
+        T constant() const
         {
             return PothosToAF<T>::from(_constant);
         }

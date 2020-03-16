@@ -131,7 +131,7 @@ static void testNToOneBlockCommon(
     POTHOS_TEST_EQUAL(
         testInputs[0].size(),
         output.elements());
-    if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("getArrayFireBackend")))
+    if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("arrayFireBackend")))
     {
         auto expectedOutputs = getExpectedOutputs(
                                    testInputs,
