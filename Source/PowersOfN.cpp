@@ -21,7 +21,7 @@ class PowN: public OneToOneBlock
             double base)
         {
             // Supports float, complex
-            static const DTypeSupport dtypeSupport{true,true,true};
+            static const DTypeSupport dtypeSupport{false,false,true,true};
             validateDType(dtype, dtypeSupport);
 
             return new PowN(device, dtype, base);
