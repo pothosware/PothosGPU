@@ -216,7 +216,7 @@ static Pothos::Block* makeScalarOpBlock(
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -238,7 +238,7 @@ static Pothos::BlockRegistry registerScalarArithmetic(
  *
  * |category /ArrayFire/Scalar Operations
  * |keywords scalar less greater not equal
- * |factory /arrayfire/scalar/comparator(device,operation,dtype,scalar)
+ * |factory /arrayfire/scalar/comparator(device,operation,dtype,scalar,dim=1)
  * |setter setScalar(scalar)
  *
  * |param device[Device] ArrayFire device to use.
@@ -256,7 +256,7 @@ static Pothos::BlockRegistry registerScalarArithmetic(
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -293,7 +293,7 @@ static Pothos::BlockRegistry registerScalarComparator(
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,dim=1)
  * |default "uint64"
  * |preview disable
  *
@@ -329,7 +329,7 @@ static Pothos::BlockRegistry registerScalarBitwise(
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,dim=1)
  * |default "uint64"
  * |preview disable
  *

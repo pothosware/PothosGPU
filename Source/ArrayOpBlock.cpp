@@ -133,7 +133,7 @@ static Pothos::Block* makeArrayLogical(
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -156,7 +156,7 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  *
  * |category /ArrayFire/Array
  * |keywords array less greater equal
- * |factory /arrayfire/array/comparator(device,operation,dtype)
+ * |factory /arrayfire/array/comparator(device,operation,dtype,dim=1)
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
@@ -173,7 +173,7 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  * |preview enable
  *
  * |param dtype[Data Type] The input's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
@@ -208,7 +208,7 @@ static Pothos::BlockRegistry registerComparator(
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,dim=1)
  * |default "uint64"
  * |preview disable
  *
@@ -243,7 +243,7 @@ static Pothos::BlockRegistry registerArrayBitwise(
  * |preview enable
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,dim=1)
  * |default "uint64"
  * |preview disable
  *
