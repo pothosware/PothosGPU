@@ -111,12 +111,6 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_array_conversion)
         test1DArrayConversion<std::complex<float>>("complex_float32", ::c32);
         test1DArrayConversion<std::complex<double>>("complex_float64", ::c64);
     }
-
-#if !IS_AF_CONFIG_PER_THREAD
-    // Restore global backend and device to fastest options.
-    af::setBackend(getAvailableBackends()[0]);
-    af::setDevice(0);
-#endif
 }
 
 }
@@ -142,12 +136,6 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_arrayproxy_conversion)
         test2DArrayConversion<std::complex<float>>("complex_float32", ::c32);
         test2DArrayConversion<std::complex<double>>("complex_float64", ::c64);
     }
-
-#if !IS_AF_CONFIG_PER_THREAD
-    // Restore global backend and device to fastest options.
-    af::setBackend(getAvailableBackends()[0]);
-    af::setDevice(0);
-#endif
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_std_vector_conversion)
@@ -165,10 +153,4 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_std_vector_conversion)
         testStdVectorToAfArrayConversion<std::complex<float>>(::c32);
         testStdVectorToAfArrayConversion<std::complex<double>>(::c64);
     }
-
-#if !IS_AF_CONFIG_PER_THREAD
-    // Restore global backend and device to fastest options.
-    af::setBackend(getAvailableBackends()[0]);
-    af::setDevice(0);
-#endif
 }

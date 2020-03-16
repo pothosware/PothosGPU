@@ -122,12 +122,10 @@ OneToOneBlock::~OneToOneBlock() {}
 // Default behavior, can be overridden
 void OneToOneBlock::work()
 {
-#if IS_AF_CONFIG_PER_THREAD
     // The thread may have changed since the block was created, so make sure
     // the backend and device still match.
     af::setBackend(_afBackend);
     af::setDevice(_afDevice);
-#endif
 
     const size_t elems = this->workInfo().minElements;
     if(0 == elems)
