@@ -65,7 +65,6 @@ POTHOS_MODULE_UTIL(
     SOURCES
         ${autogenOutputs}
 
-        Source/Approx.cpp
         Source/ArrayFireBlock.cpp
         Source/ArrayFireInfo.cpp
         Source/ArrayOpBlock.cpp
@@ -131,7 +130,6 @@ POTHOS_MODULE_UTIL(
     LIBRARIES
         ArrayFire::af
     DOC_SOURCES
-        Source/Approx.cpp
         Source/ArrayOpBlock.cpp
         Source/Cast.cpp
         Source/Clamp.cpp
