@@ -57,6 +57,7 @@ static bool isCUDAVersionValid(const std::string& toolkitStr)
         // 2020/02/18: Currently, the latest CUDA runtime has the crash we're
         // guarding against, so this check will always fail. This should be
         // updated when a CUDA runtime version is released that fixes this.
+        // See: https://github.com/arrayfire/arrayfire/issues/2707
         constexpr size_t minValidVersion = std::numeric_limits<size_t>::max();
 
         isValid = (versionForComp >= minValidVersion);
@@ -102,16 +103,6 @@ static std::vector<af::Backend> _getAvailableBackends()
                     if(isCUDAVersionValid(toolkit))
                     {
                         availableBackends.emplace_back(backend);
-                    }
-                    else
-                    {
-                        // See: https://github.com/arrayfire/arrayfire/issues/2707
-                        poco_information_f1(
-                            getLogger(),
-                            "Detected CUDA %s, which has a bug resulting in a crash on exit. "
-                            "All CUDA-compatible devices will fall back on ArrayFire's OpenCL "
-                            "backend, if present.",
-                            std::string(toolkit));
                     }
                 }
             }
