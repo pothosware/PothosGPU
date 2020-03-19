@@ -10,6 +10,7 @@
 
 #include <Poco/File.h>
 #include <Poco/Format.h>
+#include <Poco/Logger.h>
 #include <Poco/NumberFormatter.h>
 
 #include <arrayfire.h>
@@ -17,6 +18,8 @@
 #include <cstring>
 #include <string>
 #include <typeinfo>
+
+static const std::string blockRegistryPath = "/arrayfire/array/file_source";
 
 class FileSourceBlock: public ArrayFireBlock
 {
@@ -75,6 +78,17 @@ class FileSourceBlock: public ArrayFireBlock
             // Now that we know the file is valid, store the array and
             // initialize our ports.
             const auto dtype = Pothos::Object(_afFileContents.type()).convert<Pothos::DType>();
+            if(dtype.name().find("int64") != std::string::npos)
+            {
+                static auto& logger = Poco::Logger::get(blockRegistryPath);
+                poco_warning_f2(
+                    logger,
+                    "The array corresponding to key \"%s\" is of type \"%s\". FileSource will "
+                    "support this key, but you cannot write it back to the file with FileSink, "
+                    "as it does not support 64-bit integral types.",
+                    _key,
+                    dtype.name());
+            }
 
             if(1 == numDims)
             {
@@ -218,5 +232,5 @@ class FileSourceBlock: public ArrayFireBlock
  * |default true
  */
 static Pothos::BlockRegistry registerFileSource(
-    "/arrayfire/array/file_source",
+    blockRegistryPath,
     Pothos::Callable(&FileSourceBlock::make));
