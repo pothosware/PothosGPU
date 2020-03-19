@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
+#include "BufferConversions.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Callable.hpp>
@@ -54,20 +55,31 @@ class FFTBlock: public ArrayFireBlock
             size_t numBins,
             double norm,
             size_t dtypeDims,
-            bool checkNumBins
+            bool enforceNumBins
         ):
             ArrayFireBlock(device),
             _func(func),
+            _enforceNumBins(enforceNumBins),
             _numBins(numBins),
             _norm(0.0) // Set with class setter
         {
-            if(checkNumBins && !isPowerOfTwo(numBins))
+            if(_enforceNumBins && !isPowerOfTwo(numBins))
             {
-                static auto& logger = Poco::Logger::get(fftBlockPath);
-                poco_warning(
-                    logger,
-                    "This block is most efficient when "
-                    "numBins is a power of 2.");
+                // For OpenCL, this is a requirement due to the underlying
+                // use of clFFT. Not enforcing this would result in an
+                // obscure error.
+                if(::AF_BACKEND_OPENCL == _afBackend)
+                {
+                    throw Pothos::InvalidArgumentException("For OpenCL devices, numBins must be a power of 2.");
+                }
+                else
+                {
+                    static auto& logger = Poco::Logger::get(fftBlockPath);
+                    poco_warning(
+                        logger,
+                        "This block is most efficient when "
+                        "numBins is a power of 2.");
+                }
             }
 
             static const Pothos::DType inDType(typeid(InType));
@@ -79,6 +91,10 @@ class FFTBlock: public ArrayFireBlock
             this->setupOutput(
                 0,
                 Pothos::DType::fromDType(outDType, dtypeDims));
+            if(_enforceNumBins)
+            {
+                this->input(0)->setReserve(_numBins);
+            }
 
             this->registerProbe("normalizationFactor");
             this->registerSignal("normalizationFactorChanged");
@@ -90,6 +106,27 @@ class FFTBlock: public ArrayFireBlock
         }
 
         virtual ~FFTBlock() = default;
+
+        Pothos::BufferManager::Sptr getOutputBufferManager(
+            const std::string& name,
+            const std::string& domain)
+        {
+            if(!_enforceNumBins) return ArrayFireBlock::getOutputBufferManager(name, domain);
+            
+            if(domain.empty())
+            {
+                // We always want to operate on pinned memory, as GPUs can access this via DMA.
+                Pothos::BufferManagerArgs args;
+                args.numBuffers = 16;
+
+                // Make sure the buffer is large enough for our numBins.
+                args.bufferSize = std::max<size_t>(_numBins*sizeof(OutType), (2 << 20));
+                
+                return makePinnedBufferManager(_afBackend, args);
+            }
+
+            throw Pothos::PortDomainError(domain);
+        }
 
         double normalizationFactor() const
         {
@@ -103,23 +140,33 @@ class FFTBlock: public ArrayFireBlock
             this->emitSignal("normalizationFactorChanged", _norm);
         }
 
+        af::array getInputPort0ForFFT()
+        {
+            const auto elems = _enforceNumBins ? _numBins : this->workInfo().minElements;
+            
+            auto bufferChunk = this->input(0)->buffer();
+            bufferChunk.length = elems * bufferChunk.dtype.size();
+
+            this->input(0)->consume(elems);
+            return Pothos::Object(bufferChunk).convert<af::array>();
+        }
+
         void work() override
         {
             auto elems = this->workInfo().minElements;
-            if(elems < this->_numBins)
+            if(0 == elems)
             {
                 return;
             }
 
-            auto afInput = this->getInputPortAsAfArray(0);
+            auto afInput = this->getInputPort0ForFFT();
             auto afOutput = _func(afInput, this->_norm);
-            this->postAfArray(0, afOutput);
+            this->produceFromAfArray(0, afOutput);
         }
 
     private:
         FFTFunc _func;
-
-    protected:
+        bool _enforceNumBins;
         size_t _numBins;
         double _norm;
         size_t _nchans;
@@ -150,8 +197,7 @@ static EnableIfBothComplex<FwdIn, FwdOut, FFTFunc> getFFTFunc(
 
     auto retLambda = [func](const af::array& arr, const double norm)
                      {
-                         // Pass in 0 to not pad or truncate output array.
-                         return func(arr, norm, 0);
+                         return func(arr, norm, arr.elements());
                      };
 
     return FFTFunc(retLambda);
@@ -269,12 +315,25 @@ static Pothos::Block* makeFFT(
  * |default "complex_float64"
  * |preview disable
  *
- * |param numBins[Num FFT Bins] The number of bins per FFT.
+ * |param numBins[Num FFT Bins] The number of bins per FFT. It is not recommended
+ * to use values higher than 4096 unless the output is routed into another ArrayFire block.
  * |default 1024
  * |option 512
  * |option 1024
  * |option 2048
  * |option 4096
+ * |option 8192
+ * |option 16384
+ * |option 32768
+ * |option 65536
+ * |option 131072
+ * |option 262144
+ * |option 524288
+ * |option 1048576
+ * |option 2097152
+ * |option 4194304
+ * |option 8388608
+ * |option 16777216
  * |widget ComboBox(editable=true)
  * |preview enable
  *
