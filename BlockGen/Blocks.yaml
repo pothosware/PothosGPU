@@ -24,17 +24,19 @@ OneToOneBlocks:
         - func: trunc
           niceName: Truncate
           header: arith
-          description: Truncate to nearest integer.
+          description: Truncate to nearest integer towards zero.
           supportedTypes:
                   supportFloat: true
 
         - func: floor
           header: arith
+          description: Round to nearest lower integer.
           supportedTypes:
                   supportFloat: true
 
         - func: ceil
           header: arith
+          description: Round to nearest higher integer.
           supportedTypes:
                   supportFloat: true
 
@@ -173,24 +175,28 @@ OneToOneBlocks:
         - func: log1p
           niceName: log(1 + x)
           header: arith
+          description: Calculate <b>log(1+x)</b>. Most useful for small inputs.
           supportedTypes:
                   supportFloat: true
 
         - func: rsqrt
           niceName: Reciprocal Square Root
           header: arith
+          description: Calculates <b>1 / sqrt(x)</b>.
           minAPIVersion: 37
           supportedTypes:
                   supportFloat: true
 
         - func: factorial
           header: arith
+          description: For all positive integers, returns <b>x * (x-1) * ... * 1</b>.
           supportedTypes:
                   supportFloat: true
 
         - func: tgamma
           niceName: Gamma
           header: arith
+          description: "<p>An extension of factorial numbers to include non-integral values.</p><p><b>Gamma(x) = (x-1)!</b></p>"
           supportedTypes:
                   supportFloat: true
 
@@ -205,6 +211,7 @@ OneToOneBlocks:
           niceName: Secant
           category: Trigonometry
           header: arith
+          description: <b>sec(x) = 1 / cos(x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -213,6 +220,7 @@ OneToOneBlocks:
           niceName: Cosecant
           category: Trigonometry
           header: arith
+          description: <b>sec(x) = 1 / sin(x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -221,6 +229,7 @@ OneToOneBlocks:
           niceName: Cotangent
           category: Trigonometry
           header: arith
+          description: <b>sec(x) = 1 / tan(x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -229,6 +238,7 @@ OneToOneBlocks:
           niceName: Arc Secant
           category: Trigonometry
           header: arith
+          description: <b>asec(x) = acos(1 / x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -237,6 +247,7 @@ OneToOneBlocks:
           niceName: Arc Cosecant
           category: Trigonometry
           header: arith
+          description: <b>acsc(x) = asin(1 / x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -245,6 +256,7 @@ OneToOneBlocks:
           niceName: Arc Cotangent
           category: Trigonometry
           header: arith
+          description: <b>acot(x) = atan(1 / x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -253,6 +265,7 @@ OneToOneBlocks:
           niceName: Hyperbolic Secant
           category: Trigonometry
           header: arith
+          description: <b>sech(x) = 1 / cosh(x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -261,6 +274,7 @@ OneToOneBlocks:
           niceName: Hyperbolic Cosecant
           category: Trigonometry
           header: arith
+          description: <b>csch(x) = 1 / sinh(x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -269,6 +283,7 @@ OneToOneBlocks:
           niceName: Hyperbolic Cotangent
           category: Trigonometry
           header: arith
+          description: <b>coth(x) = 1 / tanh(x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -277,6 +292,7 @@ OneToOneBlocks:
           niceName: Hyperbolic Arc Secant
           category: Trigonometry
           header: arith
+          description: <b>asech(x) = acosh(1 / x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -285,6 +301,7 @@ OneToOneBlocks:
           niceName: Hyperbolic Arc Cosecant
           category: Trigonometry
           header: arith
+          description: <b>acsch(x) = asinh(1 / x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -293,6 +310,7 @@ OneToOneBlocks:
           niceName: Hyperbolic Arc Cotangent
           category: Trigonometry
           header: arith
+          description: <b>acoth(x) = atanh(1 / x)</b>
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -301,6 +319,11 @@ OneToOneBlocks:
           niceName: Sinc
           category: Signal
           header: signal
+          description: "The Sinc function is defined as follows:
+<ul>
+<li><b>x = 0 -> sinc(x) = 1</b></li>
+<li><b>x != 0 -> sinc(x) = (sin(x) / x)</b></li>
+</ul>"
           testOnly: true
           supportedTypes:
                   supportFloat: true
@@ -310,6 +333,7 @@ OneToOneBlocks:
           niceName: Unique
           category: Stream
           header: algorithm
+          description: Outputs the unique elements in the input stream, sorted in ascending order.
           testOnly: true
           supportedTypes:
                   supportInt: true
@@ -319,6 +343,7 @@ OneToOneBlocks:
         - func: flip
           category: Stream
           header: data
+          description: Reverses the input stream and outputs the result. This block is most useful when applied to discrete sets of elements, such as the contents of a file.
           testOnly: true
           supportedTypes:
                   supportAll: true
@@ -337,6 +362,7 @@ TwoToOneBlocks:
         - func: rem
           niceName: Remainder
           header: arith
+          description: For each element in inputs <b>0</b> and <b>1</b>, returns the remainder of <b>port0 / port1</b>. Will throw if <b>port1</b> includes a 0.
           allowZeroInBuffer1: false
           supportedTypes:
                   supportInt: true
@@ -345,6 +371,7 @@ TwoToOneBlocks:
 
         - func: mod
           niceName: Modulus
+          description: For each element in inputs <b>0</b> and <b>1</b>, returns <b>port0 ^ port1</b>. Will throw if <b>port1</b> includes a 0.
           header: arith
           allowZeroInBuffer1: false
           supportedTypes:
@@ -355,9 +382,11 @@ TwoToOneBlocks:
         - func: atan2
           niceName: Arc Tangent
           header: arith
+          description: <b>atan2(y,x)</b> returns the angle between the ray to the point <b>(x, y)</b> and the positive <b>x</b> axis.
           supportedTypes:
                   supportFloat: true
 
+# TODO: move to Complex.cpp, use "rho" and "theta"
         - func: polar_to_complex
           niceName: Polar to Complex
           header: arith
@@ -370,6 +399,7 @@ NToOneBlocks:
         - func: min
           niceName: Minimum
           header: arith
+          description: For each position in the given inputs, outputs the minimum value of all elements at that position.
           supportedTypes:
                   supportInt: true
                   supportUInt: true
@@ -378,6 +408,7 @@ NToOneBlocks:
         - func: max
           niceName: Maximum
           header: arith
+          description: For each position in the given inputs, outputs the maximum value of all elements at that position.
           supportedTypes:
                   supportInt: true
                   supportUInt: true
@@ -388,6 +419,7 @@ NToOneBlocks:
           niceName: Set Union
           category: Stream
           header: algorithm
+          description: Outputs the union of all input buffers, sorted in ascending order.
           testOnly: true
           supportedTypes:
                   supportInt: true
