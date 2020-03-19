@@ -197,13 +197,21 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_source)
     {
         auto afDType = Pothos::Object(type).convert<af::dtype>();
 
-        allTestData.emplace_back(TestData{
+        TestData testData{
             Pothos::DType(type),
             ("1d_" + type),
             ("2d_" + type),
             af::randu(numElements, afDType),
             af::randu(numChannels, numElements, afDType)
-        });
+        };
+        PothosArrayFireTests::addMinMaxToAfArray(
+            testData.oneDimArray,
+            type);
+        PothosArrayFireTests::addMinMaxToAfArray(
+            testData.twoDimArray,
+            type);
+
+        allTestData.emplace_back(std::move(testData));
     }
 
     const auto testDataFilepath = generateTestFile(allTestData);

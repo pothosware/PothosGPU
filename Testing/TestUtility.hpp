@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <complex>
 #include <cstring>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -263,6 +264,43 @@ static void compareAfArrayToBufferChunk(
         Pothos::Object(afArray).convert<Pothos::BufferChunk>(),
         bufferChunk);
 }
+
+template <typename T>
+static EnableIfNotComplex<T, void> addMinMaxToAfArray(af::array& rAfArray)
+{
+    if(1 == rAfArray.numdims())
+    {
+        rAfArray(0) = std::numeric_limits<T>::min();
+        rAfArray(1) = std::numeric_limits<T>::max();
+    }
+    else
+    {
+        rAfArray(0,0) = std::numeric_limits<T>::min();
+        rAfArray(0,1) = std::numeric_limits<T>::max();
+    }
+}
+
+template <typename T>
+static EnableIfComplex<T, void> addMinMaxToAfArray(af::array& rAfArray)
+{
+    using Scalar = typename T::value_type;
+    
+    if(1 == rAfArray.numdims())
+    {
+        rAfArray(0) = typename PothosToAF<T>::type(
+                                   std::numeric_limits<Scalar>::min(),
+                                   std::numeric_limits<Scalar>::max());
+    }
+    else
+    {
+        rAfArray(0,0) = typename PothosToAF<T>::type(
+                                     std::numeric_limits<Scalar>::min(),
+                                     std::numeric_limits<Scalar>::max());
+    }
+}
+
+// To enable doing this in non-templated functions.
+void addMinMaxToAfArray(af::array& rAfArray, const std::string& type);
 
 }
 

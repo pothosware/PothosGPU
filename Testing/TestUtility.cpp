@@ -52,4 +52,27 @@ void testBufferChunk(
     IfTypeThenCompare("complex_float64", std::complex<double>)
 }
 
+void addMinMaxToAfArray(af::array& rAfArray, const std::string& type)
+{
+    #define IfTypeThenAdd(typeStr, ctype) \
+        if(typeStr == type) \
+        { \
+            addMinMaxToAfArray<ctype>(rAfArray); \
+            return; \
+        }
+
+    IfTypeThenAdd("int8", std::int8_t)
+    IfTypeThenAdd("int16", std::int16_t)
+    IfTypeThenAdd("int32", std::int32_t)
+    IfTypeThenAdd("int64", std::int64_t)
+    IfTypeThenAdd("uint8", std::uint8_t)
+    IfTypeThenAdd("uint16", std::uint16_t)
+    IfTypeThenAdd("uint32", std::uint32_t)
+    IfTypeThenAdd("uint64", std::uint64_t)
+    IfTypeThenAdd("float32", float)
+    IfTypeThenAdd("float64", double)
+    IfTypeThenAdd("complex_float32", std::complex<float>)
+    IfTypeThenAdd("complex_float64", std::complex<double>)
+}
+
 }
