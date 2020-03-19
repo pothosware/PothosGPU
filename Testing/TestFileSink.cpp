@@ -24,11 +24,11 @@ static const std::vector<std::string> AllTypes =
 {
     "int16",
     "int32",
-    //"int64",
+    "int64",
     "uint8",
     "uint16",
     "uint32",
-    //"uint64",
+    "uint64",
     "float32",
     "float64",
     "complex_float32",
@@ -203,13 +203,21 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_sink)
     {
         auto afDType = Pothos::Object(type).convert<af::dtype>();
 
-        allTestData.emplace_back(TestData{
+        TestData testData{
             Pothos::DType(type),
             ("1d_" + type),
             ("2d_" + type),
             af::randu(numElements, afDType),
             af::randu(numChannels, numElements, afDType)
-        });
+        };
+        PothosArrayFireTests::addMinMaxToAfArray(
+            testData.oneDimArray,
+            type);
+        PothosArrayFireTests::addMinMaxToAfArray(
+            testData.twoDimArray,
+            type);
+
+        allTestData.emplace_back(std::move(testData));
     }
 
     Poco::TemporaryFile tempFile;
