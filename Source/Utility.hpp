@@ -17,6 +17,16 @@
 #include <vector>
 
 //
+// Useful typedefs
+//
+
+template <typename T>
+struct IsComplex : std::false_type {};
+
+template <typename T>
+struct IsComplex<std::complex<T>> : std::true_type {};
+
+//
 // These helper functions will be used for registering enum conversions.
 //
 

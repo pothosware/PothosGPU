@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "Utility.hpp"
+
 #include <Pothos/Framework.hpp>
 #include <Pothos/Plugin.hpp>
 #include <Pothos/Proxy.hpp>
@@ -20,23 +22,11 @@ namespace PothosArrayFireTests
 {
 
 //
-// Should be called at the beginning of each test
-//
-
-void setupTestEnv();
-
-//
 // Useful typedefs
 //
 
 using InputPortVector = std::vector<Pothos::InputPort*>;
 using OutputPortVector = std::vector<Pothos::OutputPort*>;
-
-template <typename T>
-struct IsComplex : std::false_type {};
-
-template <typename T>
-struct IsComplex<std::complex<T>> : std::true_type {};
 
 template <typename T, typename U>
 using EnableIfInteger = typename std::enable_if<!IsComplex<T>::value && !std::is_floating_point<T>::value && !std::is_unsigned<T>::value, U>::type;
@@ -76,6 +66,12 @@ using EnableIfTypeSizeIsGE = typename std::enable_if<sizeof(T) >= size, Ret>::ty
 
 template <typename T, typename Ret, size_t size>
 using EnableIfTypeSizeIsLT = typename std::enable_if<sizeof(T) < size, Ret>::type;
+
+//
+// Should be called at the beginning of each test
+//
+
+void setupTestEnv();
 
 //
 // Utility functions

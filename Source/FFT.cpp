@@ -4,6 +4,7 @@
 #include "ArrayFireBlock.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Callable.hpp>
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
@@ -31,38 +32,38 @@ static bool isPowerOfTwo(size_t num)
 }
 
 static const std::string fftBlockPath = "/arrayfire/signal/fft";
-static const std::string rfftBlockPath = "/arrayfire/signal/rfft";
 
 //
 // Block classes
 //
 
-using FFTInPlaceFuncPtr = void(*)(af::array&, const double);
 using FFTFuncPtr = af::array(*)(const af::array&, const double);
 using FFTFunc = std::function<af::array(const af::array&, const double)>;
 
 template <typename In, typename Out>
-class FFTBaseBlock: public ArrayFireBlock
+class FFTBlock: public ArrayFireBlock
 {
     public:
         using InType = In;
         using OutType = Out;
-        using Class = FFTBaseBlock<In, Out>;
+        using Class = FFTBlock<In, Out>;
 
-        FFTBaseBlock(
+        FFTBlock(
             const std::string& device,
+            FFTFunc func,
             size_t numBins,
             double norm,
             size_t dtypeDims,
-            const std::string& blockRegistryPath
+            bool checkNumBins
         ):
             ArrayFireBlock(device),
+            _func(func),
             _numBins(numBins),
             _norm(0.0) // Set with class setter
         {
-            if(!isPowerOfTwo(numBins))
+            if(checkNumBins && !isPowerOfTwo(numBins))
             {
-                auto& logger = Poco::Logger::get(blockRegistryPath);
+                static auto& logger = Poco::Logger::get(fftBlockPath);
                 poco_warning(
                     logger,
                     "This block is most efficient when "
@@ -88,9 +89,7 @@ class FFTBaseBlock: public ArrayFireBlock
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setNormalizationFactor));
         }
 
-        virtual ~FFTBaseBlock() = default;
-
-        virtual void work() = 0;
+        virtual ~FFTBlock() = default;
 
         double normalizationFactor() const
         {
@@ -104,65 +103,6 @@ class FFTBaseBlock: public ArrayFireBlock
             this->emitSignal("normalizationFactorChanged", _norm);
         }
 
-    protected:
-        size_t _numBins;
-        double _norm;
-        size_t _nchans;
-};
-
-template <typename T>
-class FFTBlock: public FFTBaseBlock<T,T>
-{
-    public:
-        FFTBlock(
-            const std::string& device,
-            FFTInPlaceFuncPtr func,
-            size_t numBins,
-            double norm,
-            size_t dtypeDims
-        ):
-            FFTBaseBlock<T,T>(device, numBins, norm, dtypeDims, fftBlockPath),
-            _func(func)
-        {
-        }
-
-        virtual ~FFTBlock() = default;
-
-        void work() override
-        {
-            auto elems = this->workInfo().minElements;
-            if(elems < this->_numBins)
-            {
-                return;
-            }
-
-            auto afArray = this->getInputPortAsAfArray(0);
-            _func(afArray, this->_norm);
-            this->produceFromAfArray(0, afArray);
-        }
-
-    private:
-        FFTInPlaceFuncPtr _func;
-};
-
-template <typename In, typename Out>
-class RFFTBlock: public FFTBaseBlock<In,Out>
-{
-    public:
-        RFFTBlock(
-            const std::string& device,
-            const FFTFunc& func,
-            size_t numBins,
-            double norm,
-            size_t dtypeDims
-        ):
-            FFTBaseBlock<In,Out>(device, numBins, norm, dtypeDims, rfftBlockPath),
-            _func(func)
-        {
-        }
-
-        virtual ~RFFTBlock() = default;
-
         void work() override
         {
             auto elems = this->workInfo().minElements;
@@ -173,12 +113,94 @@ class RFFTBlock: public FFTBaseBlock<In,Out>
 
             auto afInput = this->getInputPortAsAfArray(0);
             auto afOutput = _func(afInput, this->_norm);
-            this->produceFromAfArray(0, afOutput);
+            this->postAfArray(0, afOutput);
         }
 
     private:
         FFTFunc _func;
+
+    protected:
+        size_t _numBins;
+        double _norm;
+        size_t _nchans;
 };
+
+//
+// Generate underlying FFT functions based on types
+//
+
+template <typename T, typename U, typename V>
+using EnableIfComplexAndFloat = typename std::enable_if<IsComplex<T>::value && !IsComplex<U>::value, V>::type;
+
+template <typename T, typename U, typename V>
+using EnableIfFloatAndComplex = typename std::enable_if<!IsComplex<T>::value && IsComplex<U>::value, V>::type;
+
+template <typename T, typename U, typename V>
+using EnableIfBothComplex = typename std::enable_if<IsComplex<T>::value && IsComplex<U>::value, V>::type;
+
+template <typename FwdIn, typename FwdOut>
+static EnableIfBothComplex<FwdIn, FwdOut, FFTFunc> getFFTFunc(
+    size_t /*numBins*/,
+    bool inverse)
+{
+    // To despecialize
+    using FuncPtr = af::array(*)(const af::array&, const double, const dim_t);
+
+    FuncPtr func = inverse ? FuncPtr(&af::ifftNorm) : FuncPtr(&af::fftNorm);
+
+    auto retLambda = [func](const af::array& arr, const double norm)
+                     {
+                         // Pass in 0 to not pad or truncate output array.
+                         return func(arr, norm, 0);
+                     };
+
+    return FFTFunc(retLambda);
+}
+
+// This is here for compatibility, but there is no inverse case for this.
+template <typename FwdIn, typename FwdOut>
+static EnableIfFloatAndComplex<FwdIn, FwdOut, FFTFunc> getFFTFunc(
+    size_t /*numBins*/,
+    bool inverse)
+{
+    if(inverse)
+    {
+        static const Pothos::DType fwdInDType(typeid(FwdIn));
+        static const Pothos::DType fwdOutDType(typeid(FwdOut));
+        
+        throw Pothos::InvalidArgumentException(
+                  Poco::format(
+                      "Reverse FFT is not supported for %s -> %s",
+                      fwdInDType.name(),
+                      fwdOutDType.name()));
+    }
+
+    // To despecialize
+    using FuncPtr = af::array(*)(const af::array&, const double);
+
+    return FuncPtr(af::fftR2C<1>);
+}
+
+template <typename FwdIn, typename FwdOut>
+static EnableIfComplexAndFloat<FwdIn, FwdOut, FFTFunc> getFFTFunc(
+    size_t numBins,
+    bool inverse)
+{
+    const bool isOdd = (1 == (numBins % 2));
+
+    auto fwdRetLambda = [isOdd](const af::array& arr, const double norm)
+    {
+        // Since we know numBins beforehand, remove the parameter.
+        return af::fftC2R<1>(arr, isOdd, norm);
+    };
+    auto revRetLambda = [](const af::array& arr, const double norm)
+    {
+         // Pass in 0 to not pad or truncate output array.
+        return af::ifftNorm(arr, norm, 0);
+    };
+
+    return inverse ? FFTFunc(revRetLambda) : FFTFunc(fwdRetLambda);
+}
 
 //
 // Factories
@@ -186,86 +208,64 @@ class RFFTBlock: public FFTBaseBlock<In,Out>
 
 static Pothos::Block* makeFFT(
     const std::string& device,
-    const Pothos::DType& dtype,
+    const Pothos::DType& inputDType,
+    const Pothos::DType& outputDType,
     size_t numBins,
     double norm,
     bool inverse)
 {
-    FFTInPlaceFuncPtr func = inverse ? &af::ifftInPlace : &af::fftInPlace;
-
-    #define ifTypeDeclareFactory(T) \
-        if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new FFTBlock<T>(device, func, numBins, norm, dtype.dimension());
-
-    ifTypeDeclareFactory(std::complex<float>)
-    ifTypeDeclareFactory(std::complex<double>)
-    #undef ifTypeDeclareFactory
-
-    throw Pothos::InvalidArgumentException(
-              "Unsupported type",
-              dtype.name());
-}
-
-static Pothos::Block* makeRFFT(
-    const std::string& device,
-    const Pothos::DType& dtype,
-    size_t numBins,
-    double norm,
-    bool inverse)
-{
-    auto getC2RFunc = [&numBins]() -> FFTFunc
+    if(inputDType.dimension() != outputDType.dimension())
     {
-        // We need to point to a specific af::fftC2R overload.
-        using fftC2RFuncPtr = af::array(*)(const af::array&, bool, const double);
-        fftC2RFuncPtr func = &af::fftC2R<1>;
+        throw Pothos::InvalidArgumentException("Input and output type dimensions must match.");
+    }
 
-        FFTFunc ret(std::bind(
-                        func,
-                        std::placeholders::_1,
-                        (1 == (numBins % 2)),
-                        std::placeholders::_2));
-        return ret;
-    };
-
-    FFTFunc func = inverse ? getC2RFunc() : FFTFuncPtr(&af::fftR2C<1>);
-
-    #define ifTypeDeclareFactory(T) \
-        if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-        { \
-            if(inverse) return new RFFTBlock<T,std::complex<T>>(device,func,numBins,norm,dtype.dimension()); \
-            else        return new RFFTBlock<std::complex<T>,T>(device,func,numBins,norm,dtype.dimension()); \
-        }
+    #define __ifTypeDeclareFactory(FwdIn,FwdOut) \
+    if((Pothos::DType::fromDType(inputDType, 1) == Pothos::DType(typeid(FwdIn))) && \
+       (Pothos::DType::fromDType(outputDType, 1) == Pothos::DType(typeid(FwdOut)))) \
+    { \
+        auto fftFunc = getFFTFunc<FwdIn,FwdOut>(numBins, inverse); \
+        if(inverse) return new FFTBlock<FwdOut,FwdIn>(device, fftFunc, numBins, norm, inputDType.dimension(), false); \
+        else        return new FFTBlock<FwdIn,FwdOut>(device, fftFunc, numBins, norm, inputDType.dimension(), true); \
+    }
+    #define ifTypeDeclareFactory(FloatType) \
+        __ifTypeDeclareFactory(FloatType, std::complex<FloatType>) \
+        __ifTypeDeclareFactory(std::complex<FloatType>, FloatType) \
+        __ifTypeDeclareFactory(std::complex<FloatType>, std::complex<FloatType>)
 
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
-    #undef ifTypeDeclareFactory
 
     throw Pothos::InvalidArgumentException(
-              "Unsupported type",
-              dtype.name());
+              Poco::format(
+                  "Unsupported types: %s -> %s",
+                  inputDType.name(),
+                  outputDType.name()));
 }
 
 //
-// Block registries
+// Block registration
 //
 
 /*
  * |PothosDoc FFT
  *
- * Calculates the FFT of the input stream. For the forward FFT, this
- * block uses <b>af::fftInPlace</b> For the reverse FFT, this block
- * uses <b>af::ifftInPlace</b>.
+ * Calculates the FFT of the input stream, with an optional normalization factor.
  *
  * |category /ArrayFire/Signal
  * |keywords array signal fft ifft fourier
- * |factory /arrayfire/signal/fft(device,dtype,numBins,norm,inverse)
+ * |factory /arrayfire/signal/fft(device,inputDType,outputDType,numBins,norm,inverse)
  * |setter setNormalizationFactor(norm)
  *
  * |param device[Device] ArrayFire device to use.
  * |default "Auto"
  *
- * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(cfloat=1,dim=1)
+ * |param inputDType[Input Data Type] The forward FFT's input data type.
+ * |widget DTypeChooser(float=1,cfloat=1,dim=1)
+ * |default "complex_float64"
+ * |preview disable
+ *
+ * |param outputDType[Output Data Type] The forward FFT's output data type.
+ * |widget DTypeChooser(float=1,cfloat=1,dim=1)
  * |default "complex_float64"
  * |preview disable
  *
@@ -278,7 +278,7 @@ static Pothos::Block* makeRFFT(
  * |widget ComboBox(editable=true)
  * |preview enable
  *
- * |param norm[Normalization Factor]
+ * |param norm[Normalization Factor] Multiply all outputs by this value post-transformation.
  * |widget DoubleSpinBox(minimum=0.0)
  * |default 1.0
  * |preview enable
@@ -291,46 +291,3 @@ static Pothos::Block* makeRFFT(
 static Pothos::BlockRegistry registerFFT(
     fftBlockPath,
     Pothos::Callable(&makeFFT));
-
-/*
- * |PothosDoc Real FFT
- *
- * Calculates the real FFT of the input stream. For the forward FFT, this
- * block uses <b>af::fftR2C\<1\></b>. For the reverse FFT, this block uses
- * <b>af::fftC2R\<1\></b>.
- *
- * |category /ArrayFire/Signal
- * |keywords array signal fft ifft rfft fourier
- * |factory /arrayfire/signal/rfft(device,dtype,numBins,norm,inverse)
- * |setter setNormalizationFactor(norm)
- *
- * |param device[Device] ArrayFire device to use.
- * |default "Auto"
- *
- * |param dtype[Data Type] The floating-type underlying the input types.
- * |widget DTypeChooser(float=1,dim=1)
- * |default "float64"
- * |preview disable
- *
- * |param numBins[Num FFT Bins] The number of bins per FFT.
- * |default 1024
- * |option 512
- * |option 1024
- * |option 2048
- * |option 4096
- * |widget ComboBox(editable=true)
- * |preview enable
- *
- * |param norm[Normalization Factor]
- * |widget DoubleSpinBox(minimum=0.0)
- * |default 1.0
- * |preview enable
- *
- * |param inverse[Inverse?]
- * |widget ToggleSwitch(on="True",off="False")
- * |preview enable
- * |default false
- */
-static Pothos::BlockRegistry registerRFFT(
-    rfftBlockPath,
-    Pothos::Callable(&makeRFFT));
