@@ -14,11 +14,46 @@
 #include <arrayfire.h>
 
 #include <iostream>
+#include <limits>
 #include <string>
 #include <typeinfo>
 
 namespace PothosArrayFireTests
 {
+
+template <typename T>
+static EnableIfNotComplex<T, void> addMinMaxToAfArray(af::array& rAfArray)
+{
+    if(1 == rAfArray.numdims())
+    {
+        rAfArray(0) = std::numeric_limits<T>::min();
+        rAfArray(1) = std::numeric_limits<T>::max();
+    }
+    else
+    {
+        rAfArray(0,0) = std::numeric_limits<T>::min();
+        rAfArray(0,1) = std::numeric_limits<T>::max();
+    }
+}
+
+template <typename T>
+static EnableIfComplex<T, void> addMinMaxToAfArray(af::array& rAfArray)
+{
+    using Scalar = typename T::value_type;
+    
+    if(1 == rAfArray.numdims())
+    {
+        rAfArray(0) = typename PothosToAF<T>::type(
+                                   std::numeric_limits<Scalar>::min(),
+                                   std::numeric_limits<Scalar>::max());
+    }
+    else
+    {
+        rAfArray(0,0) = typename PothosToAF<T>::type(
+                                     std::numeric_limits<Scalar>::min(),
+                                     std::numeric_limits<Scalar>::max());
+    }
+}
 
 template <typename T>
 static void test1DArrayConversion(
@@ -30,6 +65,7 @@ static void test1DArrayConversion(
     std::cout << " * Testing " << dtypeName << "..." << std::endl;
 
     auto afArray = af::randu(ArrDim, afDType);
+    addMinMaxToAfArray<T>(afArray);
 
     auto convertedBufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
     compareAfArrayToBufferChunk(
@@ -53,6 +89,8 @@ static void test2DArrayConversion(
     std::cout << " * Testing " << dtypeName << "..." << std::endl;
 
     auto afArray = af::randu(ArrDim1, ArrDim2, afDType);
+    addMinMaxToAfArray<T>(afArray);
+
     for(dim_t row = 0; row < ArrDim1; ++row)
     {
         const af::array::array_proxy afArrayRow = afArray.row(row);
