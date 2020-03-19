@@ -120,6 +120,7 @@ POTHOS_MODULE_UTIL(
         Testing/TestArrayFireConfig.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
+        Testing/TestFFT.cpp
         Testing/TestFileSink.cpp
         Testing/TestFileSource.cpp
         Testing/TestManagedDeviceCache.cpp
