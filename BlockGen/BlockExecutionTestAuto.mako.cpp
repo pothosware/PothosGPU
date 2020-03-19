@@ -9,44 +9,6 @@
 
 using namespace PothosArrayFireTests;
 
-//
-// Verification functions
-//
-%for block in oneToOneBlocks:
-    %if "verify" in block:
-
-template <typename In, typename Out>
-static inline Out verify_${block["header"]}_${block["blockName"]}(const In& val)
-{
-    return ${block["verify"]}(val);
-}
-    %endif
-%endfor
-%for block in singleOutputSources:
-    %if "verify" in block:
-
-    %endif
-%endfor
-%for block in twoToOneBlocks:
-    %if "verify" in block:
-
-template <typename In, typename Out>
-static inline Out verify_${block["header"]}_${block["blockName"]}(const In& val0, const In& val1)
-{
-    return ${block["verify"]}(val0, val1);
-}
-    %endif
-%endfor
-%for block in NToOneBlocks:
-    %if "verify" in block:
-
-template <typename In, typename Out>
-static inline Out verify_${block["header"]}_${block["blockName"]}(const In& val0, const In& val1)
-{
-    return ${block["verify"]}(val0, val1);
-}
-    %endif
-%endfor
 %for k,v in sfinaeMap.items():
 
 template <typename T>
@@ -57,18 +19,9 @@ static EnableIf${k}<T, void> blockExecutionTest()
     %endif
 
     %for block in oneToOneBlocks:
-        %if (block.get("pattern", "") == "FloatToComplex") and (k == "Float"):
-    testOneToOneBlockF2C<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-    testOneToOneBlockC2F<Scalar>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        ${"&verify_{0}_{1}<T, Scalar>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-        %elif "supportedTypes" in block:
+        %if "supportedTypes" in block:
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
-    testOneToOneBlock<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
+    testOneToOneBlock<T>("/arrayfire/${block["header"]}/${block["blockName"]}");
             %endif
         %endif
     %endfor
@@ -77,13 +30,11 @@ static EnableIf${k}<T, void> blockExecutionTest()
         %if (block.get("pattern", "") == "FloatToComplex") and (k == "Float"):
     testTwoToOneBlockF2C<T>(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
-        ${"&verify_{0}_{1}<T, std::complex<T>>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"},
         ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
         %elif "supportedTypes" in block:
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
     testTwoToOneBlock<T>(
         "/arrayfire/${block["header"]}/${block["blockName"]}",
-        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"},
         ${"false" if block.get("allowZeroInBuffer1", True) else "true"});
             %endif
         %endif
@@ -92,14 +43,8 @@ static EnableIf${k}<T, void> blockExecutionTest()
     %for block in NToOneBlocks:
         %if "supportedTypes" in block:
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
-    testNToOneBlock<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        2,
-        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
-    testNToOneBlock<T>(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
-        5,
-        ${"&verify_{0}_{1}<T,T>".format(block["header"], block["blockName"]) if "verify" in block else "nullptr"});
+    testNToOneBlock<T>("/arrayfire/${block["header"]}/${block["blockName"]}", 2);
+    testNToOneBlock<T>("/arrayfire/${block["header"]}/${block["blockName"]}", 5);
             %endif
         %endif
     %endfor

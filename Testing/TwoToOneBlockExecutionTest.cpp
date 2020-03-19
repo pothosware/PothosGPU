@@ -18,27 +18,8 @@ namespace PothosArrayFireTests
 {
 
 template <typename In, typename Out>
-static std::vector<Out> getExpectedOutputs(
-    const std::vector<In>& inputs0,
-    const std::vector<In>& inputs1,
-    const BinaryFunc<In, Out>& verificationFunc)
-{
-    POTHOS_TEST_EQUAL(inputs0.size(), inputs1.size());
-    const size_t numInputs = inputs0.size();
-
-    std::vector<Out> expectedOutputs(numInputs);
-    for(size_t elem = 0; elem < numInputs; ++elem)
-    {
-        expectedOutputs[elem] = verificationFunc(inputs0[elem], inputs1[elem]);
-    }
-
-    return expectedOutputs;
-}
-
-template <typename In, typename Out>
 void testTwoToOneBlockCommon(
     const Pothos::Proxy& block,
-    const BinaryFunc<In, Out>& verificationFunc,
     bool removeZerosInBuffer1)
 {
     static const Pothos::DType inputDType(typeid(In));
@@ -113,28 +94,16 @@ void testTwoToOneBlockCommon(
         POTHOS_TEST_TRUE(topology.waitInactive(0.05));
     }
 
-    // Make sure the blocks output data and, if the caller provided a
-    // verification function, that the outputs are valid.
+    // Make sure the block outputs data.
     auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
     POTHOS_TEST_EQUAL(
         testInputs[0].size(),
         output.elements());
-    if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("arrayFireBackend")))
-    {
-        auto expectedOutputs = getExpectedOutputs(
-                                   testInputs[0],
-                                   testInputs[1],
-                                   verificationFunc);
-        testBufferChunk<Out>(
-            output,
-            expectedOutputs);
-    }
 }
 
 template <typename T>
 void testTwoToOneBlock(
     const std::string& blockRegistryPath,
-    const BinaryFunc<T, T>& verificationFunc,
     bool removeZerosInBuffer1)
 {
     static const Pothos::DType dtype(typeid(T));
@@ -152,14 +121,12 @@ void testTwoToOneBlock(
 
     testTwoToOneBlockCommon<T, T>(
         block,
-        verificationFunc,
         removeZerosInBuffer1);
 }
 
 template <typename T>
 void testTwoToOneBlockF2C(
     const std::string& blockRegistryPath,
-    const BinaryFunc<T, std::complex<T>>& verificationFunc,
     bool removeZerosInBuffer1)
 {
     static const Pothos::DType floatDType(typeid(T));
@@ -179,23 +146,16 @@ void testTwoToOneBlockF2C(
 
     testTwoToOneBlockCommon<T, std::complex<T>>(
         block,
-        verificationFunc,
         removeZerosInBuffer1);
 }
 
 #define SPECIALIZE_TEMPLATE_TEST(T) \
     template \
-    void testTwoToOneBlock<T>( \
-        const std::string& blockRegistryPath, \
-        const BinaryFunc<T, T>& verificationFunc, \
-        bool removeZerosInBuffer1);
+    void testTwoToOneBlock<T>(const std::string&, bool);
 
 #define SPECIALIZE_F2C_TEMPLATE_TEST(T) \
     template \
-    void testTwoToOneBlockF2C<T>( \
-        const std::string& blockRegistryPath, \
-        const BinaryFunc<T, std::complex<T>>& verificationFunc, \
-        bool removeZerosInBuffer1);
+    void testTwoToOneBlockF2C<T>(const std::string&, bool);
 
 SPECIALIZE_TEMPLATE_TEST(std::int8_t)
 SPECIALIZE_TEMPLATE_TEST(std::int16_t)

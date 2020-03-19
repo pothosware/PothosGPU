@@ -18,41 +18,9 @@ namespace PothosArrayFireTests
 {
 
 template <typename In, typename Out>
-static EnableIfTypeMatches<In, Out, std::vector<Out>> getExpectedOutputs(
-    const std::vector<std::vector<In>>& inputs,
-    const BinaryFunc<In, Out>& verificationFunc)
-{
-    const size_t numInputs = inputs[0].size();
-
-    std::vector<Out> expectedOutputs = inputs[0];
-    for(size_t chan = 1; chan < inputs.size(); ++chan)
-    {
-        const auto& chanInputs = inputs[chan];
-        POTHOS_TEST_EQUAL(chanInputs.size(), expectedOutputs.size());
-        for(size_t elem = 0; elem < numInputs; ++elem)
-        {
-            expectedOutputs[elem] = verificationFunc(
-                                        expectedOutputs[elem],
-                                        chanInputs[elem]);
-        }
-    }
-
-    return expectedOutputs;
-}
-
-template <typename In, typename Out>
-static EnableIfTypeDoesNotMatch<In, Out, std::vector<Out>> getExpectedOutputs(
-    const std::vector<std::vector<In>>&,
-    const BinaryFunc<In, Out>&)
-{
-    return std::vector<Out>();
-}
-
-template <typename In, typename Out>
 static void testNToOneBlockCommon(
     const Pothos::Proxy& block,
     size_t numInputChannels,
-    const BinaryFunc<In, Out>& verificationFunc,
     bool removeZerosInBuffer1)
 {
     static const Pothos::DType inputDType(typeid(In));
@@ -125,28 +93,17 @@ static void testNToOneBlockCommon(
         POTHOS_TEST_TRUE(topology.waitInactive(0.05));
     }
 
-    // Make sure the blocks output data and, if the caller provided a
-    // verification function, that the outputs are valid.
+    // Make sure the block outputs data.
     auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
     POTHOS_TEST_EQUAL(
         testInputs[0].size(),
         output.elements());
-    if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("arrayFireBackend")))
-    {
-        auto expectedOutputs = getExpectedOutputs(
-                                   testInputs,
-                                   verificationFunc);
-        testBufferChunk<Out>(
-            output,
-            expectedOutputs);
-    }
 }
 
 template <typename T>
 void testNToOneBlock(
     const std::string& blockRegistryPath,
-    size_t numInputChannels,
-    const BinaryFunc<T, T>& verificationFunc)
+    size_t numInputChannels)
 {
     static const Pothos::DType dtype(typeid(T));
 
@@ -168,15 +125,13 @@ void testNToOneBlock(
     testNToOneBlockCommon<T, T>(
         block,
         numInputChannels,
-        verificationFunc,
         false /*removeZerosInBuffer1*/);
 }
 
 template <typename T1, typename T2>
 void testReducedBlock(
     const std::string& blockRegistryPath,
-    size_t numInputChannels,
-    const BinaryFunc<T1, T2>& verificationFunc)
+    size_t numInputChannels)
 {
     static const Pothos::DType dtype1(typeid(T1));
     static const Pothos::DType dtype2(typeid(T2));
@@ -200,29 +155,19 @@ void testReducedBlock(
     testNToOneBlockCommon<T1, T2>(
         block,
         numInputChannels,
-        verificationFunc,
         false /*removeZerosInBuffer1*/);
 }
 
 #define SPECIALIZE_TEMPLATE_TEST(T) \
     template \
-    void testNToOneBlock<T>( \
-        const std::string&, \
-        size_t, \
-        const BinaryFunc<T, T>&); \
+    void testNToOneBlock<T>(const std::string&, size_t); \
     template \
-    void testReducedBlock<T, T>( \
-        const std::string&, \
-        size_t, \
-        const BinaryFunc<T, T>&); \
+    void testReducedBlock<T, T>(const std::string&, size_t);
 
 #define SPECIALIZE_TEMPLATE_TEST_WITH_REDUCEDINT8OUT(T) \
     SPECIALIZE_TEMPLATE_TEST(T) \
     template \
-    void testReducedBlock<T, std::int8_t>( \
-        const std::string&, \
-        size_t, \
-        const BinaryFunc<T, std::int8_t>&); \
+    void testReducedBlock<T, std::int8_t>(const std::string&, size_t);
 
 SPECIALIZE_TEMPLATE_TEST(std::int8_t)
 SPECIALIZE_TEMPLATE_TEST_WITH_REDUCEDINT8OUT(std::int16_t)

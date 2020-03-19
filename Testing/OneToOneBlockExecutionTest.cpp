@@ -18,9 +18,7 @@ namespace PothosArrayFireTests
 {
 
 template <typename In, typename Out>
-static void testOneToOneBlockCommon(
-    const Pothos::Proxy& block,
-    const UnaryFunc<In, Out>& verificationFunc)
+static void testOneToOneBlockCommon(const Pothos::Proxy& block)
 {
     static const Pothos::DType inputDType(typeid(In));
     static const Pothos::DType outputDType(typeid(Out));
@@ -48,31 +46,15 @@ static void testOneToOneBlockCommon(
         POTHOS_TEST_TRUE(topology.waitInactive(0.05));
     }
 
-    // Make sure the blocks output data and, if the caller provided a
-    // verification function, that the outputs are valid.
+    // Make sure the block outputs data.
     auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
     POTHOS_TEST_EQUAL(
         testInputs.size(),
         static_cast<size_t>(output.elements()));
-    if((nullptr != verificationFunc) && ("CPU" == block.call<std::string>("arrayFireBackend")))
-    {
-        std::vector<Out> expectedOutputs;
-        std::transform(
-            testInputs.begin(),
-            testInputs.end(),
-            std::back_inserter(expectedOutputs),
-            verificationFunc);
-
-        testBufferChunk<Out>(
-            output,
-            expectedOutputs);
-    }
 }
 
 template <typename T>
-void testOneToOneBlock(
-    const std::string& blockRegistryPath,
-    const UnaryFunc<T, T>& verificationFunc)
+void testOneToOneBlock(const std::string& blockRegistryPath)
 {
     static const Pothos::DType dtype(typeid(T));
 
@@ -83,15 +65,11 @@ void testOneToOneBlock(
                      blockRegistryPath,
                      "Auto",
                      dtype);
-    testOneToOneBlockCommon<T, T>(
-        block,
-        verificationFunc);
+    testOneToOneBlockCommon<T, T>(block);
 }
 
 template <typename T>
-void testOneToOneBlockF2C(
-    const std::string& blockRegistryPath,
-    const UnaryFunc<T, std::complex<T>>& verificationFunc)
+void testOneToOneBlockF2C(const std::string& blockRegistryPath)
 {
     static const Pothos::DType floatDType(typeid(T));
     static const Pothos::DType complexDType(typeid(std::complex<T>));
@@ -104,15 +82,11 @@ void testOneToOneBlockF2C(
                      blockRegistryPath,
                      "Auto",
                      floatDType);
-    testOneToOneBlockCommon<T, std::complex<T>>(
-        block,
-        verificationFunc);
+    testOneToOneBlockCommon<T, std::complex<T>>(block);
 }
 
 template <typename T>
-void testOneToOneBlockC2F(
-    const std::string& blockRegistryPath,
-    const UnaryFunc<std::complex<T>, T>& verificationFunc)
+void testOneToOneBlockC2F(const std::string& blockRegistryPath)
 {
     static const Pothos::DType floatDType(typeid(T));
     static const Pothos::DType complexDType(typeid(std::complex<T>));
@@ -126,15 +100,12 @@ void testOneToOneBlockC2F(
                      "Auto",
                      floatDType);
 
-    testOneToOneBlockCommon<std::complex<T>, T>(
-        block,
-        verificationFunc);
+    testOneToOneBlockCommon<std::complex<T>, T>(block);
 }
 
 template <typename T>
 void testScalarOpBlock(
     const std::string& blockRegistryPath,
-    const BinaryFunc<T, T>& verificationFunc,
     bool allowZeroScalar)
 {
     static const Pothos::DType dtype(typeid(T));
@@ -160,31 +131,20 @@ void testScalarOpBlock(
     block.template call("setScalar", scalar);
     testEqual(scalar, block.template call<T>("getScalar"));
 
-    testOneToOneBlockCommon<T, T>(
-        block,
-        binaryFuncToUnary(verificationFunc, scalar));
+    testOneToOneBlockCommon<T, T>(block);
 }
 
 #define SPECIALIZE_TEMPLATE_TEST(T) \
     template \
-    void testOneToOneBlock<T>( \
-        const std::string& blockRegistryPath, \
-        const UnaryFunc<T, T>& verificationFunc); \
+    void testOneToOneBlock<T>(const std::string&); \
     template \
-    void testScalarOpBlock<T>( \
-        const std::string& blockRegistryPath, \
-        const BinaryFunc<T, T>& verificationFunc, \
-        bool allowZeroScalar);
+    void testScalarOpBlock<T>(const std::string&, bool);
 
 #define SPECIALIZE_COMPLEX_1TO1_TEMPLATE_TEST(T) \
     template \
-    void testOneToOneBlockF2C<T>( \
-        const std::string& blockRegistryPath, \
-        const UnaryFunc<T, std::complex<T>>& verificationFunc); \
+    void testOneToOneBlockF2C<T>(const std::string&); \
     template \
-    void testOneToOneBlockC2F<T>( \
-        const std::string& blockRegistryPath, \
-        const UnaryFunc<std::complex<T>, T>& verificationFunc);
+    void testOneToOneBlockC2F<T>(const std::string&);
 
 SPECIALIZE_TEMPLATE_TEST(std::int8_t)
 SPECIALIZE_TEMPLATE_TEST(std::int16_t)

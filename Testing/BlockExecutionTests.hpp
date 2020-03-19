@@ -9,7 +9,6 @@
 
 #include <complex>
 #include <cmath>
-#include <functional>
 #include <random>
 #include <vector>
 
@@ -19,74 +18,42 @@ namespace PothosArrayFireTests
 using PortInfoVector = std::vector<Pothos::PortInfo>;
 
 //
-// Verification function types
-//
-
-template <typename In, typename Out>
-using UnaryFunc = std::function<Out(const In&)>;
-
-template <typename In, typename Out>
-using BinaryFunc = std::function<Out(const In&, const In&)>;
-
-template <typename T>
-static UnaryFunc<T, T> binaryFuncToUnary(
-    const BinaryFunc<T, T>& binaryFunc,
-    const T& operand)
-{
-    UnaryFunc<T, T> ret = (nullptr == binaryFunc)
-                        ? UnaryFunc<T, T>(nullptr)
-                        : std::bind(binaryFunc, std::placeholders::_1, operand);
-    return ret;
-}
-
-//
 // Templated type calls
 //
 
 template <typename T>
-void testOneToOneBlock(
-    const std::string& blockRegistryPath,
-    const UnaryFunc<T, T>& verificationFunc);
+void testOneToOneBlock(const std::string& blockRegistryPath);
 
 template <typename T>
-void testOneToOneBlockF2C(
-    const std::string& blockRegistryPath,
-    const UnaryFunc<T, std::complex<T>>& verificationFunc);
+void testOneToOneBlockF2C(const std::string& blockRegistryPath);
 
 template <typename T>
-void testOneToOneBlockC2F(
-    const std::string& blockRegistryPath,
-    const UnaryFunc<std::complex<T>, T>& verificationFunc);
+void testOneToOneBlockC2F(const std::string& blockRegistryPath);
 
 template <typename T>
 void testTwoToOneBlock(
     const std::string& blockRegistryPath,
-    const BinaryFunc<T, T>& verificationFunc,
     bool removeZerosInBuffer1);
 
 template <typename T>
 void testTwoToOneBlockF2C(
     const std::string& blockRegistryPath,
-    const BinaryFunc<T, std::complex<T>>& verificationFunc,
     bool removeZerosInBuffer1);
 
 template <typename T>
 void testNToOneBlock(
     const std::string& blockRegistryPath,
-    size_t numChannels,
-    const BinaryFunc<T, T>& verificationFunc);
+    size_t numChannels);
 
 template <typename T1, typename T2>
 void testReducedBlock(
     const std::string& blockRegistryPath,
-    size_t numChannels,
-    const BinaryFunc<T1, T2>& verificationFunc);
+    size_t numChannels);
 
 template <typename T>
 void testScalarOpBlock(
     const std::string& blockRegistryPath,
     size_t numChannels,
-    const BinaryFunc<T, T>& verificationFunc,
     bool allowZeroScalar);
 
 //
@@ -177,34 +144,6 @@ template <typename T>
 static inline T getSingleTestInput()
 {
     return getTestInputs<T>()[0];
-}
-
-//
-// Manual verification functions
-//
-
-template <typename T>
-static inline EnableIfComplex<T, typename T::value_type> testReal(const T& val)
-{
-    return val.real();
-}
-
-template <typename T>
-static inline EnableIfComplex<T, typename T::value_type> testImag(const T& val)
-{
-    return val.imag();
-}
-
-template <typename T>
-static inline EnableIfFloat<T, T> testSigmoid(const T& val)
-{
-    return (T(1.0) / (1.0 + std::exp(val * T(-1))));
-}
-
-template <typename T>
-static inline EnableIfFloat<T, T> testFactorial(const T& val)
-{
-    return std::tgamma(val + T(1.0));
 }
 
 //
