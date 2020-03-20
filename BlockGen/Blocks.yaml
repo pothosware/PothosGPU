@@ -386,14 +386,6 @@ TwoToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-# TODO: move to Complex.cpp, use "rho" and "theta"
-        - func: polar_to_complex
-          niceName: Polar to Complex
-          header: arith
-          category: Convert
-          testOnly: true
-          pattern: FloatToComplex
-
 NToOneBlocks:
 
         - func: min

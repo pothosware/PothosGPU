@@ -21,8 +21,12 @@
 #include <typeinfo>
 #include <vector>
 
-static constexpr const char* combineRegistryPath = "/arrayfire/arith/combine_complex";
-static constexpr const char* splitRegistryPath   = "/arrayfire/arith/split_complex";
+static constexpr const char* combineRegistryPath        = "/arrayfire/arith/combine_complex";
+static constexpr const char* splitRegistryPath          = "/arrayfire/arith/split_complex";
+static constexpr const char* polarToComplexRegistryPath = "/arrayfire/arith/polar_to_complex";
+static constexpr const char* complexToPolarRegistryPath = "/arrayfire/arith/complex_to_polar";
+
+// These calls involve multiple kernels, so give them some initial compile time.
 static constexpr int sleepTimeMs = 500;
 
 static void testCombineToSplit(const std::string& type)
@@ -151,6 +155,132 @@ static void testSplitToCombine(const std::string& type)
         collectorSink.call("getBuffer"));
 }
 
+static void testPolarToComplexToPolar(const std::string& type)
+{
+    std::cout << "Testing " << polarToComplexRegistryPath << " -> " << complexToPolarRegistryPath
+              << " (type: " << type << ")" << std::endl;
+
+    auto magTestInputs = PothosArrayFireTests::getTestInputs(type);
+    auto phaseTestInputs = PothosArrayFireTests::getTestInputs(type);
+
+    auto magFeederSource = Pothos::BlockRegistry::make(
+                               "/blocks/feeder_source",
+                               type);
+    magFeederSource.call("feedBuffer", magTestInputs);
+
+    auto phaseFeederSource = Pothos::BlockRegistry::make(
+                                 "/blocks/feeder_source",
+                                 type);
+    phaseFeederSource.call("feedBuffer", phaseTestInputs);
+
+    auto polarToComplex = Pothos::BlockRegistry::make(
+                              polarToComplexRegistryPath,
+                              "Auto",
+                              type);
+    auto complexToPolar = Pothos::BlockRegistry::make(
+                            complexToPolarRegistryPath,
+                            "Auto",
+                            type);
+
+    auto magCollectorSink = Pothos::BlockRegistry::make(
+                                "/blocks/collector_sink",
+                                type);
+    auto phaseCollectorSink = Pothos::BlockRegistry::make(
+                                  "/blocks/collector_sink",
+                                  type);
+
+    {
+        Pothos::Topology topology;
+
+        topology.connect(
+            magFeederSource, 0,
+            polarToComplex, "mag");
+        topology.connect(
+            phaseFeederSource, 0,
+            polarToComplex, "phase");
+
+        topology.connect(
+            polarToComplex, 0,
+            complexToPolar, 0);
+
+        topology.connect(
+            complexToPolar, "mag",
+            magCollectorSink, 0);
+        topology.connect(
+            complexToPolar, "phase",
+            phaseCollectorSink, 0);
+
+        topology.commit();
+        Poco::Thread::sleep(sleepTimeMs);
+        POTHOS_TEST_TRUE(topology.waitInactive());
+    }
+    POTHOS_TEST_TRUE(magCollectorSink.call("getBuffer").call<size_t>("elements") > 0);
+    POTHOS_TEST_TRUE(phaseCollectorSink.call("getBuffer").call<size_t>("elements") > 0);
+
+    PothosArrayFireTests::testBufferChunk(
+        magTestInputs,
+        magCollectorSink.call("getBuffer"));
+    PothosArrayFireTests::testBufferChunk(
+        phaseTestInputs,
+        phaseCollectorSink.call("getBuffer"));
+}
+
+static void testComplexToPolarToComplex(const std::string& type)
+{
+    std::cout << "Testing " << complexToPolarRegistryPath << " -> " << polarToComplexRegistryPath
+              << " (type: " << type << ")" << std::endl;
+
+    const auto complexType = "complex_"+type;
+
+    auto testInputs = PothosArrayFireTests::getTestInputs(complexType);
+
+    auto feederSource = Pothos::BlockRegistry::make(
+                            "/blocks/feeder_source",
+                            complexType);
+    feederSource.call("feedBuffer", testInputs);
+
+    auto complexToPolar = Pothos::BlockRegistry::make(
+                              complexToPolarRegistryPath,
+                              "Auto",
+                              type);
+    auto polarToComplex = Pothos::BlockRegistry::make(
+                              polarToComplexRegistryPath,
+                              "Auto",
+                              type);
+
+    auto collectorSink = Pothos::BlockRegistry::make(
+                             "/blocks/collector_sink",
+                             complexType);
+
+    {
+        Pothos::Topology topology;
+
+        topology.connect(
+            feederSource, 0,
+            complexToPolar, 0);
+
+        topology.connect(
+            complexToPolar, "mag",
+            polarToComplex, "mag");
+        topology.connect(
+            complexToPolar, "phase",
+            polarToComplex, "phase");
+
+        topology.connect(
+            polarToComplex, 0,
+            collectorSink, 0);
+
+        topology.commit();
+        Poco::Thread::sleep(sleepTimeMs);
+        POTHOS_TEST_TRUE(topology.waitInactive());
+    }
+    POTHOS_TEST_TRUE(collectorSink.call("getBuffer").call<size_t>("elements") > 0);
+
+    PothosArrayFireTests::testBufferChunk(
+        testInputs,
+        collectorSink.call("getBuffer"));
+}
+
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_complex_blocks)
 {
     PothosArrayFireTests::setupTestEnv();
@@ -161,5 +291,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_complex_blocks)
     {
         testCombineToSplit(type);
         testSplitToCombine(type);
+        testPolarToComplexToPolar(type);
+        testComplexToPolarToComplex(type);
     }
 }
