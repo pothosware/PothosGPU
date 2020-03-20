@@ -17,19 +17,110 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <random>
 #include <string>
 #include <typeinfo>
 #include <vector>
 
-static constexpr const char* combineRegistryPath        = "/arrayfire/arith/combine_complex";
-static constexpr const char* splitRegistryPath          = "/arrayfire/arith/split_complex";
-static constexpr const char* polarToComplexRegistryPath = "/arrayfire/arith/polar_to_complex";
-static constexpr const char* complexToPolarRegistryPath = "/arrayfire/arith/complex_to_polar";
+namespace
+{
+
+constexpr const char* combineRegistryPath        = "/arrayfire/arith/combine_complex";
+constexpr const char* splitRegistryPath          = "/arrayfire/arith/split_complex";
+constexpr const char* polarToComplexRegistryPath = "/arrayfire/arith/polar_to_complex";
+constexpr const char* complexToPolarRegistryPath = "/arrayfire/arith/complex_to_polar";
 
 // These calls involve multiple kernels, so give them some initial compile time.
-static constexpr int sleepTimeMs = 500;
+constexpr int sleepTimeMs = 500;
 
-static void testScalarToComplexToScalar(
+template <typename T>
+Pothos::BufferChunk getPhaseInputs()
+{
+    static std::random_device rd;
+    static std::mt19937 g(rd());
+    
+    auto phases = PothosArrayFireTests::linspace<T>(-M_PI/2, M_PI/2, 123);
+    std::shuffle(phases.begin(), phases.end(), g);
+
+    return PothosArrayFireTests::stdVectorToBufferChunk(phases);
+}
+
+inline Pothos::BufferChunk getPhaseInputs(const std::string& type)
+{
+    return ("float32" == type) ? getPhaseInputs<float>() : getPhaseInputs<double>();
+}
+
+// Since multiple kernels are involved, we'll be more forgiving for floating-point errors.
+void testBufferChunksEqual(
+    const Pothos::BufferChunk& expectedBufferChunk,
+    const Pothos::BufferChunk& actualBufferChunk)
+{
+    POTHOS_TEST_EQUAL(
+        expectedBufferChunk.dtype.name(),
+        actualBufferChunk.dtype.name());
+    POTHOS_TEST_EQUAL(
+        expectedBufferChunk.elements(),
+        actualBufferChunk.elements());
+
+    constexpr double epsilon = 1e-3;
+
+    if("float32" == expectedBufferChunk.dtype.name())
+    {
+        for(size_t elem = 0; elem < expectedBufferChunk.elements(); ++elem)
+        {
+            POTHOS_TEST_CLOSE(
+                expectedBufferChunk.as<const float*>()[elem],
+                actualBufferChunk.as<const float*>()[elem],
+                epsilon);
+        }
+    }
+    else if("float64" == expectedBufferChunk.dtype.name())
+    {
+        for(size_t elem = 0; elem < expectedBufferChunk.elements(); ++elem)
+        {
+            POTHOS_TEST_CLOSE(
+                expectedBufferChunk.as<const double*>()[elem],
+                actualBufferChunk.as<const double*>()[elem],
+                epsilon);
+        }
+    }
+    else if("complex_float32" == expectedBufferChunk.dtype.name())
+    {
+        for(size_t elem = 0; elem < expectedBufferChunk.elements(); ++elem)
+        {
+            POTHOS_TEST_CLOSE(
+                expectedBufferChunk.as<const std::complex<float>*>()[elem].real(),
+                actualBufferChunk.as<const std::complex<float>*>()[elem].real(),
+                epsilon);
+            POTHOS_TEST_CLOSE(
+                expectedBufferChunk.as<const std::complex<float>*>()[elem].imag(),
+                actualBufferChunk.as<const std::complex<float>*>()[elem].imag(),
+                epsilon);
+        }
+    }
+    else if("complex_float64" == expectedBufferChunk.dtype.name())
+    {
+        for(size_t elem = 0; elem < expectedBufferChunk.elements(); ++elem)
+        {
+            POTHOS_TEST_CLOSE(
+                expectedBufferChunk.as<const std::complex<double>*>()[elem].real(),
+                actualBufferChunk.as<const std::complex<double>*>()[elem].real(),
+                epsilon);
+            POTHOS_TEST_CLOSE(
+                expectedBufferChunk.as<const std::complex<double>*>()[elem].imag(),
+                actualBufferChunk.as<const std::complex<double>*>()[elem].imag(),
+                epsilon);
+        }
+    }
+    else
+    {
+        PothosArrayFireTests::testBufferChunk(
+            expectedBufferChunk,
+            actualBufferChunk);
+    }
+}
+
+void testScalarToComplexToScalar(
     const std::string& scalarToComplexRegistryPath,
     const std::string& complexToScalarRegistryPath,
     const std::string& port0Name,
@@ -40,7 +131,7 @@ static void testScalarToComplexToScalar(
               << " (type: " << type << ")" << std::endl;
 
     auto port0TestInputs = PothosArrayFireTests::getTestInputs(type);
-    auto port1TestInputs = PothosArrayFireTests::getTestInputs(type);
+    auto port1TestInputs = getPhaseInputs(type); // Inputs don't matter for other function
 
     auto port0FeederSource = Pothos::BlockRegistry::make(
                                  "/blocks/feeder_source",
@@ -96,15 +187,15 @@ static void testScalarToComplexToScalar(
     POTHOS_TEST_TRUE(port0CollectorSink.call("getBuffer").call<size_t>("elements") > 0);
     POTHOS_TEST_TRUE(port1CollectorSink.call("getBuffer").call<size_t>("elements") > 0);
 
-    PothosArrayFireTests::testBufferChunk(
+    testBufferChunksEqual(
         port0TestInputs,
         port0CollectorSink.call("getBuffer"));
-    PothosArrayFireTests::testBufferChunk(
+    testBufferChunksEqual(
         port1TestInputs,
         port1CollectorSink.call("getBuffer"));
 }
 
-static void testComplexToScalarToComplex(
+void testComplexToScalarToComplex(
     const std::string& scalarToComplexRegistryPath,
     const std::string& complexToScalarRegistryPath,
     const std::string& port0Name,
@@ -160,12 +251,12 @@ static void testComplexToScalarToComplex(
     }
     POTHOS_TEST_TRUE(collectorSink.call("getBuffer").call<size_t>("elements") > 0);
 
-    PothosArrayFireTests::testBufferChunk(
+    testBufferChunksEqual(
         testInputs,
         collectorSink.call("getBuffer"));
 }
 
-static void testCombineToSplit(const std::string& type)
+void testCombineToSplit(const std::string& type)
 {
     testScalarToComplexToScalar(
         combineRegistryPath,
@@ -175,7 +266,7 @@ static void testCombineToSplit(const std::string& type)
         type);
 }
 
-static void testSplitToCombine(const std::string& type)
+void testSplitToCombine(const std::string& type)
 {
     testComplexToScalarToComplex(
         combineRegistryPath,
@@ -185,7 +276,7 @@ static void testSplitToCombine(const std::string& type)
         type);
 }
 
-static void testPolarToComplexToPolar(const std::string& type)
+void testPolarToComplexToPolar(const std::string& type)
 {
     testScalarToComplexToScalar(
         polarToComplexRegistryPath,
@@ -195,7 +286,7 @@ static void testPolarToComplexToPolar(const std::string& type)
         type);
 }
 
-static void testComplexToPolarToComplex(const std::string& type)
+void testComplexToPolarToComplex(const std::string& type)
 {
     testComplexToScalarToComplex(
         polarToComplexRegistryPath,
@@ -203,6 +294,8 @@ static void testComplexToPolarToComplex(const std::string& type)
         "mag",
         "phase",
         type);
+}
+
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_complex_blocks)
