@@ -1,2 +1,3 @@
 Pre-release:
+ * Log device cache exclusions on instantation of process's first block instead of device enumeration
  * AF 3.7+: turn off stacktraces for release build (not linking for some reason)

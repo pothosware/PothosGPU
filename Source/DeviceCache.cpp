@@ -166,22 +166,9 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                                {
                                    return (deviceCacheEntry.name == entry.name);
                                });
-            if(deviceCache.end() == devIter)
+            if((deviceCache.end() == devIter) && af::isDoubleAvailable(devIndex))
             {            
-                if(af::isDoubleAvailable(devIndex))
-                {
-                    deviceCache.emplace_back(std::move(deviceCacheEntry));
-                }
-                else
-                {
-                    poco_information_f2(
-                        getLogger(),
-                        "Found %s device %s, which does not have 64-bit floating-point "
-                        "support through ArrayFire. This device will not be made "
-                        "available through PothosArrayFire.",
-                        Pothos::Object(backend).convert<std::string>(),
-                        deviceCacheEntry.name);
-                }
+                deviceCache.emplace_back(std::move(deviceCacheEntry));
             }
         }
     }
