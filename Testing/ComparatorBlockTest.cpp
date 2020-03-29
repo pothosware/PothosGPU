@@ -200,7 +200,7 @@ static void testScalarComparatorBlockForTypeAndOperation(
             &input,
             &scalar,
             &output);
-        POTHOS_TEST_TRUE(input.elements() > 0);
+        POTHOS_TEST_GT(input.elements(), 0);
         POTHOS_TEST_TRUE(scalar);
         POTHOS_TEST_EQUAL(input.elements(), output.elements());
 
@@ -277,7 +277,7 @@ static void testArrayComparatorBlockForTypeAndOperation(
             &input0,
             &input1,
             &output);
-        POTHOS_TEST_TRUE(input0.elements() > 0);
+        POTHOS_TEST_GT(input0.elements(), 0);
         POTHOS_TEST_EQUAL(input0.elements(), input1.elements());
         POTHOS_TEST_EQUAL(input0.elements(), output.elements());
 

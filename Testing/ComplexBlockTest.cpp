@@ -38,7 +38,7 @@ Pothos::BufferChunk getPhaseInputs()
 {
     static std::random_device rd;
     static std::mt19937 g(rd());
-    
+
     auto phases = PothosArrayFireTests::linspace<T>(-M_PI/2, M_PI/2, 123);
     std::shuffle(phases.begin(), phases.end(), g);
 
@@ -184,8 +184,8 @@ void testScalarToComplexToScalar(
         Poco::Thread::sleep(sleepTimeMs);
         POTHOS_TEST_TRUE(topology.waitInactive());
     }
-    POTHOS_TEST_TRUE(port0CollectorSink.call("getBuffer").call<size_t>("elements") > 0);
-    POTHOS_TEST_TRUE(port1CollectorSink.call("getBuffer").call<size_t>("elements") > 0);
+    POTHOS_TEST_GT(port0CollectorSink.call("getBuffer").call<size_t>("elements"), 0);
+    POTHOS_TEST_GT(port1CollectorSink.call("getBuffer").call<size_t>("elements"), 0);
 
     testBufferChunksEqual(
         port0TestInputs,
@@ -249,7 +249,7 @@ void testComplexToScalarToComplex(
         Poco::Thread::sleep(sleepTimeMs);
         POTHOS_TEST_TRUE(topology.waitInactive());
     }
-    POTHOS_TEST_TRUE(collectorSink.call("getBuffer").call<size_t>("elements") > 0);
+    POTHOS_TEST_GT(collectorSink.call("getBuffer").call<size_t>("elements"), 0);
 
     testBufferChunksEqual(
         testInputs,
@@ -303,7 +303,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_complex_blocks)
     PothosArrayFireTests::setupTestEnv();
 
     const std::vector<std::string> dtypes = {"float32","float64"};
-    
+
     for(const auto& type: dtypes)
     {
         testCombineToSplit(type);

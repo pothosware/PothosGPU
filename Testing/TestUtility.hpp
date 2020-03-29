@@ -101,7 +101,7 @@ template <typename T>
 static Pothos::BufferChunk stdVectorToBufferChunk(const std::vector<T>& vectorIn)
 {
     static Pothos::DType dtype(typeid(T));
-    
+
     auto ret = Pothos::BufferChunk(dtype, vectorIn.size());
     auto buf = ret.as<T*>();
     std::memcpy(
@@ -186,7 +186,7 @@ static EnableIfFloat<T, void> testBufferChunk(
     const std::vector<T>& expectedOutputs,
     T epsilon = 1e-6)
 {
-    POTHOS_TEST_TRUE(bufferChunk.elements() > 0);
+    POTHOS_TEST_GT(bufferChunk.elements(), 0);
     auto pOut = bufferChunk.as<const T*>();
     for (size_t i = 0; i < bufferChunk.elements(); i++)
     {
@@ -205,7 +205,7 @@ static EnableIfAnyInt<T, void> testBufferChunk(
 {
     (void)epsilon;
 
-    POTHOS_TEST_TRUE(bufferChunk.elements() > 0);
+    POTHOS_TEST_GT(bufferChunk.elements(), 0);
     auto pOut = bufferChunk.as<const T*>();
     for (size_t i = 0; i < bufferChunk.elements(); i++)
     {
@@ -284,7 +284,7 @@ template <typename T>
 static EnableIfComplex<T, void> addMinMaxToAfArray(af::array& rAfArray)
 {
     using Scalar = typename T::value_type;
-    
+
     if(1 == rAfArray.numdims())
     {
         rAfArray(0) = typename PothosToAF<T>::type(

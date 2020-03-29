@@ -21,7 +21,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_arrayfire_config)
                    Pothos::DType(typeid(float)));
 
     const auto& deviceCache = getDeviceCache();
-    POTHOS_TEST_TRUE(!deviceCache.empty());
+    POTHOS_TEST_FALSE(deviceCache.empty());
 
     POTHOS_TEST_EQUAL(
         deviceCache[0].afBackendEnum,

@@ -57,7 +57,7 @@ static void testNToOneBlockCommon(
         }
     }
 
-    POTHOS_TEST_TRUE(!testInputs[0].empty());
+    POTHOS_TEST_FALSE(testInputs[0].empty());
     POTHOS_TEST_EQUAL(testInputs[0].size(), testInputs[1].size());
 
     for(size_t chan = 0; chan < numInputChannels; ++chan)

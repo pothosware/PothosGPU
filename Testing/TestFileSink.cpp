@@ -70,7 +70,7 @@ static void testFileSink1D(
     POTHOS_TEST_EQUAL(
         testData.oneDimKey,
         oneDimBlock.call<std::string>("key"));
-    POTHOS_TEST_TRUE(!oneDimBlock.call<bool>("append"));
+    POTHOS_TEST_FALSE(oneDimBlock.call<bool>("append"));
     POTHOS_TEST_EQUAL(0, oneDimBlock.call("outputs").call<size_t>("size"));
 
     const auto inputs = oneDimBlock.call<InputPortVector>("inputs");
@@ -94,7 +94,7 @@ static void testFileSink1D(
 
     // Read back and compare array.
     POTHOS_TEST_TRUE(Poco::File(filepath).exists());
-    POTHOS_TEST_TRUE(-1 != af::readArrayCheck(filepath.c_str(), testData.oneDimKey.c_str()));
+    POTHOS_TEST_NOT_EQUAL(-1, af::readArrayCheck(filepath.c_str(), testData.oneDimKey.c_str()));
 
     auto arrFromFile = af::readArray(filepath.c_str(), testData.oneDimKey.c_str());
     POTHOS_TEST_EQUAL(1, arrFromFile.numdims());
@@ -142,7 +142,7 @@ static void testFileSink2D(
     POTHOS_TEST_EQUAL(
         testData.twoDimKey,
         twoDimBlock.call<std::string>("key"));
-    POTHOS_TEST_TRUE(!twoDimBlock.call<bool>("append"));
+    POTHOS_TEST_FALSE(twoDimBlock.call<bool>("append"));
     POTHOS_TEST_EQUAL(0, twoDimBlock.call("outputs").call<size_t>("size"));
 
     const auto inputs = twoDimBlock.call<InputPortVector>("inputs");
@@ -172,7 +172,7 @@ static void testFileSink2D(
 
     // Read back and compare array.
     POTHOS_TEST_TRUE(Poco::File(filepath).exists());
-    POTHOS_TEST_TRUE(-1 != af::readArrayCheck(filepath.c_str(), testData.twoDimKey.c_str()));
+    POTHOS_TEST_NOT_EQUAL(-1, af::readArrayCheck(filepath.c_str(), testData.twoDimKey.c_str()));
 
     auto arrFromFile = af::readArray(filepath.c_str(), testData.twoDimKey.c_str());
     POTHOS_TEST_EQUAL(2, arrFromFile.numdims());

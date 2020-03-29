@@ -83,7 +83,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
         Poco::Thread::sleep(SleepTimeMs);
     }
 
-    POTHOS_TEST_TRUE(collectorSink.call("getBuffer").call<int>("elements") > 0);
+    POTHOS_TEST_GT(collectorSink.call("getBuffer").call<int>("elements"), 0);
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_from_different_domains)
@@ -122,16 +122,16 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_from_different_domains)
         Poco::Thread::sleep(SleepTimeMs);
     }
 
-    POTHOS_TEST_TRUE(collectorSink.call("getBuffer").call<int>("elements") > 0);
+    POTHOS_TEST_GT(collectorSink.call("getBuffer").call<int>("elements"), 0);
 }
 
 static std::vector<std::string> getSingleDevicePerBackend()
 {
     std::vector<std::string> devices;
-    
+
     const auto& availableBackends = getAvailableBackends();
     const auto& deviceCache = getDeviceCache();
-    
+
     for(auto backend: availableBackends)
     {
         auto deviceIter = std::find_if(
@@ -153,13 +153,13 @@ static std::vector<std::string> getSingleDevicePerBackend()
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_multiple_backends_into_one_sink)
 {
     const auto devices = getSingleDevicePerBackend();
-    
+
     if(devices.size() > 1)
     {
         const double constant = 5.0;
 
         std::vector<Pothos::Proxy> afBlocks;
-        for(const auto& device: devices) 
+        for(const auto& device: devices)
         {
             std::cout << "Adding " << device << " to topology..." << std::endl;
 
@@ -187,7 +187,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_multiple_backends_into_one_sink)
 
         // No matter the backend, the value should be the same.
         auto buffOut = collectorSink.call<Pothos::BufferChunk>("getBuffer");
-        POTHOS_TEST_TRUE(buffOut.elements() > 0);
+        POTHOS_TEST_GT(buffOut.elements(), 0);
 
         const double* begin = buffOut;
         const double* end = begin + buffOut.elements();
@@ -202,14 +202,14 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_multiple_backends_into_one_sink)
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_multiple_backends)
 {
     const auto devices = getSingleDevicePerBackend();
-    
+
     if(devices.size() > 1)
     {
         constexpr double constant = 5.0;
         constexpr double multiplier = 2.0;
 
         std::vector<Pothos::Proxy> afBlocks;
-        for(const auto& device: devices) 
+        for(const auto& device: devices)
         {
             std::cout << "Adding " << device << " to topology..." << std::endl;
 
@@ -251,12 +251,12 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_multiple_backends)
 
         // No matter the backend, the value should be the same.
         auto buffOut = collectorSink.call<Pothos::BufferChunk>("getBuffer");
-        POTHOS_TEST_TRUE(buffOut.elements() > 0);
+        POTHOS_TEST_GT(buffOut.elements(), 0);
 
         const double* begin = buffOut;
         const double* end = begin + buffOut.elements();
         const double expectedValue = constant * (multiplier * (afBlocks.size()-1));
-        
+
         POTHOS_TEST_TRUE(end == std::find_if(begin, end, [&expectedValue](double val){return val != expectedValue;}));
     }
     else
