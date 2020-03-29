@@ -118,6 +118,7 @@ POTHOS_MODULE_UTIL(
         Testing/OneToOneBlockExecutionTest.cpp
         Testing/TwoToOneBlockExecutionTest.cpp
         Testing/TestArrayFireConfig.cpp
+        Testing/TestBufferCombos.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
         Testing/TestFFT.cpp
@@ -125,7 +126,6 @@ POTHOS_MODULE_UTIL(
         Testing/TestFileSource.cpp
         Testing/TestManagedDeviceCache.cpp
         Testing/TestNumericConversions.cpp
-        Testing/TestPortDomainCombos.cpp
         Testing/TestStatistics.cpp
         Testing/TestUtility.cpp
     LIBRARIES

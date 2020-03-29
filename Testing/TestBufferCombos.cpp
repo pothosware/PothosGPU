@@ -86,7 +86,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
     POTHOS_TEST_GT(collectorSink.call("getBuffer").call<int>("elements"), 0);
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_from_different_domains)
+POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_with_different_buffers)
 {
     const std::string type = "float64";
 
