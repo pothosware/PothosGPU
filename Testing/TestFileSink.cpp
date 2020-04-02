@@ -9,6 +9,7 @@
 #include <Pothos/Testing.hpp>
 
 #include <Poco/TemporaryFile.h>
+#include <Poco/Timestamp.h>
 
 #include <arrayfire.h>
 
@@ -194,6 +195,8 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_sink)
     using namespace PothosArrayFireTests;
 
     setupTestEnv();
+
+    af::setSeed(static_cast<unsigned long long>(Poco::Timestamp().utcTime()));
 
     constexpr dim_t numChannels = 4;
     constexpr dim_t numElements = 50;
