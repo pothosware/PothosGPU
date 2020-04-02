@@ -47,6 +47,7 @@ static void testDTypeEnumUsage(
     POTHOS_TEST_EQUAL(
         afDType,
         Pothos::Object(dtype).convert<af::dtype>());
+    POTHOS_TEST_EQUAL(dtype.size(), af::getSizeOf(afDType));
 
     auto dtypeFromAF = Pothos::Object(afDType).convert<Pothos::DType>();
     POTHOS_TEST_EQUAL(dtypeName, dtypeFromAF.name());
