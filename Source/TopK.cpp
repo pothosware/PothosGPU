@@ -18,8 +18,6 @@
 #include <typeinfo>
 #include <vector>
 
-#if AF_API_VERSION_CURRENT >= 36
-
 class TopK: public ArrayFireBlock
 {
     public:
@@ -149,5 +147,3 @@ class TopK: public ArrayFireBlock
 static Pothos::BlockRegistry registerTopK(
     "/arrayfire/statistics/topk",
     Pothos::Callable(&TopK::make));
-
-#endif

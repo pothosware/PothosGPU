@@ -87,7 +87,6 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_randomenginetype_conversion)
     PothosArrayFireTests::testEnumValueConversion("Mersenne", ::AF_RANDOM_ENGINE_MERSENNE);
 }
 
-#if AF_API_VERSION_CURRENT >= 36
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_topkfunction_conversion)
 {
     PothosArrayFireTests::testTypesCanConvert<std::string, af::topkFunction>();
@@ -95,7 +94,6 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_topkfunction_conversion)
     PothosArrayFireTests::testEnumValueConversion("Max",     ::AF_TOPK_MAX);
     PothosArrayFireTests::testEnumValueConversion("Default", ::AF_TOPK_DEFAULT);
 }
-#endif
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_dtype_conversion)
 {

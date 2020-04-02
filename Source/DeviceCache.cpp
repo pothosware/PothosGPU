@@ -35,7 +35,7 @@ static bool isCUDAVersionValid(const std::string& toolkitStr)
     using RE = Poco::RegularExpression;
 
     bool isValid = false;
-    
+
     constexpr int options = RE::RE_CASELESS;
     const RE cudaVersionRE("([0-9]+).([0-9]+)", options);
 
@@ -69,7 +69,7 @@ static bool isCUDAVersionValid(const std::string& toolkitStr)
             "Failed to parse CUDA version string %s. Considering invalid for safety.",
             toolkitStr);
     }
-    
+
     return isValid;
 }
 
@@ -82,6 +82,13 @@ static std::vector<af::Backend> _getAvailableBackends()
         ::AF_BACKEND_CPU,
     };
     const int afAvailableBackends = af::getAvailableBackends();
+
+    if(0 == afAvailableBackends)
+    {
+        poco_error(
+            getLogger(),
+            "No ArrayFire backends detected. Check your ArrayFire installation.");
+    }
 
     std::vector<af::Backend> availableBackends;
     for(const auto& backend: AllBackends)
@@ -167,10 +174,17 @@ static std::vector<DeviceCacheEntry> _getDeviceCache()
                                    return (deviceCacheEntry.name == entry.name);
                                });
             if((deviceCache.end() == devIter) && af::isDoubleAvailable(devIndex))
-            {            
+            {
                 deviceCache.emplace_back(std::move(deviceCacheEntry));
             }
         }
+    }
+
+    if(deviceCache.empty())
+    {
+        poco_error(
+            getLogger(),
+            "No ArrayFire devices detected. Check your ArrayFire installation.");
     }
 
     return deviceCache;
