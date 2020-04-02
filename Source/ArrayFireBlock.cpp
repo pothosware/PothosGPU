@@ -49,6 +49,11 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
     checkVersion();
 
     const auto& deviceCache = getDeviceCache();
+    if(deviceCache.empty())
+    {
+        throw Pothos::RuntimeException("No ArrayFire devices found. Check your ArrayFire installation.");
+    }
+
     if(device == "Auto")
     {
         _afBackend = deviceCache[0].afBackendEnum;
@@ -99,7 +104,7 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getInputBufferManager(
         Pothos::BufferManagerArgs args;
         args.numBuffers = 16;
         args.bufferSize = (2 << 20);
-        
+
         return makePinnedBufferManager(_afBackend, args);
     }
 
@@ -116,7 +121,7 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getOutputBufferManager(
         Pothos::BufferManagerArgs args;
         args.numBuffers = 16;
         args.bufferSize = (2 << 20);
-        
+
         return makePinnedBufferManager(_afBackend, args);
     }
 
