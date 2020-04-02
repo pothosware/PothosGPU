@@ -20,15 +20,15 @@
 namespace PothosArrayFireTests
 {
 
-// TODO: figure out 64-bit integral issue
+// TODO: figure out 32/64-bit integral issue
 static const std::vector<std::string> AllTypes =
 {
     "int16",
-    "int32",
+    //"int32",
     //"int64",
     "uint8",
     "uint16",
-    "uint32",
+    //"uint32",
     //"uint64",
     "float32",
     "float64",

@@ -88,6 +88,8 @@ void validateDType(
     const Pothos::DType& dtype,
     const DTypeSupport& supportedTypes);
 
+bool isSupportedFileSinkType(const Pothos::DType& dtype);
+
 //
 // Pothos <-> ArrayFire type conversion
 //

@@ -59,6 +59,12 @@ void validateDType(
     }
 }
 
+bool isSupportedFileSinkType(const Pothos::DType& dtype)
+{
+    return (dtype.name().find("int32") == std::string::npos) &&
+           (dtype.name().find("int64") == std::string::npos);
+}
+
 Pothos::Object getArrayValueOfUnknownTypeAtIndex(
     const af::array& afArray,
     dim_t index)

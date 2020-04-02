@@ -95,9 +95,15 @@ class FileSinkBlock: public ArrayFireBlock
                     auto arrNChans = static_cast<size_t>(arr.dims().dims[0]);
                     auto arrDType = Pothos::Object(arr.type()).convert<Pothos::DType>();
 
-                    // Note, 2019/12/10:
-                    // Pothos::DType doesn't currently have a != operator.
-                    if((arrNChans != _nchans) || !(arrDType == dtype))
+                    if(!isSupportedFileSinkType(arrDType))
+                    {
+                        throw Pothos::DataFormatException(
+                                  Poco::format(
+                                      "Cannot append to array \"%s\", as it is of unsupported type \"%s\".",
+                                      key,
+                                      arrDType.name()));
+                    }
+                    if((arrNChans != _nchans) || (arrDType != dtype))
                     {
                         throw Pothos::DataFormatException(
                                   Poco::format(
@@ -121,6 +127,14 @@ class FileSinkBlock: public ArrayFireBlock
                     throw Pothos::FileAccessDeniedException(
                               "Cannot write a file to the parent directory",
                               _filepath);
+                }
+
+                // If the user is creating a file, error out if the type is unsupported.
+                if(!isSupportedFileSinkType(dtype))
+                {
+                    throw Pothos::DataFormatException(
+                              Poco::format("This block does not currently support \"%s\".",
+                                           dtype.name()));
                 }
             }
 
@@ -189,6 +203,12 @@ class FileSinkBlock: public ArrayFireBlock
 
         void work()
         {
+            const auto elems = this->workInfo().minInElements;
+            if(0 == elems)
+            {
+                return;
+            }
+
             // Just accumulate the buffers we're given.
             for(size_t chan = 0; chan < _nchans; ++chan)
             {
@@ -226,8 +246,14 @@ class FileSinkBlock: public ArrayFireBlock
  * </ol>
  *
  * <b>NOTE:</b> Unlike other ArrayFire blocks, this block does not support the
- * types <b>"int64"</b> and <b>"uint64"</b> due to an ArrayFire bug that doesn't
- * preserve the values passed into <b>af::writeArray</b>.
+ * following types, due to an ArrayFire bug that doesn't preserve the values
+ * passed into <b>af::writeArray</b>.
+ * <ul>
+ * <li><b>int32</b></li>
+ * <li><b>int64</b></li>
+ * <li><b>uint32</b></li>
+ * <li><b>uint64</b></li>
+ * </ul>
  *
  * |category /ArrayFire/File IO
  * |keywords array file sink io
@@ -249,7 +275,7 @@ class FileSinkBlock: public ArrayFireBlock
  * |param dtype[Data Type] The output's data type.
  * If appending to an existing array, this value must match the type of the
  * existing array.
- * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1float=1,cfloat=1,dim=1)
+ * |widget DTypeChooser(int16=1,uint8=1,uint16=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *

@@ -78,14 +78,14 @@ class FileSourceBlock: public ArrayFireBlock
             // Now that we know the file is valid, store the array and
             // initialize our ports.
             const auto dtype = Pothos::Object(_afFileContents.type()).convert<Pothos::DType>();
-            if(dtype.name().find("int64") != std::string::npos)
+            if(isSupportedFileSinkType(dtype))
             {
                 static auto& logger = Poco::Logger::get(blockRegistryPath);
                 poco_warning_f2(
                     logger,
                     "The array corresponding to key \"%s\" is of type \"%s\". FileSource will "
                     "support this key, but you cannot write it back to the file with FileSink, "
-                    "as it does not support 64-bit integral types.",
+                    "as 32/64-bit integral types are currently not supported.",
                     _key,
                     dtype.name());
             }
@@ -199,7 +199,6 @@ class FileSourceBlock: public ArrayFireBlock
         std::vector<Pothos::SharedBuffer> _fileContents;
 };
 
-// TODO: setKey initializer
 /*
  * |PothosDoc ArrayFire File Source
  *
