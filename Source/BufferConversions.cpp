@@ -48,18 +48,6 @@ AfPinnedMemRAII::~AfPinnedMemRAII()
 template <typename AfArrayType>
 Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 {
-    #ifndef NDEBUG
-    static auto& logger = Poco::Logger::get(__FUNCTION__);
-    logger.setLevel("debug");
-
-    poco_debug_f3(
-        logger,
-        "Moving %s af::array of size %s and type %s",
-        Pothos::Object(af::getBackendId(afArray)).convert<std::string>(),
-        Poco::NumberFormatter::format(afArray.bytes()),
-        Pothos::Object(afArray.type()).convert<std::string>());
-    #endif
-
     auto afPinnedMemSPtr = std::make_shared<AfPinnedMemRAII>(
                                af::getBackendId(afArray),
                                afArray.bytes());
