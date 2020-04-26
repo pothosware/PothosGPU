@@ -16,4 +16,4 @@ This toolkit adds 100+ Pothos blocks that wrap the majority of ArrayFire's API, 
 
 ## Licensing information
 
-This module is licensed under the BSD 3-Clause license. To view the full license, view License.txt.
+This module is licensed under the BSD 3-Clause license. To view the full license, view LICENSE.txt.
