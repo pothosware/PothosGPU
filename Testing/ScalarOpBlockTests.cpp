@@ -1,16 +1,16 @@
 // Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <arrayfire.h>
+#include "BlockExecutionTests.hpp"
+#include "TestUtility.hpp"
+#include "Utility.hpp"
 
 #include <Pothos/Exception.hpp>
 #include <Pothos/Framework.hpp>
 #include <Pothos/Proxy.hpp>
 #include <Pothos/Testing.hpp>
 
-#include "BlockExecutionTests.hpp"
-#include "TestUtility.hpp"
-#include "Utility.hpp"
+#include <arrayfire.h>
 
 #include <iostream>
 #include <string>

@@ -1,7 +1,6 @@
 // Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "BlockExecutionTests.hpp"
 #include "TestUtility.hpp"
 
 #include <Pothos/Framework.hpp>

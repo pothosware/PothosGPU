@@ -1,7 +1,6 @@
 // Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "BlockExecutionTests.hpp"
 #include "TestUtility.hpp"
 #include "Utility.hpp"
 
@@ -82,7 +81,7 @@ template <typename T>
 static void testIsXBlockFailsForType(const std::string& blockRegistryPath)
 {
     static const Pothos::DType dtype(typeid(T));
-    
+
     POTHOS_TEST_THROWS(
         Pothos::BlockRegistry::make(
             blockRegistryPath,
@@ -97,7 +96,7 @@ static void testFloatOnlyBlock(
 {
     testIsX<float>(blockRegistryPath, expectedOutput);
     testIsX<double>(blockRegistryPath, expectedOutput);
-    
+
     testIsXBlockFailsForType<std::int16_t>(blockRegistryPath);
     testIsXBlockFailsForType<std::int32_t>(blockRegistryPath);
     testIsXBlockFailsForType<std::int64_t>(blockRegistryPath);

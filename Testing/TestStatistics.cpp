@@ -262,10 +262,10 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_statistics)
     for(size_t blockIndex = 0; blockIndex < numBlocks; ++blockIndex)
     {
         const auto blockName = arrayFireBlocks[blockIndex].call<std::string>("getName");
-        
+
         const bool isStdOrVar = ("/arrayfire/statistics/stdev" == blockName) ||
                                 ("/arrayfire/statistics/var" == blockName);
-        
+
         std::cout << "Testing " << blockName << "..." << std::endl;
 
         // Make sure the buffer was forwarded as expected.

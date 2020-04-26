@@ -1,7 +1,6 @@
 // Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "BlockExecutionTests.hpp"
 #include "TestUtility.hpp"
 
 #include <Pothos/Framework.hpp>
@@ -33,7 +32,7 @@ namespace
     AFTests::EnableIfComplex<T, std::vector<T>> getFFTInputs()
     {
         using Scalar = typename T::value_type;
-        
+
         auto inputs = AFTests::toComplexVector(AFTests::linspace<Scalar>(-30.f, 20.f, numBins*2));
         std::shuffle(inputs.begin(), inputs.end(), g);
 
@@ -53,7 +52,7 @@ namespace
         // Should never get here
         return Pothos::BufferChunk();
     }
-    
+
     struct TestParams
     {
         std::string fwdInputType;
@@ -78,11 +77,11 @@ namespace
                                 "/blocks/feeder_source",
                                 feederSourceType);
         feederSource.call("feedBuffer", getFFTInputs(feederSourceType));
-        
+
         auto collectorSink = Pothos::BlockRegistry::make(
                                  "/blocks/collector_sink",
                                  collectorSinkType);
-        
+
         auto fft = Pothos::BlockRegistry::make(
                        "/arrayfire/signal/fft",
                        "Auto",

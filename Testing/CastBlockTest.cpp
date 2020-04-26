@@ -1,7 +1,6 @@
 // Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "BlockExecutionTests.hpp"
 #include "TestUtility.hpp"
 #include "Utility.hpp"
 
@@ -78,7 +77,7 @@ static void testCastBlock(
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_cast)
 {
     AFTests::setupTestEnv();
-    
+
     const auto& dtypeNames = AFTests::getAllDTypeNames();
 
     for(const auto& inputType: dtypeNames)

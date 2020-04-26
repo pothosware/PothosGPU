@@ -5,7 +5,6 @@
 #include "DeviceCache.hpp"
 #include "Utility.hpp"
 #include "TestUtility.hpp"
-#include "BlockExecutionTests.hpp"
 
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>

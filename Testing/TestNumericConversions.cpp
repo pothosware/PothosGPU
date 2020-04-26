@@ -1,7 +1,6 @@
 // Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "BlockExecutionTests.hpp" // TODO: move random input funcs to TestUtility
 #include "TestUtility.hpp"
 
 #include <Pothos/Framework.hpp>
