@@ -89,6 +89,7 @@ POTHOS_MODULE_UTIL(
         Source/MinMax.cpp
         Source/NToOneBlock.cpp
         Source/NumericConversions.cpp
+        Source/ObjectFunctions.cpp
         Source/OneToOneBlock.cpp
         Source/PinnedBufferManager.cpp
         Source/Pow.cpp
@@ -115,6 +116,7 @@ POTHOS_MODULE_UTIL(
         Testing/ScalarOpBlockTests.cpp
         Testing/ReplaceBlockTest.cpp
         Testing/NToOneBlockExecutionTest.cpp
+        Testing/TestObjectFunctions.cpp
         Testing/OneToOneBlockExecutionTest.cpp
         Testing/TwoToOneBlockExecutionTest.cpp
         Testing/TestArrayFireConfig.cpp
