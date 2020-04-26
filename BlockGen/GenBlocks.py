@@ -153,6 +153,7 @@ def generatePothosDoc(category,blockYAML):
                                 default="0" if blockYAML.get("allowZeroScalar",True) else "1",
                                 preview="enable")]
     if category == "NToOneBlocks":
+        desc["args"] += ["numInputs"]
         desc["params"] += [dict(key="numInputs",
                                 name="Num Inputs",
                                 desc=["The number of inputs for this block."],
