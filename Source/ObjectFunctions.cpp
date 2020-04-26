@@ -120,12 +120,11 @@ static std::string afEnumToString(T input)
 template <typename T>
 static void registerEnumToString(const std::string& leafName)
 {
-    using Func = std::string(*)(const T& input);
     static auto impl = [](const T& input){return Pothos::Object(input).convert<std::string>();};
 
     Pothos::registerToStringFunc<T>(
         "ArrayFire/"+leafName,
-        Pothos::Callable((Func)impl),
+        Pothos::ToStringFunc<T>(impl),
         false /*registerPointerTypes*/);
 }
 
@@ -158,11 +157,11 @@ pothos_static_block(pothosArrayFireRegisterObjectFunctions)
 {
     Pothos::registerToStringFunc<af::array>(
         "ArrayFire/af_array",
-        Pothos::Callable(&afArrayToString<af::array>),
+        &afArrayToString<af::array>,
         false /*registerPointerTypes*/);
     Pothos::registerToStringFunc<af::array::array_proxy>(
         "ArrayFire/af_array_arrayproxy",
-        Pothos::Callable(&afArrayToString<af::array::array_proxy>),
+        &afArrayToString<af::array::array_proxy>,
         false /*registerPointerTypes*/);
 
     registerEnumToString<af::Backend>("af_backend");
