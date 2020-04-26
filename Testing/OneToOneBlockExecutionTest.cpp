@@ -14,7 +14,7 @@
 #include <string>
 #include <typeinfo>
 
-namespace PothosArrayFireTests
+namespace AFTests
 {
 
 template <typename In, typename Out>

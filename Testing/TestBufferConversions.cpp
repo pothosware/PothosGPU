@@ -17,7 +17,7 @@
 #include <string>
 #include <typeinfo>
 
-namespace PothosArrayFireTests
+namespace AFTests
 {
 
 template <typename T>
@@ -95,7 +95,7 @@ static void testStdVectorToAfArrayConversion(af::dtype expectedAfDType)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_array_conversion)
 {
-    using namespace PothosArrayFireTests;
+    using namespace AFTests;
 
     for(const auto& backend: getAvailableBackends())
     {
@@ -120,7 +120,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_array_conversion)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_arrayproxy_conversion)
 {
-    using namespace PothosArrayFireTests;
+    using namespace AFTests;
 
     for(const auto& backend: getAvailableBackends())
     {
@@ -143,7 +143,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_arrayproxy_conversion)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_std_vector_conversion)
 {
-    using namespace PothosArrayFireTests;
+    using namespace AFTests;
 
     for(const auto& backend: getAvailableBackends())
     {

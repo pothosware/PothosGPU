@@ -23,7 +23,7 @@
 #include <typeinfo>
 #include <vector>
 
-using namespace PothosArrayFireTests;
+using namespace AFTests;
 
 static constexpr long SleepTimeMs = 1000;
 

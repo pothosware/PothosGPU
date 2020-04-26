@@ -46,7 +46,7 @@ static void testCastBlock(
                          type1,
                          type2);
 
-        auto testInputs = PothosArrayFireTests::getTestInputs(inputDType.name());
+        auto testInputs = AFTests::getTestInputs(inputDType.name());
 
         auto feederSource = Pothos::BlockRegistry::make(
                                 "/blocks/feeder_source",
@@ -77,9 +77,9 @@ static void testCastBlock(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_cast)
 {
-    PothosArrayFireTests::setupTestEnv();
+    AFTests::setupTestEnv();
     
-    const auto& dtypeNames = PothosArrayFireTests::getAllDTypeNames();
+    const auto& dtypeNames = AFTests::getAllDTypeNames();
 
     for(const auto& inputType: dtypeNames)
     {

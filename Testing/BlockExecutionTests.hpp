@@ -12,7 +12,7 @@
 #include <random>
 #include <vector>
 
-namespace PothosArrayFireTests
+namespace AFTests
 {
 
 using PortInfoVector = std::vector<Pothos::PortInfo>;

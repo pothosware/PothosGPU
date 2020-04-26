@@ -21,20 +21,20 @@ namespace
     std::mt19937 g(rd());
 
     template <typename T>
-    PothosArrayFireTests::EnableIfFloat<T, std::vector<T>> getFFTInputs()
+    AFTests::EnableIfFloat<T, std::vector<T>> getFFTInputs()
     {
-        auto inputs = PothosArrayFireTests::linspace<T>(-30.f, 20.f, numBins);
+        auto inputs = AFTests::linspace<T>(-30.f, 20.f, numBins);
         std::shuffle(inputs.begin(), inputs.end(), g);
 
         return inputs;
     }
 
     template <typename T>
-    PothosArrayFireTests::EnableIfComplex<T, std::vector<T>> getFFTInputs()
+    AFTests::EnableIfComplex<T, std::vector<T>> getFFTInputs()
     {
         using Scalar = typename T::value_type;
         
-        auto inputs = PothosArrayFireTests::toComplexVector(PothosArrayFireTests::linspace<Scalar>(-30.f, 20.f, numBins*2));
+        auto inputs = AFTests::toComplexVector(AFTests::linspace<Scalar>(-30.f, 20.f, numBins*2));
         std::shuffle(inputs.begin(), inputs.end(), g);
 
         return inputs;
@@ -43,7 +43,7 @@ namespace
     Pothos::BufferChunk getFFTInputs(const std::string& type)
     {
         #define IfTypeGetFFTInputs(typeStr, cType) \
-            if(typeStr == type) return PothosArrayFireTests::stdVectorToBufferChunk(getFFTInputs<cType>());
+            if(typeStr == type) return AFTests::stdVectorToBufferChunk(getFFTInputs<cType>());
 
         IfTypeGetFFTInputs("float32", float)
         else IfTypeGetFFTInputs("float64", double)

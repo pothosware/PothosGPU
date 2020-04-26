@@ -30,8 +30,8 @@ static void getScalarTestValues(
     T* pScalar,
     std::vector<std::int8_t>* pOutput)
 {
-    (*pInput) = PothosArrayFireTests::getTestInputs<T>(true /*shuffle*/);
-    (*pScalar) = PothosArrayFireTests::getSingleTestInput<T>();
+    (*pInput) = AFTests::getTestInputs<T>(true /*shuffle*/);
+    (*pScalar) = AFTests::getSingleTestInput<T>();
 
     std::transform(
         pInput->begin(),
@@ -51,8 +51,8 @@ static void getArrayTestValues(
     std::vector<T>* pInput1,
     std::vector<std::int8_t>* pOutput)
 {
-    (*pInput0) = PothosArrayFireTests::getTestInputs<T>(true /*shuffle*/);
-    (*pInput1) = PothosArrayFireTests::getTestInputs<T>(true /*shuffle*/);
+    (*pInput0) = AFTests::getTestInputs<T>(true /*shuffle*/);
+    (*pInput1) = AFTests::getTestInputs<T>(true /*shuffle*/);
     POTHOS_TEST_EQUAL(pInput0->size(), pInput1->size());
 
     for(size_t i = 0; i < pInput0->size(); ++i)
@@ -93,9 +93,9 @@ static void getScalarTestValues(
         GET_SCALAR_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
         GET_SCALAR_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
  \
-        (*pInput) = PothosArrayFireTests::stdVectorToBufferChunk(input); \
+        (*pInput) = AFTests::stdVectorToBufferChunk(input); \
         (*pScalar) = Pothos::Object(scalar); \
-        (*pOutput) = PothosArrayFireTests::stdVectorToBufferChunk(output); \
+        (*pOutput) = AFTests::stdVectorToBufferChunk(output); \
         return; \
     }
 
@@ -140,9 +140,9 @@ static void getArrayTestValues(
         GET_ARRAY_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
         GET_ARRAY_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
  \
-        (*pInput0) = PothosArrayFireTests::stdVectorToBufferChunk(input0); \
-        (*pInput1) = PothosArrayFireTests::stdVectorToBufferChunk(input1); \
-        (*pOutput) = PothosArrayFireTests::stdVectorToBufferChunk(output); \
+        (*pInput0) = AFTests::stdVectorToBufferChunk(input0); \
+        (*pInput1) = AFTests::stdVectorToBufferChunk(input1); \
+        (*pOutput) = AFTests::stdVectorToBufferChunk(output); \
         return; \
     }
 
@@ -227,7 +227,7 @@ static void testScalarComparatorBlockForTypeAndOperation(
             POTHOS_TEST_TRUE(topology.waitInactive(0.05));
         }
 
-        PothosArrayFireTests::testBufferChunk(
+        AFTests::testBufferChunk(
             output,
             collectorSink.call<Pothos::BufferChunk>("getBuffer"));
     }
@@ -306,7 +306,7 @@ static void testArrayComparatorBlockForTypeAndOperation(
             POTHOS_TEST_TRUE(topology.waitInactive(0.05));
         }
 
-        PothosArrayFireTests::testBufferChunk(
+        AFTests::testBufferChunk(
             output,
             collectorSink.call<Pothos::BufferChunk>("getBuffer"));
     }
@@ -324,9 +324,9 @@ static void testComparatorBlocksForType(const std::string& type)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_comparators)
 {
-    PothosArrayFireTests::setupTestEnv();
+    AFTests::setupTestEnv();
 
-    for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
+    for(const auto& type: AFTests::getAllDTypeNames())
     {
         testComparatorBlocksForType(type);
     }

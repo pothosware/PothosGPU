@@ -53,7 +53,7 @@ static void testArrayOpBlock(
     std::vector<Pothos::Proxy> collectorSinks;
     for(size_t chan = 0; chan < nchans; ++chan)
     {
-        allTestInputs.emplace_back(PothosArrayFireTests::getTestInputs(inputDType));
+        allTestInputs.emplace_back(AFTests::getTestInputs(inputDType));
 
         feederSources.emplace_back(Pothos::BlockRegistry::make(
                                        "/blocks/feeder_source",
@@ -89,7 +89,7 @@ static void testArrayOpBlock(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_arithmetic)
 {
-    const auto& allDTypeNames = PothosArrayFireTests::getAllDTypeNames();
+    const auto& allDTypeNames = AFTests::getAllDTypeNames();
     const std::vector<std::string> allOperations = {"Add", "Subtract", "Multiply", "Divide"};
 
     for(const auto& dtype: allDTypeNames)

@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace PothosArrayFireTests
+namespace AFTests
 {
 
 //

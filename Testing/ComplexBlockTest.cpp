@@ -39,10 +39,10 @@ Pothos::BufferChunk getPhaseInputs()
     static std::random_device rd;
     static std::mt19937 g(rd());
 
-    auto phases = PothosArrayFireTests::linspace<T>(-M_PI/2, M_PI/2, 123);
+    auto phases = AFTests::linspace<T>(-M_PI/2, M_PI/2, 123);
     std::shuffle(phases.begin(), phases.end(), g);
 
-    return PothosArrayFireTests::stdVectorToBufferChunk(phases);
+    return AFTests::stdVectorToBufferChunk(phases);
 }
 
 inline Pothos::BufferChunk getPhaseInputs(const std::string& type)
@@ -114,7 +114,7 @@ void testBufferChunksEqual(
     }
     else
     {
-        PothosArrayFireTests::testBufferChunk(
+        AFTests::testBufferChunk(
             expectedBufferChunk,
             actualBufferChunk);
     }
@@ -130,7 +130,7 @@ void testScalarToComplexToScalar(
     std::cout << "Testing " << scalarToComplexRegistryPath << " -> " << complexToScalarRegistryPath
               << " (type: " << type << ")" << std::endl;
 
-    auto port0TestInputs = PothosArrayFireTests::getTestInputs(type);
+    auto port0TestInputs = AFTests::getTestInputs(type);
     auto port1TestInputs = getPhaseInputs(type); // Inputs don't matter for other function
 
     auto port0FeederSource = Pothos::BlockRegistry::make(
@@ -207,7 +207,7 @@ void testComplexToScalarToComplex(
 
     const auto complexType = "complex_"+type;
 
-    auto testInputs = PothosArrayFireTests::getTestInputs(complexType);
+    auto testInputs = AFTests::getTestInputs(complexType);
 
     auto feederSource = Pothos::BlockRegistry::make(
                             "/blocks/feeder_source",
@@ -300,7 +300,7 @@ void testComplexToPolarToComplex(const std::string& type)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_complex_blocks)
 {
-    PothosArrayFireTests::setupTestEnv();
+    AFTests::setupTestEnv();
 
     const std::vector<std::string> dtypes = {"float32","float64"};
 

@@ -9,7 +9,7 @@
 #include <Pothos/Proxy.hpp>
 #include <Pothos/Testing.hpp>
 
-namespace PothosArrayFireTests
+namespace AFTests
 {
 
 void setupTestEnv()

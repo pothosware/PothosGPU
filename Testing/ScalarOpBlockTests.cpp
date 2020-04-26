@@ -37,8 +37,8 @@ static void testScalarOpBlock(
 
     }
 
-    const auto testInputs = PothosArrayFireTests::getTestInputs(inputDType);
-    const auto scalar = PothosArrayFireTests::getSingleTestInput(inputDType);
+    const auto testInputs = AFTests::getTestInputs(inputDType);
+    const auto scalar = AFTests::getSingleTestInput(inputDType);
 
     auto scalarOpBlock = Pothos::BlockRegistry::make(
                              blockRegistryPath,
@@ -78,7 +78,7 @@ static void testScalarOpBlock(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_arithmetic)
 {
-    const auto& allDTypeNames = PothosArrayFireTests::getAllDTypeNames();
+    const auto& allDTypeNames = AFTests::getAllDTypeNames();
     const std::vector<std::string> allOperations = {"Add", "Subtract", "Multiply", "Divide", "Modulus"};
 
     for(const auto& dtype: allDTypeNames)

@@ -7,7 +7,7 @@
 #include <cmath>
 #include <cstdint>
 
-using namespace PothosArrayFireTests;
+using namespace AFTests;
 
 %for k,v in sfinaeMap.items():
 
@@ -53,8 +53,8 @@ static EnableIf${k}<T, void> blockExecutionTest()
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_block_execution)
 {
-    PothosArrayFireTests::setupTestEnv();
-    
+    setupTestEnv();
+
     blockExecutionTest<std::int16_t>();
     blockExecutionTest<std::int32_t>();
     blockExecutionTest<std::int64_t>();

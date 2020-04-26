@@ -16,7 +16,7 @@
 // TODO: complex overload
 
 template <typename T>
-static PothosArrayFireTests::EnableIfAnyInt<T, Pothos::BufferChunk> getIsXTestInputs()
+static AFTests::EnableIfAnyInt<T, Pothos::BufferChunk> getIsXTestInputs()
 {
     const std::vector<T> testInputs =
     {
@@ -26,11 +26,11 @@ static PothosArrayFireTests::EnableIfAnyInt<T, Pothos::BufferChunk> getIsXTestIn
         5,
         std::numeric_limits<T>::max() / 2,
     };
-    return PothosArrayFireTests::stdVectorToBufferChunk(testInputs);
+    return AFTests::stdVectorToBufferChunk(testInputs);
 }
 
 template <typename T>
-static PothosArrayFireTests::EnableIfFloat<T, Pothos::BufferChunk> getIsXTestInputs()
+static AFTests::EnableIfFloat<T, Pothos::BufferChunk> getIsXTestInputs()
 {
     const std::vector<T> testInputs =
     {
@@ -40,7 +40,7 @@ static PothosArrayFireTests::EnableIfFloat<T, Pothos::BufferChunk> getIsXTestInp
         5.0,
         std::numeric_limits<T>::quiet_NaN(),
     };
-    return PothosArrayFireTests::stdVectorToBufferChunk(testInputs);
+    return AFTests::stdVectorToBufferChunk(testInputs);
 }
 
 template <typename T>
@@ -73,7 +73,7 @@ static void testIsX(
         POTHOS_TEST_TRUE(topology.waitInactive(0.05));
     }
 
-    PothosArrayFireTests::testBufferChunk(
+    AFTests::testBufferChunk(
         collectorSink.call("getBuffer"),
         expectedOutput);
 }
@@ -109,7 +109,7 @@ static void testFloatOnlyBlock(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_isinf)
 {
-    PothosArrayFireTests::setupTestEnv();
+    AFTests::setupTestEnv();
 
     testFloatOnlyBlock(
         "/arrayfire/arith/isinf",
@@ -118,7 +118,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_isinf)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_isnan)
 {
-    PothosArrayFireTests::setupTestEnv();
+    AFTests::setupTestEnv();
 
     testFloatOnlyBlock(
         "/arrayfire/arith/isnan",
@@ -127,7 +127,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_isnan)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_iszero)
 {
-    PothosArrayFireTests::setupTestEnv();
+    AFTests::setupTestEnv();
 
     const std::string blockRegistryPath = "/arrayfire/arith/iszero";
     const std::vector<std::int8_t> signedOutput = {1,0,0,0,0};
@@ -147,7 +147,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_iszero)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_sign)
 {
-    PothosArrayFireTests::setupTestEnv();
+    AFTests::setupTestEnv();
 
     const std::string blockRegistryPath = "/arrayfire/arith/sign";
     const std::vector<std::int8_t> expectedOutput = {0,0,1,0,0};

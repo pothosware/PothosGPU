@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace PothosArrayFireTests
+namespace AFTests
 {
 
 // TODO: figure out 32/64-bit integral issue
@@ -192,7 +192,7 @@ static void testFileSink2D(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_sink)
 {
-    using namespace PothosArrayFireTests;
+    using namespace AFTests;
 
     setupTestEnv();
 
@@ -213,10 +213,10 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_sink)
             af::randu(numElements, afDType),
             af::randu(numChannels, numElements, afDType)
         };
-        PothosArrayFireTests::addMinMaxToAfArray(
+        AFTests::addMinMaxToAfArray(
             testData.oneDimArray,
             type);
-        PothosArrayFireTests::addMinMaxToAfArray(
+        AFTests::addMinMaxToAfArray(
             testData.twoDimArray,
             type);
 

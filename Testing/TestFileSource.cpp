@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-namespace PothosArrayFireTests
+namespace AFTests
 {
 
 static const std::vector<std::string> AllTypes =
@@ -185,7 +185,7 @@ static void testFileSource2D(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_source)
 {
-    using namespace PothosArrayFireTests;
+    using namespace AFTests;
 
     setupTestEnv();
 
@@ -204,10 +204,10 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_source)
             af::randu(numElements, afDType),
             af::randu(numChannels, numElements, afDType)
         };
-        PothosArrayFireTests::addMinMaxToAfArray(
+        AFTests::addMinMaxToAfArray(
             testData.oneDimArray,
             type);
-        PothosArrayFireTests::addMinMaxToAfArray(
+        AFTests::addMinMaxToAfArray(
             testData.twoDimArray,
             type);
 

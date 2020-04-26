@@ -54,7 +54,7 @@ static void testFlatBlock(
 
     for(size_t chan = 0; chan < numChannels; ++chan)
     {
-        testInputs.emplace_back(PothosArrayFireTests::getTestInputs(type));
+        testInputs.emplace_back(AFTests::getTestInputs(type));
 
         feederSources.emplace_back(
             Pothos::BlockRegistry::make(
@@ -87,7 +87,7 @@ static void testFlatBlock(
         POTHOS_TEST_TRUE(topology.waitInactive(0.05));
     }
 
-    PothosArrayFireTests::testBufferChunk(
+    AFTests::testBufferChunk(
         concatBufferChunks(testInputs),
         collectorSink.call<Pothos::BufferChunk>("getBuffer"));
 }
@@ -100,9 +100,9 @@ static void testFlatBlockForType(const std::string& type)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_flat)
 {
-    PothosArrayFireTests::setupTestEnv();
+    AFTests::setupTestEnv();
 
-    for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
+    for(const auto& type: AFTests::getAllDTypeNames())
     {
         testFlatBlockForType(type);
     }

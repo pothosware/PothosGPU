@@ -5,7 +5,7 @@
 #include "TestUtility.hpp"
 #include "Utility.hpp"
 
-namespace PothosArrayFireTests
+namespace AFTests
 {
 
 #define RETURN_BUFFERCHUNK(typeStr, cType) \

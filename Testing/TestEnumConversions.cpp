@@ -12,7 +12,7 @@
 #include <string>
 #include <typeinfo>
 
-namespace PothosArrayFireTests
+namespace AFTests
 {
 
 template <typename Type1, typename Type2>
@@ -59,56 +59,56 @@ static void testDTypeEnumUsage(
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_backend_conversion)
 {
-    PothosArrayFireTests::testTypesCanConvert<std::string, af::Backend>();
-    PothosArrayFireTests::testEnumValueConversion("CPU",    ::AF_BACKEND_CPU);
-    PothosArrayFireTests::testEnumValueConversion("CUDA",   ::AF_BACKEND_CUDA);
-    PothosArrayFireTests::testEnumValueConversion("OpenCL", ::AF_BACKEND_OPENCL);
+    AFTests::testTypesCanConvert<std::string, af::Backend>();
+    AFTests::testEnumValueConversion("CPU",    ::AF_BACKEND_CPU);
+    AFTests::testEnumValueConversion("CUDA",   ::AF_BACKEND_CUDA);
+    AFTests::testEnumValueConversion("OpenCL", ::AF_BACKEND_OPENCL);
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_convmode_conversion)
 {
-    PothosArrayFireTests::testTypesCanConvert<std::string, af::convMode>();
-    PothosArrayFireTests::testEnumValueConversion("Default", ::AF_CONV_DEFAULT);
-    PothosArrayFireTests::testEnumValueConversion("Expand",  ::AF_CONV_EXPAND);
+    AFTests::testTypesCanConvert<std::string, af::convMode>();
+    AFTests::testEnumValueConversion("Default", ::AF_CONV_DEFAULT);
+    AFTests::testEnumValueConversion("Expand",  ::AF_CONV_EXPAND);
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_convdomain_conversion)
 {
-    PothosArrayFireTests::testTypesCanConvert<std::string, af::convDomain>();
-    PothosArrayFireTests::testEnumValueConversion("Auto",    ::AF_CONV_AUTO);
-    PothosArrayFireTests::testEnumValueConversion("Spatial", ::AF_CONV_SPATIAL);
-    PothosArrayFireTests::testEnumValueConversion("Freq",    ::AF_CONV_FREQ);
+    AFTests::testTypesCanConvert<std::string, af::convDomain>();
+    AFTests::testEnumValueConversion("Auto",    ::AF_CONV_AUTO);
+    AFTests::testEnumValueConversion("Spatial", ::AF_CONV_SPATIAL);
+    AFTests::testEnumValueConversion("Freq",    ::AF_CONV_FREQ);
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_randomenginetype_conversion)
 {
-    PothosArrayFireTests::testTypesCanConvert<std::string, af::randomEngineType>();
-    PothosArrayFireTests::testEnumValueConversion("Philox",   ::AF_RANDOM_ENGINE_PHILOX);
-    PothosArrayFireTests::testEnumValueConversion("Threefry", ::AF_RANDOM_ENGINE_THREEFRY);
-    PothosArrayFireTests::testEnumValueConversion("Mersenne", ::AF_RANDOM_ENGINE_MERSENNE);
+    AFTests::testTypesCanConvert<std::string, af::randomEngineType>();
+    AFTests::testEnumValueConversion("Philox",   ::AF_RANDOM_ENGINE_PHILOX);
+    AFTests::testEnumValueConversion("Threefry", ::AF_RANDOM_ENGINE_THREEFRY);
+    AFTests::testEnumValueConversion("Mersenne", ::AF_RANDOM_ENGINE_MERSENNE);
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_topkfunction_conversion)
 {
-    PothosArrayFireTests::testTypesCanConvert<std::string, af::topkFunction>();
-    PothosArrayFireTests::testEnumValueConversion("Min",     ::AF_TOPK_MIN);
-    PothosArrayFireTests::testEnumValueConversion("Max",     ::AF_TOPK_MAX);
-    PothosArrayFireTests::testEnumValueConversion("Default", ::AF_TOPK_DEFAULT);
+    AFTests::testTypesCanConvert<std::string, af::topkFunction>();
+    AFTests::testEnumValueConversion("Min",     ::AF_TOPK_MIN);
+    AFTests::testEnumValueConversion("Max",     ::AF_TOPK_MAX);
+    AFTests::testEnumValueConversion("Default", ::AF_TOPK_DEFAULT);
 }
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_dtype_conversion)
 {
-    PothosArrayFireTests::testTypesCanConvert<Pothos::DType, af::dtype>();
-    PothosArrayFireTests::testDTypeEnumUsage("int8",            ::b8);
-    PothosArrayFireTests::testDTypeEnumUsage("int16",           ::s16);
-    PothosArrayFireTests::testDTypeEnumUsage("int32",           ::s32);
-    PothosArrayFireTests::testDTypeEnumUsage("int64",           ::s64);
-    PothosArrayFireTests::testDTypeEnumUsage("uint8",           ::u8);
-    PothosArrayFireTests::testDTypeEnumUsage("uint16",          ::u16);
-    PothosArrayFireTests::testDTypeEnumUsage("uint32",          ::u32);
-    PothosArrayFireTests::testDTypeEnumUsage("uint64",          ::u64);
-    PothosArrayFireTests::testDTypeEnumUsage("float32",         ::f32);
-    PothosArrayFireTests::testDTypeEnumUsage("float64",         ::f64);
-    PothosArrayFireTests::testDTypeEnumUsage("complex_float32", ::c32);
-    PothosArrayFireTests::testDTypeEnumUsage("complex_float64", ::c64);
+    AFTests::testTypesCanConvert<Pothos::DType, af::dtype>();
+    AFTests::testDTypeEnumUsage("int8",            ::b8);
+    AFTests::testDTypeEnumUsage("int16",           ::s16);
+    AFTests::testDTypeEnumUsage("int32",           ::s32);
+    AFTests::testDTypeEnumUsage("int64",           ::s64);
+    AFTests::testDTypeEnumUsage("uint8",           ::u8);
+    AFTests::testDTypeEnumUsage("uint16",          ::u16);
+    AFTests::testDTypeEnumUsage("uint32",          ::u32);
+    AFTests::testDTypeEnumUsage("uint64",          ::u64);
+    AFTests::testDTypeEnumUsage("float32",         ::f32);
+    AFTests::testDTypeEnumUsage("float64",         ::f64);
+    AFTests::testDTypeEnumUsage("complex_float32", ::c32);
+    AFTests::testDTypeEnumUsage("complex_float64", ::c64);
 }

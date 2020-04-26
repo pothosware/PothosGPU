@@ -25,7 +25,7 @@ static constexpr const char* pluginPath = "/blocks/arrayfire/arith/clamp";
 #define GET_MINMAX_OBJECTS(typeStr, cType) \
     if(type == typeStr) \
     { \
-        const auto sortedInputs = PothosArrayFireTests::getTestInputs<cType>(false /*shuffle*/); \
+        const auto sortedInputs = AFTests::getTestInputs<cType>(false /*shuffle*/); \
         assert(sortedInputs.size() >= 6); \
  \
         (*pMinObjectOut) = Pothos::Object(sortedInputs[2]); \
@@ -82,7 +82,7 @@ void testClampBlockForType(const std::string& type)
                          minObject,
                          maxObject);
 
-        auto testInputs = PothosArrayFireTests::getTestInputs(type);
+        auto testInputs = AFTests::getTestInputs(type);
 
         auto feederSource = Pothos::BlockRegistry::make(
                                 "/blocks/feeder_source",
@@ -113,9 +113,9 @@ void testClampBlockForType(const std::string& type)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_clamp)
 {
-    PothosArrayFireTests::setupTestEnv();
+    AFTests::setupTestEnv();
 
-    for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
+    for(const auto& type: AFTests::getAllDTypeNames())
     {
         testClampBlockForType(type);
     }

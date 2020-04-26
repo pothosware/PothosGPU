@@ -14,7 +14,7 @@
 #include <string>
 #include <typeinfo>
 
-namespace PothosArrayFireTests
+namespace AFTests
 {
 
 template <typename Type1, typename Type2>
@@ -47,6 +47,6 @@ static void testComplexConversion()
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_complex_conversion)
 {
-    PothosArrayFireTests::testComplexConversion<std::complex<float>, af::cfloat>();
-    PothosArrayFireTests::testComplexConversion<std::complex<double>, af::cdouble>();
+    AFTests::testComplexConversion<std::complex<float>, af::cfloat>();
+    AFTests::testComplexConversion<std::complex<double>, af::cdouble>();
 }

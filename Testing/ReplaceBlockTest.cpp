@@ -35,7 +35,7 @@ static void testReplaceBlockForType(const std::string& type)
 
         // TODO: output validation
         auto feederSource = Pothos::BlockRegistry::make("/blocks/feeder_source", type);
-        feederSource.call("feedBuffer", PothosArrayFireTests::getTestInputs(type));
+        feederSource.call("feedBuffer", AFTests::getTestInputs(type));
         
         auto collectorSink = Pothos::BlockRegistry::make("/blocks/collector_sink", type);
 
@@ -68,9 +68,9 @@ static void testReplaceBlockForType(const std::string& type)
 
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_replace)
 {
-    PothosArrayFireTests::setupTestEnv();
+    AFTests::setupTestEnv();
 
-    for(const auto& type: PothosArrayFireTests::getAllDTypeNames())
+    for(const auto& type: AFTests::getAllDTypeNames())
     {
         testReplaceBlockForType(type);
     }
