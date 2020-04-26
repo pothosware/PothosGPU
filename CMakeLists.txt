@@ -52,6 +52,13 @@ add_custom_target(
     autogen_files ALL
     DEPENDS ${autogenOutputs})
 
+# We need all sources to be relative paths to be able to use ENABLE_DOCS instead
+# of manually specifying files to be scanned.
+foreach(autogenOutput ${autogenOutputs})
+    file(RELATIVE_PATH relativeAutogenOutput ${CMAKE_CURRENT_SOURCE_DIR} ${autogenOutput})
+    list(APPEND relativeAutogenOutputs ${relativeAutogenOutput})
+endforeach()
+
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Source
@@ -63,7 +70,7 @@ include(PothosUtil)
 POTHOS_MODULE_UTIL(
     TARGET ArrayFireBlocks
     SOURCES
-        ${autogenOutputs}
+        ${relativeAutogenOutputs}
 
         Source/ArrayFireBlock.cpp
         Source/ArrayFireInfo.cpp
@@ -131,31 +138,6 @@ POTHOS_MODULE_UTIL(
         Testing/TestUtility.cpp
     LIBRARIES
         ArrayFire::af
-    DOC_SOURCES
-        Source/ArrayOpBlock.cpp
-        Source/Cast.cpp
-        Source/Clamp.cpp
-        Source/Complex.cpp
-        Source/Constant.cpp
-        Source/Convolve.cpp
-        Source/CorrCoef.cpp
-        Source/Covariance.cpp
-        Source/FFT.cpp
-        Source/FileSink.cpp
-        Source/FileSource.cpp
-        Source/Filter.cpp
-        Source/Flat.cpp
-        Source/IsX.cpp
-        Source/LogN.cpp
-        Source/MinMax.cpp
-        Source/Pow.cpp
-        Source/PowersOfN.cpp
-        Source/Random.cpp
-        Source/Replace.cpp
-        Source/Root.cpp
-        Source/ScalarOpBlock.cpp
-        Source/Sort.cpp
-        Source/Statistics.cpp
-        Source/TopK.cpp
     DESTINATION arrayfire
+    ENABLE_DOCS ON
 )
