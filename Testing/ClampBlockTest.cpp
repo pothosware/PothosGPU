@@ -25,7 +25,7 @@ static constexpr const char* pluginPath = "/blocks/arrayfire/arith/clamp";
     if(type == typeStr) \
     { \
         const auto sortedInputs = AFTests::getTestInputs<cType>(false /*shuffle*/); \
-        assert(sortedInputs.size() >= 6); \
+        POTHOS_TEST_GE(sortedInputs.size(), 6); \
  \
         (*pMinObjectOut) = Pothos::Object(sortedInputs[2]); \
         (*pMaxObjectOut) = Pothos::Object(sortedInputs[sortedInputs.size()-3]); \
@@ -49,6 +49,42 @@ static void getMinMaxObjects(
     GET_MINMAX_OBJECTS("uint64", std::uint64_t)
     GET_MINMAX_OBJECTS("float32", float)
     GET_MINMAX_OBJECTS("float64", double)
+    // This block has no complex implementation.
+}
+
+template <typename T>
+static void testClampBlockOutput(
+    const T* output,
+    size_t numElems,
+    T min,
+    T max)
+{
+    for(size_t elem = 0; elem < numElems; ++elem)
+    {
+        POTHOS_TEST_GE(output[elem], min);
+        POTHOS_TEST_LE(output[elem], max);
+    }
+}
+
+#define TEST_OUTPUT_FOR_TYPE(typeStr, cType) \
+    if(output.dtype.name() == typeStr) \
+        testClampBlockOutput<cType>(output, output.elements(), minObject, maxObject);
+
+static void testClampBlockOutput(
+    const Pothos::BufferChunk& output,
+    const Pothos::Object& minObject,
+    const Pothos::Object& maxObject)
+{
+    // ArrayFire doesn't support int8
+    TEST_OUTPUT_FOR_TYPE("int16", std::int16_t)
+    TEST_OUTPUT_FOR_TYPE("int32", std::int32_t)
+    TEST_OUTPUT_FOR_TYPE("int64", std::int64_t)
+    TEST_OUTPUT_FOR_TYPE("uint8", std::uint8_t)
+    TEST_OUTPUT_FOR_TYPE("uint16", std::uint16_t)
+    TEST_OUTPUT_FOR_TYPE("uint32", std::uint32_t)
+    TEST_OUTPUT_FOR_TYPE("uint64", std::uint64_t)
+    TEST_OUTPUT_FOR_TYPE("float32", float)
+    TEST_OUTPUT_FOR_TYPE("float64", double)
     // This block has no complex implementation.
 }
 
@@ -102,11 +138,11 @@ void testClampBlockForType(const std::string& type)
             POTHOS_TEST_TRUE(topology.waitInactive(0.05));
         }
 
-        // TODO: output verification
         auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
         POTHOS_TEST_EQUAL(
             testInputs.elements(),
             output.elements());
+        testClampBlockOutput(output, minObject, maxObject);
     }
 }
 
