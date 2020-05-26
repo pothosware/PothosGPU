@@ -13,8 +13,6 @@
 #include <string>
 #include <vector>
 
-// TODO: dtype dimensions
-
 // Resolve overloads
 using FFTConvolveFuncPtr = af::array(*)(
                                const af::array&,
@@ -33,17 +31,16 @@ class ConvolveBaseBlock: public OneToOneBlock
         using Class = ConvolveBaseBlock<T>;
         using TapType = typename Tap<T>::Type;
 
-        static const Pothos::DType dtype;
-
         ConvolveBaseBlock(
             const std::string& device,
+            size_t dtypeDim,
             const Pothos::Callable& callable
         ):
             OneToOneBlock(
                 device,
                 Pothos::Callable(callable),
-                Class::dtype,
-                Class::dtype),
+                Pothos::DType(typeid(T), dtypeDim),
+                Pothos::DType(typeid(T), dtypeDim)),
             _taps({T(1.0)}),
             _convMode(::AF_CONV_DEFAULT),
             _waitTaps(false),
@@ -59,7 +56,6 @@ class ConvolveBaseBlock: public OneToOneBlock
             this->registerProbe("taps");
             this->registerProbe("mode");
 
-            this->registerSignal("tapsChanged");
             this->registerSignal("modeChanged");
 
             // Emit the initial signals.
@@ -91,8 +87,6 @@ class ConvolveBaseBlock: public OneToOneBlock
             _taps = taps;
             _func.bind(Pothos::Object(_taps).convert<af::array>(), 1);
             _waitTapsArmed = false; // We have taps
-
-            this->emitSignal("tapsChanged", _taps);
         }
 
         std::string mode() const
@@ -134,17 +128,15 @@ class ConvolveBaseBlock: public OneToOneBlock
 };
 
 template <typename T>
-const Pothos::DType ConvolveBaseBlock<T>::dtype(typeid(T));
-
-template <typename T>
 class ConvolveBlock: public ConvolveBaseBlock<T>
 {
     public:
         using Class = ConvolveBlock<T>;
 
-        ConvolveBlock(const std::string& device):
+        ConvolveBlock(const std::string& device, size_t dtypeDim):
             ConvolveBaseBlock<T>(
                 device,
+                dtypeDim,
                 Pothos::Callable(&af::convolve1)),
             _convDomain(::AF_CONV_AUTO)
         {
@@ -190,7 +182,7 @@ static Pothos::Block* makeConvolve(
 {
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new ConvolveBlock<T>(device);
+            return new ConvolveBlock<T>(device, dtype.dimension());
 
     ifTypeDeclareFactory(std::int16_t)
     ifTypeDeclareFactory(std::int32_t)
@@ -218,7 +210,7 @@ static Pothos::Block* makeFFTConvolve(
 
     #define ifTypeDeclareFactory(T) \
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
-            return new FFTConvolveBlock<T>(device, callableFFTConvolve);
+            return new FFTConvolveBlock<T>(device, dtype.dimension(), callableFFTConvolve);
 
     ifTypeDeclareFactory(std::int16_t)
     ifTypeDeclareFactory(std::int32_t)

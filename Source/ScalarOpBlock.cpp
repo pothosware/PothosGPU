@@ -7,6 +7,8 @@
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
+#include <Poco/Format.h>
+
 #include <arrayfire.h>
 
 #include <cassert>
@@ -39,7 +41,7 @@ class ScalarOpBlock: public OneToOneBlock
             Pothos::Callable(func),
             dtype,
             outputDType),
-        _allowZeroOperand(allowZeroOperand)
+            _allowZeroOperand(allowZeroOperand)
         {
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, scalar));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setScalar));
@@ -179,7 +181,9 @@ static Pothos::Block* makeScalarOpBlock(
         }
         else
         {
-            throw Pothos::InvalidArgumentException("Invalid operation for type", operation);
+            throw Pothos::InvalidArgumentException(
+                      "Invalid operation for type "+dtype.name(),
+                      operation);
         }
     }
 
