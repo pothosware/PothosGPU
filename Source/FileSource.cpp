@@ -211,6 +211,8 @@ class FileSourceBlock: public ArrayFireBlock
  * of the given array.
  *
  * |category /ArrayFire/File IO
+ * |category /File IO
+ * |category /Sources
  * |keywords array file source io
  * |factory /arrayfire/array/file_source(device,filepath,key,repeat)
  *

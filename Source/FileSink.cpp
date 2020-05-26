@@ -256,6 +256,8 @@ class FileSinkBlock: public ArrayFireBlock
  * </ul>
  *
  * |category /ArrayFire/File IO
+ * |category /File IO
+ * |category /Sinks
  * |keywords array file sink io
  * |factory /arrayfire/array/file_sink(device,filepath,key,dtype,numChannels,append)
  *
