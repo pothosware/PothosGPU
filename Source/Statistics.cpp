@@ -64,8 +64,11 @@ class OneArrayStatsBlock: public ArrayFireBlock
         static Pothos::Block* makeFromFuncPtr(
             const std::string& device,
             OneArrayStatsFuncPtr func,
+            const DTypeSupport& dtypeSupport,
             const Pothos::DType& dtype)
         {
+            validateDType(dtype, dtypeSupport);
+
             return new OneArrayStatsBlock(
                            device,
                            func,
@@ -147,6 +150,8 @@ class VarianceBlock: public OneArrayStatsBlock
             const Pothos::DType& dtype,
             bool isBiased)
         {
+            validateDType(dtype, floatOnlyDTypeSupport);
+
             return new VarianceBlock(device, dtype, isBiased);
         }
 
@@ -216,7 +221,8 @@ class VarianceBlock: public OneArrayStatsBlock
 static Pothos::BlockRegistry registerMean(
     "/arrayfire/statistics/mean",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&af::mean, 1));
+        .bind<OneArrayStatsFuncPtr>(&af::mean, 1)
+        .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));
 
 /*
  * |PothosDoc Median
@@ -242,7 +248,8 @@ static Pothos::BlockRegistry registerMean(
 static Pothos::BlockRegistry registerMedian(
     "/arrayfire/statistics/median",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&af::median, 1));
+        .bind<OneArrayStatsFuncPtr>(&af::median, 1)
+        .bind<DTypeSupport>({true,true,true,false}, 2));
 
 /*
  * |PothosDoc RMS
@@ -261,14 +268,15 @@ static Pothos::BlockRegistry registerMedian(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |widget DTypeChooser(float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
 static Pothos::BlockRegistry registerRMS(
     "/arrayfire/statistics/rms",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&afRMS, 1));
+        .bind<OneArrayStatsFuncPtr>(&afRMS, 1)
+        .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));
 
 /*
  * |PothosDoc Variance
@@ -288,7 +296,7 @@ static Pothos::BlockRegistry registerRMS(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |widget DTypeChooser(float=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -324,7 +332,8 @@ static Pothos::BlockRegistry registerVar(
 static Pothos::BlockRegistry registerStdev(
     "/arrayfire/statistics/stdev",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&af::stdev, 1));
+        .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
+        .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));
 
 /*
  * |PothosDoc Median Absolute Deviation
@@ -343,11 +352,12 @@ static Pothos::BlockRegistry registerStdev(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |widget DTypeChooser(float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
 static Pothos::BlockRegistry registerMedAbsDev(
     "/arrayfire/statistics/medabsdev",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1));
+        .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
+        .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));

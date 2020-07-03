@@ -7,7 +7,9 @@ OneToOneBlocks:
           niceName: Absolute Value
           header: arith
           supportedTypes:
-                  supportAll: true
+                  supportInt: true
+                  supportFloat: true
+                  supportComplex: true
 
         - func: arg
           niceName: Phase of Complex Number

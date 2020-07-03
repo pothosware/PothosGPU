@@ -20,8 +20,7 @@ class Pow: public OneToOneBlock
             const Pothos::DType& dtype,
             double power)
         {
-            // Supports float, complex
-            static const DTypeSupport dtypeSupport{false,false,true,true};
+            static const DTypeSupport dtypeSupport{true,true,true,true};
             validateDType(dtype, dtypeSupport);
 
             return new Pow(device, dtype, power);
@@ -85,8 +84,8 @@ class Pow: public OneToOneBlock
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(float=1,cfloat=1,dim=1)
- * |default "complex_float64"
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
+ * |default "float64"
  * |preview disable
  *
  * |param power[Power] The exponent value.

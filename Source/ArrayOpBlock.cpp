@@ -40,10 +40,17 @@ static Pothos::Block* makeArrayArithmetic(
     const Pothos::DType& dtype,
     size_t numChans)
 {
+    static const DTypeSupport allDTypeSupport{true,true,true,true};
+    static const DTypeSupport modulusDTypeSupport{true,true,true,false};
+
+    const auto& dtypeSupport = ("Modulus" == operation) ? modulusDTypeSupport : allDTypeSupport;
+    validateDType(dtype, dtypeSupport);
+
     IfOpThenReducedBlock("Add", af::sum)
     else IfOpThenNToOneBlock(-, "Subtract")
     else IfOpThenReducedBlock("Multiply", af::product)
     else IfOpThenNToOneBlock(/, "Divide")
+    else IfOpThenNToOneBlock(%, "Modulus")
 
     throw Pothos::InvalidArgumentException("Invalid operation", operation);
 }
@@ -129,6 +136,7 @@ static Pothos::Block* makeArrayLogical(
  * |option [Subtract] "Subtract"
  * |option [Multiply] "Multiply"
  * |option [Divide] "Divide"
+ * |option [Modulus] "Modulus"
  * |default "Add"
  * |preview enable
  *

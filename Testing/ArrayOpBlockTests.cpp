@@ -89,18 +89,21 @@ static void testArrayOpBlock(
 POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_arithmetic)
 {
     const auto& allDTypeNames = AFTests::getAllDTypeNames();
-    const std::vector<std::string> allOperations = {"Add", "Subtract", "Multiply", "Divide"};
+    const std::vector<std::string> allOperations = {"Add", "Subtract", "Multiply", "Divide", "Modulus"};
 
     for(const auto& dtype: allDTypeNames)
     {
         for(const auto& operation: allOperations)
         {
-            testArrayOpBlock(
-                "/arrayfire/array/arithmetic",
-                dtype,
-                dtype,
-                operation,
-                3);
+            if(("Modulus" != operation) || !isDTypeComplexFloat(Pothos::DType(dtype)))
+            {
+                testArrayOpBlock(
+                    "/arrayfire/array/arithmetic",
+                    dtype,
+                    dtype,
+                    operation,
+                    3);
+            }
         }
     }
 }
