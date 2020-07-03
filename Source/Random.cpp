@@ -4,6 +4,7 @@
 #include "ArrayFireBlock.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Exception.hpp>
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
 
@@ -28,6 +29,9 @@ class RandomBlock: public ArrayFireBlock
             const Pothos::DType& dtype,
             const std::string& distribution)
         {
+            static const DTypeSupport dtypeSupport{false,false,true,true};
+            validateDType(dtype, dtypeSupport);
+
             return new RandomBlock(device, dtype, distribution);
         }
 
@@ -160,7 +164,7 @@ class RandomBlock: public ArrayFireBlock
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
+ * |widget DTypeChooser(float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *

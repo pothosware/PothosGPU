@@ -119,12 +119,12 @@ static Pothos::BlockRegistry registerArithIsZero(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,float=1,cfloat=1,dim=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
 static Pothos::BlockRegistry registerArithSign(
     "/arrayfire/arith/sign",
     Pothos::Callable(&makeIsX)
-        .bind<DTypeSupport>({true,false,true,true}, 2)
+        .bind<DTypeSupport>({true,false,true,false}, 2)
         .bind<OneToOneFunc>(&af::sign, 3));

@@ -21,8 +21,8 @@ class Log: public OneToOneBlock
             const Pothos::DType& dtype,
             double base)
         {
-            // Supports float, complex
-            static const DTypeSupport dtypeSupport{false,false,true,true};
+            // Supports float
+            static const DTypeSupport dtypeSupport{false,false,true,false};
             validateDType(dtype, dtypeSupport);
 
             return new Log(device, dtype, base);
@@ -95,13 +95,13 @@ class Log: public OneToOneBlock
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(float=1,cfloat=1,dim=1)
- * |default "complex_float64"
+ * |widget DTypeChooser(float=1,dim=1)
+ * |default "float64"
  * |preview disable
  *
  * |param base[Base] The logarithm base.
  * |widget DoubleSpinBox()
- * |default 0.0
+ * |default 10
  * |preview enable
  */
 static Pothos::BlockRegistry registerLogN(

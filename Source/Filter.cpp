@@ -112,7 +112,7 @@ class IIRBlock: public OneToOneBlock
 
         // TODO: this is the case as of ArrayFire 3.7.0.
         //       #ifdef this if it changes.
-        static const size_t MaxFFCoeffLength = 512;
+        static constexpr size_t MaxFFCoeffLength = 512;
 
         IIRBlock(
             const std::string& device,
@@ -238,7 +238,7 @@ class IIRBlock: public OneToOneBlock
         bool _waitTaps;
         bool _waitTapsArmed;
 
-        void _disarmWaitTapsIfCoeffsPopulated()
+        inline void _disarmWaitTapsIfCoeffsPopulated()
         {
             _waitTapsArmed = _feedForwardCoeffs.empty() || _feedbackCoeffs.empty();
         }

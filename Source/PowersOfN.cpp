@@ -93,13 +93,13 @@ class PowN: public OneToOneBlock
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |widget DTypeChooser(float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *
  * |param base[Base] The base value.
  * |widget LineEdit()
- * |default 0
+ * |default 2
  * |preview enable
  */
 static Pothos::BlockRegistry registerPow(

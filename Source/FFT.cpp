@@ -22,14 +22,9 @@
 // Misc
 //
 
-static bool isPowerOfTwo(size_t num)
+static inline bool isPowerOfTwo(size_t num)
 {
-    if(0 == num)
-    {
-        return false;
-    }
-
-    return (std::ceil(std::log2(num)) == std::floor(std::log2(num)));
+    return (0 != num) && ((num & (num - 1)) == 0);
 }
 
 static const std::string fftBlockPath = "/arrayfire/signal/fft";
@@ -112,7 +107,7 @@ class FFTBlock: public ArrayFireBlock
             const std::string& domain)
         {
             if(!_enforceNumBins) return ArrayFireBlock::getOutputBufferManager(name, domain);
-            
+
             if(domain.empty())
             {
                 // We always want to operate on pinned memory, as GPUs can access this via DMA.
@@ -121,7 +116,7 @@ class FFTBlock: public ArrayFireBlock
 
                 // Make sure the buffer is large enough for our numBins.
                 args.bufferSize = std::max<size_t>(_numBins*sizeof(OutType), (2 << 20));
-                
+
                 return makePinnedBufferManager(_afBackend, args);
             }
 
@@ -143,7 +138,7 @@ class FFTBlock: public ArrayFireBlock
         af::array getInputPort0ForFFT()
         {
             const auto elems = _enforceNumBins ? _numBins : this->workInfo().minElements;
-            
+
             auto bufferChunk = this->input(0)->buffer();
             bufferChunk.length = elems * bufferChunk.dtype.size();
 
@@ -213,7 +208,7 @@ static EnableIfFloatAndComplex<FwdIn, FwdOut, FFTFunc> getFFTFunc(
     {
         static const Pothos::DType fwdInDType(typeid(FwdIn));
         static const Pothos::DType fwdOutDType(typeid(FwdOut));
-        
+
         throw Pothos::InvalidArgumentException(
                   Poco::format(
                       "Reverse FFT is not supported for %s -> %s",
