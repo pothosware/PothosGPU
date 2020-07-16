@@ -1,0 +1,60 @@
+language: cpp
+sudo: required
+dist: bionic
+
+branches:
+  only:
+    - master
+    - maint
+
+env:
+  matrix:
+    - BUILD_TYPE=Release
+    - BUILD_TYPE=Debug
+
+compiler:
+  - gcc
+  - clang
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:pothoware/support'
+    packages:
+      - libpoco-dev
+      - nlohmann-json-dev
+
+      # TODO: remove these once we can install PothosCore from the PPA
+      - libmuparserx-dev
+      - libspuce-dev
+
+install:
+  # Build dependencies
+  - sudo apt update -qq
+  - sudo apt -y install cmake python-mako python-yaml
+
+  # The ArrayFire debs available are too old for us, so use ArrayFire's official installer.
+  - wget https://arrayfire.s3.amazonaws.com/3.7.2/ArrayFire-v3.7.2_Linux_x86_64.sh
+  - sudo sh ./ArrayFire-v3.7.2_Linux_x86_64.sh --prefix=/usr/local --skip-license
+
+  - sudo ldconfig
+
+script:
+  # Use a known good commit until we can use the PPA
+  - git clone --recursive https://github.com/pothosware/PothosCore -b f0370edfb8183a2d469ff60d5439a486ebaecff8
+  - pushd PothosCore
+  - mkdir build && cd build
+  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
+  - make -j2 && sudo make install
+  - sudo ldconfig
+  - popd
+
+  # Build and install PothosArrayFire
+  - mkdir build && cd build
+  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
+  - make && sudo make install
+  - sudo ldconfig
+
+  # Output module info and run tests
+  - PothosUtil --device-info=arrayfire
+  - PothosUtil --self-tests=/arrayfire/tests
