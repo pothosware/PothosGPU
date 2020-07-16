@@ -9,7 +9,7 @@ This toolkit adds 100+ Pothos blocks that wrap the majority of ArrayFire's API, 
 ## Dependencies
 
 * Pothos library (0.7+)
-* ArrayFire (3.5+)
+* ArrayFire (3.6+)
 * Mako Python module (build-time only)
 
 ## Licensing information
