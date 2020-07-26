@@ -153,7 +153,7 @@ static std::string afArrayToString(const AfArrType& arr)
 //
 // Registration
 //
-pothos_static_block(pothosArrayFireRegisterObjectFunctions)
+pothos_static_block(pothosGPURegisterArrayFireObjectFunctions)
 {
     Pothos::registerToStringFunc<af::array>(
         "ArrayFire/af_array",
@@ -172,6 +172,6 @@ pothos_static_block(pothosArrayFireRegisterObjectFunctions)
     registerEnumToString<af::topkFunction>("af_topkfunction");
 
     Pothos::PluginRegistry::addCall(
-        "/object/compare/arrayfire/af_array",
+        "/object/compare/gpu/af_array",
         Pothos::Callable(&compareAfArray<af::array>));
 }

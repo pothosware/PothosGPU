@@ -16,7 +16,7 @@
 
 static Poco::Logger& getLogger()
 {
-    auto& logger = Poco::Logger::get("PothosArrayFire");
+    auto& logger = Poco::Logger::get("PothosGPU");
     return logger;
 }
 
@@ -57,7 +57,7 @@ static bool isCUDAVersionValid(const std::string& toolkitStr)
         // 2020/02/18: Currently, the latest CUDA runtime has the crash we're
         // guarding against, so this check will always fail. This should be
         // updated when a CUDA runtime version is released that fixes this.
-        // See: https://github.com/arrayfire/arrayfire/issues/2707
+        // See: https://github.com/gpu/gpu/issues/2707
         constexpr size_t minValidVersion = std::numeric_limits<size_t>::max();
 
         isValid = (versionForComp >= minValidVersion);
@@ -249,4 +249,4 @@ static auto managedDeviceCache = Pothos::ManagedClass()
     .registerConstructor(&deviceCacheCtor)
     .registerMethod("getEntry", &getEntry)
     .registerMethod(POTHOS_FCN_TUPLE(DeviceCache, size))
-    .commit("ArrayFire/DeviceCache");
+    .commit("GPU/DeviceCache");

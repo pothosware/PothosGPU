@@ -10,13 +10,13 @@
 
 #include <iostream>
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_managed_device_cache)
+POTHOS_TEST_BLOCK("/gpu/tests", test_managed_device_cache)
 {
     // Compare the managed interface to the actual class.
     const auto& nativeDeviceCache = getDeviceCache();
 
     auto env = Pothos::ProxyEnvironment::make("managed");
-    auto deviceCache = env->findProxy("ArrayFire/DeviceCache")();
+    auto deviceCache = env->findProxy("GPU/DeviceCache")();
 
     // The managed constructor should return the full cache, not
     // an empty vector.

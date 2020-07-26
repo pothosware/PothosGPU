@@ -24,10 +24,10 @@
 namespace
 {
 
-constexpr const char* combineRegistryPath        = "/arrayfire/arith/combine_complex";
-constexpr const char* splitRegistryPath          = "/arrayfire/arith/split_complex";
-constexpr const char* polarToComplexRegistryPath = "/arrayfire/arith/polar_to_complex";
-constexpr const char* complexToPolarRegistryPath = "/arrayfire/arith/complex_to_polar";
+constexpr const char* combineRegistryPath        = "/gpu/arith/combine_complex";
+constexpr const char* splitRegistryPath          = "/gpu/arith/split_complex";
+constexpr const char* polarToComplexRegistryPath = "/gpu/arith/polar_to_complex";
+constexpr const char* complexToPolarRegistryPath = "/gpu/arith/complex_to_polar";
 
 // These calls involve multiple kernels, so give them some initial compile time.
 constexpr int sleepTimeMs = 500;
@@ -38,10 +38,10 @@ Pothos::BufferChunk getPhaseInputs()
     static std::random_device rd;
     static std::mt19937 g(rd());
 
-    auto phases = AFTests::linspace<T>(-M_PI/2, M_PI/2, 123);
+    auto phases = GPUTests::linspace<T>(-M_PI/2, M_PI/2, 123);
     std::shuffle(phases.begin(), phases.end(), g);
 
-    return AFTests::stdVectorToBufferChunk(phases);
+    return GPUTests::stdVectorToBufferChunk(phases);
 }
 
 inline Pothos::BufferChunk getPhaseInputs(const std::string& type)
@@ -113,7 +113,7 @@ void testBufferChunksEqual(
     }
     else
     {
-        AFTests::testBufferChunk(
+        GPUTests::testBufferChunk(
             expectedBufferChunk,
             actualBufferChunk);
     }
@@ -129,7 +129,7 @@ void testScalarToComplexToScalar(
     std::cout << "Testing " << scalarToComplexRegistryPath << " -> " << complexToScalarRegistryPath
               << " (type: " << type << ")" << std::endl;
 
-    auto port0TestInputs = AFTests::getTestInputs(type);
+    auto port0TestInputs = GPUTests::getTestInputs(type);
     auto port1TestInputs = getPhaseInputs(type); // Inputs don't matter for other function
 
     auto port0FeederSource = Pothos::BlockRegistry::make(
@@ -206,7 +206,7 @@ void testComplexToScalarToComplex(
 
     const auto complexType = "complex_"+type;
 
-    auto testInputs = AFTests::getTestInputs(complexType);
+    auto testInputs = GPUTests::getTestInputs(complexType);
 
     auto feederSource = Pothos::BlockRegistry::make(
                             "/blocks/feeder_source",
@@ -297,9 +297,9 @@ void testComplexToPolarToComplex(const std::string& type)
 
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_complex_blocks)
+POTHOS_TEST_BLOCK("/gpu/tests", test_complex_blocks)
 {
-    AFTests::setupTestEnv();
+    GPUTests::setupTestEnv();
 
     const std::vector<std::string> dtypes = {"float32","float64"};
 

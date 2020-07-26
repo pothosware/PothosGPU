@@ -201,12 +201,12 @@ static Pothos::Block* makeScalarOpBlock(
  * the specified scalar value as the second operand. The result is returned
  * in the output stream.
  *
- * |category /ArrayFire/Scalar Operations
+ * |category /GPU/Scalar Operations
  * |keywords scalar add subtract multiply divide modulus
- * |factory /arrayfire/scalar/arithmetic(device,operation,dtype,scalar)
+ * |factory /gpu/scalar/arithmetic(device,operation,dtype,scalar)
  * |setter setScalar(scalar)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param operation[Operation] The arithmetic operation to perform.
@@ -230,7 +230,7 @@ static Pothos::Block* makeScalarOpBlock(
  * |preview enable
  */
 static Pothos::BlockRegistry registerScalarArithmetic(
-    "/arrayfire/scalar/arithmetic",
+    "/gpu/scalar/arithmetic",
     Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::ARITHMETIC, 0));
 
 /*
@@ -240,12 +240,12 @@ static Pothos::BlockRegistry registerScalarArithmetic(
  * and the given scalar, returning the result in an output stream of type <b>int8</b>,
  * where <b>0</b> corresponds to false and <b>1</b> corresponds to true.
  *
- * |category /ArrayFire/Scalar Operations
+ * |category /GPU/Scalar Operations
  * |keywords scalar less greater not equal
- * |factory /arrayfire/scalar/comparator(device,operation,dtype,scalar,dim=1)
+ * |factory /gpu/scalar/comparator(device,operation,dtype,scalar,dim=1)
  * |setter setScalar(scalar)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param operation[Operation] The comparison to perform.
@@ -270,7 +270,7 @@ static Pothos::BlockRegistry registerScalarArithmetic(
  * |preview enable
  */
 static Pothos::BlockRegistry registerScalarComparator(
-    "/arrayfire/scalar/comparator",
+    "/gpu/scalar/comparator",
     Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::COMPARATOR, 0));
 
 /*
@@ -279,12 +279,12 @@ static Pothos::BlockRegistry registerScalarComparator(
  * Perform the specified bitwise operation between each element in the input stream
  * and the given scalar, returning the result in an output stream.
  *
- * |category /ArrayFire/Scalar Operations
+ * |category /GPU/Scalar Operations
  * |keywords scalar and or left right shift
- * |factory /arrayfire/scalar/bitwise(device,operation,dtype,scalar)
+ * |factory /gpu/scalar/bitwise(device,operation,dtype,scalar)
  * |setter setScalar(scalar)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param operation[Operation] The bitwise operation to perform.
@@ -307,7 +307,7 @@ static Pothos::BlockRegistry registerScalarComparator(
  * |preview enable
  */
 static Pothos::BlockRegistry registerScalarBitwise(
-    "/arrayfire/scalar/bitwise",
+    "/gpu/scalar/bitwise",
     Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::BITWISE, 0));
 
 /*
@@ -317,12 +317,12 @@ static Pothos::BlockRegistry registerScalarBitwise(
  * and the given scalar, returning the result in an output stream of type <b>int8</b>,
  * where <b>0</b> corresponds to false and <b>1</b> corresponds to true.
  *
- * |category /ArrayFire/Scalar Operations
+ * |category /GPU/Scalar Operations
  * |keywords scalar and or
- * |factory /arrayfire/scalar/logical(device,operation,dtype,scalar)
+ * |factory /gpu/scalar/logical(device,operation,dtype,scalar)
  * |setter setScalar(scalar)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param operation[Operation] The bitwise operation to perform.
@@ -343,5 +343,5 @@ static Pothos::BlockRegistry registerScalarBitwise(
  * |preview enable
  */
 static Pothos::BlockRegistry registerScalarLogical(
-    "/arrayfire/scalar/logical",
+    "/gpu/scalar/logical",
     Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::LOGICAL, 0));

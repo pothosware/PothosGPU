@@ -19,7 +19,7 @@
 #include <string>
 #include <typeinfo>
 
-static const std::string blockRegistryPath = "/arrayfire/array/file_source";
+static const std::string blockRegistryPath = "/gpu/array/file_source";
 
 class FileSourceBlock: public ArrayFireBlock
 {
@@ -210,13 +210,13 @@ class FileSourceBlock: public ArrayFireBlock
  * a given channel. The DType of each OutputPort is determined by the type
  * of the given array.
  *
- * |category /ArrayFire/File IO
+ * |category /GPU/File IO
  * |category /File IO
  * |category /Sources
  * |keywords array file source io
- * |factory /arrayfire/array/file_source(device,filepath,key,repeat)
+ * |factory /gpu/array/file_source(device,filepath,key,repeat)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param filepath[Filepath] The path of the ArrayFire binary file.

@@ -155,9 +155,9 @@ static void waitUntilMessagesReceived(const std::vector<Pothos::Proxy>& collecto
 }
 
 // TODO: test corrcoef, topk, cov
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_statistics)
+POTHOS_TEST_BLOCK("/gpu/tests", test_statistics)
 {
-    using namespace AFTests;
+    using namespace GPUTests;
 
     setupTestEnv();
 
@@ -173,14 +173,14 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_statistics)
     // NaN functions will be tested elsewhere.
     const std::vector<Pothos::Proxy> arrayFireBlocks =
     {
-        Pothos::BlockRegistry::make("/arrayfire/algorithm/max", "Auto", dtype),
-        Pothos::BlockRegistry::make("/arrayfire/algorithm/min", "Auto", dtype),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/mean", "Auto", dtype),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/median", "Auto", dtype),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/stdev", "Auto", dtype),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/var", "Auto", dtype, false),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/medabsdev", "Auto", dtype),
-        Pothos::BlockRegistry::make("/arrayfire/statistics/rms", "Auto", dtype),
+        Pothos::BlockRegistry::make("/gpu/algorithm/max", "Auto", dtype),
+        Pothos::BlockRegistry::make("/gpu/algorithm/min", "Auto", dtype),
+        Pothos::BlockRegistry::make("/gpu/statistics/mean", "Auto", dtype),
+        Pothos::BlockRegistry::make("/gpu/statistics/median", "Auto", dtype),
+        Pothos::BlockRegistry::make("/gpu/statistics/stdev", "Auto", dtype),
+        Pothos::BlockRegistry::make("/gpu/statistics/var", "Auto", dtype, false),
+        Pothos::BlockRegistry::make("/gpu/statistics/medabsdev", "Auto", dtype),
+        Pothos::BlockRegistry::make("/gpu/statistics/rms", "Auto", dtype),
     };
     const size_t numBlocks = arrayFireBlocks.size();
 
@@ -263,8 +263,8 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_statistics)
     {
         const auto blockName = arrayFireBlocks[blockIndex].call<std::string>("getName");
 
-        const bool isStdOrVar = ("/arrayfire/statistics/stdev" == blockName) ||
-                                ("/arrayfire/statistics/var" == blockName);
+        const bool isStdOrVar = ("/gpu/statistics/stdev" == blockName) ||
+                                ("/gpu/statistics/var" == blockName);
 
         std::cout << "Testing " << blockName << "..." << std::endl;
 

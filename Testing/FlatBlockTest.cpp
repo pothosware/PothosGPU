@@ -32,7 +32,7 @@ static void testFlatBlock(
     const std::string& type,
     size_t numChannels)
 {
-    static constexpr const char* blockRegistryPath = "/arrayfire/data/flat";
+    static constexpr const char* blockRegistryPath = "/gpu/data/flat";
 
     std::cout << "Testing " << blockRegistryPath
               << " (type: " << type
@@ -53,7 +53,7 @@ static void testFlatBlock(
 
     for(size_t chan = 0; chan < numChannels; ++chan)
     {
-        testInputs.emplace_back(AFTests::getTestInputs(type));
+        testInputs.emplace_back(GPUTests::getTestInputs(type));
 
         feederSources.emplace_back(
             Pothos::BlockRegistry::make(
@@ -86,7 +86,7 @@ static void testFlatBlock(
         POTHOS_TEST_TRUE(topology.waitInactive(0.05));
     }
 
-    AFTests::testBufferChunk(
+    GPUTests::testBufferChunk(
         concatBufferChunks(testInputs),
         collectorSink.call<Pothos::BufferChunk>("getBuffer"));
 }
@@ -97,11 +97,11 @@ static void testFlatBlockForType(const std::string& type)
     testFlatBlock(type, 3);
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_flat)
+POTHOS_TEST_BLOCK("/gpu/tests", test_flat)
 {
-    AFTests::setupTestEnv();
+    GPUTests::setupTestEnv();
 
-    for(const auto& type: AFTests::getAllDTypeNames())
+    for(const auto& type: GPUTests::getAllDTypeNames())
     {
         testFlatBlockForType(type);
     }

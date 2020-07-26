@@ -173,13 +173,13 @@ static Pothos::Block* replaceFactory(
  * Calls <b>af::replace</b> to replace all elements of a given buffer of
  * a given value with another value.
  *
- * |category /ArrayFire/Stream
+ * |category /GPU/Stream
  * |keywords data find
- * |factory /arrayfire/data/replace(device,dtype,findValue,replaceValue)
+ * |factory /gpu/data/replace(device,dtype,findValue,replaceValue)
  * |setter setFindValue(findValue)
  * |setter setReplaceValue(replaceValue)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type.
@@ -198,5 +198,5 @@ static Pothos::Block* replaceFactory(
  * |preview enable
  */
 static Pothos::BlockRegistry registerReplace(
-    "/arrayfire/data/replace",
+    "/gpu/data/replace",
     Pothos::Callable(&replaceFactory));

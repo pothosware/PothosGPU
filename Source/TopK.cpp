@@ -117,13 +117,13 @@ class TopK: public ArrayFireBlock
 /*
  * |PothosDoc Top K
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords top min max k
- * |factory /arrayfire/statistics/topk(device,dtype)
+ * |factory /gpu/statistics/topk(device,dtype)
  * |setter setK(K)
  * |setter setOrder(order)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param K[K] How many values to record.
@@ -145,5 +145,5 @@ class TopK: public ArrayFireBlock
  * |preview disable
  */
 static Pothos::BlockRegistry registerTopK(
-    "/arrayfire/statistics/topk",
+    "/gpu/statistics/topk",
     Pothos::Callable(&TopK::make));

@@ -150,13 +150,13 @@ void Clamp<double>::work()
  *
  * Calls <b>af::clamp</b> on all inputs with given minimum and maximum values.
  *
- * |category /ArrayFire/Arith
+ * |category /GPU/Arith
  * |keywords array arith clamp min max
- * |factory /arrayfire/arith/clamp(device,dtype,minValue,maxValue)
+ * |factory /gpu/arith/clamp(device,dtype,minValue,maxValue)
  * |setter setMinValue(minValue)
  * |setter setMaxValue(maxValue)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -200,5 +200,5 @@ static Pothos::Block* clampFactory(
 }
 
 static Pothos::BlockRegistry registerClamp(
-    "/arrayfire/arith/clamp",
+    "/gpu/arith/clamp",
     Pothos::Callable(&clampFactory));

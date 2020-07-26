@@ -108,7 +108,7 @@ static std::vector<Num> convertAfArrayToStdVector(const Arr& arr)
 template <typename T>
 static void registerStdVectorConversion(const std::string& typeName)
 {
-    static const std::string convertPluginSubpath("/object/convert/arrayfire");
+    static const std::string convertPluginSubpath("/object/convert/gpu");
 
     const std::string stdVectorToAFArrayPluginPath =
         Poco::format(
@@ -140,13 +140,13 @@ static void registerStdVectorConversion(const std::string& typeName)
 pothos_static_block(registerArrayFireBufferConversions)
 {
     Pothos::PluginRegistry::add(
-        "/object/convert/arrayfire/afarray_to_bufferchunk",
+        "/object/convert/gpu/afarray_to_bufferchunk",
         Pothos::Callable(&afArrayTypeToBufferChunk<af::array>));
     Pothos::PluginRegistry::add(
-        "/object/convert/arrayfire/afarrayproxy_to_bufferchunk",
+        "/object/convert/gpu/afarrayproxy_to_bufferchunk",
         Pothos::Callable(&afArrayTypeToBufferChunk<af::array::array_proxy>));
     Pothos::PluginRegistry::add(
-        "/object/convert/arrayfire/bufferchunk_to_afarray",
+        "/object/convert/gpu/bufferchunk_to_afarray",
         Pothos::Callable(&bufferChunkToAfArray));
 
     registerStdVectorConversion<float>("float");

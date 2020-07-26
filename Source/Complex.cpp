@@ -264,11 +264,11 @@ static Pothos::Block* complexToPolarFactory(
  * Calls <b>af::complex</b> on the inputs of the <b>"re"</b> and <b>"im"</b> ports
  * and outputs the combined results.
  *
- * |category /ArrayFire/Convert
+ * |category /GPU/Convert
  * |keywords arith complex real imag imaginary
- * |factory /arrayfire/arith/combine_complex(device,dtype)
+ * |factory /gpu/arith/combine_complex(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type. The output type will be the complex form of this type.
@@ -277,7 +277,7 @@ static Pothos::Block* complexToPolarFactory(
  * |preview disable
  */
 static Pothos::BlockRegistry registerCombineComplex(
-    "/arrayfire/arith/combine_complex",
+    "/gpu/arith/combine_complex",
     Pothos::Callable(&combineComplexFactory));
 
 /*
@@ -286,11 +286,11 @@ static Pothos::BlockRegistry registerCombineComplex(
  * Calls <b>af::real</b> and <b>af::imag</b> on all inputs and outputs results
  * in "re" and "im" output channels.
  *
- * |category /ArrayFire/Convert
+ * |category /GPU/Convert
  * |keywords arith complex real imag imaginary
- * |factory /arrayfire/arith/split_complex(device,dtype)
+ * |factory /gpu/arith/split_complex(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type. The input type will be the complex form of this type.
@@ -299,7 +299,7 @@ static Pothos::BlockRegistry registerCombineComplex(
  * |preview disable
  */
 static Pothos::BlockRegistry registerSplitComplex(
-    "/arrayfire/arith/split_complex",
+    "/gpu/arith/split_complex",
     Pothos::Callable(&splitComplexFactory));
 
 /*
@@ -308,11 +308,11 @@ static Pothos::BlockRegistry registerSplitComplex(
  * Takes in a polar magnitude (port <b>"mag"</b>) and phase (port <b>"phase"</b>) and converts
  * them to a complex number.
  *
- * |category /ArrayFire/Convert
+ * |category /GPU/Convert
  * |keywords arith complex real imag imaginary magnitude phase rho theta
- * |factory /arrayfire/arith/polar_to_complex(device,dtype)
+ * |factory /gpu/arith/polar_to_complex(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type. The output type will be the complex form of this type.
@@ -321,7 +321,7 @@ static Pothos::BlockRegistry registerSplitComplex(
  * |preview disable
  */
 static Pothos::BlockRegistry registerPolarToComplex(
-    "/arrayfire/arith/polar_to_complex",
+    "/gpu/arith/polar_to_complex",
     Pothos::Callable(&polarToComplexFactory));
 
 /*
@@ -330,11 +330,11 @@ static Pothos::BlockRegistry registerPolarToComplex(
  * Calls <b>af::abs</b> and <b>af::arg</b> on all inputs and outputs results
  * in "mag" and "phase" output channels.
  *
- * |category /ArrayFire/Convert
+ * |category /GPU/Convert
  * |keywords arith complex real imag imaginary magnitude phase rho theta
- * |factory /arrayfire/arith/complex_to_polar(device,dtype)
+ * |factory /gpu/arith/complex_to_polar(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type. The input type will be the complex form of this type.
@@ -343,5 +343,5 @@ static Pothos::BlockRegistry registerPolarToComplex(
  * |preview disable
  */
 static Pothos::BlockRegistry registerComplexToPolar(
-    "/arrayfire/arith/complex_to_polar",
+    "/gpu/arith/complex_to_polar",
     Pothos::Callable(&complexToPolarFactory));

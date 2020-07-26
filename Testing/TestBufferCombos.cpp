@@ -21,37 +21,37 @@
 #include <typeinfo>
 #include <vector>
 
-using namespace AFTests;
+using namespace GPUTests;
 
 static constexpr long SleepTimeMs = 1000;
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
+POTHOS_TEST_BLOCK("/gpu/tests", test_chaining_arrayfire_blocks)
 {
     const std::string type = "float64";
 
     auto afRandomSource = Pothos::BlockRegistry::make(
-                              "/arrayfire/random/source",
+                              "/gpu/random/source",
                               "Auto",
                               type,
                               "Normal");
 
     auto afAbs = Pothos::BlockRegistry::make(
-                     "/arrayfire/arith/abs",
+                     "/gpu/arith/abs",
                      "Auto",
                      type);
 
     auto afCeil = Pothos::BlockRegistry::make(
-                      "/arrayfire/arith/ceil",
+                      "/gpu/arith/ceil",
                       "Auto",
                       type);
 
     auto afCos = Pothos::BlockRegistry::make(
-                     "/arrayfire/arith/cos",
+                     "/gpu/arith/cos",
                      "Auto",
                      type);
 
     auto afHypot = Pothos::BlockRegistry::make(
-                       "/arrayfire/arith/hypot",
+                       "/gpu/arith/hypot",
                        "Auto",
                        type);
 
@@ -84,12 +84,12 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_arrayfire_blocks)
     POTHOS_TEST_GT(collectorSink.call("getBuffer").call<int>("elements"), 0);
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_with_different_buffers)
+POTHOS_TEST_BLOCK("/gpu/tests", test_inputs_with_different_buffers)
 {
     const std::string type = "float64";
 
     auto afRandomSource = Pothos::BlockRegistry::make(
-                              "/arrayfire/random/source",
+                              "/gpu/random/source",
                               "Auto",
                               type,
                               "Normal");
@@ -98,7 +98,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_inputs_with_different_buffers)
     infiniteSource.call("enableBuffers", true);
 
     auto afHypot = Pothos::BlockRegistry::make(
-                       "/arrayfire/arith/hypot",
+                       "/gpu/arith/hypot",
                        "Auto",
                        type);
 
@@ -148,7 +148,7 @@ static std::vector<std::string> getSingleDevicePerBackend()
     return devices;
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_multiple_backends_into_one_sink)
+POTHOS_TEST_BLOCK("/gpu/tests", test_multiple_backends_into_one_sink)
 {
     const auto devices = getSingleDevicePerBackend();
 
@@ -162,7 +162,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_multiple_backends_into_one_sink)
             std::cout << "Adding " << device << " to topology..." << std::endl;
 
             afBlocks.emplace_back(Pothos::BlockRegistry::make(
-                                      "/arrayfire/data/constant",
+                                      "/gpu/data/constant",
                                       device,
                                       "float64",
                                       constant));
@@ -197,7 +197,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_multiple_backends_into_one_sink)
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_multiple_backends)
+POTHOS_TEST_BLOCK("/gpu/tests", test_chaining_multiple_backends)
 {
     const auto devices = getSingleDevicePerBackend();
 
@@ -215,7 +215,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_multiple_backends)
             {
                 // Make the first block a source.
                 afBlocks.emplace_back(Pothos::BlockRegistry::make(
-                                          "/arrayfire/data/constant",
+                                          "/gpu/data/constant",
                                           device,
                                           "float64",
                                           constant));
@@ -223,7 +223,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_chaining_multiple_backends)
             else
             {
                 afBlocks.emplace_back(Pothos::BlockRegistry::make(
-                                          "/arrayfire/scalar/arithmetic",
+                                          "/gpu/scalar/arithmetic",
                                           device,
                                           "Multiply",
                                           "float64",

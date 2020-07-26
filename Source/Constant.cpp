@@ -110,12 +110,12 @@ static Pothos::Block* constantFactory(
  *
  * Calls <b>af::constant</b> to fill all outgoing buffers with a given value.
  *
- * |category /ArrayFire/Sources
+ * |category /GPU/Sources
  * |keywords data constant
- * |factory /arrayfire/data/constant(device,dtype,constant)
+ * |factory /gpu/data/constant(device,dtype,constant)
  * |setter setConstant(constant)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type.
@@ -129,5 +129,5 @@ static Pothos::Block* constantFactory(
  * |preview enable
  */
 static Pothos::BlockRegistry registerConstant(
-    "/arrayfire/data/constant",
+    "/gpu/data/constant",
     Pothos::Callable(&constantFactory));

@@ -52,7 +52,7 @@ static void testArrayOpBlock(
     std::vector<Pothos::Proxy> collectorSinks;
     for(size_t chan = 0; chan < nchans; ++chan)
     {
-        allTestInputs.emplace_back(AFTests::getTestInputs(inputDType));
+        allTestInputs.emplace_back(GPUTests::getTestInputs(inputDType));
 
         feederSources.emplace_back(Pothos::BlockRegistry::make(
                                        "/blocks/feeder_source",
@@ -86,9 +86,9 @@ static void testArrayOpBlock(
 // Registered tests
 //
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_arithmetic)
+POTHOS_TEST_BLOCK("/gpu/tests", test_array_arithmetic)
 {
-    const auto& allDTypeNames = AFTests::getAllDTypeNames();
+    const auto& allDTypeNames = GPUTests::getAllDTypeNames();
     const std::vector<std::string> allOperations = {"Add", "Subtract", "Multiply", "Divide", "Modulus"};
 
     for(const auto& dtype: allDTypeNames)
@@ -98,7 +98,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_arithmetic)
             if(("Modulus" != operation) || !isDTypeComplexFloat(Pothos::DType(dtype)))
             {
                 testArrayOpBlock(
-                    "/arrayfire/array/arithmetic",
+                    "/gpu/array/arithmetic",
                     dtype,
                     dtype,
                     operation,
@@ -108,7 +108,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_arithmetic)
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_bitwise)
+POTHOS_TEST_BLOCK("/gpu/tests", test_array_bitwise)
 {
     const std::vector<std::string> validDTypeNames = {"int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"};
     const std::vector<std::string> allOperations = {"And", "Or", "XOr", "Left Shift", "Right Shift"};
@@ -118,7 +118,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_bitwise)
         for(const auto& operation: allOperations)
         {
             testArrayOpBlock(
-                "/arrayfire/array/bitwise",
+                "/gpu/array/bitwise",
                 dtype,
                 dtype,
                 operation,
@@ -127,7 +127,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_bitwise)
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_logical)
+POTHOS_TEST_BLOCK("/gpu/tests", test_array_logical)
 {
     const std::vector<std::string> validDTypeNames = {"int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"};
     const std::vector<std::string> allOperations = {"And", "Or"};
@@ -137,7 +137,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_array_logical)
         for(const auto& operation: allOperations)
         {
             testArrayOpBlock(
-                "/arrayfire/array/logical",
+                "/gpu/array/logical",
                 dtype,
                 "int8",
                 operation,

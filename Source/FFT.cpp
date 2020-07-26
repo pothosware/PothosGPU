@@ -27,7 +27,7 @@ static inline bool isPowerOfTwo(size_t num)
     return (0 != num) && ((num & (num - 1)) == 0);
 }
 
-static const std::string fftBlockPath = "/arrayfire/signal/fft";
+static const std::string fftBlockPath = "/gpu/signal/fft";
 
 //
 // Block classes
@@ -292,12 +292,12 @@ static Pothos::Block* makeFFT(
  *
  * Calculates the FFT of the input stream, with an optional normalization factor.
  *
- * |category /ArrayFire/Signal
+ * |category /GPU/Signal
  * |keywords array signal fft ifft fourier
- * |factory /arrayfire/signal/fft(device,inputDType,outputDType,numBins,norm,inverse)
+ * |factory /gpu/signal/fft(device,inputDType,outputDType,numBins,norm,inverse)
  * |setter setNormalizationFactor(norm)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param inputDType[Input Data Type] The forward FFT's input data type.

@@ -36,11 +36,11 @@ static Pothos::Block* makeIsX(
  * whose values are either <b>1</b> or <b>0</b>, depending on whether
  * or not the associated element is infinite.
  *
- * |category /ArrayFire/Arith
+ * |category /GPU/Arith
  * |keywords array infinite infinity
- * |factory /arrayfire/arith/isinf(device,dtype)
+ * |factory /gpu/arith/isinf(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -49,7 +49,7 @@ static Pothos::Block* makeIsX(
  * |preview disable
  */
 static Pothos::BlockRegistry registerArithIsInf(
-    "/arrayfire/arith/isinf",
+    "/gpu/arith/isinf",
     Pothos::Callable(&makeIsX)
         .bind<DTypeSupport>({false,false,true,false}, 2)
         .bind<OneToOneFunc>(&af::isInf, 3));
@@ -61,11 +61,11 @@ static Pothos::BlockRegistry registerArithIsInf(
  * whose values are either <b>1</b> or <b>0</b>, depending on whether
  * or not the associated element is NaN (not a number).
  *
- * |category /ArrayFire/Arith
+ * |category /GPU/Arith
  * |keywords array infinite infinity
- * |factory /arrayfire/arith/isnan(device,dtype)
+ * |factory /gpu/arith/isnan(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -74,7 +74,7 @@ static Pothos::BlockRegistry registerArithIsInf(
  * |preview disable
  */
 static Pothos::BlockRegistry registerArithIsNaN(
-    "/arrayfire/arith/isnan",
+    "/gpu/arith/isnan",
     Pothos::Callable(&makeIsX)
         .bind<DTypeSupport>({false,false,true,false}, 2)
         .bind<OneToOneFunc>(&af::isNaN, 3));
@@ -86,11 +86,11 @@ static Pothos::BlockRegistry registerArithIsNaN(
  * whose values are either <b>1</b> or <b>0</b>, depending on whether
  * or not the associated element is zero.
  *
- * |category /ArrayFire/Arith
+ * |category /GPU/Arith
  * |keywords array infinite infinity
- * |factory /arrayfire/arith/iszero(device,dtype)
+ * |factory /gpu/arith/iszero(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -99,7 +99,7 @@ static Pothos::BlockRegistry registerArithIsNaN(
  * |preview disable
  */
 static Pothos::BlockRegistry registerArithIsZero(
-    "/arrayfire/arith/iszero",
+    "/gpu/arith/iszero",
     Pothos::Callable(&makeIsX)
         .bind<DTypeSupport>({true,true,true,true}, 2)
         .bind<OneToOneFunc>(&af::iszero, 3));
@@ -111,11 +111,11 @@ static Pothos::BlockRegistry registerArithIsZero(
  * whose values are either <b>1</b> or <b>0</b>, depending on whether
  * or not the associated element is negative.
  *
- * |category /ArrayFire/Arith
+ * |category /GPU/Arith
  * |keywords array minus negative
- * |factory /arrayfire/arith/sign(device,dtype)
+ * |factory /gpu/arith/sign(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -124,7 +124,7 @@ static Pothos::BlockRegistry registerArithIsZero(
  * |preview disable
  */
 static Pothos::BlockRegistry registerArithSign(
-    "/arrayfire/arith/sign",
+    "/gpu/arith/sign",
     Pothos::Callable(&makeIsX)
         .bind<DTypeSupport>({true,false,true,false}, 2)
         .bind<OneToOneFunc>(&af::sign, 3));

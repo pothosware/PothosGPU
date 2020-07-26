@@ -86,12 +86,12 @@ class Log: public OneToOneBlock
  * scalar caller-given base. Uses <b>af::log2</b> and <b>af::log10</b>
  * to optimize the log-2 and log-10 cases.
  *
- * |category /ArrayFire/Arith
+ * |category /GPU/Arith
  * |keywords exponent power
- * |factory /arrayfire/arith/log(device,dtype,base)
+ * |factory /gpu/arith/log(device,dtype,base)
  * |setter setBase(base)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -105,5 +105,5 @@ class Log: public OneToOneBlock
  * |preview enable
  */
 static Pothos::BlockRegistry registerLogN(
-    "/arrayfire/arith/log",
+    "/gpu/arith/log",
     Pothos::Callable(&Log::make));

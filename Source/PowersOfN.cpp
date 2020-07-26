@@ -84,12 +84,12 @@ class PowN: public OneToOneBlock
  * input element. Uses <b>af::pow2</b> to optimize the case where
  * <b>base = 2</b>.
  *
- * |category /ArrayFire/Arith
+ * |category /GPU/Arith
  * |keywords exponent base pow2
- * |factory /arrayfire/arith/powN(device,dtype,base)
+ * |factory /gpu/arith/powN(device,dtype,base)
  * |setter setBase(base)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -103,5 +103,5 @@ class PowN: public OneToOneBlock
  * |preview enable
  */
 static Pothos::BlockRegistry registerPow(
-    "/arrayfire/arith/powN",
+    "/gpu/arith/powN",
     Pothos::Callable(&PowN::make));

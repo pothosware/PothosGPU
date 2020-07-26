@@ -103,12 +103,12 @@ class CovarianceBlock: public ArrayFireBlock
  * last calculated value can be queried with the <b>lastValue</b> probe. The input
  * buffers are forwarded unchanged.
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords array coefficient
- * |factory /arrayfire/statistics/cov(device,dtype)
+ * |factory /gpu/statistics/cov(device,dtype)
  * |setter setIsBiased(isBiased)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -121,5 +121,5 @@ class CovarianceBlock: public ArrayFireBlock
  * |default false
  */
 static Pothos::BlockRegistry registerStatisticsCorrCoef(
-    "/arrayfire/statistics/cov",
+    "/gpu/statistics/cov",
     Pothos::Callable(&CovarianceBlock::make));

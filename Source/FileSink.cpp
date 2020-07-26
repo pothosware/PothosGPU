@@ -255,13 +255,13 @@ class FileSinkBlock: public ArrayFireBlock
  * <li><b>uint64</b></li>
  * </ul>
  *
- * |category /ArrayFire/File IO
+ * |category /GPU/File IO
  * |category /File IO
  * |category /Sinks
  * |keywords array file sink io
- * |factory /arrayfire/array/file_sink(device,filepath,key,dtype,numChannels,append)
+ * |factory /gpu/array/file_sink(device,filepath,key,dtype,numChannels,append)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param filepath[Filepath] The path of the ArrayFire binary file.
@@ -294,5 +294,5 @@ class FileSinkBlock: public ArrayFireBlock
  * |preview enable
  */
 static Pothos::BlockRegistry registerFileSink(
-    "/arrayfire/array/file_sink",
+    "/gpu/array/file_sink",
     Pothos::Callable(&FileSinkBlock::make));

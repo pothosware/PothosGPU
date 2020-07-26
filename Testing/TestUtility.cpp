@@ -9,7 +9,7 @@
 #include <Pothos/Proxy.hpp>
 #include <Pothos/Testing.hpp>
 
-namespace AFTests
+namespace GPUTests
 {
 
 void setupTestEnv()

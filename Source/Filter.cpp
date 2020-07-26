@@ -300,13 +300,13 @@ static Pothos::Block* makeIIR(
  * taps. The taps can be set at runtime by connecting the output of a FIR Designer
  * block to <b>"setTaps"</b>.
  *
- * |category /ArrayFire/Signal
+ * |category /GPU/Signal
  * |keywords array tap taps fir
- * |factory /arrayfire/signal/fir_filter(device,dtype)
+ * |factory /gpu/signal/fir_filter(device,dtype)
  * |setter setTaps(taps)
  * |setter setWaitTaps(waitTaps)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -326,7 +326,7 @@ static Pothos::Block* makeIIR(
  * |preview disable
  */
 static Pothos::BlockRegistry registerFIR(
-    "/arrayfire/signal/fir_filter",
+    "/gpu/signal/fir_filter",
     Pothos::Callable(&makeFIR));
 
 
@@ -340,15 +340,15 @@ static Pothos::BlockRegistry registerFIR(
  * can be connected to <b>setTapsFromCommsIIRDesigner</b> to set both sets of
  * coefficients simultaneously.
  *
- * |category /ArrayFire/Signal
+ * |category /GPU/Signal
  * |keywords array tap taps iir
- * |factory /arrayfire/signal/iir_filter(device,dtype)
+ * |factory /gpu/signal/iir_filter(device,dtype)
  * |setter setFeedForwardCoeffs(feedForwardCoeffs)
  * |setter setFeedbackCoeffs(feedbackCoeffs)
  * |setter setTapsFromCommsIIRDesigner(taps)
  * |setter setWaitTaps(waitTaps)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -379,5 +379,5 @@ static Pothos::BlockRegistry registerFIR(
  * |preview disable
  */
 static Pothos::BlockRegistry registerIIR(
-    "/arrayfire/signal/iir_filter",
+    "/gpu/signal/iir_filter",
     Pothos::Callable(&makeIIR));

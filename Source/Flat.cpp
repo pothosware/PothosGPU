@@ -77,11 +77,11 @@ class FlatBlock: public ArrayFireBlock
  * Calls <b>af::flat</b> on all inputs, resulting in a single concatenated
  * output.
  *
- * |category /ArrayFire/Data
+ * |category /GPU/Data
  * |keywords array data flat
- * |factory /arrayfire/data/flat(device,dtype,numChannels)
+ * |factory /gpu/data/flat(device,dtype,numChannels)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  * |widget ComboBox(editable=false)
  * |preview enable
@@ -97,5 +97,5 @@ class FlatBlock: public ArrayFireBlock
  * |preview disable
  */
 static Pothos::BlockRegistry registerFlat(
-    "/arrayfire/data/flat",
+    "/gpu/data/flat",
     Pothos::Callable(&FlatBlock::make));

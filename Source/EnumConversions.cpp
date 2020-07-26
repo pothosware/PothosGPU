@@ -78,7 +78,7 @@ static void registerEnumConversion(
     const std::string& keyToValPluginName,
     const std::string& valToKeyPluginName)
 {
-    static const std::string ConvertPluginSubpath("/object/convert/arrayfire/");
+    static const std::string ConvertPluginSubpath("/object/convert/gpu/");
 
     const std::string keyToValPluginPath = ConvertPluginSubpath + keyToValPluginName;
     const std::string valToKeyPluginPath = ConvertPluginSubpath + valToKeyPluginName;
@@ -122,9 +122,9 @@ pothos_static_block(registerArrayFireEnumConversions)
 
     // Different enough to not use helper function
     Pothos::PluginRegistry::add(
-        "/object/convert/arrayfire/pothos_dtype_to_af_dtype",
+        "/object/convert/gpu/pothos_dtype_to_af_dtype",
         Pothos::Callable(&pothosDTypeToAfDType));
     Pothos::PluginRegistry::add(
-        "/object/convert/arrayfire/af_dtype_to_pothos_dtype",
+        "/object/convert/gpu/af_dtype_to_pothos_dtype",
         Pothos::Callable(&afDTypeToPothosDType));
 }

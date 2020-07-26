@@ -2,7 +2,7 @@
 # Project setup
 ########################################################################
 cmake_minimum_required(VERSION 3.3)
-project(PothosArrayFire CXX)
+project(PothosGPU CXX)
 
 find_package(Pothos 0.7 CONFIG REQUIRED)
 
@@ -27,7 +27,7 @@ find_python_module(yaml REQUIRED)
 find_path(JSON_HPP_INCLUDE_DIR NAMES json.hpp PATH_SUFFIXES nlohmann)
 
 if (NOT JSON_HPP_INCLUDE_DIR)
-    message(STATUS "Pothos ArrayFire toolkit requires json.hpp. Exiting...")
+    message(STATUS "Pothos GPU toolkit requires json.hpp. Exiting...")
     return()
 endif ()
 
@@ -69,12 +69,11 @@ include_directories(
 
 include(PothosUtil)
 POTHOS_MODULE_UTIL(
-    TARGET ArrayFireBlocks
+    TARGET GPUBlocks
     SOURCES
         ${relativeAutogenOutputs}
 
         Source/ArrayFireBlock.cpp
-        Source/ArrayFireInfo.cpp
         Source/ArrayOpBlock.cpp
         Source/BufferConversions.cpp
         Source/Cast.cpp
@@ -95,6 +94,7 @@ POTHOS_MODULE_UTIL(
         Source/IsX.cpp
         Source/LogN.cpp
         Source/MinMax.cpp
+        Source/ModuleInfo.cpp
         Source/NToOneBlock.cpp
         Source/NumericConversions.cpp
         Source/ObjectFunctions.cpp
@@ -126,19 +126,19 @@ POTHOS_MODULE_UTIL(
         Testing/TestObjectFunctions.cpp
         Testing/OneToOneBlockExecutionTest.cpp
         Testing/TwoToOneBlockExecutionTest.cpp
-        Testing/TestArrayFireConfig.cpp
         Testing/TestBufferCombos.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
         Testing/TestFFT.cpp
         Testing/TestFileSink.cpp
         Testing/TestFileSource.cpp
+        Testing/TestGPUConfig.cpp
         Testing/TestManagedDeviceCache.cpp
         Testing/TestNumericConversions.cpp
         Testing/TestStatistics.cpp
         Testing/TestUtility.cpp
     LIBRARIES
         ArrayFire::af
-    DESTINATION arrayfire
+    DESTINATION gpu
     ENABLE_DOCS ON
 )

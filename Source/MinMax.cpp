@@ -105,11 +105,11 @@ static Pothos::Block* minMaxFactory(
  *
  * The most recent minimum value can be queried using the "lastValue" probe.
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords algorithm min
- * |factory /arrayfire/algorithm/min(device,dtype)
+ * |factory /gpu/algorithm/min(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type.
@@ -118,7 +118,7 @@ static Pothos::Block* minMaxFactory(
  * |preview disable
  */
 static Pothos::BlockRegistry registerMin(
-    "/arrayfire/algorithm/min",
+    "/gpu/algorithm/min",
     Pothos::Callable(&minMaxFactory<true>));
 
 /*
@@ -128,11 +128,11 @@ static Pothos::BlockRegistry registerMin(
  *
  * The most recent minimum value can be queried using the "lastValue" probe.
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords algorithm max
- * |factory /arrayfire/algorithm/max(device,dtype)
+ * |factory /gpu/algorithm/max(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type.
@@ -141,5 +141,5 @@ static Pothos::BlockRegistry registerMin(
  * |preview disable
  */
 static Pothos::BlockRegistry registerMax(
-    "/arrayfire/algorithm/max",
+    "/gpu/algorithm/max",
     Pothos::Callable(&minMaxFactory<false>));

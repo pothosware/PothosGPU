@@ -20,20 +20,20 @@ namespace
     std::mt19937 g(rd());
 
     template <typename T>
-    AFTests::EnableIfFloat<T, std::vector<T>> getFFTInputs()
+    GPUTests::EnableIfFloat<T, std::vector<T>> getFFTInputs()
     {
-        auto inputs = AFTests::linspace<T>(-30.f, 20.f, numBins);
+        auto inputs = GPUTests::linspace<T>(-30.f, 20.f, numBins);
         std::shuffle(inputs.begin(), inputs.end(), g);
 
         return inputs;
     }
 
     template <typename T>
-    AFTests::EnableIfComplex<T, std::vector<T>> getFFTInputs()
+    GPUTests::EnableIfComplex<T, std::vector<T>> getFFTInputs()
     {
         using Scalar = typename T::value_type;
 
-        auto inputs = AFTests::toComplexVector(AFTests::linspace<Scalar>(-30.f, 20.f, numBins*2));
+        auto inputs = GPUTests::toComplexVector(GPUTests::linspace<Scalar>(-30.f, 20.f, numBins*2));
         std::shuffle(inputs.begin(), inputs.end(), g);
 
         return inputs;
@@ -42,7 +42,7 @@ namespace
     Pothos::BufferChunk getFFTInputs(const std::string& type)
     {
         #define IfTypeGetFFTInputs(typeStr, cType) \
-            if(typeStr == type) return AFTests::stdVectorToBufferChunk(getFFTInputs<cType>());
+            if(typeStr == type) return GPUTests::stdVectorToBufferChunk(getFFTInputs<cType>());
 
         IfTypeGetFFTInputs("float32", float)
         else IfTypeGetFFTInputs("float64", double)
@@ -83,7 +83,7 @@ namespace
                                  collectorSinkType);
 
         auto fft = Pothos::BlockRegistry::make(
-                       "/arrayfire/signal/fft",
+                       "/gpu/signal/fft",
                        "Auto",
                        testParams.fwdInputType,
                        testParams.fwdOutputType,
@@ -107,7 +107,7 @@ namespace
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_fft)
+POTHOS_TEST_BLOCK("/gpu/tests", test_fft)
 {
     const std::vector<TestParams> allTestParams =
     {

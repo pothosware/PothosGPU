@@ -16,7 +16,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 {
 %for block in oneToOneBlocks:
     Pothos::BlockRegistry(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
+        "/gpu/${block["header"]}/${block["blockName"]}",
     %if block.get("pattern", "") == "FloatToComplex":
         Pothos::Callable(&OneToOneBlock::makeFloatToComplex)
             .bind<OneToOneFunc>(&af::${block["func"]}, 1)
@@ -37,7 +37,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 %endfor
 %for block in twoToOneBlocks:
     Pothos::BlockRegistry(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
+        "/gpu/${block["header"]}/${block["blockName"]}",
     %if block.get("pattern", "") == "FloatToComplex":
         Pothos::Callable(&TwoToOneBlock::makeFloatToComplex)
             .bind<TwoToOneFunc>(&af::${block["func"]}, 1)
@@ -57,7 +57,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 %endfor
 %for block in NToOneBlocks:
     Pothos::BlockRegistry(
-        "/arrayfire/${block["header"]}/${block["blockName"]}",
+        "/gpu/${block["header"]}/${block["blockName"]}",
         Pothos::Callable(&NToOneBlock::make)
     %if "operator" in block:
             .bind<NToOneFunc>(AF_ARRAY_OP_N_TO_ONE_FUNC(${block["operator"]}), 1)
@@ -74,7 +74,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 %endfor
 };
 
-pothos_static_block(register_pothos_arrayfire_docs)
+pothos_static_block(register_pothos_gpu_docs)
 {
 %for doc in docs:
     ${doc}

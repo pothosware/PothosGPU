@@ -42,7 +42,7 @@ void validateDType(
     if(doesVectorContainValue(globalUnsupportedTypes, dtype.name()))
     {
         throw Pothos::InvalidArgumentException(
-                  "PothosArrayFire blocks do not support this type",
+                  "PothosGPU blocks do not support this type",
                   dtype.name());
     }
 

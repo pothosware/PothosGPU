@@ -123,11 +123,11 @@ static Pothos::Block* makeArrayLogical(
  * Perform the specified arithmetic operation on all given inputs, resulting
  * in a single output stream.
  *
- * |category /ArrayFire/Array
+ * |category /GPU/Array
  * |keywords array add subtract multiply divide modulus
- * |factory /arrayfire/array/arithmetic(device,operation,dtype,nchans)
+ * |factory /gpu/array/arithmetic(device,operation,dtype,nchans)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param operation[Operation] The arithmetic operation to perform.
@@ -151,7 +151,7 @@ static Pothos::Block* makeArrayLogical(
  * |preview disable
  */
 static Pothos::BlockRegistry registerArrayArithmetic(
-    "/arrayfire/array/arithmetic",
+    "/gpu/array/arithmetic",
     Pothos::Callable(&makeArrayArithmetic));
 
 /*
@@ -162,11 +162,11 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  * a single output stream of type <b>int8</b>, where <b>0</b>
  * corresponds to false and <b>1</b> corresponds to true.
  *
- * |category /ArrayFire/Array
+ * |category /GPU/Array
  * |keywords array less greater equal
- * |factory /arrayfire/array/comparator(device,operation,dtype,dim=1)
+ * |factory /gpu/array/comparator(device,operation,dtype,dim=1)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param operation[Operation] The arithmetic operation to perform.
@@ -186,7 +186,7 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  * |preview disable
  */
 static Pothos::BlockRegistry registerComparator(
-    "/arrayfire/array/comparator",
+    "/gpu/array/comparator",
     Pothos::Callable(&makeComparator));
 
 /*
@@ -198,11 +198,11 @@ static Pothos::BlockRegistry registerComparator(
  * <b>Note:</b> the <b>Left Shift</b> and <b>Right Shift</b> operations
  * automatically use two inputs.
  *
- * |category /ArrayFire/Array
+ * |category /GPU/Array
  * |keywords array and or xor left right shift
- * |factory /arrayfire/array/bitwise(device,operation,dtype,nchans)
+ * |factory /gpu/array/bitwise(device,operation,dtype,nchans)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param operation[Operation] The bitwise operation to perform.
@@ -226,7 +226,7 @@ static Pothos::BlockRegistry registerComparator(
  * |preview disable
  */
 static Pothos::BlockRegistry registerArrayBitwise(
-    "/arrayfire/array/bitwise",
+    "/gpu/array/bitwise",
     Pothos::Callable(&makeArrayBitwise));
 
 /*
@@ -236,11 +236,11 @@ static Pothos::BlockRegistry registerArrayBitwise(
  * in a single output stream of type <b>int8</b>, where <b>0</b> corresponds
  * to false and <b>1</b> corresponds to true.
  *
- * |category /ArrayFire/Array
+ * |category /GPU/Array
  * |keywords array and or xor
- * |factory /arrayfire/array/logical(device,operation,dtype,nchans)
+ * |factory /gpu/array/logical(device,operation,dtype,nchans)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param operation[Operation] The logical operation to perform.
@@ -261,5 +261,5 @@ static Pothos::BlockRegistry registerArrayBitwise(
  * |preview disable
  */
 static Pothos::BlockRegistry registerArrayLogical(
-    "/arrayfire/array/logical",
+    "/gpu/array/logical",
     Pothos::Callable(&makeArrayLogical));

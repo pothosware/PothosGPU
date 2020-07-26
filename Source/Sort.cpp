@@ -70,11 +70,11 @@ class Sort: public OneToOneBlock
 /*
  * |PothosDoc Sort
  *
- * |category /ArrayFire/Stream
- * |factory /arrayfire/algorithm/sort(device,dtype)
+ * |category /GPU/Stream
+ * |factory /gpu/algorithm/sort(device,dtype)
  * |setter setIsAscending(isAscending)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -88,5 +88,5 @@ class Sort: public OneToOneBlock
  * |preview enable
  */
 static Pothos::BlockRegistry registerSort(
-    "/arrayfire/algorithm/sort",
+    "/gpu/algorithm/sort",
     Pothos::Callable(&Sort::make));

@@ -78,11 +78,11 @@ class CorrCoefBlock: public ArrayFireBlock
  * input streams. The last calculated value can be queried with the <b>lastValue</b>
  * probe.
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords array coefficient
- * |factory /arrayfire/statistics/corrcoef(device,dtype)
+ * |factory /gpu/statistics/corrcoef(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -91,5 +91,5 @@ class CorrCoefBlock: public ArrayFireBlock
  * |preview disable
  */
 static Pothos::BlockRegistry registerStatisticsCorrCoef(
-    "/arrayfire/statistics/corrcoef",
+    "/gpu/statistics/corrcoef",
     Pothos::Callable(&CorrCoefBlock::make));

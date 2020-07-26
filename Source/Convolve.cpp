@@ -241,15 +241,15 @@ static Pothos::Block* makeFFTConvolve(
  * taps. The taps can be set at runtime by connecting the output of a FIR Designer
  * block to <b>"setTaps"</b>.
  *
- * |category /ArrayFire/Signal
+ * |category /GPU/Signal
  * |keywords array tap taps convolution
- * |factory /arrayfire/signal/convolve(device,dtype)
+ * |factory /gpu/signal/convolve(device,dtype)
  * |setter setTaps(taps)
  * |setter setMode(mode)
  * |setter setDomain(domain)
  * |setter setWaitTaps(waitTaps)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -293,7 +293,7 @@ static Pothos::Block* makeFFTConvolve(
  * |preview disable
  */
 static Pothos::BlockRegistry registerConvolve(
-    "/arrayfire/signal/convolve",
+    "/gpu/signal/convolve",
     Pothos::Callable(&makeConvolve));
 
 /*
@@ -303,14 +303,14 @@ static Pothos::BlockRegistry registerConvolve(
  * taps using an FFT. The taps can be set at runtime by connecting the output of a FIR Designer
  * block to <b>"setTaps"</b>.
  *
- * |category /ArrayFire/Signal
+ * |category /GPU/Signal
  * |keywords array tap taps convolution
- * |factory /arrayfire/signal/fftconvolve(device,dtype)
+ * |factory /gpu/signal/fftconvolve(device,dtype)
  * |setter setTaps(taps)
  * |setter setMode(mode)
  * |setter setWaitTaps(waitTaps)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -341,5 +341,5 @@ static Pothos::BlockRegistry registerConvolve(
  * |preview disable
  */
 static Pothos::BlockRegistry registerFFTConvolve(
-    "/arrayfire/signal/fftconvolve",
+    "/gpu/signal/fftconvolve",
     Pothos::Callable(&makeFFTConvolve));

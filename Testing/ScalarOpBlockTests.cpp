@@ -37,8 +37,8 @@ static void testScalarOpBlock(
 
     }
 
-    const auto testInputs = AFTests::getTestInputs(inputDType);
-    const auto scalar = AFTests::getSingleTestInput(inputDType);
+    const auto testInputs = GPUTests::getTestInputs(inputDType);
+    const auto scalar = GPUTests::getSingleTestInput(inputDType);
 
     auto scalarOpBlock = Pothos::BlockRegistry::make(
                              blockRegistryPath,
@@ -76,9 +76,9 @@ static void testScalarOpBlock(
 // Registered tests
 //
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_arithmetic)
+POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_arithmetic)
 {
-    const auto& allDTypeNames = AFTests::getAllDTypeNames();
+    const auto& allDTypeNames = GPUTests::getAllDTypeNames();
     const std::vector<std::string> allOperations = {"Add", "Subtract", "Multiply", "Divide", "Modulus"};
 
     for(const auto& dtype: allDTypeNames)
@@ -88,7 +88,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_arithmetic)
             if(("Modulus" != operation) || !isDTypeComplexFloat(Pothos::DType(dtype)))
             {
                 testScalarOpBlock(
-                    "/arrayfire/scalar/arithmetic",
+                    "/gpu/scalar/arithmetic",
                     dtype,
                     dtype,
                     operation);
@@ -97,7 +97,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_arithmetic)
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_comparator)
+POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_comparator)
 {
     const std::vector<std::string> validDTypeNames =
     {
@@ -112,7 +112,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_comparator)
         for(const auto& operation: allOperations)
         {
             testScalarOpBlock(
-                "/arrayfire/scalar/comparator",
+                "/gpu/scalar/comparator",
                 dtype,
                 "int8",
                 operation);
@@ -120,7 +120,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_comparator)
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_bitwise)
+POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_bitwise)
 {
     const std::vector<std::string> validDTypeNames = {"int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"};
     const std::vector<std::string> allOperations = {"And", "Or", "XOr", "Left Shift", "Right Shift"};
@@ -130,7 +130,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_bitwise)
         for(const auto& operation: allOperations)
         {
             testScalarOpBlock(
-                "/arrayfire/scalar/bitwise",
+                "/gpu/scalar/bitwise",
                 dtype,
                 dtype,
                 operation);
@@ -138,7 +138,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_bitwise)
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_logical)
+POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_logical)
 {
     const std::vector<std::string> validDTypeNames = {"int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"};
     const std::vector<std::string> allOperations = {"And", "Or"};
@@ -148,7 +148,7 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_scalar_logical)
         for(const auto& operation: allOperations)
         {
             testScalarOpBlock(
-                "/arrayfire/scalar/logical",
+                "/gpu/scalar/logical",
                 dtype,
                 "int8",
                 operation);

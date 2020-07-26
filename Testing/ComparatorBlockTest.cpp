@@ -19,8 +19,8 @@
 #include <typeinfo>
 #include <vector>
 
-static constexpr const char* arrayBlockRegistryPath = "/arrayfire/array/comparator";
-static constexpr const char* scalarBlockRegistryPath = "/arrayfire/scalar/comparator";
+static constexpr const char* arrayBlockRegistryPath = "/gpu/array/comparator";
+static constexpr const char* scalarBlockRegistryPath = "/gpu/scalar/comparator";
 
 template <typename T, typename ComparatorFcn>
 static void getScalarTestValues(
@@ -29,8 +29,8 @@ static void getScalarTestValues(
     T* pScalar,
     std::vector<std::int8_t>* pOutput)
 {
-    (*pInput) = AFTests::getTestInputs<T>(true /*shuffle*/);
-    (*pScalar) = AFTests::getSingleTestInput<T>();
+    (*pInput) = GPUTests::getTestInputs<T>(true /*shuffle*/);
+    (*pScalar) = GPUTests::getSingleTestInput<T>();
 
     std::transform(
         pInput->begin(),
@@ -50,8 +50,8 @@ static void getArrayTestValues(
     std::vector<T>* pInput1,
     std::vector<std::int8_t>* pOutput)
 {
-    (*pInput0) = AFTests::getTestInputs<T>(true /*shuffle*/);
-    (*pInput1) = AFTests::getTestInputs<T>(true /*shuffle*/);
+    (*pInput0) = GPUTests::getTestInputs<T>(true /*shuffle*/);
+    (*pInput1) = GPUTests::getTestInputs<T>(true /*shuffle*/);
     POTHOS_TEST_EQUAL(pInput0->size(), pInput1->size());
 
     for(size_t i = 0; i < pInput0->size(); ++i)
@@ -92,9 +92,9 @@ static void getScalarTestValues(
         GET_SCALAR_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
         GET_SCALAR_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
  \
-        (*pInput) = AFTests::stdVectorToBufferChunk(input); \
+        (*pInput) = GPUTests::stdVectorToBufferChunk(input); \
         (*pScalar) = Pothos::Object(scalar); \
-        (*pOutput) = AFTests::stdVectorToBufferChunk(output); \
+        (*pOutput) = GPUTests::stdVectorToBufferChunk(output); \
         return; \
     }
 
@@ -139,9 +139,9 @@ static void getArrayTestValues(
         GET_ARRAY_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
         GET_ARRAY_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
  \
-        (*pInput0) = AFTests::stdVectorToBufferChunk(input0); \
-        (*pInput1) = AFTests::stdVectorToBufferChunk(input1); \
-        (*pOutput) = AFTests::stdVectorToBufferChunk(output); \
+        (*pInput0) = GPUTests::stdVectorToBufferChunk(input0); \
+        (*pInput1) = GPUTests::stdVectorToBufferChunk(input1); \
+        (*pOutput) = GPUTests::stdVectorToBufferChunk(output); \
         return; \
     }
 
@@ -226,7 +226,7 @@ static void testScalarComparatorBlockForTypeAndOperation(
             POTHOS_TEST_TRUE(topology.waitInactive(0.05));
         }
 
-        AFTests::testBufferChunk(
+        GPUTests::testBufferChunk(
             output,
             collectorSink.call<Pothos::BufferChunk>("getBuffer"));
     }
@@ -305,7 +305,7 @@ static void testArrayComparatorBlockForTypeAndOperation(
             POTHOS_TEST_TRUE(topology.waitInactive(0.05));
         }
 
-        AFTests::testBufferChunk(
+        GPUTests::testBufferChunk(
             output,
             collectorSink.call<Pothos::BufferChunk>("getBuffer"));
     }
@@ -321,11 +321,11 @@ static void testComparatorBlocksForType(const std::string& type)
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_comparators)
+POTHOS_TEST_BLOCK("/gpu/tests", test_comparators)
 {
-    AFTests::setupTestEnv();
+    GPUTests::setupTestEnv();
 
-    for(const auto& type: AFTests::getAllDTypeNames())
+    for(const auto& type: GPUTests::getAllDTypeNames())
     {
         testComparatorBlocksForType(type);
     }

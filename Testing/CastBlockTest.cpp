@@ -53,7 +53,7 @@ static void testCastBlock(
     const std::string& type1,
     const std::string& type2)
 {
-    static constexpr const char* afCastRegistryPath = "/arrayfire/array/cast";
+    static constexpr const char* afCastRegistryPath = "/gpu/array/cast";
 
     std::cout << "Testing " << afCastRegistryPath
               << " (types: " << type1 << " -> " << type2 << ")" << std::endl;
@@ -83,7 +83,7 @@ static void testCastBlock(
                                    "/blocks/converter",
                                    outputDType);
 
-        auto testInputs = AFTests::getTestInputs(inputDType.name());
+        auto testInputs = GPUTests::getTestInputs(inputDType.name());
         addCornerCases(type1, type2, testInputs);
 
         auto feederSource = Pothos::BlockRegistry::make(
@@ -118,17 +118,17 @@ static void testCastBlock(
         POTHOS_TEST_EQUAL(
             testInputs.elements(),
             afOutput.elements());
-        AFTests::testBufferChunk(
+        GPUTests::testBufferChunk(
             pothosOutput,
             afOutput);
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_cast)
+POTHOS_TEST_BLOCK("/gpu/tests", test_cast)
 {
-    AFTests::setupTestEnv();
+    GPUTests::setupTestEnv();
 
-    const auto& dtypeNames = AFTests::getAllDTypeNames();
+    const auto& dtypeNames = GPUTests::getAllDTypeNames();
 
     for(const auto& inputType: dtypeNames)
     {

@@ -33,10 +33,8 @@ static json deviceCacheEntryToJSON(const DeviceCacheEntry& entry)
 static std::string _enumerateArrayFireDevices()
 {
     json topObject;
-    auto& arrayFireInfo = topObject["ArrayFire Info"];
-    arrayFireInfo["Library Version"] = AF_VERSION;
-    arrayFireInfo["Revision"] = af_get_revision();
-    arrayFireInfo["API Version"] = AF_API_VERSION;
+    auto& arrayFireInfo = topObject["PothosGPU Library Info"];
+    arrayFireInfo["ArrayFire Version"] = AF_VERSION;
 
     const auto& deviceCache = getDeviceCache();
     const auto& afAvailableBackends = getAvailableBackends();
@@ -47,7 +45,7 @@ static std::string _enumerateArrayFireDevices()
         std::end(deviceCache),
         std::back_inserter(devicesJSON),
         deviceCacheEntryToJSON);
-    topObject["ArrayFire Device"] = devicesJSON;
+    topObject["PothosGPU Device"] = devicesJSON;
 
     std::vector<std::string> availableBackends;
     std::transform(
@@ -73,8 +71,8 @@ static std::string enumerateArrayFireDevices()
     return devs;
 }
 
-pothos_static_block(registerArrayFireInfo)
+pothos_static_block(registerGPUInfo)
 {
     Pothos::PluginRegistry::addCall(
-        "/devices/arrayfire/info", &enumerateArrayFireDevices);
+        "/devices/gpu/info", &enumerateArrayFireDevices);
 }

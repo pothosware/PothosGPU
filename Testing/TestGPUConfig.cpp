@@ -13,10 +13,10 @@
 
 #include <typeinfo>
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_arrayfire_config)
+POTHOS_TEST_BLOCK("/gpu/tests", test_pothosgpu_config)
 {
     auto abs = Pothos::BlockRegistry::make(
-                   "/arrayfire/arith/abs",
+                   "/gpu/arith/abs",
                    "Auto",
                    Pothos::DType(typeid(float)));
 
@@ -25,23 +25,23 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_arrayfire_config)
 
     POTHOS_TEST_EQUAL(
         deviceCache[0].afBackendEnum,
-        abs.call<af::Backend>("arrayFireBackend"));
+        abs.call<af::Backend>("backend"));
     POTHOS_TEST_EQUAL(
         deviceCache[0].name,
-        abs.call<std::string>("arrayFireDevice"));
+        abs.call<std::string>("device"));
 
     for(const auto& entry: deviceCache)
     {
         abs = Pothos::BlockRegistry::make(
-                  "/arrayfire/arith/abs",
+                  "/gpu/arith/abs",
                   entry.name,
                   Pothos::DType(typeid(float)));
 
         POTHOS_TEST_EQUAL(
             entry.afBackendEnum,
-            abs.call<af::Backend>("arrayFireBackend"));
+            abs.call<af::Backend>("backend"));
         POTHOS_TEST_EQUAL(
             entry.name,
-            abs.call<std::string>("arrayFireDevice"));
+            abs.call<std::string>("device"));
     }
 }

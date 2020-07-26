@@ -85,8 +85,8 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
 
     this->configArrayFire();
 
-    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, arrayFireBackend));
-    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, arrayFireDevice));
+    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, backend));
+    this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, device));
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, overlay));
 }
 
@@ -133,12 +133,12 @@ void ArrayFireBlock::activate()
     this->configArrayFire();
 }
 
-std::string ArrayFireBlock::arrayFireBackend() const
+std::string ArrayFireBlock::backend() const
 {
     return Pothos::Object(_afBackend).convert<std::string>();
 }
 
-std::string ArrayFireBlock::arrayFireDevice() const
+std::string ArrayFireBlock::device() const
 {
     return _afDeviceName;
 }

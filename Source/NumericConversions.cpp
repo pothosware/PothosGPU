@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <vector>
 
-static const std::string convertPluginSubpath("/object/convert/arrayfire");
+static const std::string convertPluginSubpath("/object/convert/gpu");
 
 //
 // std::complex <-> ArrayFire complex

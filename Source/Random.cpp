@@ -154,13 +154,13 @@ class RandomBlock: public ArrayFireBlock
  * The underlying random generation scheme can also be customized, although for
  * most purposes, leaving this value as its default will be fine.
  *
- * |category /ArrayFire/Sources
+ * |category /GPU/Sources
  * |keywords array random uniform normal philox threefry mersenne source
- * |factory /arrayfire/random/source(device,dtype,distribution)
+ * |factory /gpu/random/source(device,dtype,distribution)
  * |setter setDistribution(distribution)
  * |setter setRandomEngineType(randomEngineType)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -184,5 +184,5 @@ class RandomBlock: public ArrayFireBlock
  * |preview enable
  */
 static Pothos::BlockRegistry registerRandomSource(
-    "/arrayfire/random/source",
+    "/gpu/random/source",
     Pothos::Callable(&RandomBlock::make));

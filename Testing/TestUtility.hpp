@@ -20,7 +20,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace AFTests
+namespace GPUTests
 {
 
 //

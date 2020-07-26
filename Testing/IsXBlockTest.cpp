@@ -15,7 +15,7 @@
 // TODO: complex overload
 
 template <typename T>
-static AFTests::EnableIfAnyInt<T, Pothos::BufferChunk> getIsXTestInputs()
+static GPUTests::EnableIfAnyInt<T, Pothos::BufferChunk> getIsXTestInputs()
 {
     const std::vector<T> testInputs =
     {
@@ -25,11 +25,11 @@ static AFTests::EnableIfAnyInt<T, Pothos::BufferChunk> getIsXTestInputs()
         5,
         std::numeric_limits<T>::max() / 2,
     };
-    return AFTests::stdVectorToBufferChunk(testInputs);
+    return GPUTests::stdVectorToBufferChunk(testInputs);
 }
 
 template <typename T>
-static AFTests::EnableIfFloat<T, Pothos::BufferChunk> getIsXTestInputs()
+static GPUTests::EnableIfFloat<T, Pothos::BufferChunk> getIsXTestInputs()
 {
     const std::vector<T> testInputs =
     {
@@ -39,7 +39,7 @@ static AFTests::EnableIfFloat<T, Pothos::BufferChunk> getIsXTestInputs()
         5.0,
         std::numeric_limits<T>::quiet_NaN(),
     };
-    return AFTests::stdVectorToBufferChunk(testInputs);
+    return GPUTests::stdVectorToBufferChunk(testInputs);
 }
 
 template <typename T>
@@ -72,7 +72,7 @@ static void testIsX(
         POTHOS_TEST_TRUE(topology.waitInactive(0.05));
     }
 
-    AFTests::testBufferChunk(
+    GPUTests::testBufferChunk(
         collectorSink.call("getBuffer"),
         expectedOutput);
 }
@@ -106,29 +106,29 @@ static void testFloatOnlyBlock(
     testIsXBlockFailsForType<std::uint64_t>(blockRegistryPath);
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_isinf)
+POTHOS_TEST_BLOCK("/gpu/tests", test_isinf)
 {
-    AFTests::setupTestEnv();
+    GPUTests::setupTestEnv();
 
     testFloatOnlyBlock(
-        "/arrayfire/arith/isinf",
+        "/gpu/arith/isinf",
         {0,1,1,0,0});
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_isnan)
+POTHOS_TEST_BLOCK("/gpu/tests", test_isnan)
 {
-    AFTests::setupTestEnv();
+    GPUTests::setupTestEnv();
 
     testFloatOnlyBlock(
-        "/arrayfire/arith/isnan",
+        "/gpu/arith/isnan",
         {0,0,0,0,1});
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_iszero)
+POTHOS_TEST_BLOCK("/gpu/tests", test_iszero)
 {
-    AFTests::setupTestEnv();
+    GPUTests::setupTestEnv();
 
-    const std::string blockRegistryPath = "/arrayfire/arith/iszero";
+    const std::string blockRegistryPath = "/gpu/arith/iszero";
     const std::vector<std::int8_t> signedOutput = {1,0,0,0,0};
     const std::vector<std::int8_t> unsignedOutput = {1,0,1,0,0};
 
@@ -144,11 +144,11 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_iszero)
     testIsX<double>(blockRegistryPath, signedOutput);
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_sign)
+POTHOS_TEST_BLOCK("/gpu/tests", test_sign)
 {
-    AFTests::setupTestEnv();
+    GPUTests::setupTestEnv();
 
-    const std::string blockRegistryPath = "/arrayfire/arith/sign";
+    const std::string blockRegistryPath = "/gpu/arith/sign";
     const std::vector<std::int8_t> expectedOutput = {0,0,1,0,0};
 
     // TODO: test complex

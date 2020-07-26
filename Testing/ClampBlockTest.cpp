@@ -18,13 +18,13 @@
 #include <typeinfo>
 #include <vector>
 
-static constexpr const char* blockRegistryPath = "/arrayfire/arith/clamp";
-static constexpr const char* pluginPath = "/blocks/arrayfire/arith/clamp";
+static constexpr const char* blockRegistryPath = "/gpu/arith/clamp";
+static constexpr const char* pluginPath = "/blocks/gpu/arith/clamp";
 
 #define GET_MINMAX_OBJECTS(typeStr, cType) \
     if(type == typeStr) \
     { \
-        const auto sortedInputs = AFTests::getTestInputs<cType>(false /*shuffle*/); \
+        const auto sortedInputs = GPUTests::getTestInputs<cType>(false /*shuffle*/); \
         POTHOS_TEST_GE(sortedInputs.size(), 6); \
  \
         (*pMinObjectOut) = Pothos::Object(sortedInputs[2]); \
@@ -117,7 +117,7 @@ void testClampBlockForType(const std::string& type)
                          minObject,
                          maxObject);
 
-        auto testInputs = AFTests::getTestInputs(type);
+        auto testInputs = GPUTests::getTestInputs(type);
 
         auto feederSource = Pothos::BlockRegistry::make(
                                 "/blocks/feeder_source",
@@ -146,11 +146,11 @@ void testClampBlockForType(const std::string& type)
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_clamp)
+POTHOS_TEST_BLOCK("/gpu/tests", test_clamp)
 {
-    AFTests::setupTestEnv();
+    GPUTests::setupTestEnv();
 
-    for(const auto& type: AFTests::getAllDTypeNames())
+    for(const auto& type: GPUTests::getAllDTypeNames())
     {
         testClampBlockForType(type);
     }

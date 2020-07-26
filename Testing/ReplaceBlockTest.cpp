@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-static const std::string blockRegistryPath = "/arrayfire/data/replace";
+static const std::string blockRegistryPath = "/gpu/data/replace";
 
 static void testReplaceBlockForType(const std::string& type)
 {
@@ -34,7 +34,7 @@ static void testReplaceBlockForType(const std::string& type)
 
         // TODO: output validation
         auto feederSource = Pothos::BlockRegistry::make("/blocks/feeder_source", type);
-        feederSource.call("feedBuffer", AFTests::getTestInputs(type));
+        feederSource.call("feedBuffer", GPUTests::getTestInputs(type));
 
         auto collectorSink = Pothos::BlockRegistry::make("/blocks/collector_sink", type);
 
@@ -65,11 +65,11 @@ static void testReplaceBlockForType(const std::string& type)
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_replace)
+POTHOS_TEST_BLOCK("/gpu/tests", test_replace)
 {
-    AFTests::setupTestEnv();
+    GPUTests::setupTestEnv();
 
-    for(const auto& type: AFTests::getAllDTypeNames())
+    for(const auto& type: GPUTests::getAllDTypeNames())
     {
         testReplaceBlockForType(type);
     }

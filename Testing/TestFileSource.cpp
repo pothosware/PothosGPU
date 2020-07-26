@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace AFTests
+namespace GPUTests
 {
 
 static const std::vector<std::string> AllTypes =
@@ -73,7 +73,7 @@ static void testFileSource1D(
               << " (chans: 1)..." << std::endl;
 
     auto oneDimBlock = Pothos::BlockRegistry::make(
-                           "/arrayfire/array/file_source",
+                           "/gpu/array/file_source",
                            "Auto",
                            filepath,
                            testData.oneDimKey,
@@ -126,7 +126,7 @@ static void testFileSource2D(
               << " (chans: " << nchans << ")..." << std::endl;
 
     auto twoDimBlock = Pothos::BlockRegistry::make(
-                           "/arrayfire/array/file_source",
+                           "/gpu/array/file_source",
                            "Auto",
                            filepath,
                            testData.twoDimKey,
@@ -182,9 +182,9 @@ static void testFileSource2D(
 
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_source)
+POTHOS_TEST_BLOCK("/gpu/tests", test_file_source)
 {
-    using namespace AFTests;
+    using namespace GPUTests;
 
     setupTestEnv();
 
@@ -203,10 +203,10 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_file_source)
             af::randu(numElements, afDType),
             af::randu(numChannels, numElements, afDType)
         };
-        AFTests::addMinMaxToAfArray(
+        GPUTests::addMinMaxToAfArray(
             testData.oneDimArray,
             type);
-        AFTests::addMinMaxToAfArray(
+        GPUTests::addMinMaxToAfArray(
             testData.twoDimArray,
             type);
 

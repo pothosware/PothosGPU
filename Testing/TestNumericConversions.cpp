@@ -13,7 +13,7 @@
 #include <string>
 #include <typeinfo>
 
-namespace AFTests
+namespace GPUTests
 {
 
 template <typename Type1, typename Type2>
@@ -44,8 +44,8 @@ static void testComplexConversion()
 
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_complex_conversion)
+POTHOS_TEST_BLOCK("/gpu/tests", test_af_complex_conversion)
 {
-    AFTests::testComplexConversion<std::complex<float>, af::cfloat>();
-    AFTests::testComplexConversion<std::complex<double>, af::cdouble>();
+    GPUTests::testComplexConversion<std::complex<float>, af::cfloat>();
+    GPUTests::testComplexConversion<std::complex<double>, af::cdouble>();
 }

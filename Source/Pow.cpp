@@ -75,12 +75,12 @@ class Pow: public OneToOneBlock
  * Uses <b>af::pow</b> to calculate the power of each input element
  * to the given scalar power value.
  *
- * |category /ArrayFire/Arith
+ * |category /GPU/Arith
  * |keywords exponent power
- * |factory /arrayfire/arith/pow(device,dtype,power)
+ * |factory /gpu/arith/pow(device,dtype,power)
  * |setter setPower(power)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -94,5 +94,5 @@ class Pow: public OneToOneBlock
  * |preview enable
  */
 static Pothos::BlockRegistry registerPow(
-    "/arrayfire/arith/pow",
+    "/gpu/arith/pow",
     Pothos::Callable(&Pow::make));

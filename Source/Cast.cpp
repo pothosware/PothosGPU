@@ -72,11 +72,11 @@ class CastBlock: public OneToOneBlock
  *
  * Calls <b>af::array::as</b> on all inputs to cast to a given type.
  *
- * |category /ArrayFire/Convert
+ * |category /GPU/Convert
  * |keywords array cast
- * |factory /arrayfire/array/cast(device,inputDType,outputDType)
+ * |factory /gpu/array/cast(device,inputDType,outputDType)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param inputDType[Input Data Type] The block data type.
@@ -90,5 +90,5 @@ class CastBlock: public OneToOneBlock
  * |preview disable
  */
 static Pothos::BlockRegistry registerCast(
-    "/arrayfire/array/cast",
+    "/gpu/array/cast",
     Pothos::Callable(&CastBlock::make));

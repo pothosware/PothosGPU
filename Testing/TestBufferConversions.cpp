@@ -16,7 +16,7 @@
 #include <string>
 #include <typeinfo>
 
-namespace AFTests
+namespace GPUTests
 {
 
 template <typename T>
@@ -92,9 +92,9 @@ static void testStdVectorToAfArrayConversion(af::dtype expectedAfDType)
         stdVector2);
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_array_conversion)
+POTHOS_TEST_BLOCK("/gpu/tests", test_af_array_conversion)
 {
-    using namespace AFTests;
+    using namespace GPUTests;
 
     for(const auto& backend: getAvailableBackends())
     {
@@ -117,9 +117,9 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_array_conversion)
 
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_arrayproxy_conversion)
+POTHOS_TEST_BLOCK("/gpu/tests", test_af_arrayproxy_conversion)
 {
-    using namespace AFTests;
+    using namespace GPUTests;
 
     for(const auto& backend: getAvailableBackends())
     {
@@ -140,9 +140,9 @@ POTHOS_TEST_BLOCK("/arrayfire/tests", test_af_arrayproxy_conversion)
     }
 }
 
-POTHOS_TEST_BLOCK("/arrayfire/tests", test_std_vector_conversion)
+POTHOS_TEST_BLOCK("/gpu/tests", test_std_vector_conversion)
 {
-    using namespace AFTests;
+    using namespace GPUTests;
 
     for(const auto& backend: getAvailableBackends())
     {

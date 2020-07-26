@@ -206,11 +206,11 @@ class VarianceBlock: public OneArrayStatsBlock
  *
  * The incoming buffer is forwarded to the output port with no changes.
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords statistics stats mean average
- * |factory /arrayfire/statistics/mean(device,dtype)
+ * |factory /gpu/statistics/mean(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -219,7 +219,7 @@ class VarianceBlock: public OneArrayStatsBlock
  * |preview disable
  */
 static Pothos::BlockRegistry registerMean(
-    "/arrayfire/statistics/mean",
+    "/gpu/statistics/mean",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
         .bind<OneArrayStatsFuncPtr>(&af::mean, 1)
         .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));
@@ -233,11 +233,11 @@ static Pothos::BlockRegistry registerMean(
  *
  * The incoming buffer is forwarded to the output port with no changes.
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords statistics stats
- * |factory /arrayfire/statistics/median(device,dtype)
+ * |factory /gpu/statistics/median(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -246,7 +246,7 @@ static Pothos::BlockRegistry registerMean(
  * |preview disable
  */
 static Pothos::BlockRegistry registerMedian(
-    "/arrayfire/statistics/median",
+    "/gpu/statistics/median",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
         .bind<OneArrayStatsFuncPtr>(&af::median, 1)
         .bind<DTypeSupport>({true,true,true,false}, 2));
@@ -260,11 +260,11 @@ static Pothos::BlockRegistry registerMedian(
  *
  * The incoming buffer is forwarded to the output port with no changes.
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords statistics stats root mean square
- * |factory /arrayfire/statistics/rms(device,dtype)
+ * |factory /gpu/statistics/rms(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -273,7 +273,7 @@ static Pothos::BlockRegistry registerMedian(
  * |preview disable
  */
 static Pothos::BlockRegistry registerRMS(
-    "/arrayfire/statistics/rms",
+    "/gpu/statistics/rms",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
         .bind<OneArrayStatsFuncPtr>(&afRMS, 1)
         .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));
@@ -287,12 +287,12 @@ static Pothos::BlockRegistry registerRMS(
  *
  * The incoming buffer is forwarded to the output port with no changes.
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords statistics stats root mean square
- * |factory /arrayfire/statistics/var(device,dtype,isBiased)
+ * |factory /gpu/statistics/var(device,dtype,isBiased)
  * |setter setIsBiased(isBiased)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -305,7 +305,7 @@ static Pothos::BlockRegistry registerRMS(
  * |default False
  */
 static Pothos::BlockRegistry registerVar(
-    "/arrayfire/statistics/var",
+    "/gpu/statistics/var",
     Pothos::Callable(&VarianceBlock::make));
 
 /*
@@ -317,11 +317,11 @@ static Pothos::BlockRegistry registerVar(
  *
  * The incoming buffer is forwarded to the output port with no changes.
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords statistics stats stddev
- * |factory /arrayfire/statistics/stdev(device,dtype)
+ * |factory /gpu/statistics/stdev(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -330,7 +330,7 @@ static Pothos::BlockRegistry registerVar(
  * |preview disable
  */
 static Pothos::BlockRegistry registerStdev(
-    "/arrayfire/statistics/stdev",
+    "/gpu/statistics/stdev",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
         .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
         .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));
@@ -344,11 +344,11 @@ static Pothos::BlockRegistry registerStdev(
  *
  * The incoming buffer is forwarded to the output port with no changes.
  *
- * |category /ArrayFire/Statistics
+ * |category /GPU/Statistics
  * |keywords statistics stats mad
- * |factory /arrayfire/statistics/medabsdev(device,dtype)
+ * |factory /gpu/statistics/medabsdev(device,dtype)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -357,7 +357,7 @@ static Pothos::BlockRegistry registerStdev(
  * |preview disable
  */
 static Pothos::BlockRegistry registerMedAbsDev(
-    "/arrayfire/statistics/medabsdev",
+    "/gpu/statistics/medabsdev",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
         .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
         .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));

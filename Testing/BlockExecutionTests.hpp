@@ -5,7 +5,7 @@
 
 #include "TestUtility.hpp"
 
-namespace AFTests
+namespace GPUTests
 {
 
 //

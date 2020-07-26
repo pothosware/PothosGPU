@@ -14,7 +14,7 @@
 #include <string>
 #include <typeinfo>
 
-namespace AFTests
+namespace GPUTests
 {
 
 template <typename In, typename Out>

@@ -88,12 +88,12 @@ class Root: public OneToOneBlock
  * input element. Uses <b>af::sqrt</b> and <b>af::cbrt</b> to optimize
  * their given root values.
  *
- * |category /ArrayFire/Arith
+ * |category /GPU/Arith
  * |keywords exponent power
- * |factory /arrayfire/arith/root(device,dtype,root)
+ * |factory /gpu/arith/root(device,dtype,root)
  * |setter setRoot(root)
  *
- * |param device[Device] ArrayFire device to use.
+ * |param device[Device] Device to use for processing.
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
@@ -107,5 +107,5 @@ class Root: public OneToOneBlock
  * |preview enable
  */
 static Pothos::BlockRegistry registerRoot(
-    "/arrayfire/arith/root",
+    "/gpu/arith/root",
     Pothos::Callable(&Root::make));

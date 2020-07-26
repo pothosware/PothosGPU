@@ -58,7 +58,7 @@ def filterBlockYAML(blockTypeYAML, printSkippedBlocks=False):
     if (len(filteredYAML) != blockTypeYAML) and printSkippedBlocks:
         for block in blockTypeYAML:
             if block.get("minAPIVersion", 0) > apiVersion:
-                print("Skipping /arrayfire/{0}/{1}, requires API {2} > {3}".format(block["header"], block["func"], block["minAPIVersion"], apiVersion))
+                print("Skipping /gpu/{0}/{1}, requires ArrayFire API {2} > {3}".format(block["header"], block["func"], block["minAPIVersion"], apiVersion))
 
     return filteredYAML
 
@@ -94,8 +94,8 @@ def generateDTypeDictEntries(supportedTypes):
 def generatePothosDoc(category,blockYAML):
     desc = dict()
     desc["name"] = blockYAML.get("niceName", blockYAML["func"].title())
-    desc["path"] = "/arrayfire/{0}/{1}".format(blockYAML["header"], blockYAML.get("blockName", blockYAML["func"]))
-    desc["categories"] = ["/ArrayFire/" + blockYAML.get("category", blockYAML["header"].title())]
+    desc["path"] = "/gpu/{0}/{1}".format(blockYAML["header"], blockYAML.get("blockName", blockYAML["func"]))
+    desc["categories"] = ["/GPU/" + blockYAML.get("category", blockYAML["header"].title())]
     desc["keywords"] = [blockYAML["header"], blockYAML["func"]]
     if "keywords" in blockYAML:
         desc["keywords"] += blockYAML["keywords"]
@@ -112,7 +112,7 @@ def generatePothosDoc(category,blockYAML):
 
     desc["params"] = [dict(key="device",
                            name="Device",
-                           desc=["ArrayFire device"],
+                           desc=["PothosGPU device"],
                            preview="enable",
                            default="\"Auto\"")]
 
