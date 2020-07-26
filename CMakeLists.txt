@@ -27,8 +27,9 @@ find_python_module(yaml REQUIRED)
 find_path(JSON_HPP_INCLUDE_DIR NAMES json.hpp PATH_SUFFIXES nlohmann)
 
 if (NOT JSON_HPP_INCLUDE_DIR)
-    message(FATAL_ERROR "Pothos ArrayFire toolkit requires json.hpp")
-endif (NOT JSON_HPP_INCLUDE_DIR)
+    message(STATUS "Pothos ArrayFire toolkit requires json.hpp. Exiting...")
+    return()
+endif ()
 
 ########################################################################
 # Auto-generate the majority of blocks
