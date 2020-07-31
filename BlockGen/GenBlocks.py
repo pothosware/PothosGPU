@@ -89,7 +89,7 @@ def generateDTypeDictEntries(supportedTypes):
         supportedTypes["defaultType"] = "float64"
     else:
         supportedTypes["dtypeString"] = ",".join([DICT_ENTRY_KEYS[key] for key in DICT_ENTRY_KEYS if key in supportedTypes])
-        supportedTypes["defaultType"] = "float64" if ("float=1" in supportedTypes["dtypeString"] and "cfloat=1" not in supportedTypes["dtypeString"]) else "{0}64".format(supportedTypes["dtypeString"].split("=")[0].split(",")[0]).replace("cfloat64", "complex_float64")
+        supportedTypes["defaultType"] = "complex_float64" if ("cfloat=1" in supportedTypes["dtypeString"]) else "{0}64".format(supportedTypes["dtypeString"].split("=")[0])
 
 def generatePothosDoc(category,blockYAML):
     desc = dict()
@@ -139,7 +139,7 @@ def generatePothosDoc(category,blockYAML):
                 dtypeArg["widgetKwargs"]["uint"] = 1
             if ("supportFloat" in supportedTypes) or ("supportAll" in supportedTypes):
                 dtypeArg["widgetKwargs"]["float"] = 1
-            if ("supportComplex" in supportedTypes) or ("supportAll" in supportedTypes):
+            if ("supportComplexFloat" in supportedTypes) or ("supportAll" in supportedTypes):
                 dtypeArg["widgetKwargs"]["cfloat"] = 1
             dtypeArg["widgetKwargs"]["dim"] = 1
 
@@ -159,6 +159,9 @@ def generatePothosDoc(category,blockYAML):
                                 desc=["The number of inputs for this block."],
                                 default="2" if category == "NToOneBlocks" else "1",
                                 preview="disable")]
+
+    if "supportedTypes" in blockYAML:
+        dtypeArg["default"] = "\"{0}\"".format(blockYAML["supportedTypes"]["defaultType"])
 
     # Encode the block description into escaped JSON
     descEscaped = "".join([hex(ord(ch)).replace("0x", "\\x") for ch in json.dumps(desc)])
