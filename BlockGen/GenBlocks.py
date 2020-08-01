@@ -89,7 +89,9 @@ def generateDTypeDictEntries(supportedTypes):
         supportedTypes["defaultType"] = "float64"
     else:
         supportedTypes["dtypeString"] = ",".join([DICT_ENTRY_KEYS[key] for key in DICT_ENTRY_KEYS if key in supportedTypes])
-        supportedTypes["defaultType"] = "complex_float64" if ("cfloat=1" in supportedTypes["dtypeString"]) else "{0}64".format(supportedTypes["dtypeString"].split("=")[0])
+        supportedTypes["defaultType"] = "complex_float64" if ("cfloat=1" in supportedTypes["dtypeString"]) else supportedTypes["dtypeString"].split("=")[0]
+        if not supportedTypes["defaultType"][-1].isdigit():
+            supportedTypes["defaultType"] += "64"
 
 def generatePothosDoc(category,blockYAML):
     desc = dict()

@@ -371,16 +371,6 @@ TwoToOneBlocks:
                   supportUInt: true
                   supportFloat: true
 
-        - func: mod
-          niceName: Modulus
-          description: For each element in inputs <b>0</b> and <b>1</b>, returns <b>port0 ^ port1</b>. Will throw if <b>port1</b> includes a 0.
-          header: arith
-          allowZeroInBuffer1: false
-          supportedTypes:
-                  supportInt: true
-                  supportUInt: true
-                  supportFloat: true
-
         - func: atan2
           niceName: Arc Tangent
           header: arith
