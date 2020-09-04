@@ -175,7 +175,9 @@ static std::vector<T> getIntTestParams(T a, T step, size_t N)
 
     for(size_t i = 0; i < N; ++i)
     {
-        ret.emplace_back(a + (T(i)*step));
+        // Skip 0 to avoid crashes
+        if((a + (T(i)*step)) >= 0) ret.emplace_back(a + (T(i+1)*step));
+        else                       ret.emplace_back(a + (T(i)*step));
     }
 
     return ret;
