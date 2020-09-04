@@ -147,8 +147,8 @@ static std::vector<std::complex<T>> toComplexVector(const std::vector<T>& vector
 {
     std::vector<std::complex<T>> vectorOut(vectorIn.size() / 2);
     std::memcpy(
-        vectorOut.data(),
-        vectorIn.data(),
+        (void*)vectorOut.data(),
+        (const void*)vectorIn.data(),
         vectorIn.size() * sizeof(T));
 
     return vectorOut;
