@@ -35,6 +35,12 @@ struct ValueCompareParams
     Pothos::DType sinkDType;
 };
 
+template <typename T>
+static bool isClose(T t0, T t1)
+{
+    return (std::abs(t0-t1) < 1e-6);
+}
+
 static void compareIOBlockValues(const ValueCompareParams& params)
 {
     std::cout << Poco::format(
@@ -150,7 +156,7 @@ static void compareIOBlockValues(const ValueCompareParams& params)
         const auto medAbsDev = medAbsDevBlocks[chan].call<double>("lastValue");
         std::string outputString;
 
-        if((0.0 != mean) || (0.0 != stdev))
+        if(!isClose(mean, 0.0) || !isClose(stdev, 0.0) || !isClose(median, 0.0) || !isClose(medAbsDev, 0.0))
         {
             outputString = Poco::format(
                                "   * %z mean difference:   %f +- %f",
@@ -158,9 +164,7 @@ static void compareIOBlockValues(const ValueCompareParams& params)
                                mean,
                                stdev);
             std::cout << outputString << std::endl;
-        }
-        if((0.0 != median) || (0.0 != medAbsDev))
-        {
+
             outputString = Poco::format(
                                "   * %z median difference: %f +- %f",
                                chan,
@@ -171,15 +175,70 @@ static void compareIOBlockValues(const ValueCompareParams& params)
     }
 }
 
+static void testTrigBlock(
+    const std::string& pothosGPUBlockPath,
+    const std::string& pothosCommsOperation)
+{
+    std::vector<Pothos::DType> dtypes = {"float32", "float64"};
+    for(const auto& dtype: dtypes)
+    {
+        ValueCompareParams params =
+        {
+            {
+                Pothos::BlockRegistry::make("/comms/trigonometric", dtype, pothosCommsOperation),
+                {"0"},
+                {"0"}
+            },
+            {
+                Pothos::BlockRegistry::make(pothosGPUBlockPath, "Auto", dtype),
+                {"0"},
+                {"0"}
+            },
+
+            dtype,
+            dtype
+        };
+        compareIOBlockValues(params);
+    }
+}
+
+static void testConverterBlock(const Pothos::DType& inputDType)
+{
+    std::vector<Pothos::DType> outputDTypes = {"int32", "int64", "uint32", "uint64", "float32", "float64"};
+    for(const auto& outputDType: outputDTypes)
+    {
+        ValueCompareParams params =
+        {
+            {
+                Pothos::BlockRegistry::make("/blocks/converter", outputDType),
+                {"0"},
+                {"0"}
+            },
+            {
+                Pothos::BlockRegistry::make("/gpu/array/cast", "Auto", inputDType, outputDType),
+                {"0"},
+                {"0"}
+            },
+
+            inputDType,
+            outputDType
+        };
+        compareIOBlockValues(params);
+    }
+}
+
 POTHOS_TEST_BLOCK("/gpu/tests", compare_pothos_block_outputs)
 {
     std::vector<TestBlockNames> oneChanFloatBlocks =
     {
+        {"/comms/abs", "/gpu/arith/abs"},
         {"/blocks/floor", "/gpu/arith/floor"},
         {"/blocks/ceil", "/gpu/arith/ceil"},
         {"/blocks/trunc", "/gpu/arith/trunc"},
         {"/comms/gamma", "/gpu/arith/tgamma"},
         {"/comms/lngamma", "/gpu/arith/lgamma"},
+        {"/comms/sinc", "/gpu/signal/sinc"},
+        {"/comms/log1p", "/gpu/arith/log1p"},
     };
 
     for(const auto& block: oneChanFloatBlocks)
@@ -209,6 +268,49 @@ POTHOS_TEST_BLOCK("/gpu/tests", compare_pothos_block_outputs)
             }
 
         }
-        else std::cout << "Could not find " << block.pothosBlock << ". Skipping." << std::endl;
+        else std::cout << " * Could not find " << block.pothosBlock << ". Skipping." << std::endl;
     }
+
+    if(GPUTests::doesBlockExist("/comms/trigonometric"))
+    {
+        testTrigBlock("/gpu/arith/cos", "COS");
+        testTrigBlock("/gpu/arith/sin", "SIN");
+        testTrigBlock("/gpu/arith/tan", "TAN");
+        testTrigBlock("/gpu/arith/sec", "SEC");
+        testTrigBlock("/gpu/arith/csc", "CSC");
+        testTrigBlock("/gpu/arith/cot", "COT");
+        testTrigBlock("/gpu/arith/acos", "ACOS");
+        testTrigBlock("/gpu/arith/asin", "ASIN");
+        testTrigBlock("/gpu/arith/atan", "ATAN");
+        testTrigBlock("/gpu/arith/asec", "ASEC");
+        testTrigBlock("/gpu/arith/acsc", "ACSC");
+        testTrigBlock("/gpu/arith/acot", "ACOT");
+        testTrigBlock("/gpu/arith/cosh", "COSH");
+        testTrigBlock("/gpu/arith/sinh", "SINH");
+        testTrigBlock("/gpu/arith/tanh", "TANH");
+        testTrigBlock("/gpu/arith/sech", "SECH");
+        testTrigBlock("/gpu/arith/csch", "CSCH");
+        testTrigBlock("/gpu/arith/coth", "COTH");
+        testTrigBlock("/gpu/arith/acosh", "ACOSH");
+        testTrigBlock("/gpu/arith/asinh", "ASINH");
+        testTrigBlock("/gpu/arith/atanh", "ATANH");
+        testTrigBlock("/gpu/arith/asech", "ASECH");
+        testTrigBlock("/gpu/arith/acsch", "ACSCH");
+        testTrigBlock("/gpu/arith/acoth", "ACOTH");
+    }
+    else std::cout << " * Could not find /comms/trigonometric. Skipping." << std::endl;
+
+    if(GPUTests::doesBlockExist("/blocks/converter"))
+    {
+        testConverterBlock("int16");
+        testConverterBlock("int32");
+        testConverterBlock("int64");
+        testConverterBlock("uint8");
+        testConverterBlock("uint16");
+        testConverterBlock("uint32");
+        testConverterBlock("uint64");
+        testConverterBlock("float32");
+        testConverterBlock("float64");
+    }
+    else std::cout << " * Could not find /blocks/converter. Skipping." << std::endl;
 }
