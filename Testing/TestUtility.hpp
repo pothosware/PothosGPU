@@ -401,6 +401,15 @@ static inline T getSingleTestInput()
 
 const std::vector<std::string>& getAllDTypeNames();
 
+//
+// Only test against blocks that exist
+//
+
+inline bool doesBlockExist(const std::string& blockPath)
+{
+    return Pothos::PluginRegistry::exists("/blocks"+blockPath);
+}
+
 }
 
 //
