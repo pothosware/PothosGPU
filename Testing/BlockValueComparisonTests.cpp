@@ -55,8 +55,12 @@ static void compareIOBlockValues(const ValueCompareParams& params)
     const auto numSinkChans = params.pothosBlockParams.sinkChans.size();
 
     std::vector<Pothos::Proxy> sources(numSourceChans);
-    std::vector<Pothos::Proxy> pothosBlockSinks(numSinkChans);
-    std::vector<Pothos::Proxy> pothosGPUBlockSinks(numSinkChans);
+
+    std::vector<Pothos::Proxy> subBlocks(numSinkChans);
+    std::vector<Pothos::Proxy> meanBlocks(numSinkChans);
+    std::vector<Pothos::Proxy> stdevBlocks(numSinkChans);
+    std::vector<Pothos::Proxy> medianBlocks(numSinkChans);
+    std::vector<Pothos::Proxy> medAbsDevBlocks(numSinkChans);
 
     for(size_t chan = 0; chan < numSourceChans; ++chan)
     {
@@ -69,12 +73,26 @@ static void compareIOBlockValues(const ValueCompareParams& params)
     }
     for(size_t chan = 0; chan < numSinkChans; ++chan)
     {
-        pothosBlockSinks[chan] = Pothos::BlockRegistry::make(
-                                     "/blocks/collector_sink",
-                                     params.sinkDType);
-        pothosGPUBlockSinks[chan] = Pothos::BlockRegistry::make(
-                                        "/blocks/collector_sink",
-                                        params.sinkDType);
+        subBlocks[chan] = Pothos::BlockRegistry::make(
+                              "/comms/arithmetic",
+                              params.sinkDType,
+                              "SUB");
+        meanBlocks[chan] = Pothos::BlockRegistry::make(
+                               "/gpu/statistics/mean",
+                               "Auto",
+                               params.sinkDType);
+        stdevBlocks[chan] = Pothos::BlockRegistry::make(
+                                "/gpu/statistics/stdev",
+                                "Auto",
+                                params.sinkDType);
+        medianBlocks[chan] = Pothos::BlockRegistry::make(
+                                 "/gpu/statistics/median",
+                                 "Auto",
+                                 params.sinkDType);
+        medAbsDevBlocks[chan] = Pothos::BlockRegistry::make(
+                                    "/gpu/statistics/medabsdev",
+                                    "Auto",
+                                    params.sinkDType);
     }
 
     {
@@ -83,20 +101,41 @@ static void compareIOBlockValues(const ValueCompareParams& params)
         for(size_t chan = 0; chan < numSourceChans; ++chan)
         {
             topology.connect(
-                sources[chan], 0,
-                params.pothosBlockParams.block, params.pothosBlockParams.sourceChans[chan]);
+                sources[chan],
+                0,
+                params.pothosBlockParams.block,
+                params.pothosBlockParams.sourceChans[chan]);
             topology.connect(
-                sources[chan], 0,
-                params.pothosGPUBlockParams.block, params.pothosGPUBlockParams.sourceChans[chan]);
+                sources[chan],
+                0,
+                params.pothosGPUBlockParams.block,
+                params.pothosGPUBlockParams.sourceChans[chan]);
         }
         for(size_t chan = 0; chan < numSinkChans; ++chan)
         {
             topology.connect(
-                params.pothosBlockParams.block, params.pothosBlockParams.sinkChans[chan],
-                pothosBlockSinks[chan], 0);
+                params.pothosBlockParams.block,
+                params.pothosBlockParams.sinkChans[chan],
+                subBlocks[chan],
+                0);
             topology.connect(
-                params.pothosGPUBlockParams.block, params.pothosGPUBlockParams.sinkChans[chan],
-                pothosGPUBlockSinks[chan], 0);
+                params.pothosGPUBlockParams.block,
+                params.pothosGPUBlockParams.sinkChans[chan],
+                subBlocks[chan],
+                1);
+
+            topology.connect(
+                subBlocks[chan], 0,
+                meanBlocks[chan], 0);
+            topology.connect(
+                subBlocks[chan], 0,
+                stdevBlocks[chan], 0);
+            topology.connect(
+                subBlocks[chan], 0,
+                medianBlocks[chan], 0);
+            topology.connect(
+                subBlocks[chan], 0,
+                medAbsDevBlocks[chan], 0);
         }
 
         topology.commit();
@@ -105,14 +144,30 @@ static void compareIOBlockValues(const ValueCompareParams& params)
 
     for(size_t chan = 0; chan < numSinkChans; ++chan)
     {
-        std::cout << Poco::format(
-                         "   * Testing output %s vs %s...",
-                         params.pothosBlockParams.sinkChans[chan],
-                         params.pothosGPUBlockParams.sinkChans[chan]) << std::endl;
+        const auto mean = meanBlocks[chan].call<double>("lastValue");
+        const auto stdev = stdevBlocks[chan].call<double>("lastValue");
+        const auto median = medianBlocks[chan].call<double>("lastValue");
+        const auto medAbsDev = medAbsDevBlocks[chan].call<double>("lastValue");
+        std::string outputString;
 
-        GPUTests::testBufferChunk(
-            pothosBlockSinks[chan].call<Pothos::BufferChunk>("getBuffer"),
-            pothosGPUBlockSinks[chan].call<Pothos::BufferChunk>("getBuffer"));
+        if((0.0 != mean) || (0.0 != stdev))
+        {
+            outputString = Poco::format(
+                               "   * %z mean difference:   %f +- %f",
+                               chan,
+                               mean,
+                               stdev);
+            std::cout << outputString << std::endl;
+        }
+        if((0.0 != median) || (0.0 != medAbsDev))
+        {
+            outputString = Poco::format(
+                               "   * %z median difference: %f +- %f",
+                               chan,
+                               median,
+                               medAbsDev);
+            std::cout << outputString << std::endl;
+        }
     }
 }
 
