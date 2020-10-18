@@ -252,12 +252,21 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_statistics)
         POTHOS_TEST_EQUAL(1, messages.size());
 
         auto output = messages[0];
-        POTHOS_TEST_TRUE(output.type() == typeid(Pothos::Object));
-        POTHOS_TEST_TRUE(output.extract<Pothos::Object>().type() == typeid(double));
+        double outputDouble = 0;
+        if(output.type() == typeid(Pothos::Object))
+        {
+            POTHOS_TEST_TRUE(output.extract<Pothos::Object>().type() == typeid(double));
+            outputDouble = output.extract<Pothos::Object>().extract<double>();
+        }
+        else
+        {
+            POTHOS_TEST_TRUE(output.type() == typeid(double));
+            outputDouble = output.extract<double>();
+        }
 
         POTHOS_TEST_CLOSE(
             expectedOutputs[blockIndex],
-            output.extract<Pothos::Object>().extract<double>(),
+            outputDouble,
             isStdOrVar ? 1.0 : 1e-6);
     }
 }

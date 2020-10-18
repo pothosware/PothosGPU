@@ -83,8 +83,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
             ArrayFireBlock(device),
             _func(std::move(func)),
             _dtype(dtype),
-            _afDType(Pothos::Object(dtype).convert<af::dtype>()),
-            _lastValue()
+            _afDType(Pothos::Object(dtype).convert<af::dtype>())
         {
             validateDType(dtype, floatOnlyDTypeSupport);
 
@@ -106,7 +105,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
                 dtype)
         {}
 
-        Pothos::Object lastValue() const
+        double lastValue() const
         {
             return _lastValue;
         }
@@ -128,7 +127,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
                           std::to_string(afLabelValues.elements()));
             }
 
-            _lastValue = getArrayValueOfUnknownTypeAtIndex(afLabelValues, 0);
+            _lastValue = getArrayValueOfUnknownTypeAtIndex(afLabelValues, 0).convert<double>();
 
             this->produceFromAfArray(0, afArray);
         }
@@ -138,7 +137,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
         OneArrayStatsFunction _func;
         Pothos::DType _dtype;
         af::dtype _afDType;
-        Pothos::Object _lastValue;
+        double _lastValue;
 };
 
 class VarianceBlock: public OneArrayStatsBlock
