@@ -16,6 +16,7 @@
 #include <sstream>
 #include <vector>
 
+// TODO: take in string to give context on what block is unsupported
 void validateDType(
     const Pothos::DType& dtype,
     const DTypeSupport& supportedTypes)

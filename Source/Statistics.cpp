@@ -86,8 +86,6 @@ class OneArrayStatsBlock: public ArrayFireBlock
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _lastValue(0.0)
         {
-            validateDType(dtype, floatOnlyDTypeSupport);
-
             this->setupInput(0, _dtype);
             this->setupOutput(0, _dtype);
 
@@ -120,7 +118,7 @@ class OneArrayStatsBlock: public ArrayFireBlock
             }
 
             auto afArray = this->getInputPortAsAfArray(0);
-            auto afLabelValues = _func(afArray, defaultDim);
+            auto afLabelValues = _func(afArray.as(::f64), defaultDim);
             if(1 != afLabelValues.elements())
             {
                 throw Pothos::AssertionViolationException(
@@ -150,8 +148,6 @@ class VarianceBlock: public OneArrayStatsBlock
             const Pothos::DType& dtype,
             bool isBiased)
         {
-            validateDType(dtype, floatOnlyDTypeSupport);
-
             return new VarianceBlock(device, dtype, isBiased);
         }
 
@@ -214,7 +210,7 @@ class VarianceBlock: public OneArrayStatsBlock
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(float=1,dim=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
@@ -222,7 +218,7 @@ static Pothos::BlockRegistry registerMean(
     "/gpu/statistics/mean",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
         .bind<OneArrayStatsFuncPtr>(&af::mean, 1)
-        .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));
+        .bind<DTypeSupport>(DTypeSupport({true,true,true,false}), 2));
 
 /*
  * |PothosDoc Median
@@ -268,7 +264,7 @@ static Pothos::BlockRegistry registerMedian(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(float=1,dim=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
@@ -296,7 +292,7 @@ static Pothos::BlockRegistry registerRMS(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(float=1,dim=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -325,7 +321,7 @@ static Pothos::BlockRegistry registerVar(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(float=1,dim=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
@@ -333,7 +329,7 @@ static Pothos::BlockRegistry registerStdev(
     "/gpu/statistics/stdev",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
         .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
-        .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));
+        .bind<DTypeSupport>(DTypeSupport({true,true,true,false}), 2));
 
 /*
  * |PothosDoc Median Absolute Deviation
@@ -352,7 +348,7 @@ static Pothos::BlockRegistry registerStdev(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(float=1,dim=1)
+ * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
@@ -360,4 +356,4 @@ static Pothos::BlockRegistry registerMedAbsDev(
     "/gpu/statistics/medabsdev",
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
         .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
-        .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));
+        .bind<DTypeSupport>(DTypeSupport({true,true,true,false}), 2));
