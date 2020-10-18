@@ -83,7 +83,8 @@ class OneArrayStatsBlock: public ArrayFireBlock
             ArrayFireBlock(device),
             _func(std::move(func)),
             _dtype(dtype),
-            _afDType(Pothos::Object(dtype).convert<af::dtype>())
+            _afDType(Pothos::Object(dtype).convert<af::dtype>()),
+            _lastValue(0.0)
         {
             validateDType(dtype, floatOnlyDTypeSupport);
 
