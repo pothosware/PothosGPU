@@ -396,12 +396,6 @@ static inline T getSingleTestInput()
 }
 
 //
-// Misc
-//
-
-const std::vector<std::string>& getAllDTypeNames();
-
-//
 // Only test against blocks that exist
 //
 
@@ -409,6 +403,41 @@ inline bool doesBlockExist(const std::string& blockPath)
 {
     return Pothos::PluginRegistry::exists("/blocks"+blockPath);
 }
+
+//
+// For stats test and comparing BufferChunks
+//
+
+template <typename T>
+static T median(const std::vector<T>& inputs)
+{
+    std::vector<T> sortedInputs(inputs);
+    std::sort(sortedInputs.begin(), sortedInputs.end());
+    auto sortedIndex = size_t(std::floor(inputs.size()/2));
+
+    return sortedInputs[sortedIndex];
+}
+
+template <typename T>
+static T medAbsDev(const std::vector<T>& inputs)
+{
+    const T med = median(inputs);
+    std::vector<T> diffs;
+
+    std::transform(
+        inputs.begin(),
+        inputs.end(),
+        std::back_inserter(diffs),
+        [&med](T input){return std::abs<T>(input-med);});
+
+    return median(diffs);
+}
+
+//
+// Misc
+//
+
+const std::vector<std::string>& getAllDTypeNames();
 
 }
 

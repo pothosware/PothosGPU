@@ -49,16 +49,6 @@ static T mean(const std::vector<T>& inputs)
 }
 
 template <typename T>
-static T median(const std::vector<T>& inputs)
-{
-    std::vector<T> sortedInputs(inputs);
-    std::sort(sortedInputs.begin(), sortedInputs.end());
-    auto sortedIndex = size_t(std::floor(inputs.size()/2));
-
-    return sortedInputs[sortedIndex];
-}
-
-template <typename T>
 static T stddev(const std::vector<T>& inputs)
 {
     const T inputMean = mean(inputs);
@@ -89,21 +79,6 @@ static T variance(const std::vector<T>& inputs)
 }
 
 template <typename T>
-static T medAbsDev(const std::vector<T>& inputs)
-{
-    const T med = median(inputs);
-    std::vector<T> diffs;
-
-    std::transform(
-        inputs.begin(),
-        inputs.end(),
-        std::back_inserter(diffs),
-        [&med](T input){return std::abs<T>(input-med);});
-
-    return median(diffs);
-}
-
-template <typename T>
 static T RMS(const std::vector<T>& inputs)
 {
     auto addPow = [](T val1, T val2)
@@ -126,10 +101,10 @@ static std::vector<double> getExpectedOutputs(const std::vector<double>& inputs)
         max(inputs),
         min(inputs),
         mean(inputs),
-        median(inputs),
+        GPUTests::median(inputs),
         stddev(inputs),
         variance(inputs),
-        medAbsDev(inputs),
+        GPUTests::medAbsDev(inputs),
         RMS(inputs)
     };
 }
