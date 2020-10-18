@@ -114,6 +114,7 @@ POTHOS_MODULE_UTIL(
         Source/Utility.cpp
 
         Testing/ArrayOpBlockTests.cpp
+        Testing/BlockValueComparisonTests.cpp
         Testing/CastBlockTest.cpp
         Testing/ClampBlockTest.cpp
         Testing/ComparatorBlockTest.cpp
