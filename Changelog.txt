@@ -1,5 +1,10 @@
 This this the changelog file for the Pothos GPU toolkit.
 
+Release 0.1.0 (2020-10-18)
+==========================
+
+- Initial full public release.
+
 Release 0.0.2 (2020-07-31)
 ==========================
 
