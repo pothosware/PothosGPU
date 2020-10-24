@@ -40,12 +40,17 @@ static void testArrayOpBlock(
 
     }
 
-    auto arrayOpBlock = Pothos::BlockRegistry::make(
-                               blockRegistryPath,
-                               "Auto",
-                               operation,
-                               inputDType,
-                               nchans);
+    Pothos::Proxy arrayOpBlock = (0 == nchans) ? Pothos::BlockRegistry::make(
+                                                     blockRegistryPath,
+                                                     "Auto",
+                                                     operation,
+                                                     inputDType)
+                                               : Pothos::BlockRegistry::make(
+                                                    blockRegistryPath,
+                                                    "Auto",
+                                                    operation,
+                                                    inputDType,
+                                                    nchans);
 
     std::vector<Pothos::BufferChunk> allTestInputs;
     std::vector<Pothos::Proxy> feederSources;
@@ -111,7 +116,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_array_arithmetic)
 POTHOS_TEST_BLOCK("/gpu/tests", test_array_bitwise)
 {
     const std::vector<std::string> validDTypeNames = {"int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"};
-    const std::vector<std::string> allOperations = {"And", "Or", "XOr", "Left Shift", "Right Shift"};
+    const std::vector<std::string> allOperations = {"And", "Or", "XOr"};
 
     for(const auto& dtype: validDTypeNames)
     {
@@ -122,7 +127,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_array_bitwise)
                 dtype,
                 dtype,
                 operation,
-                (operation.find("Shift") == std::string::npos) ? 3 : 2);
+                3);
         }
     }
 }

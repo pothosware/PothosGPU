@@ -87,8 +87,6 @@ static Pothos::Block* makeArrayBitwise(
         IfOpThenNToOneBlock(&, "And")
         else IfOpThenNToOneBlock(|, "Or")
         else IfOpThenNToOneBlock(^, "XOr")
-        else IfOpThenTwoToOneBlock(<<, "Left Shift")
-        else IfOpThenTwoToOneBlock(>>, "Right Shift")
 
         throw Pothos::InvalidArgumentException("Invalid operation", operation);
     }
@@ -195,11 +193,8 @@ static Pothos::BlockRegistry registerComparator(
  * Perform the specified bitwise operation on all given inputs, resulting
  * in a single output stream.
  *
- * <b>Note:</b> the <b>Left Shift</b> and <b>Right Shift</b> operations
- * automatically use two inputs.
- *
  * |category /GPU/Array
- * |keywords array and or xor left right shift
+ * |keywords array and or xor
  * |factory /gpu/array/bitwise(device,operation,dtype,nchans)
  *
  * |param device[Device] Device to use for processing.
@@ -210,8 +205,6 @@ static Pothos::BlockRegistry registerComparator(
  * |option [And] "And"
  * |option [Or] "Or"
  * |option [XOr] "XOr"
- * |option [Left Shift] "Left Shift"
- * |option [Right Shift] "Right Shift"
  * |default "And"
  * |preview enable
  *
