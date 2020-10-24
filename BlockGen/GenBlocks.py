@@ -209,13 +209,13 @@ def generateBlockExecutionTest(allBlockYAML):
 
     try:
         rendered = Template(BlockExecutionTestAutoTemplate).render(
-                       oneToOneBlocks=filterBlockYAML(allBlockYAML["OneToOneBlocks"], True),
+                       oneToOneBlocks=allBlockYAML["OneToOneBlocks"],
                        scalarOpBlocks=[],
                        singleOutputSources=[],
-                       #scalarOpBlocks=filterBlockYAML(allBlockYAML["ScalarOpBlocks"], True),
-                       #singleOutputSources=filterBlockYAML(allBlockYAML["SingleOutputSources"], True),
-                       twoToOneBlocks=filterBlockYAML(allBlockYAML["TwoToOneBlocks"], True),
-                       NToOneBlocks=filterBlockYAML(allBlockYAML["NToOneBlocks"], True),
+                       #scalarOpBlocks=allBlockYAML["ScalarOpBlocks"],
+                       #singleOutputSources=allBlockYAML["SingleOutputSources"],
+                       twoToOneBlocks=allBlockYAML["TwoToOneBlocks"],
+                       NToOneBlocks=allBlockYAML["NToOneBlocks"],
                        sfinaeMap=sfinaeMap)
     except:
         print(mako.exceptions.text_error_template().render())

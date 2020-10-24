@@ -86,6 +86,7 @@ POTHOS_MODULE_UTIL(
         Source/DeviceCache.cpp
         Source/EnumConversions.cpp
         Source/FactoryOnly.cpp
+        Source/Fallback.cpp
         Source/FFT.cpp
         Source/FileSink.cpp
         Source/FileSource.cpp
