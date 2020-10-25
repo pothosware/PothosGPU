@@ -138,7 +138,9 @@ POTHOS_MODULE_UTIL(
         Testing/TestGPUConfig.cpp
         Testing/TestLog.cpp
         Testing/TestManagedDeviceCache.cpp
+        Testing/TestMinMax.cpp
         Testing/TestNumericConversions.cpp
+        Testing/TestPowRoot.cpp
         Testing/TestRSqrt.cpp
         Testing/TestSinc.cpp
         Testing/TestStatistics.cpp
