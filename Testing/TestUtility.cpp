@@ -17,13 +17,69 @@ void setupTestEnv()
     af::setBackend(getAvailableBackends()[0]);
 }
 
+template <typename T>
+static inline EnableIfNotComplex<T, T> epsilon()
+{
+    return T(1e-6);
+}
+
+template <typename T>
+static inline EnableIfComplex<T, T> epsilon()
+{
+    using ScalarType = typename T::value_type;
+
+    return T(epsilon<ScalarType>(), epsilon<ScalarType>());
+}
+
+// TODO: consolidate all these testBufferChunk calls
+template <typename T>
+static EnableIfAnyInt<T, void> compareBufferChunks(
+    const Pothos::BufferChunk& expectedBufferChunk,
+    const Pothos::BufferChunk& actualBufferChunk)
+{
+    POTHOS_TEST_EQUALA(
+        expectedBufferChunk.as<const T*>(),
+        actualBufferChunk.as<const T*>(),
+        expectedBufferChunk.elements());
+}
+
+template <typename T>
+static EnableIfFloat<T, void> compareBufferChunks(
+    const Pothos::BufferChunk& expectedBufferChunk,
+    const Pothos::BufferChunk& actualBufferChunk)
+{
+    POTHOS_TEST_CLOSEA(
+        expectedBufferChunk.as<const T*>(),
+        actualBufferChunk.as<const T*>(),
+        expectedBufferChunk.elements(),
+        T(1e-6));
+}
+
+template <typename T>
+static EnableIfComplex<T, void> compareBufferChunks(
+    const Pothos::BufferChunk& expectedBufferChunk,
+    const Pothos::BufferChunk& actualBufferChunk)
+{
+    using ScalarType = typename T::value_type;
+
+    auto scalarExpected = expectedBufferChunk;
+    scalarExpected.dtype = typeid(ScalarType);
+
+    auto scalarActual = actualBufferChunk;
+    scalarActual.dtype = typeid(ScalarType);
+
+    compareBufferChunks<ScalarType>(
+        scalarExpected,
+        scalarActual);
+}
+
 void testBufferChunk(
     const Pothos::BufferChunk& expectedBufferChunk,
     const Pothos::BufferChunk& actualBufferChunk)
 {
     POTHOS_TEST_EQUAL(
-        expectedBufferChunk.dtype.name(),
-        actualBufferChunk.dtype.name());
+        expectedBufferChunk.dtype,
+        actualBufferChunk.dtype);
     POTHOS_TEST_EQUAL(
         expectedBufferChunk.elements(),
         actualBufferChunk.elements());
@@ -31,14 +87,12 @@ void testBufferChunk(
     #define IfTypeThenCompare(typeStr, cType) \
         if(expectedBufferChunk.dtype.name() == typeStr) \
         { \
-            POTHOS_TEST_EQUALA( \
-                expectedBufferChunk.as<const cType*>(), \
-                actualBufferChunk.as<const cType*>(), \
-                expectedBufferChunk.elements()); \
+            compareBufferChunks<cType>( \
+                expectedBufferChunk, \
+                actualBufferChunk); \
             return; \
         }
 
-    IfTypeThenCompare("int8", std::int8_t)
     IfTypeThenCompare("int16", std::int16_t)
     IfTypeThenCompare("int32", std::int32_t)
     IfTypeThenCompare("int64", std::int64_t)
