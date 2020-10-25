@@ -129,15 +129,20 @@ POTHOS_MODULE_UTIL(
         Testing/TestBitwise.cpp
         Testing/TestBufferCombos.cpp
         Testing/TestBufferConversions.cpp
+        Testing/TestConjugate.cpp
         Testing/TestEnumConversions.cpp
         Testing/TestFFT.cpp
         Testing/TestFileSink.cpp
         Testing/TestFileSource.cpp
         Testing/TestGamma.cpp
         Testing/TestGPUConfig.cpp
+        Testing/TestLog.cpp
         Testing/TestManagedDeviceCache.cpp
         Testing/TestNumericConversions.cpp
+        Testing/TestRSqrt.cpp
+        Testing/TestSinc.cpp
         Testing/TestStatistics.cpp
+        Testing/TestTrigonometric.cpp
         Testing/TestUtility.cpp
     LIBRARIES
         ArrayFire::af
