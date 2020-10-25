@@ -126,6 +126,7 @@ POTHOS_MODULE_UTIL(
         Testing/OneToOneBlockExecutionTest.cpp
         Testing/TwoToOneBlockExecutionTest.cpp
         Testing/TestArithmeticBlocks.cpp
+        Testing/TestBitwise.cpp
         Testing/TestBufferCombos.cpp
         Testing/TestBufferConversions.cpp
         Testing/TestEnumConversions.cpp
