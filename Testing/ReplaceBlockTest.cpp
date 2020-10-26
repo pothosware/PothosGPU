@@ -119,6 +119,7 @@ static void testReplace(
     const auto params = getTestParams<T>(findValue, replaceValue);
     
     std::cout << " * Testing " << dtype.toString() << "..." << std::endl;
+    std::cout << "   * " << findValue << " -> " << replaceValue << std::endl;
 
     auto source = Pothos::BlockRegistry::make("/blocks/feeder_source", dtype);
     source.call("feedBuffer", params.inputs);

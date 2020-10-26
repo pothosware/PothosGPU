@@ -20,7 +20,7 @@ namespace
     std::mt19937 g(rd());
 
     template <typename T>
-    GPUTests::EnableIfFloat<T, std::vector<T>> getFFTInputs()
+    EnableIfFloat<T, std::vector<T>> getFFTInputs()
     {
         auto inputs = GPUTests::linspace<T>(-30.f, 20.f, numBins);
         std::shuffle(inputs.begin(), inputs.end(), g);
