@@ -75,6 +75,8 @@ POTHOS_MODULE_UTIL(
 
         Source/ArrayFireBlock.cpp
         Source/ArrayOpBlock.cpp
+        Source/BitShift.cpp
+        Source/BitwiseNot.cpp
         Source/BufferConversions.cpp
         Source/Cast.cpp
         Source/Clamp.cpp
@@ -86,6 +88,7 @@ POTHOS_MODULE_UTIL(
         Source/DeviceCache.cpp
         Source/EnumConversions.cpp
         Source/FactoryOnly.cpp
+        Source/Fallback.cpp
         Source/FFT.cpp
         Source/FileSink.cpp
         Source/FileSource.cpp
@@ -113,7 +116,6 @@ POTHOS_MODULE_UTIL(
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
 
-        Testing/ArrayOpBlockTests.cpp
         Testing/BlockValueComparisonTests.cpp
         Testing/CastBlockTest.cpp
         Testing/ClampBlockTest.cpp
@@ -121,22 +123,32 @@ POTHOS_MODULE_UTIL(
         Testing/ComplexBlockTest.cpp
         Testing/FlatBlockTest.cpp
         Testing/IsXBlockTest.cpp
-        Testing/ScalarOpBlockTests.cpp
         Testing/ReplaceBlockTest.cpp
         Testing/NToOneBlockExecutionTest.cpp
         Testing/TestObjectFunctions.cpp
         Testing/OneToOneBlockExecutionTest.cpp
         Testing/TwoToOneBlockExecutionTest.cpp
+        Testing/TestArithmeticBlocks.cpp
+        Testing/TestBitwise.cpp
         Testing/TestBufferCombos.cpp
         Testing/TestBufferConversions.cpp
+        Testing/TestConjugate.cpp
         Testing/TestEnumConversions.cpp
         Testing/TestFFT.cpp
         Testing/TestFileSink.cpp
         Testing/TestFileSource.cpp
+        Testing/TestGamma.cpp
         Testing/TestGPUConfig.cpp
+        Testing/TestLog.cpp
+        Testing/TestLogical.cpp
         Testing/TestManagedDeviceCache.cpp
+        Testing/TestMinMax.cpp
         Testing/TestNumericConversions.cpp
+        Testing/TestPowRoot.cpp
+        Testing/TestRSqrt.cpp
+        Testing/TestSinc.cpp
         Testing/TestStatistics.cpp
+        Testing/TestTrigonometric.cpp
         Testing/TestUtility.cpp
     LIBRARIES
         ArrayFire::af

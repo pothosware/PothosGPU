@@ -26,6 +26,21 @@ struct IsComplex : std::false_type {};
 template <typename T>
 struct IsComplex<std::complex<T>> : std::true_type {};
 
+template <typename T, typename U>
+using EnableIfComplex = typename std::enable_if<IsComplex<T>::value, U>::type;
+
+template <typename T, typename U>
+using EnableIfInteger = typename std::enable_if<!IsComplex<T>::value && !std::is_floating_point<T>::value && !std::is_unsigned<T>::value, U>::type;
+
+template <typename T, typename U>
+using EnableIfUnsignedInt = typename std::enable_if<std::is_unsigned<T>::value, U>::type;
+
+template <typename T, typename U>
+using EnableIfAnyInt = typename std::enable_if<!IsComplex<T>::value && !std::is_floating_point<T>::value, U>::type;
+
+template <typename T, typename U>
+using EnableIfFloat = typename std::enable_if<!IsComplex<T>::value && std::is_floating_point<T>::value, U>::type;
+
 //
 // These helper functions will be used for registering enum conversions.
 //
