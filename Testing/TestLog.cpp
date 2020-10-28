@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Nick Foster
 //               2020 Nicholas Corgan
-// SPDX-License-Identifier: BSL-1.0
+// SPDX-License-Identifier: BSD-3-Clause
 
 #include <Pothos/Testing.hpp>
 #include <Pothos/Framework.hpp>
