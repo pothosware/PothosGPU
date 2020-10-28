@@ -252,8 +252,6 @@ static void testBitwiseScalar()
         xorSink.call<Pothos::BufferChunk>("getBuffer"));
 }
 
-// TODO: port when bitshift is properly implemented
-/*
 template <typename T>
 static void testBitShift()
 {
@@ -277,11 +275,21 @@ static void testBitShift()
     auto source = Pothos::BlockRegistry::make("/blocks/feeder_source", dtype);
     source.call("feedBuffer", input);
 
-    auto leftShift = Pothos::BlockRegistry::make("/comms/bitshift", dtype, "LEFTSHIFT", leftShiftSize);
+    auto leftShift = Pothos::BlockRegistry::make(
+                         "/gpu/array/bitshift",
+                         "Auto",
+                         dtype,
+                         "Left Shift",
+                         leftShiftSize);
     auto leftShiftSink = Pothos::BlockRegistry::make("/blocks/collector_sink", dtype);
     POTHOS_TEST_EQUAL(leftShiftSize, leftShift.call<size_t>("shiftSize"));
 
-    auto rightShift = Pothos::BlockRegistry::make("/comms/bitshift", dtype, "RIGHTSHIFT", rightShiftSize);
+    auto rightShift = Pothos::BlockRegistry::make(
+                          "/gpu/array/bitshift",
+                          "Auto",
+                          dtype,
+                          "Right Shift",
+                          rightShiftSize);
     auto rightShiftSink = Pothos::BlockRegistry::make("/blocks/collector_sink", dtype);
     POTHOS_TEST_EQUAL(rightShiftSize, rightShift.call<size_t>("shiftSize"));
 
@@ -298,17 +306,16 @@ static void testBitShift()
         POTHOS_TEST_TRUE(topology.waitInactive(0.01));
     }
 
-    std::cout << " * Testing LEFTSHIFT..." << std::endl;
-    CommsTests::testBufferChunksEqual<T>(
+    std::cout << " * Testing Left Shift..." << std::endl;
+    GPUTests::testBufferChunk(
         expectedLeftShiftOutput,
         leftShiftSink.call<Pothos::BufferChunk>("getBuffer"));
 
-    std::cout << " * Testing RIGHTSHIFT..." << std::endl;
-    CommsTests::testBufferChunksEqual<T>(
+    std::cout << " * Testing Right Shift..." << std::endl;
+    GPUTests::testBufferChunk(
         expectedRightShiftOutput,
         rightShiftSink.call<Pothos::BufferChunk>("getBuffer"));
 }
-*/
 
 //
 // Tests
@@ -336,17 +343,12 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_bitwise)
     testBitwiseScalar<std::uint64_t>();
 }
 
-// TODO: port when bitshift is properly implemented
-/*
-POTHOS_TEST_BLOCK("/comms/tests", test_bitshift)
+POTHOS_TEST_BLOCK("/gpu/tests", test_bitshift)
 {
-    testBitShift<std::int8_t>();
     testBitShift<std::int16_t>();
     testBitShift<std::int32_t>();
-    testBitShift<std::int64_t>();
     testBitShift<std::uint8_t>();
     testBitShift<std::uint16_t>();
     testBitShift<std::uint32_t>();
     testBitShift<std::uint64_t>();
 }
-*/

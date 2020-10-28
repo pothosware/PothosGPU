@@ -121,7 +121,7 @@ static Pothos::Block* makeArrayLogical(
  * Perform the specified arithmetic operation on all given inputs, resulting
  * in a single output stream.
  *
- * |category /GPU/Array
+ * |category /GPU/Array Operations
  * |keywords array add subtract multiply divide modulus
  * |factory /gpu/array/arithmetic(device,operation,dtype,nchans)
  *
@@ -160,7 +160,7 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  * a single output stream of type <b>int8</b>, where <b>0</b>
  * corresponds to false and <b>1</b> corresponds to true.
  *
- * |category /GPU/Array
+ * |category /GPU/Array Operations
  * |keywords array less greater equal
  * |factory /gpu/array/comparator(device,operation,dtype,dim=1)
  *
@@ -193,7 +193,7 @@ static Pothos::BlockRegistry registerComparator(
  * Perform the specified bitwise operation on all given inputs, resulting
  * in a single output stream.
  *
- * |category /GPU/Array
+ * |category /GPU/Array Operations
  * |keywords array and or xor
  * |factory /gpu/array/bitwise(device,operation,dtype,nchans)
  *
@@ -229,7 +229,7 @@ static Pothos::BlockRegistry registerArrayBitwise(
  * in a single output stream of type <b>int8</b>, where <b>0</b> corresponds
  * to false and <b>1</b> corresponds to true.
  *
- * |category /GPU/Array
+ * |category /GPU/Array Operations
  * |keywords array and or xor
  * |factory /gpu/array/logical(device,operation,dtype,nchans)
  *
