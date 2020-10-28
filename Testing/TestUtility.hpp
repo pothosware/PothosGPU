@@ -31,9 +31,6 @@ namespace GPUTests
 using InputPortVector = std::vector<Pothos::InputPort*>;
 using OutputPortVector = std::vector<Pothos::OutputPort*>;
 
-template <typename T, typename U>
-using EnableIfComplex = typename std::enable_if<IsComplex<T>::value, U>::type;
-
 template <typename T, typename U, typename V>
 using EnableIfBothComplex = typename std::enable_if<IsComplex<T>::value && IsComplex<U>::value, V>::type;
 

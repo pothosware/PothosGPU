@@ -29,7 +29,7 @@ namespace
     }
 
     template <typename T>
-    GPUTests::EnableIfComplex<T, std::vector<T>> getFFTInputs()
+    EnableIfComplex<T, std::vector<T>> getFFTInputs()
     {
         using Scalar = typename T::value_type;
 

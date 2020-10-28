@@ -78,7 +78,7 @@ static GPUTests::EnableIfNotComplex<T, ArithmeticTestValues> getAddTestValues()
 
 // Fully co-opt the scalar implementation since complex addition is just (real+real, imag+imag)
 template <typename T>
-static GPUTests::EnableIfComplex<T, ArithmeticTestValues> getAddTestValues()
+static EnableIfComplex<T, ArithmeticTestValues> getAddTestValues()
 {
     using ScalarType = typename T::value_type;
     static const Pothos::DType dtype(typeid(T));
@@ -115,7 +115,7 @@ static GPUTests::EnableIfNotComplex<T, ArithmeticTestValues> getSubTestValues()
 
 // Fully co-opt the scalar implementation since complex subtraction is just (real-real, imag-imag)
 template <typename T>
-static GPUTests::EnableIfComplex<T, ArithmeticTestValues> getSubTestValues()
+static EnableIfComplex<T, ArithmeticTestValues> getSubTestValues()
 {
     using ScalarType = typename T::value_type;
     static const Pothos::DType dtype(typeid(T));
@@ -153,7 +153,7 @@ static GPUTests::EnableIfNotComplex<T, ArithmeticTestValues> getMulTestValues()
 
 // Out of laziness, get the scalar version's values and recalculate the outputs.
 template <typename T>
-static GPUTests::EnableIfComplex<T, ArithmeticTestValues> getMulTestValues()
+static EnableIfComplex<T, ArithmeticTestValues> getMulTestValues()
 {
     using ScalarType = typename T::value_type;
     static const Pothos::DType dtype(typeid(T));
@@ -200,7 +200,7 @@ static GPUTests::EnableIfNotComplex<T, ArithmeticTestValues> getDivTestValues()
 
 // Out of laziness, get the scalar version's values and recalculate the outputs.
 template <typename T>
-static GPUTests::EnableIfComplex<T, ArithmeticTestValues> getDivTestValues()
+static EnableIfComplex<T, ArithmeticTestValues> getDivTestValues()
 {
     using ScalarType = typename T::value_type;
     static const Pothos::DType dtype(typeid(T));
@@ -321,7 +321,7 @@ static inline GPUTests::EnableIfNotComplex<T, T> avoidZero(const T& value)
 }
 
 template <typename T>
-static inline GPUTests::EnableIfComplex<T, T> avoidZero(const T& value)
+static inline EnableIfComplex<T, T> avoidZero(const T& value)
 {
     T ret(value);
 
@@ -338,7 +338,7 @@ static inline GPUTests::EnableIfNotComplex<T, T> getTestScalar()
 }
 
 template <typename T>
-static inline GPUTests::EnableIfComplex<T, T> getTestScalar()
+static inline EnableIfComplex<T, T> getTestScalar()
 {
     return T(3, 2);
 }
