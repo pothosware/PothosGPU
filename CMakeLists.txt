@@ -75,6 +75,8 @@ POTHOS_MODULE_UTIL(
 
         Source/ArrayFireBlock.cpp
         Source/ArrayOpBlock.cpp
+        Source/BitShift.cpp
+        Source/BitwiseNot.cpp
         Source/BufferConversions.cpp
         Source/Cast.cpp
         Source/Clamp.cpp
