@@ -276,7 +276,7 @@ static void testBitShift()
     source.call("feedBuffer", input);
 
     auto leftShift = Pothos::BlockRegistry::make(
-                         "/gpu/array/bitshift",
+                         "/gpu/scalar/bitshift",
                          "Auto",
                          dtype,
                          "Left Shift",
@@ -285,7 +285,7 @@ static void testBitShift()
     POTHOS_TEST_EQUAL(leftShiftSize, leftShift.call<size_t>("shiftSize"));
 
     auto rightShift = Pothos::BlockRegistry::make(
-                          "/gpu/array/bitshift",
+                          "/gpu/scalar/bitshift",
                           "Auto",
                           dtype,
                           "Right Shift",

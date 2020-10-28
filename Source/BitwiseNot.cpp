@@ -76,8 +76,8 @@ static af::array afNot(const af::array& afArray)
  * Perform the bitwise not operation on all inputs, returning
  * the outputs in the output stream.
  *
- * |category /GPU/Scalar Operations
- * |factory /gpu/scalar/bitwise_not(device,dtype)
+ * |category /GPU/Array Operations
+ * |factory /gpu/array/bitwise_not(device,dtype)
  *
  * |param device[Device] Device to use for processing.
  * |default "Auto"
@@ -88,7 +88,7 @@ static af::array afNot(const af::array& afArray)
  * |preview disable
  */
 static Pothos::BlockRegistry registerBitwiseNot(
-    "/gpu/scalar/bitwise_not",
+    "/gpu/array/bitwise_not",
     Pothos::Callable(&OneToOneBlock::makeFromOneType)
         .bind<OneToOneFunc>(&afNot, 1)
         .bind<DTypeSupport>({
