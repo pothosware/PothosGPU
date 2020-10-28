@@ -13,6 +13,39 @@
 #include <cstdint>
 #include <typeinfo>
 
+//
+// Utility code
+//
+
+template <typename T>
+static inline EnableIfAnyInt<T, af::array> isEqual(const af::array& afArray, const T& value)
+{
+    return (afArray == value);
+}
+
+template <typename T>
+static inline EnableIfFloat<T, af::array> isEqual(const af::array& afArray, const T& value)
+{
+    auto afValue = af::constant(value, afArray.elements(), afArray.type());
+
+    return (af::isNaN(afArray) && af::isNaN(afValue)) ||
+           ((af::isInf(afArray) && af::isInf(afValue)) && (af::sign(afArray) == af::sign(afArray))) ||
+           (af::abs(afArray - value) <= 1e-6);
+}
+
+template <typename T>
+static inline EnableIfComplex<T, af::array> isEqual(const af::array& afArray, const T& value)
+{
+    using ScalarType = typename T::value_type;
+
+    return isEqual<ScalarType>(af::real(afArray), value.real()) &&
+           isEqual<ScalarType>(af::imag(afArray), value.imag());
+}
+
+//
+// Interface
+//
+
 template <typename T>
 class Replace: public ArrayFireBlock
 {
@@ -74,7 +107,26 @@ class Replace: public ArrayFireBlock
             this->emitSignal("replaceValueChanged", replaceValue);
         }
 
-        void work() override;
+        void work() override
+        {
+            if(0 == this->workInfo().minElements)
+            {
+                return;
+            }
+
+            this->configArrayFire();
+
+            auto afArray = this->getInputPortAsAfArray(0);
+            auto afCond = !isEqual<T>(afArray, PothosToAF<T>::from(_findValue));
+
+            // af::replace operates in place.
+            af::replace(
+                afArray,
+                afCond,
+                af::constant(_replaceValue, afArray.elements(), _afDType));
+
+            this->produceFromAfArray(0, afArray);
+        }
 
     private:
 
@@ -87,52 +139,6 @@ class Replace: public ArrayFireBlock
 
 template <typename T>
 const Pothos::DType Replace<T>::dtype(typeid(T));
-
-//
-// ArrayFire has two versions of af::replace: a normal one that takes in an af::array
-// containing the value, and a special one for double that takes the value in directly.
-//
-
-template <typename T>
-void Replace<T>::work()
-{
-    if(0 == this->workInfo().minElements)
-    {
-        return;
-    }
-
-    this->configArrayFire();
-
-    auto afArray = this->getInputPortAsAfArray(0);
-    auto afCond = af::array(afArray == _findValue);
-
-    // af::replace operates in place.
-    af::replace(
-        afArray,
-        afCond,
-        af::constant(_replaceValue, afArray.elements(), _afDType));
-
-    this->produceFromAfArray(0, afArray);
-}
-
-template <>
-void Replace<double>::work()
-{
-    if(0 == this->workInfo().minElements)
-    {
-        return;
-    }
-
-    this->configArrayFire();
-
-    auto afArray = this->getInputPortAsAfArray(0);
-    auto afCond = af::array(afArray == _findValue);
-
-    // af::replace operates in place.
-    af::replace(afArray, afCond, _replaceValue);
-
-    this->produceFromAfArray(0, afArray);
-}
 
 //
 // Factory/Registration

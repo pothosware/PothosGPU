@@ -114,29 +114,37 @@ POTHOS_MODULE_UTIL(
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
 
-        Testing/ArrayOpBlockTests.cpp
         Testing/CastBlockTest.cpp
         Testing/ClampBlockTest.cpp
         Testing/ComparatorBlockTest.cpp
         Testing/ComplexBlockTest.cpp
         Testing/FlatBlockTest.cpp
         Testing/IsXBlockTest.cpp
-        Testing/ScalarOpBlockTests.cpp
         Testing/ReplaceBlockTest.cpp
         Testing/NToOneBlockExecutionTest.cpp
         Testing/TestObjectFunctions.cpp
         Testing/OneToOneBlockExecutionTest.cpp
         Testing/TwoToOneBlockExecutionTest.cpp
+        Testing/TestArithmeticBlocks.cpp
+        Testing/TestBitwise.cpp
         Testing/TestBufferCombos.cpp
         Testing/TestBufferConversions.cpp
+        Testing/TestConjugate.cpp
         Testing/TestEnumConversions.cpp
         Testing/TestFFT.cpp
         Testing/TestFileSink.cpp
         Testing/TestFileSource.cpp
+        Testing/TestGamma.cpp
         Testing/TestGPUConfig.cpp
+        Testing/TestLog.cpp
         Testing/TestManagedDeviceCache.cpp
+        Testing/TestMinMax.cpp
         Testing/TestNumericConversions.cpp
+        Testing/TestPowRoot.cpp
+        Testing/TestRSqrt.cpp
+        Testing/TestSinc.cpp
         Testing/TestStatistics.cpp
+        Testing/TestTrigonometric.cpp
         Testing/TestUtility.cpp
     LIBRARIES
         ArrayFire::af

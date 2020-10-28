@@ -15,7 +15,7 @@
 // TODO: complex overload
 
 template <typename T>
-static GPUTests::EnableIfAnyInt<T, Pothos::BufferChunk> getIsXTestInputs()
+static EnableIfAnyInt<T, Pothos::BufferChunk> getIsXTestInputs()
 {
     const std::vector<T> testInputs =
     {
@@ -29,7 +29,7 @@ static GPUTests::EnableIfAnyInt<T, Pothos::BufferChunk> getIsXTestInputs()
 }
 
 template <typename T>
-static GPUTests::EnableIfFloat<T, Pothos::BufferChunk> getIsXTestInputs()
+static EnableIfFloat<T, Pothos::BufferChunk> getIsXTestInputs()
 {
     const std::vector<T> testInputs =
     {

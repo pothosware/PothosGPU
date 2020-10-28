@@ -20,7 +20,7 @@ namespace
     std::mt19937 g(rd());
 
     template <typename T>
-    GPUTests::EnableIfFloat<T, std::vector<T>> getFFTInputs()
+    EnableIfFloat<T, std::vector<T>> getFFTInputs()
     {
         auto inputs = GPUTests::linspace<T>(-30.f, 20.f, numBins);
         std::shuffle(inputs.begin(), inputs.end(), g);
@@ -29,7 +29,7 @@ namespace
     }
 
     template <typename T>
-    GPUTests::EnableIfComplex<T, std::vector<T>> getFFTInputs()
+    EnableIfComplex<T, std::vector<T>> getFFTInputs()
     {
         using Scalar = typename T::value_type;
 

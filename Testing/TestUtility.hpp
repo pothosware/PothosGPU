@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <complex>
 #include <cstring>
+#include <iostream>
 #include <limits>
 #include <random>
 #include <sstream>
@@ -29,21 +30,6 @@ namespace GPUTests
 
 using InputPortVector = std::vector<Pothos::InputPort*>;
 using OutputPortVector = std::vector<Pothos::OutputPort*>;
-
-template <typename T, typename U>
-using EnableIfInteger = typename std::enable_if<!IsComplex<T>::value && !std::is_floating_point<T>::value && !std::is_unsigned<T>::value, U>::type;
-
-template <typename T, typename U>
-using EnableIfUnsignedInt = typename std::enable_if<std::is_unsigned<T>::value, U>::type;
-
-template <typename T, typename U>
-using EnableIfAnyInt = typename std::enable_if<!IsComplex<T>::value && !std::is_floating_point<T>::value, U>::type;
-
-template <typename T, typename U>
-using EnableIfFloat = typename std::enable_if<!IsComplex<T>::value && std::is_floating_point<T>::value, U>::type;
-
-template <typename T, typename U>
-using EnableIfComplex = typename std::enable_if<IsComplex<T>::value, U>::type;
 
 template <typename T, typename U, typename V>
 using EnableIfBothComplex = typename std::enable_if<IsComplex<T>::value && IsComplex<U>::value, V>::type;
@@ -159,6 +145,8 @@ template <typename T>
 static std::vector<T> linspace(T a, T b, size_t N)
 {
     T h = (b - a) / static_cast<T>(N-1);
+    std::cout << a << " " << b << " " << N << " " << h << std::endl;
+
     std::vector<T> xs(N);
     typename std::vector<T>::iterator x;
     T val;
