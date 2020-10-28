@@ -41,14 +41,10 @@ static T getRandomValue()
 // Test implementations
 //
 
-// TODO: port when Not is implemented
-/*
 template <typename T>
-static void testBitwiseUnaryArray()
+static void testBitwiseNot()
 {
     const Pothos::DType dtype(typeid(T));
-
-    std::cout << "Testing " << dtype.name() << "..." << std::endl;
 
     auto input = getTestInputs<T>();
     Pothos::BufferChunk expectedOutput(typeid(T), input.elements());
@@ -58,7 +54,7 @@ static void testBitwiseUnaryArray()
     }
 
     auto source = Pothos::BlockRegistry::make("/blocks/feeder_source", dtype);
-    auto notBlock = Pothos::BlockRegistry::make("/comms/bitwise_unary", dtype, "NOT");
+    auto notBlock = Pothos::BlockRegistry::make("/gpu/array/bitwise_not", "Auto", dtype);
     auto sink = Pothos::BlockRegistry::make("/blocks/collector_sink", dtype);
 
     source.call("feedBuffer", input);
@@ -73,11 +69,11 @@ static void testBitwiseUnaryArray()
         POTHOS_TEST_TRUE(topology.waitInactive(0.01));
     }
 
-    CommsTests::testBufferChunksEqual<T>(
+    std::cout << " * Testing Not..." << std::endl;
+    GPUTests::testBufferChunk(
         expectedOutput,
         sink.call<Pothos::BufferChunk>("getBuffer"));
 }
-*/
 
 template <typename T>
 static void testBitwiseArray()
@@ -86,6 +82,8 @@ static void testBitwiseArray()
     constexpr size_t numInputs = 3;
 
     std::cout << "Testing " << dtype.name() << "..." << std::endl;
+
+    testBitwiseNot<T>();
 
     std::vector<Pothos::BufferChunk> inputs;
     for (size_t i = 0; i < numInputs; ++i) inputs.emplace_back(getTestInputs<T>());
@@ -315,21 +313,6 @@ static void testBitShift()
 //
 // Tests
 //
-
-// TODO: port when Not is implemented
-/*
-POTHOS_TEST_BLOCK("/comms/tests", test_bitwise_unary)
-{
-    testBitwiseUnaryArray<std::int8_t>();
-    testBitwiseUnaryArray<std::int16_t>();
-    testBitwiseUnaryArray<std::int32_t>();
-    testBitwiseUnaryArray<std::int64_t>();
-    testBitwiseUnaryArray<std::uint8_t>();
-    testBitwiseUnaryArray<std::uint16_t>();
-    testBitwiseUnaryArray<std::uint32_t>();
-    testBitwiseUnaryArray<std::uint64_t>();
-}
-*/
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_array_bitwise)
 {
