@@ -106,6 +106,7 @@ void NToOneBlock::work()
 
     for(size_t chan = 1; chan < _nchans; ++chan)
     {
+        afArray = this->getInputPortAsAfArray(chan);
         outputAfArray = _func.call(outputAfArray, afArray).template extract<af::array>();
     }
     this->produceFromAfArray(0, outputAfArray);
