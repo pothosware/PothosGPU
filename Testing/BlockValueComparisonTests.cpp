@@ -9,6 +9,7 @@
 
 #include <Poco/Format.h>
 
+#include <complex>
 #include <iostream>
 #include <vector>
 
@@ -227,6 +228,135 @@ static void testConverterBlock(const Pothos::DType& inputDType)
     }
 }
 
+static void testPowBlock(const Pothos::DType& dtype)
+{
+    const auto powers = GPUTests::linspace<double>(0.0, 10.0, 11);
+    for(auto power: powers)
+    {
+        ValueCompareParams params =
+        {
+            {
+                Pothos::BlockRegistry::make("/comms/pow", dtype, power),
+                {"0"},
+                {"0"}
+            },
+            {
+                Pothos::BlockRegistry::make("/gpu/arith/pow", "Auto", dtype, power),
+                {"0"},
+                {"0"}
+            },
+
+            dtype,
+            dtype
+        };
+
+        const auto& pothosBlock = params.pothosBlockParams.block;
+        const auto& pothosGPUBlock = params.pothosGPUBlockParams.block;
+
+        pothosBlock.call(
+            "setName",
+            Poco::format(
+                "%s(%f)",
+                pothosBlock.call<std::string>("getName"),
+                power));
+
+        pothosGPUBlock.call(
+            "setName",
+            Poco::format(
+                "%s(%f)",
+                pothosGPUBlock.call<std::string>("getName"),
+                power));
+
+        compareIOBlockValues(params);
+    }
+}
+
+static void testRootBlock(const Pothos::DType& dtype)
+{
+    const std::vector<size_t> roots{1,2,3,4};
+    for(auto root: roots)
+    {
+        ValueCompareParams params =
+        {
+            {
+                Pothos::BlockRegistry::make("/comms/nth_root", dtype, root),
+                {"0"},
+                {"0"}
+            },
+            {
+                Pothos::BlockRegistry::make("/gpu/arith/root", "Auto", dtype, root),
+                {"0"},
+                {"0"}
+            },
+
+            dtype,
+            dtype
+        };
+
+        const auto& pothosBlock = params.pothosBlockParams.block;
+        const auto& pothosGPUBlock = params.pothosGPUBlockParams.block;
+
+        pothosBlock.call(
+            "setName",
+            Poco::format(
+                "%s(%z)",
+                pothosBlock.call<std::string>("getName"),
+                root));
+
+        pothosGPUBlock.call(
+            "setName",
+            Poco::format(
+                "%s(%z)",
+                pothosGPUBlock.call<std::string>("getName"),
+                root));
+
+        compareIOBlockValues(params);
+    }
+}
+
+static void testLogBlock(const Pothos::DType& dtype)
+{
+    const std::vector<size_t> bases{2,5,10};
+    for(auto base: bases)
+    {
+        ValueCompareParams params =
+        {
+            {
+                Pothos::BlockRegistry::make("/comms/logN", dtype, base),
+                {"0"},
+                {"0"}
+            },
+            {
+                Pothos::BlockRegistry::make("/gpu/arith/log", "Auto", dtype, base),
+                {"0"},
+                {"0"}
+            },
+
+            dtype,
+            dtype
+        };
+
+        const auto& pothosBlock = params.pothosBlockParams.block;
+        const auto& pothosGPUBlock = params.pothosGPUBlockParams.block;
+
+        pothosBlock.call(
+            "setName",
+            Poco::format(
+                "%s(%z)",
+                pothosBlock.call<std::string>("getName"),
+                base));
+
+        pothosGPUBlock.call(
+            "setName",
+            Poco::format(
+                "%s(%z)",
+                pothosGPUBlock.call<std::string>("getName"),
+                base));
+
+        compareIOBlockValues(params);
+    }
+}
+
 POTHOS_TEST_BLOCK("/gpu/tests", compare_pothos_block_outputs)
 {
     std::vector<TestBlockNames> oneChanFloatBlocks =
@@ -239,6 +369,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", compare_pothos_block_outputs)
         {"/comms/lngamma", "/gpu/arith/lgamma"},
         {"/comms/sinc", "/gpu/signal/sinc"},
         {"/comms/log1p", "/gpu/arith/log1p"},
+        {"/comms/rsqrt", "/gpu/arith/rsqrt"},
     };
 
     for(const auto& block: oneChanFloatBlocks)
@@ -313,4 +444,22 @@ POTHOS_TEST_BLOCK("/gpu/tests", compare_pothos_block_outputs)
         testConverterBlock("float64");
     }
     else std::cout << " * Could not find /blocks/converter. Skipping." << std::endl;
+
+    if(GPUTests::doesBlockExist("/comms/pow"))
+    {
+        testPowBlock("float32");
+        testPowBlock("float64");
+    }
+
+    if(GPUTests::doesBlockExist("/comms/nth_root"))
+    {
+        testRootBlock("float32");
+        testRootBlock("float64");
+    }
+
+    if(GPUTests::doesBlockExist("/comms/logN"))
+    {
+        testLogBlock("float32");
+        testLogBlock("float64");
+    }
 }
