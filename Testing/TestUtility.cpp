@@ -4,6 +4,8 @@
 #include "DeviceCache.hpp"
 #include "TestUtility.hpp"
 
+#include <Poco/Random.h>
+
 #include <Pothos/Framework.hpp>
 #include <Pothos/Plugin.hpp>
 #include <Pothos/Proxy.hpp>
@@ -136,6 +138,8 @@ void addMinMaxToAfArray(af::array& rAfArray, const std::string& type)
 Pothos::BufferChunk getTestInputs(const std::string& type)
 {
     const auto afDType = Pothos::Object(Pothos::DType(type)).convert<af::dtype>();
+
+    af::setSeed(Poco::Random().next());
 
     return Pothos::Object(af::randu(TestInputLength, afDType)).convert<Pothos::BufferChunk>();
 }
