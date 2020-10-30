@@ -93,7 +93,6 @@ POTHOS_MODULE_UTIL(
         Source/FileSink.cpp
         Source/FileSource.cpp
         Source/Filter.cpp
-        Source/Flat.cpp
         Source/IsX.cpp
         Source/LogN.cpp
         Source/MinMax.cpp
@@ -121,7 +120,6 @@ POTHOS_MODULE_UTIL(
         Testing/ClampBlockTest.cpp
         Testing/ComparatorBlockTest.cpp
         Testing/ComplexBlockTest.cpp
-        Testing/FlatBlockTest.cpp
         Testing/IsXBlockTest.cpp
         Testing/ReplaceBlockTest.cpp
         Testing/NToOneBlockExecutionTest.cpp
