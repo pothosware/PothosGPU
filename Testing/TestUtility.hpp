@@ -307,6 +307,8 @@ void addMinMaxToAfArray(af::array& rAfArray, const std::string& type);
 // Getting random inputs
 //
 
+static constexpr size_t TestInputLength = 4096;
+
 // Templateless for the case where templates would make the binary size
 // explode
 Pothos::BufferChunk getTestInputs(const std::string& type);

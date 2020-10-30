@@ -135,22 +135,9 @@ void addMinMaxToAfArray(af::array& rAfArray, const std::string& type)
 
 Pothos::BufferChunk getTestInputs(const std::string& type)
 {
-    // ArrayFire doesn't support int8
-    RETURN_BUFFERCHUNK("int16", std::int16_t)
-    RETURN_BUFFERCHUNK("int32", std::int32_t)
-    RETURN_BUFFERCHUNK("int64", std::int64_t)
-    RETURN_BUFFERCHUNK("uint8", std::uint8_t)
-    RETURN_BUFFERCHUNK("uint16", std::uint16_t)
-    RETURN_BUFFERCHUNK("uint32", std::uint32_t)
-    RETURN_BUFFERCHUNK("uint64", std::uint64_t)
-    RETURN_BUFFERCHUNK("float32", float)
-    RETURN_BUFFERCHUNK("float64", double)
-    // ArrayFire doesn't support any integral complex type
-    RETURN_BUFFERCHUNK("complex_float32", std::complex<float>)
-    RETURN_BUFFERCHUNK("complex_float64", std::complex<double>)
+    const auto afDType = Pothos::Object(Pothos::DType(type)).convert<af::dtype>();
 
-    // Should never happen
-    return Pothos::BufferChunk();
+    return Pothos::Object(af::randu(TestInputLength, afDType)).convert<Pothos::BufferChunk>();
 }
 
 #define RETURN_OBJECT(typeStr, cType) \

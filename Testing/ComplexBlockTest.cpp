@@ -38,7 +38,7 @@ Pothos::BufferChunk getPhaseInputs()
     static std::random_device rd;
     static std::mt19937 g(rd());
 
-    auto phases = GPUTests::linspace<T>(-M_PI/2, M_PI/2, 123);
+    auto phases = GPUTests::linspace<T>(-M_PI/2, M_PI/2, GPUTests::TestInputLength);
     std::shuffle(phases.begin(), phases.end(), g);
 
     return GPUTests::stdVectorToBufferChunk(phases);

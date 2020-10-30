@@ -330,18 +330,6 @@ OneToOneBlocks:
           supportedTypes:
                   supportFloat: true
 
-        - func: setUnique
-          blockName: set_unique
-          niceName: Unique
-          category: Stream
-          header: algorithm
-          description: Outputs the unique elements in the input stream, sorted in ascending order.
-          testOnly: true
-          supportedTypes:
-                  supportInt: true
-                  supportUInt: true
-                  supportFloat: true
-
         - func: flip
           category: Stream
           header: data
