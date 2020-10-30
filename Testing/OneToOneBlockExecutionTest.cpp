@@ -23,14 +23,14 @@ static void testOneToOneBlockCommon(const Pothos::Proxy& block)
     static const Pothos::DType inputDType(typeid(In));
     static const Pothos::DType outputDType(typeid(Out));
 
-    auto testInputs = getTestInputs<In>();
+    auto testInputs = getTestInputs(inputDType.toString());
 
     auto feederSource = Pothos::BlockRegistry::make(
                             "/blocks/feeder_source",
                             inputDType);
     feederSource.call(
         "feedBuffer",
-        stdVectorToBufferChunk<In>(testInputs));
+        testInputs);
 
     auto collectorSink = Pothos::BlockRegistry::make(
                              "/blocks/collector_sink",
@@ -49,7 +49,7 @@ static void testOneToOneBlockCommon(const Pothos::Proxy& block)
     // Make sure the block outputs data.
     auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
     POTHOS_TEST_EQUAL(
-        testInputs.size(),
+        testInputs.elements(),
         static_cast<size_t>(output.elements()));
 }
 

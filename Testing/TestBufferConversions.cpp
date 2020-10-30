@@ -75,9 +75,11 @@ static void test2DArrayConversion(
 template <typename T>
 static void testStdVectorToAfArrayConversion(af::dtype expectedAfDType)
 {
-    std::cout << " * Testing " << Pothos::DType(typeid(T)).name() << "..." << std::endl;
+    Pothos::DType dtype(typeid(T));
 
-    const std::vector<T> stdVector = getTestInputs<T>();
+    std::cout << " * Testing " << dtype.name() << "..." << std::endl;
+
+    const std::vector<T> stdVector = bufferChunkToStdVector<T>(getTestInputs(dtype.name()));
 
     const auto afArray = Pothos::Object(stdVector).convert<af::array>();
     POTHOS_TEST_EQUAL(1, afArray.numdims());
