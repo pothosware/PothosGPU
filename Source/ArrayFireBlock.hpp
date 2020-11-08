@@ -80,6 +80,7 @@ class ArrayFireBlock: public Pothos::Block
         af::Backend _afBackend;
         int _afDevice;
         std::string _afDeviceName;
+        std::string _domain;
 
     private:
 

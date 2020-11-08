@@ -64,10 +64,12 @@ class Replace: public ArrayFireBlock
         {
             this->setupInput(
                 0,
-                Pothos::DType::fromDType(Class::dtype, dtypeDims));
+                Pothos::DType::fromDType(Class::dtype, dtypeDims),
+                _domain);
             this->setupOutput(
                 0,
-                Pothos::DType::fromDType(Class::dtype, dtypeDims));
+                Pothos::DType::fromDType(Class::dtype, dtypeDims),
+                _domain);
 
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, findValue));
             this->registerCall(this, POTHOS_FCN_TUPLE(Class, setFindValue));

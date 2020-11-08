@@ -140,7 +140,7 @@ class FileSinkBlock: public ArrayFireBlock
 
             for(size_t chan = 0; chan < _nchans; ++chan)
             {
-                this->setupInput(chan, dtype);
+                this->setupInput(chan, dtype, _domain);
             }
 
             _buffers.resize(_nchans);

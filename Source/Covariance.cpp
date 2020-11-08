@@ -32,8 +32,8 @@ class CovarianceBlock: public ArrayFireBlock
         {
             for(size_t i = 0; i < 2; ++i)
             {
-                this->setupInput(i, dtype);
-                this->setupOutput(i, dtype);
+                this->setupInput(i, dtype, _domain);
+                this->setupOutput(i, dtype, _domain);
             }
 
             this->registerCall(this, POTHOS_FCN_TUPLE(CovarianceBlock, isBiased));

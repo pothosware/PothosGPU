@@ -82,10 +82,12 @@ class FFTBlock: public ArrayFireBlock
 
             this->setupInput(
                 0,
-                Pothos::DType::fromDType(inDType, dtypeDims));
+                Pothos::DType::fromDType(inDType, dtypeDims),
+                _domain);
             this->setupOutput(
                 0,
-                Pothos::DType::fromDType(outDType, dtypeDims));
+                Pothos::DType::fromDType(outDType, dtypeDims),
+                _domain);
             if(_enforceNumBins)
             {
                 this->input(0)->setReserve(_numBins);
@@ -101,27 +103,6 @@ class FFTBlock: public ArrayFireBlock
         }
 
         virtual ~FFTBlock() = default;
-
-        Pothos::BufferManager::Sptr getOutputBufferManager(
-            const std::string& name,
-            const std::string& domain)
-        {
-            if(!_enforceNumBins) return ArrayFireBlock::getOutputBufferManager(name, domain);
-
-            if(domain.empty())
-            {
-                // We always want to operate on pinned memory, as GPUs can access this via DMA.
-                Pothos::BufferManagerArgs args;
-                args.numBuffers = 16;
-
-                // Make sure the buffer is large enough for our numBins.
-                args.bufferSize = std::max<size_t>(_numBins*sizeof(OutType), (2 << 20));
-
-                return makePinnedBufferManager(_afBackend, args);
-            }
-
-            throw Pothos::PortDomainError(domain);
-        }
 
         double normalizationFactor() const
         {

@@ -33,9 +33,7 @@ class AfPinnedMemRAII
         void* _pinnedMem;
 };
 
-Pothos::BufferManager::Sptr makePinnedBufferManager(
-    af::Backend backend,
-    const Pothos::BufferManagerArgs& args);
+Pothos::BufferManager::Sptr makePinnedBufferManager(af::Backend backend);
 
 //
 // Pothos::BufferChunk <-> af::array

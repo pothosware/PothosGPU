@@ -34,14 +34,17 @@ class CombineComplex: public ArrayFireBlock
         {
             this->setupInput(
                 "re",
-                Pothos::DType(typeid(T), dtypeDimensions));
+                Pothos::DType(typeid(T), dtypeDimensions),
+                _domain);
             this->setupInput(
                 "im",
-                Pothos::DType(typeid(T), dtypeDimensions));
+                Pothos::DType(typeid(T), dtypeDimensions),
+                _domain);
 
             this->setupOutput(
                 0,
-                Pothos::DType(typeid(ComplexType), dtypeDimensions));
+                Pothos::DType(typeid(ComplexType), dtypeDimensions),
+                _domain);
         }
 
         virtual ~CombineComplex() = default;
@@ -79,10 +82,12 @@ class SplitComplex: public ArrayFireBlock
 
             this->setupOutput(
                 "re",
-                Pothos::DType(typeid(T), dtypeDimensions));
+                Pothos::DType(typeid(T), dtypeDimensions),
+                _domain);
             this->setupOutput(
                 "im",
-                Pothos::DType(typeid(T), dtypeDimensions));
+                Pothos::DType(typeid(T), dtypeDimensions),
+                _domain);
         }
 
         virtual ~SplitComplex() = default;
@@ -115,14 +120,17 @@ class PolarToComplex: public ArrayFireBlock
         {
             this->setupInput(
                 "mag",
-                Pothos::DType(typeid(T), dtypeDimensions));
+                Pothos::DType(typeid(T), dtypeDimensions),
+                _domain);
             this->setupInput(
                 "phase",
-                Pothos::DType(typeid(T), dtypeDimensions));
+                Pothos::DType(typeid(T), dtypeDimensions),
+                _domain);
 
             this->setupOutput(
                 0,
-                Pothos::DType(typeid(ComplexType), dtypeDimensions));
+                Pothos::DType(typeid(ComplexType), dtypeDimensions),
+                _domain);
         }
 
         virtual ~PolarToComplex() = default;
@@ -156,14 +164,17 @@ class ComplexToPolar: public ArrayFireBlock
         {
             this->setupInput(
                 0,
-                Pothos::DType(typeid(ComplexType), dtypeDimensions));
+                Pothos::DType(typeid(ComplexType), dtypeDimensions),
+                _domain);
 
             this->setupOutput(
                 "mag",
-                Pothos::DType(typeid(T), dtypeDimensions));
+                Pothos::DType(typeid(T), dtypeDimensions),
+                _domain);
             this->setupOutput(
                 "phase",
-                Pothos::DType(typeid(T), dtypeDimensions));
+                Pothos::DType(typeid(T), dtypeDimensions),
+                _domain);
         }
 
         virtual ~ComplexToPolar() = default;

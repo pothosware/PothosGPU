@@ -85,7 +85,7 @@ NToOneBlock::NToOneBlock(
 
     for(size_t chan = 0; chan < _nchans; ++chan)
     {
-        this->setupInput(chan, dtype);
+        this->setupInput(chan, dtype, _domain);
     }
     this->setupOutput(0, dtype);
 }

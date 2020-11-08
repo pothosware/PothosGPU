@@ -86,8 +86,8 @@ class OneArrayStatsBlock: public ArrayFireBlock
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _lastValue(0.0)
         {
-            this->setupInput(0, _dtype);
-            this->setupOutput(0, _dtype);
+            this->setupInput(0, _dtype, _domain);
+            this->setupOutput(0, _dtype, _domain);
 
             this->registerCall(this, POTHOS_FCN_TUPLE(OneArrayStatsBlock, lastValue));
             this->registerProbe("lastValue");

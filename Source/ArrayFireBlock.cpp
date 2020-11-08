@@ -83,8 +83,9 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
         }
     }
 
-    this->configArrayFire();
+    _domain = Poco::format("ArrayFire_%s_%s", this->backend(), this->device());
 
+    this->configArrayFire();
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, backend));
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, device));
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, overlay));
@@ -98,34 +99,17 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getInputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
-    if(domain.empty())
-    {
-        // We always want to operate on pinned memory, as GPUs can access this via DMA.
-        Pothos::BufferManagerArgs args;
-        args.numBuffers = 16;
-        args.bufferSize = (2 << 20);
-
-        return makePinnedBufferManager(_afBackend, args);
-    }
-
-    throw Pothos::PortDomainError(domain);
+    if(domain.empty())         return makePinnedBufferManager(_afBackend);
+    else if(domain == _domain) return Pothos::BufferManager::Sptr();
+    else throw Pothos::PortDomainError(domain);
 }
 
 Pothos::BufferManager::Sptr ArrayFireBlock::getOutputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
-    if(domain.empty())
-    {
-        // We always want to operate on pinned memory, as GPUs can access this via DMA.
-        Pothos::BufferManagerArgs args;
-        args.numBuffers = 16;
-        args.bufferSize = (2 << 20);
-
-        return makePinnedBufferManager(_afBackend, args);
-    }
-
-    throw Pothos::PortDomainError(domain);
+    if(domain.empty() || (domain == _domain)) return makePinnedBufferManager(_afBackend);
+    else                                      throw Pothos::PortDomainError(domain);
 }
 
 void ArrayFireBlock::activate()

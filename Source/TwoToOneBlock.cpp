@@ -90,9 +90,9 @@ TwoToOneBlock::TwoToOneBlock(
    _func(func),
    _allowZeroInBuffer1(allowZeroInBuffer1)
 {
-    this->setupInput(0, inputDType);
-    this->setupInput(1, inputDType);
-    this->setupOutput(0, outputDType);
+    this->setupInput(0, inputDType, _domain);
+    this->setupInput(1, inputDType, _domain);
+    this->setupOutput(0, outputDType, _domain);
 }
 
 TwoToOneBlock::~TwoToOneBlock() {}

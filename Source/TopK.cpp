@@ -38,8 +38,8 @@ class TopK: public ArrayFireBlock
           _k(1),
           _topKFunction(::AF_TOPK_DEFAULT)
         {
-            this->setupInput(0, dtype);
-            this->setupOutput(0, dtype);
+            this->setupInput(0, dtype, _domain);
+            this->setupOutput(0, dtype, _domain);
 
             this->registerProbe("lastValue");
 

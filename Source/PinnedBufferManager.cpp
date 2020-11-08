@@ -113,11 +113,7 @@ private:
 /***********************************************************************
  * Factory
  **********************************************************************/
-Pothos::BufferManager::Sptr makePinnedBufferManager(
-    af::Backend backend,
-    const Pothos::BufferManagerArgs& args)
+Pothos::BufferManager::Sptr makePinnedBufferManager(af::Backend backend)
 {
-    auto bufferManager = std::make_shared<PinnedBufferManager>(backend);
-    bufferManager->init(args);
-    return bufferManager;
+    return std::make_shared<PinnedBufferManager>(backend);
 }

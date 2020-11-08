@@ -29,8 +29,8 @@ class MinMax: public ArrayFireBlock
             _afDType(Pothos::Object(dtype).convert<af::dtype>()),
             _func(func)
         {
-            this->setupInput(0, _dtype);
-            this->setupOutput(0, _dtype);
+            this->setupInput(0, _dtype, _domain);
+            this->setupOutput(0, _dtype, _domain);
 
             this->registerCall(this, POTHOS_FCN_TUPLE(MinMax, lastValue));
             this->registerProbe("lastValue");
