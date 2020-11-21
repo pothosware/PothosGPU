@@ -294,7 +294,7 @@ static Pothos::Block* makeIIR(
 //
 
 /*
- * |PothosDoc FIR Filter
+ * |PothosDoc FIR Filter (GPU)
  *
  * Uses <b>af::fir</b> to convolve the input stream with user-provided filter
  * taps. The taps can be set at runtime by connecting the output of a FIR Designer
@@ -331,7 +331,7 @@ static Pothos::BlockRegistry registerFIR(
 
 
 /*
- * |PothosDoc IIR Filter
+ * |PothosDoc IIR Filter (GPU)
  *
  * Uses <b>af::iir</b> to convolve the input stream with user-provided filter
  * taps. The individual coefficient parts can be set at runtime by connecting

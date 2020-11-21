@@ -270,7 +270,7 @@ static Pothos::Block* complexToPolarFactory(
 //
 
 /*
- * |PothosDoc Combine Complex
+ * |PothosDoc Combine Complex (GPU)
  *
  * Calls <b>af::complex</b> on the inputs of the <b>"re"</b> and <b>"im"</b> ports
  * and outputs the combined results.
@@ -292,7 +292,7 @@ static Pothos::BlockRegistry registerCombineComplex(
     Pothos::Callable(&combineComplexFactory));
 
 /*
- * |PothosDoc Split Complex
+ * |PothosDoc Split Complex (GPU)
  *
  * Calls <b>af::real</b> and <b>af::imag</b> on all inputs and outputs results
  * in "re" and "im" output channels.
@@ -314,7 +314,7 @@ static Pothos::BlockRegistry registerSplitComplex(
     Pothos::Callable(&splitComplexFactory));
 
 /*
- * |PothosDoc Polar to Complex
+ * |PothosDoc Polar to Complex (GPU)
  *
  * Takes in a polar magnitude (port <b>"mag"</b>) and phase (port <b>"phase"</b>) and converts
  * them to a complex number.
@@ -336,7 +336,7 @@ static Pothos::BlockRegistry registerPolarToComplex(
     Pothos::Callable(&polarToComplexFactory));
 
 /*
- * |PothosDoc Complex to Polar
+ * |PothosDoc Complex to Polar (GPU)
  *
  * Calls <b>af::abs</b> and <b>af::arg</b> on all inputs and outputs results
  * in "mag" and "phase" output channels.

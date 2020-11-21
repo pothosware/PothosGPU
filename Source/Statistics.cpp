@@ -194,7 +194,7 @@ class VarianceBlock: public OneArrayStatsBlock
 //
 
 /*
- * |PothosDoc Mean
+ * |PothosDoc Mean (GPU)
  *
  * Calls <b>af::mean</b> on each input buffer to calculate the
  * arithmetic mean of the given values. The result of the last calculation
@@ -221,7 +221,7 @@ static Pothos::BlockRegistry registerMean(
         .bind<DTypeSupport>(DTypeSupport({true,true,true,false}), 2));
 
 /*
- * |PothosDoc Median
+ * |PothosDoc Median (GPU)
  *
  * Calls <b>af::median</b> on each input buffer to calculate the
  * median of the given values. The result of the last calculation
@@ -248,7 +248,7 @@ static Pothos::BlockRegistry registerMedian(
         .bind<DTypeSupport>({true,true,true,false}, 2));
 
 /*
- * |PothosDoc RMS
+ * |PothosDoc RMS (GPU)
  *
  * Calculates the root mean square (RMS) of the given values.
  * The result of the last calculation can be queried with the
@@ -275,7 +275,7 @@ static Pothos::BlockRegistry registerRMS(
         .bind<DTypeSupport>(DTypeSupport(floatOnlyDTypeSupport), 2));
 
 /*
- * |PothosDoc Variance
+ * |PothosDoc Variance (GPU)
  *
  * Calls <b>af::var</b> on each input buffer to calculate the
  * median of the given values. The result of the last calculation
@@ -305,7 +305,7 @@ static Pothos::BlockRegistry registerVar(
     Pothos::Callable(&VarianceBlock::make));
 
 /*
- * |PothosDoc Standard Deviation
+ * |PothosDoc Standard Deviation (GPU)
  *
  * Calls <b>af::stdev</b> on each input buffer to calculate the
  * standard deviation of the given values. The result of the last calculation
@@ -332,7 +332,7 @@ static Pothos::BlockRegistry registerStdev(
         .bind<DTypeSupport>(DTypeSupport({true,true,true,false}), 2));
 
 /*
- * |PothosDoc Median Absolute Deviation
+ * |PothosDoc Median Absolute Deviation (GPU)
  *
  * Calculates the median absolute deviation of the given values.
  * The result of the last calculation can be queried with the

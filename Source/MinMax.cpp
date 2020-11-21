@@ -99,7 +99,7 @@ static Pothos::Block* minMaxFactory(
 }
 
 /*
- * |PothosDoc Buffer Minimum
+ * |PothosDoc Buffer Minimum (GPU)
  *
  * Calls <b>af::min</b> on all inputs.
  *
@@ -122,7 +122,7 @@ static Pothos::BlockRegistry registerMin(
     Pothos::Callable(&minMaxFactory<true>));
 
 /*
- * |PothosDoc Buffer Maximum
+ * |PothosDoc Buffer Maximum (GPU)
  *
  * Calls <b>af::max</b> on all inputs.
  *

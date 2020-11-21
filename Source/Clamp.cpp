@@ -146,7 +146,7 @@ void Clamp<double>::work()
 };
 
 /*
- * |PothosDoc Clamp
+ * |PothosDoc Clamp (GPU)
  *
  * Calls <b>af::clamp</b> on all inputs with given minimum and maximum values.
  *

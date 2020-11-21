@@ -68,7 +68,7 @@ class CastBlock: public OneToOneBlock
 };
 
 /*
- * |PothosDoc Cast
+ * |PothosDoc Cast (GPU)
  *
  * Calls <b>af::array::as</b> on all inputs to cast to a given type.
  *

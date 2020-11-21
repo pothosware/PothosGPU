@@ -95,7 +95,7 @@ def generateDTypeDictEntries(supportedTypes):
 
 def generatePothosDoc(category,blockYAML):
     desc = dict()
-    desc["name"] = blockYAML.get("niceName", blockYAML["func"].title())
+    desc["name"] = blockYAML.get("niceName", blockYAML["func"].title()) + " (GPU)"
     desc["path"] = "/gpu/{0}/{1}".format(blockYAML["header"], blockYAML.get("blockName", blockYAML["func"]))
     desc["categories"] = ["/GPU/" + blockYAML.get("category", blockYAML["header"].title())]
     desc["keywords"] = [blockYAML["header"], blockYAML["func"]]

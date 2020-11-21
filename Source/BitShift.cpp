@@ -138,7 +138,7 @@ static Pothos::Block* makeBitShift(
 //
 
 /***********************************************************************
- * |PothosDoc Bit Shift
+ * |PothosDoc Bit Shift (GPU)
  *
  * Perform a bitwise operation on the given input buffer.
  *

@@ -80,7 +80,7 @@ class Log: public OneToOneBlock
 };
 
 /*
- * |PothosDoc Log N
+ * |PothosDoc Log N (GPU)
  *
  * Calculates the logarithm of each value in the input stream with the
  * scalar caller-given base. Uses <b>af::log2</b> and <b>af::log10</b>

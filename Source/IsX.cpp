@@ -30,7 +30,7 @@ static Pothos::Block* makeIsX(
 }
 
 /*
- * |PothosDoc Is Infinite?
+ * |PothosDoc Is Infinite? (GPU)
  *
  * Calls <b>af::isInf</b> on all inputs. Outputs an <b>Int8</b> stream
  * whose values are either <b>1</b> or <b>0</b>, depending on whether
@@ -55,7 +55,7 @@ static Pothos::BlockRegistry registerArithIsInf(
         .bind<OneToOneFunc>(&af::isInf, 3));
 
 /*
- * |PothosDoc Is NaN?
+ * |PothosDoc Is NaN? (GPU)
  *
  * Calls <b>af::isNaN</b> on all inputs. Outputs an <b>Int8</b> stream
  * whose values are either <b>1</b> or <b>0</b>, depending on whether
@@ -80,9 +80,9 @@ static Pothos::BlockRegistry registerArithIsNaN(
         .bind<OneToOneFunc>(&af::isNaN, 3));
 
 /*
- * |PothosDoc Is Zero?
+ * |PothosDoc Is Zero? (GPU)
  *
- * Calls <b>af::isnan</b> on all inputs. Outputs an <b>Int8</b> stream
+ * Calls <b>af::iszero</b> on all inputs. Outputs an <b>Int8</b> stream
  * whose values are either <b>1</b> or <b>0</b>, depending on whether
  * or not the associated element is zero.
  *
@@ -105,7 +105,7 @@ static Pothos::BlockRegistry registerArithIsZero(
         .bind<OneToOneFunc>(&af::iszero, 3));
 
 /*
- * |PothosDoc Is Negative?
+ * |PothosDoc Is Negative? (GPU)
  *
  * Calls <b>af::sign</b> on all inputs. Outputs an <b>Int8</b> stream
  * whose values are either <b>1</b> or <b>0</b>, depending on whether

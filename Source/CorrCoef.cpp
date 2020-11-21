@@ -72,7 +72,7 @@ class CorrCoefBlock: public ArrayFireBlock
 //
 
 /*
- * |PothosDoc Correlate
+ * |PothosDoc Correlate (GPU)
  *
  * Uses <b>af::corrcoef</b> to calculate the correlation coefficents of two
  * input streams. The last calculated value can be queried with the <b>lastValue</b>

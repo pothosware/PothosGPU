@@ -68,7 +68,7 @@ class Sort: public OneToOneBlock
 };
 
 /*
- * |PothosDoc Sort
+ * |PothosDoc Sort (GPU)
  *
  * |category /GPU/Stream
  * |factory /gpu/algorithm/sort(device,dtype)

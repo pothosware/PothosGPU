@@ -71,7 +71,7 @@ static af::array afNot(const af::array& afArray)
 #endif
 
 /*
- * |PothosDoc Bitwise Not
+ * |PothosDoc Bitwise Not (GPU)
  *
  * Perform the bitwise not operation on all inputs, returning
  * the outputs in the output stream.

@@ -106,7 +106,7 @@ static Pothos::Block* constantFactory(
 }
 
 /*
- * |PothosDoc Constant Source
+ * |PothosDoc Constant Source (GPU)
  *
  * Calls <b>af::constant</b> to fill all outgoing buffers with a given value.
  *

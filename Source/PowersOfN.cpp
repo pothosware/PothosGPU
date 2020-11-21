@@ -78,7 +78,7 @@ class PowN: public OneToOneBlock
 };
 
 /*
- * |PothosDoc Powers of N
+ * |PothosDoc Powers of N (GPU)
  *
  * Uses <b>af::pow</b> to calculate a scalar base to the base of each
  * input element. Uses <b>af::pow2</b> to optimize the case where

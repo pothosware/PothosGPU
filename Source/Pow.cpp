@@ -70,7 +70,7 @@ class Pow: public OneToOneBlock
 };
 
 /*
- * |PothosDoc Pow
+ * |PothosDoc Pow (GPU)
  *
  * Uses <b>af::pow</b> to calculate the power of each input element
  * to the given scalar power value.

@@ -82,7 +82,7 @@ class Root: public OneToOneBlock
 };
 
 /*
- * |PothosDoc Root
+ * |PothosDoc Root (GPU)
  *
  * Uses <b>af::root</b> to calculate the given scalar root of each
  * input element. Uses <b>af::sqrt</b> and <b>af::cbrt</b> to optimize

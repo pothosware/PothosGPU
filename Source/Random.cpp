@@ -145,7 +145,7 @@ class RandomBlock: public ArrayFireBlock
 };
 
 /*
- * |PothosDoc Random Source
+ * |PothosDoc Random Source (GPU)
  *
  * Generates random values from a <b>normal</b> or <b>uniform</b> distribution.
  * For the normal distribution, this block uses <b>af::randn</b>. For the

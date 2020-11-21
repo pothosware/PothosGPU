@@ -269,7 +269,7 @@ static Pothos::Block* makeFFT(
 //
 
 /*
- * |PothosDoc FFT
+ * |PothosDoc FFT (GPU)
  *
  * Calculates the FFT of the input stream, with an optional normalization factor.
  *

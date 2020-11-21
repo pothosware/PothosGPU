@@ -176,7 +176,7 @@ static Pothos::Block* replaceFactory(
 }
 
 /*
- * |PothosDoc Replace
+ * |PothosDoc Replace (GPU)
  *
  * Calls <b>af::replace</b> to replace all elements of a given buffer of
  * a given value with another value.

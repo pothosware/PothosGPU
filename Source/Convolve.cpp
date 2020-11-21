@@ -235,7 +235,7 @@ static Pothos::Block* makeFFTConvolve(
 //
 
 /*
- * |PothosDoc Convolve
+ * |PothosDoc Convolve (GPU)
  *
  * Uses <b>af::convolve1</b> to convolve the input stream with user-provided filter
  * taps. The taps can be set at runtime by connecting the output of a FIR Designer
@@ -297,7 +297,7 @@ static Pothos::BlockRegistry registerConvolve(
     Pothos::Callable(&makeConvolve));
 
 /*
- * |PothosDoc FFT Convolve
+ * |PothosDoc FFT Convolve (GPU)
  *
  * Uses <b>af::fftConvolve1</b> to convolve the input stream with user-provided filter
  * taps using an FFT. The taps can be set at runtime by connecting the output of a FIR Designer

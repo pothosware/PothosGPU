@@ -115,7 +115,7 @@ class TopK: public ArrayFireBlock
 };
 
 /*
- * |PothosDoc Top K
+ * |PothosDoc Top K (GPU)
  *
  * |category /GPU/Statistics
  * |keywords top min max k
