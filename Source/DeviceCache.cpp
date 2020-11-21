@@ -8,6 +8,7 @@
 #include <Pothos/Object.hpp>
 #include <Pothos/Plugin.hpp>
 
+#include <Poco/Format.h>
 #include <Poco/Logger.h>
 #include <Poco/RegularExpression.h>
 
@@ -204,6 +205,28 @@ const std::vector<DeviceCacheEntry>& getDeviceCache()
     static const std::vector<DeviceCacheEntry> deviceCache = _getDeviceCache();
 
     return deviceCache;
+}
+
+std::string getAnyDeviceWithBackend(af::Backend backend)
+{
+    const auto& deviceCache = getDeviceCache();
+
+    auto deviceIter = std::find_if(
+                          deviceCache.begin(),
+                          deviceCache.end(),
+                          [&backend](const DeviceCacheEntry& entry)
+                          {
+                              return (entry.afBackendEnum == backend);
+                          });
+    if(deviceIter == deviceCache.end())
+    {
+        throw Pothos::Exception(
+                  Poco::format(
+                      "No devices available with backend %s",
+                      Pothos::Object(backend).convert<std::string>()));
+    }
+
+    return deviceIter->name;
 }
 
 // Force device caching on init
