@@ -23,12 +23,12 @@ namespace GPUTests
 static const std::vector<std::string> AllTypes =
 {
     "int16",
-    //"int32",
-    //"int64",
+    "int32",
+    "int64",
     "uint8",
     "uint16",
-    //"uint32",
-    //"uint64",
+    "uint32",
+    "uint64",
     "float32",
     "float64",
     "complex_float32",
@@ -53,7 +53,6 @@ static void testFileSink1D(
 
     auto oneDimBlock = Pothos::BlockRegistry::make(
                            "/gpu/array/file_sink",
-                           "Auto",
                            filepath,
                            testData.oneDimKey,
                            testData.dtype,
@@ -114,7 +113,6 @@ static void testFileSink2D(
 
     auto twoDimBlock = Pothos::BlockRegistry::make(
                            "/gpu/array/file_sink",
-                           "Auto",
                            filepath,
                            testData.twoDimKey,
                            testData.dtype,
