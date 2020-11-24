@@ -229,6 +229,18 @@ std::string getAnyDeviceWithBackend(af::Backend backend)
     return deviceIter->name;
 }
 
+std::string getCPUOrBestDevice()
+{
+    std::string device;
+    try
+    {
+        device = getAnyDeviceWithBackend(::AF_BACKEND_CPU);
+    }
+    catch(...) {device = "Auto";}
+
+    return device;
+}
+
 // Force device caching on init
 pothos_static_block(arrayFireCacheDevices)
 {

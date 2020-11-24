@@ -74,7 +74,6 @@ static void testFileSource1D(
 
     auto oneDimBlock = Pothos::BlockRegistry::make(
                            "/gpu/array/file_source",
-                           "Auto",
                            filepath,
                            testData.oneDimKey,
                            false /*repeat*/);
@@ -127,7 +126,6 @@ static void testFileSource2D(
 
     auto twoDimBlock = Pothos::BlockRegistry::make(
                            "/gpu/array/file_source",
-                           "Auto",
                            filepath,
                            testData.twoDimKey,
                            false /*repeat*/);
