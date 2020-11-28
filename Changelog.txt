@@ -6,6 +6,7 @@ Release 0.1.1 (pending)
 - INCOMPATIBLITY: some stats blocks directly store double instead of Pothos::Objects
 - Removed flat, incompatible with dataflow framework
 - PothosFlow block names now end with "(GPU)"
+- Fix CPU device name format
 
 Release 0.1.0 (2020-10-18)
 ==========================

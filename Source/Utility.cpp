@@ -265,7 +265,7 @@ static std::string cleanupProcessorName(const std::string& str)
     auto ret = str;
     ret.resize(strlen(ret.c_str()));
 
-    return ret;
+    return Poco::trim(ret);
 }
 
 std::string getProcessorName()
