@@ -18,6 +18,7 @@
 #include <arrayfire.h>
 
 #include <algorithm>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -169,7 +170,6 @@ class FileSinkBlock: public ArrayFireBlock
                 {
                     afArray.row(chan) = Pothos::Object(_buffers[chan]).convert<af::array>();
                 }
-
             }
 
             af::saveArray(

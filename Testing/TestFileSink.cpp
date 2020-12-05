@@ -40,8 +40,9 @@ struct TestData
 
     std::string oneDimKey;
     std::string twoDimKey;
-    af::array oneDimArray;
-    af::array twoDimArray;
+
+    Pothos::BufferChunk oneDimArray;
+    std::vector<Pothos::BufferChunk> twoDimArray;
 };
 
 static void testFileSink1D(
@@ -97,16 +98,14 @@ static void testFileSink1D(
 
     auto arrFromFile = af::readArray(filepath.c_str(), testData.oneDimKey.c_str());
     POTHOS_TEST_EQUAL(1, arrFromFile.numdims());
-    testBufferChunk(
-        Pothos::Object(testData.oneDimArray).convert<Pothos::BufferChunk>(),
-        Pothos::Object(arrFromFile).convert<Pothos::BufferChunk>());
+    compareAfArrayToBufferChunk(arrFromFile, testData.oneDimArray);
 }
 
 static void testFileSink2D(
     const std::string& filepath,
     const TestData& testData)
 {
-    const auto nchans = static_cast<size_t>(testData.twoDimArray.dims(0));
+    const auto nchans = testData.twoDimArray.size();
 
     std::cout << "Testing " << testData.dtype.name()
               << " (chans: " << nchans << ")..." << std::endl;
@@ -118,10 +117,6 @@ static void testFileSink2D(
                            testData.dtype,
                            nchans /*numChannels*/,
                            false /*append*/);
-    auto feederSource = Pothos::BlockRegistry::make(
-                            "/blocks/feeder_source",
-                            testData.dtype);
-    feederSource.call("feedBuffer", testData.twoDimArray);
 
     std::vector<Pothos::Proxy> feederSources;
     for(size_t chan = 0; chan < nchans; ++chan)
@@ -131,7 +126,7 @@ static void testFileSink2D(
                                        testData.dtype));
         feederSources.back().call(
             "feedBuffer",
-            testData.twoDimArray.row(chan));
+            testData.twoDimArray[chan]);
     }
 
     POTHOS_TEST_EQUAL(
@@ -174,14 +169,12 @@ static void testFileSink2D(
 
     auto arrFromFile = af::readArray(filepath.c_str(), testData.twoDimKey.c_str());
     POTHOS_TEST_EQUAL(2, arrFromFile.numdims());
-    POTHOS_TEST_EQUAL(testData.twoDimArray.dims(0), arrFromFile.dims(0));
-    POTHOS_TEST_EQUAL(testData.twoDimArray.dims(1), arrFromFile.dims(1));
+    POTHOS_TEST_EQUAL(testData.twoDimArray.size(), size_t(arrFromFile.dims(0)));
+    POTHOS_TEST_EQUAL(testData.twoDimArray[0].elements(), size_t(arrFromFile.dims(1)));
 
     for(size_t chan = 0; chan < nchans; ++chan)
     {
-        testBufferChunk(
-            Pothos::Object(testData.twoDimArray.row(chan)).convert<Pothos::BufferChunk>(),
-            Pothos::Object(arrFromFile.row(chan)).convert<Pothos::BufferChunk>());
+        compareAfArrayToBufferChunk(arrFromFile.row(chan), testData.twoDimArray[chan]);
     }
 }
 
@@ -203,19 +196,22 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_file_sink)
     {
         auto afDType = Pothos::Object(type).convert<af::dtype>();
 
+        auto oneDimArray = af::randu(numElements, afDType);
+        auto twoDimArray = af::randu(numChannels, numElements, afDType);
+
+        GPUTests::addMinMaxToAfArray(
+            oneDimArray,
+            type);
+        GPUTests::addMinMaxToAfArray(
+            twoDimArray,
+            type);
         TestData testData{
             Pothos::DType(type),
             ("1d_" + type),
             ("2d_" + type),
-            af::randu(numElements, afDType),
-            af::randu(numChannels, numElements, afDType)
+            Pothos::Object(oneDimArray).convert<Pothos::BufferChunk>(),
+            GPUTests::convert2DAfArrayToBufferChunks(twoDimArray)
         };
-        GPUTests::addMinMaxToAfArray(
-            testData.oneDimArray,
-            type);
-        GPUTests::addMinMaxToAfArray(
-            testData.twoDimArray,
-            type);
 
         allTestData.emplace_back(std::move(testData));
     }
