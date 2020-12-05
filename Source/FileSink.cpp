@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
+#include "DeviceCache.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Exception.hpp>
@@ -17,6 +18,7 @@
 #include <arrayfire.h>
 
 #include <algorithm>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -24,34 +26,28 @@ class FileSinkBlock: public ArrayFireBlock
 {
     public:
         static Pothos::Block* make(
-            const std::string& device,
             const std::string& filepath,
             const std::string& key,
             const Pothos::DType& dtype,
             size_t numChannels,
             bool append)
         {
-            return new FileSinkBlock(device, filepath, key, dtype, numChannels, append);
+            return new FileSinkBlock(filepath, key, dtype, numChannels, append);
         }
 
         FileSinkBlock(
-            const std::string& device,
             const std::string& filepath,
             const std::string& key,
             const Pothos::DType& dtype,
             size_t numChannels,
             bool append
         ):
-            ArrayFireBlock(device),
+            ArrayFireBlock(getCPUOrBestDevice()),
             _filepath(filepath),
             _key(key),
             _append(append),
             _nchans(numChannels)
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, filepath));
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, key));
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, append));
-
             const Poco::File pocoFile(_filepath);
             if(pocoFile.exists())
             {
@@ -128,14 +124,6 @@ class FileSinkBlock: public ArrayFireBlock
                               "Cannot write a file to the parent directory",
                               _filepath);
                 }
-
-                // If the user is creating a file, error out if the type is unsupported.
-                if(!isSupportedFileSinkType(dtype))
-                {
-                    throw Pothos::DataFormatException(
-                              Poco::format("This block does not currently support \"%s\".",
-                                           dtype.name()));
-                }
             }
 
             for(size_t chan = 0; chan < _nchans; ++chan)
@@ -144,10 +132,16 @@ class FileSinkBlock: public ArrayFireBlock
             }
 
             _buffers.resize(_nchans);
+
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, filepath));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, key));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSinkBlock, append));
         }
 
         void deactivate()
         {
+            this->configArrayFire();
+
             static const auto bufElemCmp =
                 [](const Pothos::BufferChunk& buf1, const Pothos::BufferChunk& buf2)
                 {
@@ -176,7 +170,6 @@ class FileSinkBlock: public ArrayFireBlock
                 {
                     afArray.row(chan) = Pothos::Object(_buffers[chan]).convert<af::array>();
                 }
-
             }
 
             af::saveArray(
@@ -259,10 +252,7 @@ class FileSinkBlock: public ArrayFireBlock
  * |category /File IO
  * |category /Sinks
  * |keywords array file sink io
- * |factory /gpu/array/file_sink(device,filepath,key,dtype,numChannels,append)
- *
- * |param device[Device] Device to use for processing.
- * |default "Auto"
+ * |factory /gpu/array/file_sink(filepath,key,dtype,numChannels,append)
  *
  * |param filepath[Filepath] The path of the ArrayFire binary file.
  * |widget FileEntry(mode=save)

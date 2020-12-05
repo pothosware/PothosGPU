@@ -189,4 +189,35 @@ const std::vector<std::string>& getAllDTypeNames()
     return AllTypes;
 }
 
+std::vector<Pothos::BufferChunk> convert2DAfArrayToBufferChunks(const af::array& afArray)
+{
+    POTHOS_TEST_EQUAL(2, afArray.numdims());
+    const auto numRows = afArray.dims(0);
+
+    std::vector<Pothos::BufferChunk> bufferChunks;
+    for(dim_t i = 0; i < numRows; ++i)
+    {
+        bufferChunks.emplace_back(Pothos::Object(afArray.row(i)).convert<Pothos::BufferChunk>());
+    }
+
+    return bufferChunks;
+}
+
+// Assumption: all BufferChunks are of same type and size
+af::array convertBufferChunksTo2DAfArray(const std::vector<Pothos::BufferChunk>& bufferChunks)
+{
+    POTHOS_TEST_FALSE(bufferChunks.empty());
+
+    const auto afDType = Pothos::Object(bufferChunks[0].dtype).convert<af::dtype>();
+    af::dim4 dims(dim_t(bufferChunks.size()), dim_t(bufferChunks[0].elements()));
+
+    af::array afArray(dims, afDType);
+    for(dim_t row = 0; row < dim_t(bufferChunks.size()); ++row)
+    {
+        afArray.row(row) = Pothos::Object(bufferChunks[row]).convert<af::array>();
+    }
+
+    return afArray;
+}
+
 }

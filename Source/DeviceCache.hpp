@@ -24,3 +24,7 @@ using DeviceCache = std::vector<DeviceCacheEntry>;
 const std::vector<af::Backend>& getAvailableBackends();
 
 const std::vector<DeviceCacheEntry>& getDeviceCache();
+
+std::string getAnyDeviceWithBackend(af::Backend backend);
+
+std::string getCPUOrBestDevice();

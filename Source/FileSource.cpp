@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
+#include "DeviceCache.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Exception.hpp>
@@ -25,21 +26,19 @@ class FileSourceBlock: public ArrayFireBlock
 {
     public:
         static Pothos::Block* make(
-            const std::string& device,
             const std::string& filepath,
             const std::string& key,
             bool repeat)
         {
-            return new FileSourceBlock(device, filepath, key, repeat);
+            return new FileSourceBlock(filepath, key, repeat);
         }
 
         FileSourceBlock(
-            const std::string& device,
             const std::string& filepath,
             const std::string& key,
             bool repeat
         ):
-            ArrayFireBlock(device),
+            ArrayFireBlock(getCPUOrBestDevice()),
             _filepath(filepath),
             _key(key),
             _repeat(repeat),
@@ -49,11 +48,6 @@ class FileSourceBlock: public ArrayFireBlock
             _afFileContents(),
             _fileContents()
         {
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, filepath));
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, key));
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, repeat));
-            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, setRepeat));
-
             const Poco::File pocoFile(_filepath);
             if(!pocoFile.exists())
             {
@@ -78,17 +72,6 @@ class FileSourceBlock: public ArrayFireBlock
             // Now that we know the file is valid, store the array and
             // initialize our ports.
             const auto dtype = Pothos::Object(_afFileContents.type()).convert<Pothos::DType>();
-            if(isSupportedFileSinkType(dtype))
-            {
-                static auto& logger = Poco::Logger::get(blockRegistryPath);
-                poco_warning_f2(
-                    logger,
-                    "The array corresponding to key \"%s\" is of type \"%s\". FileSource will "
-                    "support this key, but you cannot write it back to the file with FileSink, "
-                    "as 32/64-bit integral types are currently not supported.",
-                    _key,
-                    dtype.name());
-            }
 
             if(1 == numDims)
             {
@@ -106,6 +89,18 @@ class FileSourceBlock: public ArrayFireBlock
                     this->setupOutput(chan, dtype);
                 }
             }
+
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, filepath));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, key));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, repeat));
+            this->registerCall(this, POTHOS_FCN_TUPLE(FileSourceBlock, setRepeat));
+        }
+
+        Pothos::BufferManager::Sptr getOutputBufferManager(
+            const std::string& name,
+            const std::string& domain) override
+        {
+            return Pothos::Block::getOutputBufferManager(name, domain);
         }
 
         std::string filepath() const
@@ -132,18 +127,18 @@ class FileSourceBlock: public ArrayFireBlock
         {
             ArrayFireBlock::activate();
 
-            // Incur a one-time performance hit of reading the file contents
-            // into paged memory to make the work() implementation easier.
+            const auto arrayLen = _afFileContents.bytes();
+
             if(1 == _nchans)
             {
-                _fileContents.emplace_back(Pothos::SharedBuffer::makeCirc(_afFileContents.bytes()));
+                _fileContents.emplace_back(Pothos::SharedBuffer::makeCirc(arrayLen));
                 _afFileContents.host(reinterpret_cast<void*>(_fileContents.back().getAddress()));
             }
             else
             {
                 for(size_t chan = 0; chan < _nchans; ++chan)
                 {
-                    _fileContents.emplace_back(Pothos::SharedBuffer::makeCirc(_afFileContents.bytes()));
+                    _fileContents.emplace_back(Pothos::SharedBuffer::makeCirc(arrayLen));
                     _afFileContents.row(chan).host(reinterpret_cast<void*>(_fileContents.back().getAddress()));
                 }
             }
@@ -214,10 +209,7 @@ class FileSourceBlock: public ArrayFireBlock
  * |category /File IO
  * |category /Sources
  * |keywords array file source io
- * |factory /gpu/array/file_source(device,filepath,key,repeat)
- *
- * |param device[Device] Device to use for processing.
- * |default "Auto"
+ * |factory /gpu/array/file_source(filepath,key,repeat)
  *
  * |param filepath[Filepath] The path of the ArrayFire binary file.
  * |widget FileEntry(mode=open)
@@ -225,6 +217,7 @@ class FileSourceBlock: public ArrayFireBlock
  *
  * |param key[Key] The key of the array stored in the ArrayFire binary file.
  * |widget StringEntry()
+ * |default "key"
  * |preview enable
  *
  * |param repeat[Repeat] Whether to continuously post the file contents or once.
