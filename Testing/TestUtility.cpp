@@ -197,7 +197,7 @@ std::vector<Pothos::BufferChunk> convert2DAfArrayToBufferChunks(const af::array&
     std::vector<Pothos::BufferChunk> bufferChunks;
     for(dim_t i = 0; i < numRows; ++i)
     {
-        bufferChunks.emplace_back(Pothos::Object(afArray(i)).convert<Pothos::BufferChunk>());
+        bufferChunks.emplace_back(Pothos::Object(afArray.row(i)).convert<Pothos::BufferChunk>());
     }
 
     return bufferChunks;
