@@ -217,6 +217,7 @@ class FileSourceBlock: public ArrayFireBlock
  *
  * |param key[Key] The key of the array stored in the ArrayFire binary file.
  * |widget StringEntry()
+ * |default "key"
  * |preview enable
  *
  * |param repeat[Repeat] Whether to continuously post the file contents or once.
