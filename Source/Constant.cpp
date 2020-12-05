@@ -86,14 +86,14 @@ static Pothos::Block* constantFactory(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new Constant<T>(device, constant.convert<T>(), dtype.dimension());
 
-    // ArrayFire has no implementation for std::int8_t.
-    ifTypeDeclareFactory(std::int16_t)
-    ifTypeDeclareFactory(std::int32_t)
-    ifTypeDeclareFactory(std::int64_t)
-    ifTypeDeclareFactory(std::uint8_t)
-    ifTypeDeclareFactory(std::uint16_t)
-    ifTypeDeclareFactory(std::uint32_t)
-    ifTypeDeclareFactory(std::uint64_t)
+    // ArrayFire has no implementation for char
+    ifTypeDeclareFactory(short)
+    ifTypeDeclareFactory(int)
+    ifTypeDeclareFactory(long long)
+    ifTypeDeclareFactory(unsigned char)
+    ifTypeDeclareFactory(unsigned short)
+    ifTypeDeclareFactory(unsigned)
+    ifTypeDeclareFactory(unsigned long long)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     // ArrayFire does not support any integral complex numbers.

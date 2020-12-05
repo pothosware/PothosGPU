@@ -123,12 +123,12 @@ static Pothos::Block* makeBitShift(
             else if(operation == "Right Shift") return new BitShift<T>(device, dtype, false, shiftSize); \
         }
     
-    BitShiftFactory(std::int16_t)
-    else BitShiftFactory(std::int32_t)
-    else BitShiftFactory(std::uint8_t)
-    else BitShiftFactory(std::uint16_t)
-    else BitShiftFactory(std::uint32_t)
-    else BitShiftFactory(std::uint64_t)
+    BitShiftFactory(short)
+    else BitShiftFactory(int)
+    else BitShiftFactory(unsigned char)
+    else BitShiftFactory(unsigned short)
+    else BitShiftFactory(unsigned)
+    else BitShiftFactory(unsigned long long)
 
     throw BitwiseParamException(dtype, operation);
 }

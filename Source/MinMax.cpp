@@ -84,12 +84,12 @@ static Pothos::Block* minMaxFactory(
                            (isMin ? (MinMaxFunction)af::min : (MinMaxFunction)af::max), \
                            dtype);
 
-    // ArrayFire has no implementation for int8_t, int64_t, or uint64_t.
-    ifTypeDeclareFactory(std::int16_t)
-    ifTypeDeclareFactory(std::int32_t)
-    ifTypeDeclareFactory(std::uint8_t)
-    ifTypeDeclareFactory(std::uint16_t)
-    ifTypeDeclareFactory(std::uint32_t)
+    // ArrayFire has no implementation for char, long long, or unsigned long long.
+    ifTypeDeclareFactory(short)
+    ifTypeDeclareFactory(int)
+    ifTypeDeclareFactory(unsigned char)
+    ifTypeDeclareFactory(unsigned short)
+    ifTypeDeclareFactory(unsigned)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
 

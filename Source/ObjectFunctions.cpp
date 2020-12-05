@@ -40,8 +40,8 @@ static int compareAfArray(const AfArrType& arr0, const AfArrType& arr1)
     {
         const auto bytes = arr0.bytes();
 
-        std::vector<std::uint8_t> vec0(bytes);
-        std::vector<std::uint8_t> vec1(bytes);
+        std::vector<unsigned char> vec0(bytes);
+        std::vector<unsigned char> vec1(bytes);
 
         arr0.host(vec0.data());
         arr1.host(vec1.data());
@@ -66,7 +66,7 @@ void save(Archive& ar, const af::array& afArray, const unsigned int)
     // Only for this thread
     af::setBackend(af::getBackendId(afArray));
 
-    std::vector<std::uint8_t> hostVec(afArray.bytes());
+    std::vector<unsigned char> hostVec(afArray.bytes());
     afArray.host(hostVec.data());
 
     const auto dims = afArray.dims();
@@ -83,7 +83,7 @@ void save(Archive& ar, const af::array& afArray, const unsigned int)
 template <class Archive>
 void load(Archive& ar, af::array& afArray, const unsigned int)
 {
-    std::vector<std::uint8_t> hostVec;
+    std::vector<unsigned char> hostVec;
     int backendInt = 0;
     int typeInt = 0;
     af::dim4 dims;

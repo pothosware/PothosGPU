@@ -55,13 +55,13 @@ static af::array afNot(const af::array& afArray)
 {
     switch(afArray.type())
     {
-        case s16: return detail::afNot<std::int16_t>(afArray);
-        case s32: return detail::afNot<std::int32_t>(afArray);
-        case s64: return detail::afNot<std::int64_t>(afArray);
-        case u8:  return detail::afNot<std::uint8_t>(afArray);
-        case u16: return detail::afNot<std::uint16_t>(afArray);
-        case u32: return detail::afNot<std::uint32_t>(afArray);
-        case u64: return detail::afNot<std::uint64_t>(afArray);
+        case s16: return detail::afNot<short>(afArray);
+        case s32: return detail::afNot<int>(afArray);
+        case s64: return detail::afNot<long long>(afArray);
+        case u8:  return detail::afNot<unsigned char>(afArray);
+        case u16: return detail::afNot<unsigned short>(afArray);
+        case u32: return detail::afNot<unsigned>(afArray);
+        case u64: return detail::afNot<unsigned long long>(afArray);
 
         default:
             throw DTypeAssertionViolationException(afArray.type());
