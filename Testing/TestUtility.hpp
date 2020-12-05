@@ -441,6 +441,8 @@ const std::vector<std::string>& getAllDTypeNames();
 
 std::vector<Pothos::BufferChunk> convert2DAfArrayToBufferChunks(const af::array& afArray);
 
+af::array convertBufferChunksTo2DAfArray(const std::vector<Pothos::BufferChunk>& bufferChunks);
+
 }
 
 //
