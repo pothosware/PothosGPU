@@ -302,8 +302,6 @@ class VarianceBlock: public OneArrayStatsBlock
  * arithmetic mean of the given values. The result of the last calculation
  * can be queried with the <b>lastValue</b> probe.
  *
- * The incoming buffer is forwarded to the output port with no changes.
- *
  * |category /GPU/Statistics
  * |keywords statistics stats mean average
  * |factory /gpu/statistics/mean(device,dtype)
@@ -328,8 +326,6 @@ static Pothos::BlockRegistry registerMean(
  * Calls <b>af::median</b> on each input buffer to calculate the
  * median of the given values. The result of the last calculation
  * can be queried with the <b>lastValue</b> probe.
- *
- * The incoming buffer is forwarded to the output port with no changes.
  *
  * |category /GPU/Statistics
  * |keywords statistics stats
@@ -356,8 +352,6 @@ static Pothos::BlockRegistry registerMedian(
  * The result of the last calculation can be queried with the
  * <b>lastValue</b> probe.
  *
- * The incoming buffer is forwarded to the output port with no changes.
- *
  * |category /GPU/Statistics
  * |keywords statistics stats root mean square
  * |factory /gpu/statistics/rms(device,dtype)
@@ -382,8 +376,6 @@ static Pothos::BlockRegistry registerRMS(
  * Calls <b>af::var</b> on each input buffer to calculate the
  * median of the given values. The result of the last calculation
  * can be queried with the <b>lastValue</b> probe.
- *
- * The incoming buffer is forwarded to the output port with no changes.
  *
  * |category /GPU/Statistics
  * |keywords statistics stats root mean square
@@ -413,8 +405,6 @@ static Pothos::BlockRegistry registerVar(
  * standard deviation of the given values. The result of the last calculation
  * can be queried with the <b>lastValue</b> probe.
  *
- * The incoming buffer is forwarded to the output port with no changes.
- *
  * |category /GPU/Statistics
  * |keywords statistics stats stddev
  * |factory /gpu/statistics/stdev(device,dtype)
@@ -443,8 +433,6 @@ static Pothos::BlockRegistry registerStdev(
  * Calculates the median absolute deviation of the given values.
  * The result of the last calculation can be queried with the
  * <b>lastValue</b> probe.
- *
- * The incoming buffer is forwarded to the output port with no changes.
  *
  * |category /GPU/Statistics
  * |keywords statistics stats mad

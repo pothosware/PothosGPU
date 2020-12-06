@@ -115,8 +115,7 @@ class CovarianceBlock: public ArrayFireBlock
  * |PothosDoc Covariance (GPU)
  *
  * Uses <b>af::cov</b> to calculate the covariance between two input streams. The
- * last calculated value can be queried with the <b>lastValue</b> probe. The input
- * buffers are forwarded unchanged.
+ * last calculated value can be queried with the <b>lastValue</b> probe.
  *
  * |category /GPU/Statistics
  * |keywords array coefficient
