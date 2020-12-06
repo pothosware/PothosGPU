@@ -60,7 +60,7 @@ static OneArrayStatsFunction getAfVarFunction(bool isBiased)
     return std::bind(
                static_cast<AfVarFuncPtr>(af::var),
                std::placeholders::_1,
-               (isBiased ? ::AF_VARIANCE_SAMPLE : ::AF_VARIANCE_POPULATION),
+               getVarBias(isBiased),
                std::placeholders::_2);
 #else
     // af::var is overloaded, so we need this to narrow down to a single function.
