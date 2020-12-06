@@ -29,6 +29,23 @@ static constexpr dim_t defaultDim = -1;
 using OneArrayStatsFuncPtr = af::array(*)(const af::array&, const dim_t);
 using OneArrayStatsFunction = std::function<af::array(const af::array&, const dim_t)>;
 
+static OneArrayStatsFunction getAfStdevFunction()
+{
+#if AF_API_VERSION >= 38
+    // af::stdev is overloaded, so we need this to narrow down to a single function.
+    using AfStdevFuncPtr = af::array(*)(const af::array&, const af::varBias, const dim_t);
+
+    return std::bind(
+               static_cast<AfStdevFuncPtr>(af::stdev),
+               std::placeholders::_1,
+               ::AF_VARIANCE_POPULATION,
+               std::placeholders::_2);
+#else
+    // af::stdev is overloaded, so we need this to narrow down to a single function.
+    return static_cast<OneArrayStatsFuncPtr>(af::stdev);
+#endif
+}
+
 static OneArrayStatsFunction getAfVarFunction(bool isBiased)
 {
 #if AF_API_VERSION >= 38
@@ -80,6 +97,20 @@ static af::array afRMS(const af::array& afInput, const dim_t)
 class OneArrayStatsBlock: public ArrayFireBlock
 {
     public:
+
+        static Pothos::Block* make(
+            const std::string& device,
+            const OneArrayStatsFunction& func,
+            const DTypeSupport& dtypeSupport,
+            const Pothos::DType& dtype)
+        {
+            validateDType(dtype, dtypeSupport);
+
+            return new OneArrayStatsBlock(
+                           device,
+                           func,
+                           dtype);
+        }
 
         static Pothos::Block* makeFromFuncPtr(
             const std::string& device,
@@ -347,8 +378,8 @@ static Pothos::BlockRegistry registerVar(
  */
 static Pothos::BlockRegistry registerStdev(
     "/gpu/statistics/stdev",
-    Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
+    Pothos::Callable(&OneArrayStatsBlock::make)
+        .bind<OneArrayStatsFunction>(getAfStdevFunction(), 1)
         .bind<DTypeSupport>(DTypeSupport({true,true,true,false}), 2));
 
 /*
