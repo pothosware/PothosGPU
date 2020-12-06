@@ -18,14 +18,29 @@
 #include <typeinfo>
 #include <vector>
 
-static const DTypeSupport floatOnlyDTypeSupport = {false,false,true,false};
+//
+// Utility
+//
 
-using OneArrayStatsFuncPtr = af::array(*)(const af::array&, const dim_t);
-using OneArrayStatsFunction = std::function<af::array(const af::array&, const dim_t)>;
+static const DTypeSupport floatOnlyDTypeSupport = {false,false,true,false};
 static constexpr dim_t defaultDim = -1;
 
-static OneArrayStatsFunction getAfVarBoundFunction(bool isBiased)
+// Matches pre-3.8 signature, we bind the new enum to match
+using OneArrayStatsFuncPtr = af::array(*)(const af::array&, const dim_t);
+using OneArrayStatsFunction = std::function<af::array(const af::array&, const dim_t)>;
+
+static OneArrayStatsFunction getAfVarFunction(bool isBiased)
 {
+#if AF_API_VERSION >= 38
+    // af::var is overloaded, so we need this to narrow down to a single function.
+    using AfVarFuncPtr = af::array(*)(const af::array&, const af::varBias, const dim_t);
+
+    return std::bind(
+               static_cast<AfVarFuncPtr>(af::var),
+               std::placeholders::_1,
+               (isBiased ? ::AF_VARIANCE_SAMPLE : ::AF_VARIANCE_POPULATION),
+               std::placeholders::_2);
+#else
     // af::var is overloaded, so we need this to narrow down to a single function.
     using AfVarFuncPtr = af::array(*)(const af::array&, const bool, const dim_t);
 
@@ -34,6 +49,7 @@ static OneArrayStatsFunction getAfVarBoundFunction(bool isBiased)
                std::placeholders::_1,
                isBiased,
                std::placeholders::_2);
+#endif
 }
 
 static af::array afMedAbsDev(const af::array& afInput, const dim_t)
@@ -56,6 +72,10 @@ static af::array afRMS(const af::array& afInput, const dim_t)
 
     return af::sqrt(af::sum(af::pow(afInput, 2.0)) / arrLen);
 }
+
+//
+// Class
+//
 
 class OneArrayStatsBlock: public ArrayFireBlock
 {
@@ -158,7 +178,7 @@ class VarianceBlock: public OneArrayStatsBlock
         ):
             OneArrayStatsBlock(
                 device,
-                getAfVarBoundFunction(isBiased),
+                getAfVarFunction(isBiased),
                 dtype),
             _isBiased(isBiased)
         {
@@ -179,7 +199,7 @@ class VarianceBlock: public OneArrayStatsBlock
         void setIsBiased(bool isBiased)
         {
             _isBiased = isBiased;
-            _func = getAfVarBoundFunction(isBiased);
+            _func = getAfVarFunction(isBiased);
 
             this->emitSignal("isBiasedChanged", isBiased);
         }
