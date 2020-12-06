@@ -10,6 +10,13 @@
 
 #include <arrayfire.h>
 
+#if AF_API_VERSION >= 38
+constexpr af::varBias getVarBias(bool isBiased)
+{
+    return isBiased ? ::AF_VARIANCE_SAMPLE : ::AF_VARIANCE_POPULATION;
+}
+#endif
+
 class CovarianceBlock: public ArrayFireBlock
 {
     public:
@@ -29,6 +36,9 @@ class CovarianceBlock: public ArrayFireBlock
         :
             ArrayFireBlock(device),
             _isBiased(false)
+#if AF_API_VERSION >= 38
+            , _varBias(getVarBias(false))
+#endif
         {
             for(size_t i = 0; i < 2; ++i)
             {
@@ -56,7 +66,11 @@ class CovarianceBlock: public ArrayFireBlock
             auto afInput0 = this->getInputPortAsAfArray(0);
             auto afInput1 = this->getInputPortAsAfArray(1);
 
+#if AF_API_VERSION >= 38
+            auto afLastValue = af::cov(afInput0, afInput1, _varBias);
+#else
             auto afLastValue = af::cov(afInput0, afInput1, _isBiased);
+#endif
             if(1 != afLastValue.elements())
             {
                 throw Pothos::AssertionViolationException(
@@ -78,6 +92,10 @@ class CovarianceBlock: public ArrayFireBlock
         {
             _isBiased = isBiased;
             this->emitSignal("isBiasedChanged", _isBiased);
+
+#if AF_API_VERSION >= 38
+            _varBias = getVarBias(_isBiased);
+#endif
         }
 
         double lastValue() const
@@ -89,6 +107,10 @@ class CovarianceBlock: public ArrayFireBlock
 
         double _lastValue;
         bool _isBiased;
+
+#if AF_API_VERSION >= 38
+        af::varBias _varBias;
+#endif
 };
 
 
