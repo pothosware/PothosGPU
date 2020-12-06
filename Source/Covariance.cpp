@@ -10,13 +10,6 @@
 
 #include <arrayfire.h>
 
-#if AF_API_VERSION >= 38
-constexpr af::varBias getVarBias(bool isBiased)
-{
-    return isBiased ? ::AF_VARIANCE_SAMPLE : ::AF_VARIANCE_POPULATION;
-}
-#endif
-
 class CovarianceBlock: public ArrayFireBlock
 {
     public:

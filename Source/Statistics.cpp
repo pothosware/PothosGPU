@@ -29,7 +29,7 @@ static constexpr dim_t defaultDim = -1;
 using OneArrayStatsFuncPtr = af::array(*)(const af::array&, const dim_t);
 using OneArrayStatsFunction = std::function<af::array(const af::array&, const dim_t)>;
 
-static OneArrayStatsFunction getAfStdevFunction()
+static OneArrayStatsFunction getAfStdevFunction(bool isBiased)
 {
 #if AF_API_VERSION >= 38
     // af::stdev is overloaded, so we need this to narrow down to a single function.
@@ -38,9 +38,14 @@ static OneArrayStatsFunction getAfStdevFunction()
     return std::bind(
                static_cast<AfStdevFuncPtr>(af::stdev),
                std::placeholders::_1,
-               ::AF_VARIANCE_POPULATION,
+               getVarBias(isBiased),
                std::placeholders::_2);
 #else
+    if(isBiased)
+    {
+        throw Pothos::NotImplementedException("Biased stdev is only available with ArrayFire 3.8+.")
+    }
+
     // af::stdev is overloaded, so we need this to narrow down to a single function.
     return static_cast<OneArrayStatsFuncPtr>(af::stdev);
 #endif
@@ -188,6 +193,52 @@ class OneArrayStatsBlock: public ArrayFireBlock
         Pothos::DType _dtype;
         af::dtype _afDType;
         double _lastValue;
+};
+
+class StdevBlock: public OneArrayStatsBlock
+{
+    public:
+
+        static Pothos::Block* make(
+            const std::string& device,
+            const Pothos::DType& dtype)
+        {
+            return new StdevBlock(device, dtype);
+        }
+
+        StdevBlock(
+            const std::string& device,
+            const Pothos::DType& dtype
+        ):
+            OneArrayStatsBlock(
+                device,
+                getAfStdevFunction(false),
+                dtype),
+            _isBiased(false)
+        {
+            this->registerCall(this, POTHOS_FCN_TUPLE(StdevBlock, isBiased));
+            this->registerCall(this, POTHOS_FCN_TUPLE(StdevBlock, setIsBiased));
+
+            this->registerProbe("isBiased");
+            this->registerSignal("isBiasedChanged");
+        }
+
+        bool isBiased() const
+        {
+            return _isBiased;
+        };
+
+        void setIsBiased(bool isBiased)
+        {
+            _isBiased = isBiased;
+            _func = getAfStdevFunction(isBiased);
+
+            this->emitSignal("isBiasedChanged", isBiased);
+        }
+
+    private:
+
+        bool _isBiased;
 };
 
 class VarianceBlock: public OneArrayStatsBlock
@@ -367,6 +418,7 @@ static Pothos::BlockRegistry registerVar(
  * |category /GPU/Statistics
  * |keywords statistics stats stddev
  * |factory /gpu/statistics/stdev(device,dtype)
+ * |setter setIsBiased(isBiased)
  *
  * |param device[Device] Device to use for processing.
  * |default "Auto"
@@ -375,12 +427,15 @@ static Pothos::BlockRegistry registerVar(
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
+ *
+ * |param isBiased[Is Biased?] Whether or not the input values contain sample bias.
+ * Only available with ArrayFire 3.8+.
+ * |widget ToggleSwitch(on="True", off="False")
+ * |default False
  */
 static Pothos::BlockRegistry registerStdev(
     "/gpu/statistics/stdev",
-    Pothos::Callable(&OneArrayStatsBlock::make)
-        .bind<OneArrayStatsFunction>(getAfStdevFunction(), 1)
-        .bind<DTypeSupport>(DTypeSupport({true,true,true,false}), 2));
+    Pothos::Callable(&StdevBlock::make));
 
 /*
  * |PothosDoc Median Absolute Deviation (GPU)
