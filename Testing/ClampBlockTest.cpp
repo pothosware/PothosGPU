@@ -39,7 +39,7 @@ static void getMinMaxObjects(
     assert(nullptr != pMinObjectOut);
     assert(nullptr != pMaxObjectOut);
 
-    // ArrayFire doesn't support int8
+    GET_MINMAX_OBJECTS("int8", char)
     GET_MINMAX_OBJECTS("int16", short)
     GET_MINMAX_OBJECTS("int32", int)
     GET_MINMAX_OBJECTS("int64", long long)
@@ -75,7 +75,7 @@ static void testClampBlockOutput(
     const Pothos::Object& minObject,
     const Pothos::Object& maxObject)
 {
-    // ArrayFire doesn't support int8
+    TEST_OUTPUT_FOR_TYPE("int8", char)
     TEST_OUTPUT_FOR_TYPE("int16", short)
     TEST_OUTPUT_FOR_TYPE("int32", int)
     TEST_OUTPUT_FOR_TYPE("int64", long long)

@@ -123,7 +123,8 @@ static Pothos::Block* makeBitShift(
             else if(operation == "Right Shift") return new BitShift<T>(device, dtype, false, shiftSize); \
         }
     
-    BitShiftFactory(short)
+    BitShiftFactory(char)
+    else BitShiftFactory(short)
     else BitShiftFactory(int)
     else BitShiftFactory(unsigned char)
     else BitShiftFactory(unsigned short)
@@ -149,7 +150,7 @@ static Pothos::Block* makeBitShift(
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type.
- * |widget DTypeChooser(int16=1,int32=1,uint=1,dim=1)
+ * |widget DTypeChooser(int8=1,int16=1,int32=1,uint=1,dim=1)
  * |default "uint64"
  * |preview disable
  *

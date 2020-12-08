@@ -55,6 +55,7 @@ static af::array afNot(const af::array& afArray)
 {
     switch(afArray.type())
     {
+        case b8: return detail::afNot<char>(afArray);
         case s16: return detail::afNot<short>(afArray);
         case s32: return detail::afNot<int>(afArray);
         case s64: return detail::afNot<long long>(afArray);
@@ -83,7 +84,7 @@ static af::array afNot(const af::array& afArray)
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,dim=1)
  * |default "uint64"
  * |preview disable
  */

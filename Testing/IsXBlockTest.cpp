@@ -133,6 +133,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_iszero)
     const std::vector<char> unsignedOutput = {1,0,1,0,0};
 
     // TODO: test complex
+    testIsX<char>(blockRegistryPath, signedOutput);
     testIsX<short>(blockRegistryPath, signedOutput);
     testIsX<int>(blockRegistryPath, signedOutput);
     testIsX<long long>(blockRegistryPath, signedOutput);
@@ -152,6 +153,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_sign)
     const std::vector<char> expectedOutput = {0,0,1,0,0};
 
     // TODO: test complex
+    testIsX<char>(blockRegistryPath, expectedOutput);
     testIsX<short>(blockRegistryPath, expectedOutput);
     testIsX<int>(blockRegistryPath, expectedOutput);
     testIsX<long long>(blockRegistryPath, expectedOutput);

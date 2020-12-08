@@ -323,6 +323,7 @@ static void testBitShift()
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_array_bitwise)
 {
+    testBitwiseArray<char>();
     testBitwiseArray<short>();
     testBitwiseArray<int>();
     testBitwiseArray<long long>();
@@ -334,6 +335,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_array_bitwise)
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_bitwise)
 {
+    testBitwiseScalar<char>();
     testBitwiseScalar<short>();
     testBitwiseScalar<int>();
     testBitwiseScalar<long long>();
@@ -345,6 +347,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_bitwise)
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_bitshift)
 {
+    testBitShift<char>();
     testBitShift<short>();
     testBitShift<int>();
     testBitShift<unsigned char>();

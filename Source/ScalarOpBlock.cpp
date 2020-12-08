@@ -159,6 +159,7 @@ static Pothos::Block* makeScalarOpBlock(
                            allowZeroScalar); \
         }
 
+    IfTypeDeclareFactory(char)
     IfTypeDeclareFactory(short)
     IfTypeDeclareFactory(int)
     IfTypeDeclareFactory(long long)

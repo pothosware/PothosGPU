@@ -156,14 +156,14 @@ static Pothos::Block* replaceFactory(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new Replace<T>(device, findValue.convert<T>(), replaceValue.convert<T>(), dtype.dimension());
 
-    // ArrayFire has no implementation for char.
+    ifTypeDeclareFactory(char)
     ifTypeDeclareFactory(short)
     ifTypeDeclareFactory(int)
-    // This function does not support 64-bit integral numbers.
+    ifTypeDeclareFactory(long long)
     ifTypeDeclareFactory(unsigned char)
     ifTypeDeclareFactory(unsigned short)
     ifTypeDeclareFactory(unsigned)
-    // This function does not support 64-bit integral numbers.
+    ifTypeDeclareFactory(unsigned long long)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     // ArrayFire does not support any integral complex numbers.

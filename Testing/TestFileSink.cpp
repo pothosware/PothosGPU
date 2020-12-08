@@ -21,6 +21,7 @@ namespace GPUTests
 
 static const std::vector<std::string> AllTypes =
 {
+    "int8",
     "int16",
     "int32",
     "int64",

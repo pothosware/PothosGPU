@@ -172,7 +172,6 @@ const std::vector<std::string>& getAllDTypeNames()
 {
     static const std::vector<std::string> AllTypes =
     {
-        // ArrayFire doesn't support int8
         "int16",
         "int32",
         "int64",

@@ -116,6 +116,7 @@ static void testMinMax()
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_min_max)
 {
+    testMinMax<char>();
     testMinMax<short>();
     testMinMax<int>();
     testMinMax<long long>();

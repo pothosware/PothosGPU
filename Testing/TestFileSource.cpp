@@ -22,6 +22,7 @@ namespace GPUTests
 // TODO: 32/64-bit integral issue
 static const std::vector<std::string> AllTypes =
 {
+    "int8",
     "int16",
     //"int32",
     //"int64",

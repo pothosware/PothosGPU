@@ -182,7 +182,7 @@ static Pothos::Block* clampFactory(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new Clamp<T>(device, minValue.convert<T>(), maxValue.convert<T>(), dtype.dimension());
 
-    // ArrayFire has no implementation for char
+    ifTypeDeclareFactory(char)
     ifTypeDeclareFactory(short)
     ifTypeDeclareFactory(int)
     ifTypeDeclareFactory(long long)

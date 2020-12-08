@@ -30,7 +30,6 @@ void validateDType(
     // Specific error for types not supported by any block
     static const std::vector<std::string> globalUnsupportedTypes =
     {
-        "int8",
         "complex_int8",
         "complex_int16",
         "complex_int32",

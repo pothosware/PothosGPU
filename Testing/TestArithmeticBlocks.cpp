@@ -440,6 +440,7 @@ static void testScalarArithmetic()
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_arithmetic)
 {
+    testScalarArithmetic<char>();
     testScalarArithmetic<short>();
     testScalarArithmetic<int>();
     testScalarArithmetic<long long>();

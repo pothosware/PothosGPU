@@ -191,6 +191,7 @@ static void testLogicalScalar()
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_array_logical)
 {
+    testLogicalArray<char>();
     testLogicalArray<short>();
     testLogicalArray<int>();
     testLogicalArray<long long>();
@@ -202,6 +203,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_array_logical)
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_logical)
 {
+    testLogicalScalar<char>();
     testLogicalScalar<short>();
     testLogicalScalar<int>();
     testLogicalScalar<long long>();

@@ -98,6 +98,7 @@ static void getScalarTestValues(
         return; \
     }
 
+    GET_SCALAR_TEST_VALUES("int8",    char)
     GET_SCALAR_TEST_VALUES("int16",   short)
     GET_SCALAR_TEST_VALUES("int32",   int)
     GET_SCALAR_TEST_VALUES("int64",   long long)
@@ -145,6 +146,7 @@ static void getArrayTestValues(
         return; \
     }
 
+    GET_ARRAY_TEST_VALUES("int8",    char)
     GET_ARRAY_TEST_VALUES("int16",   short)
     GET_ARRAY_TEST_VALUES("int32",   int)
     GET_ARRAY_TEST_VALUES("int64",   long long)
