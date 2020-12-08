@@ -439,6 +439,8 @@ static T medAbsDev(const std::vector<T>& inputs)
 
 const std::vector<std::string>& getAllDTypeNames();
 
+const std::vector<Pothos::DType>& getAllDTypes();
+
 std::vector<Pothos::BufferChunk> convert2DAfArrayToBufferChunks(const af::array& afArray);
 
 af::array convertBufferChunksTo2DAfArray(const std::vector<Pothos::BufferChunk>& bufferChunks);

@@ -188,6 +188,26 @@ const std::vector<std::string>& getAllDTypeNames()
     return AllTypes;
 }
 
+const std::vector<Pothos::DType>& getAllDTypes()
+{
+    static const std::vector<Pothos::DType> AllDTypes =
+    {
+        typeid(char),
+        typeid(short),
+        typeid(int),
+        typeid(long long),
+        typeid(unsigned char),
+        typeid(unsigned short),
+        typeid(unsigned int),
+        typeid(unsigned long long),
+        typeid(float),
+        typeid(double),
+        typeid(std::complex<float>),
+        typeid(std::complex<double>),
+    };
+    return AllDTypes;
+}
+
 std::vector<Pothos::BufferChunk> convert2DAfArrayToBufferChunks(const af::array& afArray)
 {
     POTHOS_TEST_EQUAL(2, afArray.numdims());
