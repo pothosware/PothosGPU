@@ -323,32 +323,32 @@ static void testBitShift()
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_array_bitwise)
 {
-    testBitwiseArray<std::int16_t>();
-    testBitwiseArray<std::int32_t>();
-    testBitwiseArray<std::int64_t>();
-    testBitwiseArray<std::uint8_t>();
-    testBitwiseArray<std::uint16_t>();
-    testBitwiseArray<std::uint32_t>();
-    testBitwiseArray<std::uint64_t>();
+    testBitwiseArray<short>();
+    testBitwiseArray<int>();
+    testBitwiseArray<long long>();
+    testBitwiseArray<unsigned char>();
+    testBitwiseArray<unsigned short>();
+    testBitwiseArray<unsigned>();
+    testBitwiseArray<unsigned long long>();
 }
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_bitwise)
 {
-    testBitwiseScalar<std::int16_t>();
-    testBitwiseScalar<std::int32_t>();
-    testBitwiseScalar<std::int64_t>();
-    testBitwiseScalar<std::uint8_t>();
-    testBitwiseScalar<std::uint16_t>();
-    testBitwiseScalar<std::uint32_t>();
-    testBitwiseScalar<std::uint64_t>();
+    testBitwiseScalar<short>();
+    testBitwiseScalar<int>();
+    testBitwiseScalar<long long>();
+    testBitwiseScalar<unsigned char>();
+    testBitwiseScalar<unsigned short>();
+    testBitwiseScalar<unsigned>();
+    testBitwiseScalar<unsigned long long>();
 }
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_bitshift)
 {
-    testBitShift<std::int16_t>();
-    testBitShift<std::int32_t>();
-    testBitShift<std::uint8_t>();
-    testBitShift<std::uint16_t>();
-    testBitShift<std::uint32_t>();
-    testBitShift<std::uint64_t>();
+    testBitShift<short>();
+    testBitShift<int>();
+    testBitShift<unsigned char>();
+    testBitShift<unsigned short>();
+    testBitShift<unsigned>();
+    testBitShift<unsigned long long>();
 }

@@ -58,10 +58,10 @@ static void testLogicalArray()
 
     for (size_t elem = 0; elem < bufferLen; ++elem)
     {
-        expectedAndOutput.template as<std::int8_t*>()[elem] = (inputs[0].template as<T*>()[elem] &&
+        expectedAndOutput.template as<char*>()[elem] = (inputs[0].template as<T*>()[elem] &&
                                                                inputs[1].template as<T*>()[elem] &&
                                                                inputs[2].template as<T*>()[elem]) ? 1 : 0;
-        expectedOrOutput.template as<std::int8_t*>()[elem]  = (inputs[0].template as<T*>()[elem] ||
+        expectedOrOutput.template as<char*>()[elem]  = (inputs[0].template as<T*>()[elem] ||
                                                                inputs[1].template as<T*>()[elem] ||
                                                                inputs[2].template as<T*>()[elem]) ? 1 : 0;
     }
@@ -131,8 +131,8 @@ static void testLogicalScalar()
 
     for (size_t elem = 0; elem < bufferLen; ++elem)
     {
-        expectedAndOutput.template as<std::int8_t*>()[elem] = (input.template as<T*>()[elem] && scalar) ? 1 : 0;
-        expectedOrOutput.template as<std::int8_t*>()[elem]  = (input.template as<T*>()[elem] || scalar) ? 1 : 0;
+        expectedAndOutput.template as<char*>()[elem] = (input.template as<T*>()[elem] && scalar) ? 1 : 0;
+        expectedOrOutput.template as<char*>()[elem]  = (input.template as<T*>()[elem] || scalar) ? 1 : 0;
     }
 
     auto source = Pothos::BlockRegistry::make("/blocks/feeder_source", dtype);
@@ -191,22 +191,22 @@ static void testLogicalScalar()
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_array_logical)
 {
-    testLogicalArray<std::int16_t>();
-    testLogicalArray<std::int32_t>();
-    testLogicalArray<std::int64_t>();
-    testLogicalArray<std::uint8_t>();
-    testLogicalArray<std::uint16_t>();
-    testLogicalArray<std::uint32_t>();
-    testLogicalArray<std::uint64_t>();
+    testLogicalArray<short>();
+    testLogicalArray<int>();
+    testLogicalArray<long long>();
+    testLogicalArray<unsigned char>();
+    testLogicalArray<unsigned short>();
+    testLogicalArray<unsigned>();
+    testLogicalArray<unsigned long long>();
 }
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_logical)
 {
-    testLogicalScalar<std::int16_t>();
-    testLogicalScalar<std::int32_t>();
-    testLogicalScalar<std::int64_t>();
-    testLogicalScalar<std::uint8_t>();
-    testLogicalScalar<std::uint16_t>();
-    testLogicalScalar<std::uint32_t>();
-    testLogicalScalar<std::uint64_t>();
+    testLogicalScalar<short>();
+    testLogicalScalar<int>();
+    testLogicalScalar<long long>();
+    testLogicalScalar<unsigned char>();
+    testLogicalScalar<unsigned short>();
+    testLogicalScalar<unsigned>();
+    testLogicalScalar<unsigned long long>();
 }

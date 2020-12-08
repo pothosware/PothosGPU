@@ -45,10 +45,10 @@ static EnableIfFloat<T, Pothos::BufferChunk> getIsXTestInputs()
 template <typename T>
 static void testIsX(
     const std::string& blockRegistryPath,
-    const std::vector<std::int8_t>& expectedOutput)
+    const std::vector<char>& expectedOutput)
 {
     static const Pothos::DType dtype(typeid(T));
-    static const Pothos::DType Int8DType(typeid(std::int8_t));
+    static const Pothos::DType Int8DType(typeid(char));
 
     std::cout << "Testing " << dtype.name() << std::endl;
 
@@ -92,18 +92,18 @@ static void testIsXBlockFailsForType(const std::string& blockRegistryPath)
 
 static void testFloatOnlyBlock(
     const std::string& blockRegistryPath,
-    const std::vector<std::int8_t>& expectedOutput)
+    const std::vector<char>& expectedOutput)
 {
     testIsX<float>(blockRegistryPath, expectedOutput);
     testIsX<double>(blockRegistryPath, expectedOutput);
 
-    testIsXBlockFailsForType<std::int16_t>(blockRegistryPath);
-    testIsXBlockFailsForType<std::int32_t>(blockRegistryPath);
-    testIsXBlockFailsForType<std::int64_t>(blockRegistryPath);
-    testIsXBlockFailsForType<std::uint8_t>(blockRegistryPath);
-    testIsXBlockFailsForType<std::uint16_t>(blockRegistryPath);
-    testIsXBlockFailsForType<std::uint32_t>(blockRegistryPath);
-    testIsXBlockFailsForType<std::uint64_t>(blockRegistryPath);
+    testIsXBlockFailsForType<short>(blockRegistryPath);
+    testIsXBlockFailsForType<int>(blockRegistryPath);
+    testIsXBlockFailsForType<long long>(blockRegistryPath);
+    testIsXBlockFailsForType<unsigned char>(blockRegistryPath);
+    testIsXBlockFailsForType<unsigned short>(blockRegistryPath);
+    testIsXBlockFailsForType<unsigned>(blockRegistryPath);
+    testIsXBlockFailsForType<unsigned long long>(blockRegistryPath);
 }
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_isinf)
@@ -129,17 +129,17 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_iszero)
     GPUTests::setupTestEnv();
 
     const std::string blockRegistryPath = "/gpu/arith/iszero";
-    const std::vector<std::int8_t> signedOutput = {1,0,0,0,0};
-    const std::vector<std::int8_t> unsignedOutput = {1,0,1,0,0};
+    const std::vector<char> signedOutput = {1,0,0,0,0};
+    const std::vector<char> unsignedOutput = {1,0,1,0,0};
 
     // TODO: test complex
-    testIsX<std::int16_t>(blockRegistryPath, signedOutput);
-    testIsX<std::int32_t>(blockRegistryPath, signedOutput);
-    testIsX<std::int64_t>(blockRegistryPath, signedOutput);
-    testIsX<std::uint8_t>(blockRegistryPath, unsignedOutput);
-    testIsX<std::uint16_t>(blockRegistryPath, unsignedOutput);
-    testIsX<std::uint32_t>(blockRegistryPath, unsignedOutput);
-    testIsX<std::uint64_t>(blockRegistryPath, unsignedOutput);
+    testIsX<short>(blockRegistryPath, signedOutput);
+    testIsX<int>(blockRegistryPath, signedOutput);
+    testIsX<long long>(blockRegistryPath, signedOutput);
+    testIsX<unsigned char>(blockRegistryPath, unsignedOutput);
+    testIsX<unsigned short>(blockRegistryPath, unsignedOutput);
+    testIsX<unsigned>(blockRegistryPath, unsignedOutput);
+    testIsX<unsigned long long>(blockRegistryPath, unsignedOutput);
     testIsX<float>(blockRegistryPath, signedOutput);
     testIsX<double>(blockRegistryPath, signedOutput);
 }
@@ -149,12 +149,12 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_sign)
     GPUTests::setupTestEnv();
 
     const std::string blockRegistryPath = "/gpu/arith/sign";
-    const std::vector<std::int8_t> expectedOutput = {0,0,1,0,0};
+    const std::vector<char> expectedOutput = {0,0,1,0,0};
 
     // TODO: test complex
-    testIsX<std::int16_t>(blockRegistryPath, expectedOutput);
-    testIsX<std::int32_t>(blockRegistryPath, expectedOutput);
-    testIsX<std::int64_t>(blockRegistryPath, expectedOutput);
+    testIsX<short>(blockRegistryPath, expectedOutput);
+    testIsX<int>(blockRegistryPath, expectedOutput);
+    testIsX<long long>(blockRegistryPath, expectedOutput);
     testIsX<float>(blockRegistryPath, expectedOutput);
     testIsX<double>(blockRegistryPath, expectedOutput);
 }

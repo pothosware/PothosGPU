@@ -55,13 +55,13 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_block_execution)
 {
     setupTestEnv();
 
-    blockExecutionTest<std::int16_t>();
-    blockExecutionTest<std::int32_t>();
-    blockExecutionTest<std::int64_t>();
-    blockExecutionTest<std::uint8_t>();
-    blockExecutionTest<std::uint16_t>();
-    blockExecutionTest<std::uint32_t>();
-    blockExecutionTest<std::uint64_t>();
+    blockExecutionTest<short>();
+    blockExecutionTest<int>();
+    blockExecutionTest<long long>();
+    blockExecutionTest<unsigned char>();
+    blockExecutionTest<unsigned short>();
+    blockExecutionTest<unsigned>();
+    blockExecutionTest<unsigned long long>();
     blockExecutionTest<float>();
     blockExecutionTest<double>();
     blockExecutionTest<std::complex<float>>();

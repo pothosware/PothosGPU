@@ -27,7 +27,7 @@ static void getScalarTestValues(
     ComparatorFcn comparatorFcn,
     std::vector<T>* pInput,
     T* pScalar,
-    std::vector<std::int8_t>* pOutput)
+    std::vector<char>* pOutput)
 {
     (*pInput) = GPUTests::getTestInputs<T>(true /*shuffle*/);
     (*pScalar) = GPUTests::getSingleTestInput<T>();
@@ -48,7 +48,7 @@ static void getArrayTestValues(
     ComparatorFcn comparatorFcn,
     std::vector<T>* pInput0,
     std::vector<T>* pInput1,
-    std::vector<std::int8_t>* pOutput)
+    std::vector<char>* pOutput)
 {
     (*pInput0) = GPUTests::getTestInputs<T>(true /*shuffle*/);
     (*pInput1) = GPUTests::getTestInputs<T>(true /*shuffle*/);
@@ -83,7 +83,7 @@ static void getScalarTestValues(
     { \
         std::vector<cType> input; \
         cType scalar(0); \
-        std::vector<std::int8_t> output; \
+        std::vector<char> output; \
  \
         GET_SCALAR_TEST_VALUES_FOR_OP(">",  std::greater<cType>()); \
         GET_SCALAR_TEST_VALUES_FOR_OP(">=", std::greater_equal<cType>()); \
@@ -98,13 +98,13 @@ static void getScalarTestValues(
         return; \
     }
 
-    GET_SCALAR_TEST_VALUES("int16",   std::int16_t)
-    GET_SCALAR_TEST_VALUES("int32",   std::int32_t)
-    GET_SCALAR_TEST_VALUES("int64",   std::int64_t)
-    GET_SCALAR_TEST_VALUES("uint8",   std::uint8_t)
-    GET_SCALAR_TEST_VALUES("uint16",  std::uint16_t)
-    GET_SCALAR_TEST_VALUES("uint32",  std::uint32_t)
-    GET_SCALAR_TEST_VALUES("uint64",  std::uint64_t)
+    GET_SCALAR_TEST_VALUES("int16",   short)
+    GET_SCALAR_TEST_VALUES("int32",   int)
+    GET_SCALAR_TEST_VALUES("int64",   long long)
+    GET_SCALAR_TEST_VALUES("uint8",   unsigned char)
+    GET_SCALAR_TEST_VALUES("uint16",  unsigned short)
+    GET_SCALAR_TEST_VALUES("uint32",  unsigned)
+    GET_SCALAR_TEST_VALUES("uint64",  unsigned long long)
     GET_SCALAR_TEST_VALUES("float32", float)
     GET_SCALAR_TEST_VALUES("float64", double)
 }
@@ -130,7 +130,7 @@ static void getArrayTestValues(
     if(type == typeStr) \
     { \
         std::vector<cType> input0, input1; \
-        std::vector<std::int8_t> output; \
+        std::vector<char> output; \
  \
         GET_ARRAY_TEST_VALUES_FOR_OP(">",  std::greater<cType>()); \
         GET_ARRAY_TEST_VALUES_FOR_OP(">=", std::greater_equal<cType>()); \
@@ -145,13 +145,13 @@ static void getArrayTestValues(
         return; \
     }
 
-    GET_ARRAY_TEST_VALUES("int16",   std::int16_t)
-    GET_ARRAY_TEST_VALUES("int32",   std::int32_t)
-    GET_ARRAY_TEST_VALUES("int64",   std::int64_t)
-    GET_ARRAY_TEST_VALUES("uint8",   std::uint8_t)
-    GET_ARRAY_TEST_VALUES("uint16",  std::uint16_t)
-    GET_ARRAY_TEST_VALUES("uint32",  std::uint32_t)
-    GET_ARRAY_TEST_VALUES("uint64",  std::uint64_t)
+    GET_ARRAY_TEST_VALUES("int16",   short)
+    GET_ARRAY_TEST_VALUES("int32",   int)
+    GET_ARRAY_TEST_VALUES("int64",   long long)
+    GET_ARRAY_TEST_VALUES("uint8",   unsigned char)
+    GET_ARRAY_TEST_VALUES("uint16",  unsigned short)
+    GET_ARRAY_TEST_VALUES("uint32",  unsigned)
+    GET_ARRAY_TEST_VALUES("uint64",  unsigned long long)
     GET_ARRAY_TEST_VALUES("float32", float)
     GET_ARRAY_TEST_VALUES("float64", double)
 }

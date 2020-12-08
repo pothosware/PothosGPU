@@ -103,13 +103,13 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_af_array_conversion)
         af::setBackend(backend);
         std::cout << "Backend: " << Pothos::Object(backend).convert<std::string>() << std::endl;
 
-        test1DArrayConversion<std::int8_t>("int8", ::b8);
-        test1DArrayConversion<std::int16_t>("int16", ::s16);
-        test1DArrayConversion<std::int32_t>("int32", ::s32);
-        test1DArrayConversion<std::int64_t>("int64", ::s64);
-        test1DArrayConversion<std::uint16_t>("uint16", ::u16);
-        test1DArrayConversion<std::uint32_t>("uint32", ::u32);
-        test1DArrayConversion<std::uint64_t>("uint64", ::u64);
+        test1DArrayConversion<char>("int8", ::b8);
+        test1DArrayConversion<short>("int16", ::s16);
+        test1DArrayConversion<int>("int32", ::s32);
+        test1DArrayConversion<long long>("int64", ::s64);
+        test1DArrayConversion<unsigned short>("uint16", ::u16);
+        test1DArrayConversion<unsigned>("uint32", ::u32);
+        test1DArrayConversion<unsigned long long>("uint64", ::u64);
         test1DArrayConversion<float>("float32", ::f32);
         test1DArrayConversion<double>("float64", ::f64);
         test1DArrayConversion<std::complex<float>>("complex_float32", ::c32);
@@ -128,13 +128,13 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_af_arrayproxy_conversion)
         af::setBackend(backend);
         std::cout << "Backend: " << Pothos::Object(backend).convert<std::string>() << std::endl;
 
-        test2DArrayConversion<std::int8_t>("int8", ::b8);
-        test2DArrayConversion<std::int16_t>("int16", ::s16);
-        test2DArrayConversion<std::int32_t>("int32", ::s32);
-        test2DArrayConversion<std::int64_t>("int64", ::s64);
-        test2DArrayConversion<std::uint16_t>("uint16", ::u16);
-        test2DArrayConversion<std::uint32_t>("uint32", ::u32);
-        test2DArrayConversion<std::uint64_t>("uint64", ::u64);
+        test2DArrayConversion<char>("int8", ::b8);
+        test2DArrayConversion<short>("int16", ::s16);
+        test2DArrayConversion<int>("int32", ::s32);
+        test2DArrayConversion<long long>("int64", ::s64);
+        test2DArrayConversion<unsigned short>("uint16", ::u16);
+        test2DArrayConversion<unsigned>("uint32", ::u32);
+        test2DArrayConversion<unsigned long long>("uint64", ::u64);
         test2DArrayConversion<float>("float32", ::f32);
         test2DArrayConversion<double>("float64", ::f64);
         test2DArrayConversion<std::complex<float>>("complex_float32", ::c32);

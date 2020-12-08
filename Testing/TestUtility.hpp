@@ -321,8 +321,8 @@ static EnableIfInteger<T, std::vector<T>> getTestInputs(bool shuffle = true)
     static std::random_device rd;
     static std::mt19937 g(rd());
 
-    static constexpr T minValue = std::is_same<T, std::int8_t>::value ? T(-5) : T(-25);
-    static constexpr size_t numInputs = std::is_same<T, std::int8_t>::value ? 11 : 51;
+    static constexpr T minValue = std::is_same<T, char>::value ? T(-5) : T(-25);
+    static constexpr size_t numInputs = std::is_same<T, char>::value ? 11 : 51;
 
     auto testParams = getIntTestParams<T>(minValue, T(1), numInputs);
     if(shuffle)
@@ -339,8 +339,8 @@ static EnableIfUnsignedInt<T, std::vector<T>> getTestInputs(bool shuffle = true)
     static std::random_device rd;
     static std::mt19937 g(rd());
 
-    static constexpr T minValue = std::is_same<T, std::uint8_t>::value ? T(5) : T(25);
-    static constexpr size_t numInputs = std::is_same<T, std::uint8_t>::value ? 9 : 76;
+    static constexpr T minValue = std::is_same<T, unsigned char>::value ? T(5) : T(25);
+    static constexpr size_t numInputs = std::is_same<T, unsigned char>::value ? 9 : 76;
 
     auto testParams = getIntTestParams<T>(minValue, T(1), numInputs);
     if(shuffle)

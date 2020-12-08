@@ -40,13 +40,13 @@ static void getMinMaxObjects(
     assert(nullptr != pMaxObjectOut);
 
     // ArrayFire doesn't support int8
-    GET_MINMAX_OBJECTS("int16", std::int16_t)
-    GET_MINMAX_OBJECTS("int32", std::int32_t)
-    GET_MINMAX_OBJECTS("int64", std::int64_t)
-    GET_MINMAX_OBJECTS("uint8", std::uint8_t)
-    GET_MINMAX_OBJECTS("uint16", std::uint16_t)
-    GET_MINMAX_OBJECTS("uint32", std::uint32_t)
-    GET_MINMAX_OBJECTS("uint64", std::uint64_t)
+    GET_MINMAX_OBJECTS("int16", short)
+    GET_MINMAX_OBJECTS("int32", int)
+    GET_MINMAX_OBJECTS("int64", long long)
+    GET_MINMAX_OBJECTS("uint8", unsigned char)
+    GET_MINMAX_OBJECTS("uint16", unsigned short)
+    GET_MINMAX_OBJECTS("uint32", unsigned)
+    GET_MINMAX_OBJECTS("uint64", unsigned long long)
     GET_MINMAX_OBJECTS("float32", float)
     GET_MINMAX_OBJECTS("float64", double)
     // This block has no complex implementation.
@@ -76,13 +76,13 @@ static void testClampBlockOutput(
     const Pothos::Object& maxObject)
 {
     // ArrayFire doesn't support int8
-    TEST_OUTPUT_FOR_TYPE("int16", std::int16_t)
-    TEST_OUTPUT_FOR_TYPE("int32", std::int32_t)
-    TEST_OUTPUT_FOR_TYPE("int64", std::int64_t)
-    TEST_OUTPUT_FOR_TYPE("uint8", std::uint8_t)
-    TEST_OUTPUT_FOR_TYPE("uint16", std::uint16_t)
-    TEST_OUTPUT_FOR_TYPE("uint32", std::uint32_t)
-    TEST_OUTPUT_FOR_TYPE("uint64", std::uint64_t)
+    TEST_OUTPUT_FOR_TYPE("int16", short)
+    TEST_OUTPUT_FOR_TYPE("int32", int)
+    TEST_OUTPUT_FOR_TYPE("int64", long long)
+    TEST_OUTPUT_FOR_TYPE("uint8", unsigned char)
+    TEST_OUTPUT_FOR_TYPE("uint16", unsigned short)
+    TEST_OUTPUT_FOR_TYPE("uint32", unsigned)
+    TEST_OUTPUT_FOR_TYPE("uint64", unsigned long long)
     TEST_OUTPUT_FOR_TYPE("float32", float)
     TEST_OUTPUT_FOR_TYPE("float64", double)
     // This block has no complex implementation.
