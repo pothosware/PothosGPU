@@ -55,6 +55,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_block_execution)
 {
     setupTestEnv();
 
+    blockExecutionTest<char>();
     blockExecutionTest<short>();
     blockExecutionTest<int>();
     blockExecutionTest<long long>();
