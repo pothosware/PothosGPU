@@ -129,6 +129,7 @@ static void waitUntilMessagesReceived(const std::vector<Pothos::Proxy>& collecto
     }
 }
 
+// TODO: test more types
 // TODO: test corrcoef, topk, cov
 POTHOS_TEST_BLOCK("/gpu/tests", test_statistics)
 {

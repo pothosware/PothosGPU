@@ -81,6 +81,7 @@ Pothos::Object getArrayValueOfUnknownTypeAtIndex(
 
     switch(afArray.type())
     {
+        SwitchCase(::b8,  char)
         SwitchCase(::s16, short)
         SwitchCase(::s32, int)
         SwitchCase(::s64, long long)
@@ -122,6 +123,7 @@ ssize_t findValueOfUnknownTypeInArray(
 
     switch(afArray.type())
     {
+        SwitchCase(::b8,  char)
         SwitchCase(::s16, short)
         SwitchCase(::s32, int)
         SwitchCase(::s64, long long)
@@ -155,6 +157,7 @@ af::array getArrayFromSingleElement(
 
     switch(afArray.type())
     {
+        SwitchCase(::b8,  char)
         SwitchCase(::s16, short)
         SwitchCase(::s32, int)
         SwitchCase(::s64, long long)
@@ -191,6 +194,7 @@ Pothos::Object afArrayToStdVector(const af::array& afArray)
 
     switch(afArray.type())
     {
+        SwitchCase(::b8,  char)
         SwitchCase(::s16, short)
         SwitchCase(::s32, int)
         SwitchCase(::s64, long long)

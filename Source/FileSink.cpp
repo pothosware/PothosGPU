@@ -267,7 +267,7 @@ class FileSinkBlock: public ArrayFireBlock
  * |param dtype[Data Type] The output's data type.
  * If appending to an existing array, this value must match the type of the
  * existing array.
- * |widget DTypeChooser(int16=1,uint8=1,uint16=1,float=1,cfloat=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *

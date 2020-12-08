@@ -310,7 +310,7 @@ class VarianceBlock: public OneArrayStatsBlock
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
@@ -335,7 +335,7 @@ static Pothos::BlockRegistry registerMean(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
@@ -360,7 +360,7 @@ static Pothos::BlockRegistry registerMedian(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
@@ -386,7 +386,7 @@ static Pothos::BlockRegistry registerRMS(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -414,7 +414,7 @@ static Pothos::BlockRegistry registerVar(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  *
@@ -442,7 +442,7 @@ static Pothos::BlockRegistry registerStdev(
  * |default "Auto"
  *
  * |param dtype[Data Type] The output's data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */

@@ -76,7 +76,7 @@ def processYAMLFile(yamlPath):
     return yml
 
 DICT_ENTRY_KEYS = dict(
-    supportInt="int16=1,int32=1,int64=1",
+    supportInt="int=1",
     supportUInt="uint=1",
     supportFloat="float=1",
     supportComplexFloat="cfloat=1"
@@ -130,13 +130,13 @@ def generatePothosDoc(category,blockYAML):
         else:
             raise RuntimeError("Unknown block pattern: " + blockYAML["blockPattern"])
     elif blockYAML.get("intOnly", False):
-        dtypeArg["widgetKwargs"]= dict(int16=1,int32=1,int64=1,uint=1)
+        dtypeArg["widgetKwargs"] = dict(int=1,uint=1)
     else:
         dtypeArg["widgetKwargs"] = dict()
         if "supportedTypes" in blockYAML:
             supportedTypes = blockYAML["supportedTypes"]
             if ("supportInt" in supportedTypes) or ("supportAll" in supportedTypes):
-                dtypeArg["widgetKwargs"].update(dict(int16=1,int32=1,int64=1))
+                dtypeArg["widgetKwargs"]["int"] = 1
             if ("supportUInt" in supportedTypes) or ("supportAll" in supportedTypes):
                 dtypeArg["widgetKwargs"]["uint"] = 1
             if ("supportFloat" in supportedTypes) or ("supportAll" in supportedTypes):

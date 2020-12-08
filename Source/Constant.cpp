@@ -86,7 +86,7 @@ static Pothos::Block* constantFactory(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new Constant<T>(device, constant.convert<T>(), dtype.dimension());
 
-    // ArrayFire has no implementation for char
+    ifTypeDeclareFactory(char)
     ifTypeDeclareFactory(short)
     ifTypeDeclareFactory(int)
     ifTypeDeclareFactory(long long)
@@ -119,7 +119,7 @@ static Pothos::Block* constantFactory(
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type.
- * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,cfloat=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *

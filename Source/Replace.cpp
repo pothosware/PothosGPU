@@ -191,7 +191,7 @@ static Pothos::Block* replaceFactory(
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type.
- * |widget DTypeChooser(int16=1,int32=1,uint16=1,uint32=1,float=1,cfloat=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *

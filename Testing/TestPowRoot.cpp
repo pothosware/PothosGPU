@@ -147,6 +147,7 @@ static void testPowRoot()
     }
 }
 
+// TODO: test integral types
 POTHOS_TEST_BLOCK("/gpu/tests", test_pow_root)
 {
     testPowRoot<float>();

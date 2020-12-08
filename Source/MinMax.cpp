@@ -84,12 +84,14 @@ static Pothos::Block* minMaxFactory(
                            (isMin ? (MinMaxFunction)af::min : (MinMaxFunction)af::max), \
                            dtype);
 
-    // ArrayFire has no implementation for char, long long, or unsigned long long.
+    ifTypeDeclareFactory(char)
     ifTypeDeclareFactory(short)
     ifTypeDeclareFactory(int)
+    ifTypeDeclareFactory(long long)
     ifTypeDeclareFactory(unsigned char)
     ifTypeDeclareFactory(unsigned short)
     ifTypeDeclareFactory(unsigned)
+    ifTypeDeclareFactory(unsigned long long)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
 
@@ -113,7 +115,7 @@ static Pothos::Block* minMaxFactory(
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type.
- * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
@@ -136,7 +138,7 @@ static Pothos::BlockRegistry registerMin(
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type.
- * |widget DTypeChooser(int16=1,int32=1,uint8=1,uint16=1,uint32=1,float=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
  */
