@@ -81,9 +81,11 @@ static void compareIOBlockValues(const ValueCompareParams& params)
     for(size_t chan = 0; chan < numSinkChans; ++chan)
     {
         subBlocks[chan] = Pothos::BlockRegistry::make(
-                              "/comms/arithmetic",
+                              "/gpu/array/arithmetic",
+                              "Auto",
+                              "Subtract",
                               params.sinkDType,
-                              "SUB");
+                              2);
         meanBlocks[chan] = Pothos::BlockRegistry::make(
                                "/gpu/statistics/mean",
                                "Auto",

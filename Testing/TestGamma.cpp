@@ -98,23 +98,23 @@ static void testGamma()
     const Pothos::DType dtype(typeid(T));
     std::cout << "Testing " << dtype.toString() << "..." << std::endl;
 
-    Pothos::BufferChunk input, gammaOutput, lGammaOutput;
-    getTestInputs<T>(&input, &gammaOutput, &lGammaOutput);
+    Pothos::BufferChunk input, tGammaOutput, lGammaOutput;
+    getTestInputs<T>(&input, &tGammaOutput, &lGammaOutput);
 
     auto feeder = Pothos::BlockRegistry::make("/blocks/feeder_source", dtype);
     feeder.call("feedBuffer", input);
 
-    auto gamma = Pothos::BlockRegistry::make("/comms/gamma", dtype);
-    auto lGamma = Pothos::BlockRegistry::make("/comms/lngamma", dtype);
+    auto tGamma = Pothos::BlockRegistry::make("/gpu/arith/tgamma", "Auto", dtype);
+    auto lGamma = Pothos::BlockRegistry::make("/gpu/arith/lgamma", "Auto", dtype);
 
-    auto gammaCollector = Pothos::BlockRegistry::make("/blocks/collector_sink", dtype);
+    auto tGammaCollector = Pothos::BlockRegistry::make("/blocks/collector_sink", dtype);
     auto lGammaCollector = Pothos::BlockRegistry::make("/blocks/collector_sink", dtype);
 
     {
         Pothos::Topology topology;
 
-        topology.connect(feeder, 0, gamma, 0);
-        topology.connect(gamma, 0, gammaCollector, 0);
+        topology.connect(feeder, 0, tGamma, 0);
+        topology.connect(tGamma, 0, tGammaCollector, 0);
 
         topology.connect(feeder, 0, lGamma, 0);
         topology.connect(lGamma, 0, lGammaCollector, 0);
@@ -123,10 +123,10 @@ static void testGamma()
         POTHOS_TEST_TRUE(topology.waitInactive(0.01));
     }
 
-    std::cout << " * Testing /gpu/arith/gamma..." << std::endl;
+    std::cout << " * Testing /gpu/arith/tgamma..." << std::endl;
     GPUTests::testBufferChunk(
-        gammaOutput,
-        gammaCollector.call<Pothos::BufferChunk>("getBuffer"));
+        tGammaOutput,
+        tGammaCollector.call<Pothos::BufferChunk>("getBuffer"));
 
     std::cout << " * Testing /gpu/arith/lgamma..." << std::endl;
     GPUTests::testBufferChunk(

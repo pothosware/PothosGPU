@@ -87,7 +87,7 @@ NToOneBlock::NToOneBlock(
     {
         this->setupInput(chan, dtype, _domain);
     }
-    this->setupOutput(0, dtype);
+    this->setupOutput(0, dtype, _domain);
 }
 
 NToOneBlock::~NToOneBlock() {}

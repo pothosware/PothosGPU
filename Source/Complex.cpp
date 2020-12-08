@@ -78,7 +78,8 @@ class SplitComplex: public ArrayFireBlock
         {
             this->setupInput(
                 0,
-                Pothos::DType(typeid(ComplexType), dtypeDimensions));
+                Pothos::DType(typeid(ComplexType), dtypeDimensions),
+                _domain);
 
             this->setupOutput(
                 "re",

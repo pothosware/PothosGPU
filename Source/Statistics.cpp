@@ -18,14 +18,51 @@
 #include <typeinfo>
 #include <vector>
 
-static const DTypeSupport floatOnlyDTypeSupport = {false,false,true,false};
+//
+// Utility
+//
 
-using OneArrayStatsFuncPtr = af::array(*)(const af::array&, const dim_t);
-using OneArrayStatsFunction = std::function<af::array(const af::array&, const dim_t)>;
+static const DTypeSupport floatOnlyDTypeSupport = {false,false,true,false};
 static constexpr dim_t defaultDim = -1;
 
-static OneArrayStatsFunction getAfVarBoundFunction(bool isBiased)
+// Matches pre-3.8 signature, we bind the new enum to match
+using OneArrayStatsFuncPtr = af::array(*)(const af::array&, const dim_t);
+using OneArrayStatsFunction = std::function<af::array(const af::array&, const dim_t)>;
+
+static OneArrayStatsFunction getAfStdevFunction(bool isBiased)
 {
+#if AF_API_VERSION >= 38
+    // af::stdev is overloaded, so we need this to narrow down to a single function.
+    using AfStdevFuncPtr = af::array(*)(const af::array&, const af::varBias, const dim_t);
+
+    return std::bind(
+               static_cast<AfStdevFuncPtr>(af::stdev),
+               std::placeholders::_1,
+               getVarBias(isBiased),
+               std::placeholders::_2);
+#else
+    if(isBiased)
+    {
+        throw Pothos::NotImplementedException("Biased stdev is only available with ArrayFire 3.8+.")
+    }
+
+    // af::stdev is overloaded, so we need this to narrow down to a single function.
+    return static_cast<OneArrayStatsFuncPtr>(af::stdev);
+#endif
+}
+
+static OneArrayStatsFunction getAfVarFunction(bool isBiased)
+{
+#if AF_API_VERSION >= 38
+    // af::var is overloaded, so we need this to narrow down to a single function.
+    using AfVarFuncPtr = af::array(*)(const af::array&, const af::varBias, const dim_t);
+
+    return std::bind(
+               static_cast<AfVarFuncPtr>(af::var),
+               std::placeholders::_1,
+               getVarBias(isBiased),
+               std::placeholders::_2);
+#else
     // af::var is overloaded, so we need this to narrow down to a single function.
     using AfVarFuncPtr = af::array(*)(const af::array&, const bool, const dim_t);
 
@@ -34,6 +71,7 @@ static OneArrayStatsFunction getAfVarBoundFunction(bool isBiased)
                std::placeholders::_1,
                isBiased,
                std::placeholders::_2);
+#endif
 }
 
 static af::array afMedAbsDev(const af::array& afInput, const dim_t)
@@ -57,9 +95,27 @@ static af::array afRMS(const af::array& afInput, const dim_t)
     return af::sqrt(af::sum(af::pow(afInput, 2.0)) / arrLen);
 }
 
+//
+// Class
+//
+
 class OneArrayStatsBlock: public ArrayFireBlock
 {
     public:
+
+        static Pothos::Block* make(
+            const std::string& device,
+            const OneArrayStatsFunction& func,
+            const DTypeSupport& dtypeSupport,
+            const Pothos::DType& dtype)
+        {
+            validateDType(dtype, dtypeSupport);
+
+            return new OneArrayStatsBlock(
+                           device,
+                           func,
+                           dtype);
+        }
 
         static Pothos::Block* makeFromFuncPtr(
             const std::string& device,
@@ -139,6 +195,52 @@ class OneArrayStatsBlock: public ArrayFireBlock
         double _lastValue;
 };
 
+class StdevBlock: public OneArrayStatsBlock
+{
+    public:
+
+        static Pothos::Block* make(
+            const std::string& device,
+            const Pothos::DType& dtype)
+        {
+            return new StdevBlock(device, dtype);
+        }
+
+        StdevBlock(
+            const std::string& device,
+            const Pothos::DType& dtype
+        ):
+            OneArrayStatsBlock(
+                device,
+                getAfStdevFunction(false),
+                dtype),
+            _isBiased(false)
+        {
+            this->registerCall(this, POTHOS_FCN_TUPLE(StdevBlock, isBiased));
+            this->registerCall(this, POTHOS_FCN_TUPLE(StdevBlock, setIsBiased));
+
+            this->registerProbe("isBiased");
+            this->registerSignal("isBiasedChanged");
+        }
+
+        bool isBiased() const
+        {
+            return _isBiased;
+        };
+
+        void setIsBiased(bool isBiased)
+        {
+            _isBiased = isBiased;
+            _func = getAfStdevFunction(isBiased);
+
+            this->emitSignal("isBiasedChanged", isBiased);
+        }
+
+    private:
+
+        bool _isBiased;
+};
+
 class VarianceBlock: public OneArrayStatsBlock
 {
     public:
@@ -158,7 +260,7 @@ class VarianceBlock: public OneArrayStatsBlock
         ):
             OneArrayStatsBlock(
                 device,
-                getAfVarBoundFunction(isBiased),
+                getAfVarFunction(isBiased),
                 dtype),
             _isBiased(isBiased)
         {
@@ -179,7 +281,7 @@ class VarianceBlock: public OneArrayStatsBlock
         void setIsBiased(bool isBiased)
         {
             _isBiased = isBiased;
-            _func = getAfVarBoundFunction(isBiased);
+            _func = getAfVarFunction(isBiased);
 
             this->emitSignal("isBiasedChanged", isBiased);
         }
@@ -199,8 +301,6 @@ class VarianceBlock: public OneArrayStatsBlock
  * Calls <b>af::mean</b> on each input buffer to calculate the
  * arithmetic mean of the given values. The result of the last calculation
  * can be queried with the <b>lastValue</b> probe.
- *
- * The incoming buffer is forwarded to the output port with no changes.
  *
  * |category /GPU/Statistics
  * |keywords statistics stats mean average
@@ -227,8 +327,6 @@ static Pothos::BlockRegistry registerMean(
  * median of the given values. The result of the last calculation
  * can be queried with the <b>lastValue</b> probe.
  *
- * The incoming buffer is forwarded to the output port with no changes.
- *
  * |category /GPU/Statistics
  * |keywords statistics stats
  * |factory /gpu/statistics/median(device,dtype)
@@ -254,8 +352,6 @@ static Pothos::BlockRegistry registerMedian(
  * The result of the last calculation can be queried with the
  * <b>lastValue</b> probe.
  *
- * The incoming buffer is forwarded to the output port with no changes.
- *
  * |category /GPU/Statistics
  * |keywords statistics stats root mean square
  * |factory /gpu/statistics/rms(device,dtype)
@@ -280,8 +376,6 @@ static Pothos::BlockRegistry registerRMS(
  * Calls <b>af::var</b> on each input buffer to calculate the
  * median of the given values. The result of the last calculation
  * can be queried with the <b>lastValue</b> probe.
- *
- * The incoming buffer is forwarded to the output port with no changes.
  *
  * |category /GPU/Statistics
  * |keywords statistics stats root mean square
@@ -311,11 +405,10 @@ static Pothos::BlockRegistry registerVar(
  * standard deviation of the given values. The result of the last calculation
  * can be queried with the <b>lastValue</b> probe.
  *
- * The incoming buffer is forwarded to the output port with no changes.
- *
  * |category /GPU/Statistics
  * |keywords statistics stats stddev
  * |factory /gpu/statistics/stdev(device,dtype)
+ * |setter setIsBiased(isBiased)
  *
  * |param device[Device] Device to use for processing.
  * |default "Auto"
@@ -324,12 +417,15 @@ static Pothos::BlockRegistry registerVar(
  * |widget DTypeChooser(int16=1,int32=1,int64=1,uint=1,float=1,dim=1)
  * |default "float64"
  * |preview disable
+ *
+ * |param isBiased[Is Biased?] Whether or not the input values contain sample bias.
+ * Only available with ArrayFire 3.8+.
+ * |widget ToggleSwitch(on="True", off="False")
+ * |default False
  */
 static Pothos::BlockRegistry registerStdev(
     "/gpu/statistics/stdev",
-    Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
-        .bind<OneArrayStatsFuncPtr>(&af::stdev, 1)
-        .bind<DTypeSupport>(DTypeSupport({true,true,true,false}), 2));
+    Pothos::Callable(&StdevBlock::make));
 
 /*
  * |PothosDoc Median Absolute Deviation (GPU)
@@ -337,8 +433,6 @@ static Pothos::BlockRegistry registerStdev(
  * Calculates the median absolute deviation of the given values.
  * The result of the last calculation can be queried with the
  * <b>lastValue</b> probe.
- *
- * The incoming buffer is forwarded to the output port with no changes.
  *
  * |category /GPU/Statistics
  * |keywords statistics stats mad
