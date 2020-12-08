@@ -159,11 +159,11 @@ static void getArrayTestValues(
 }
 
 static void testScalarComparatorBlockForTypeAndOperation(
-    const std::string& type,
+    const Pothos::DType& type,
     const std::string& operation)
 {
     std::cout << "Testing " << scalarBlockRegistryPath
-              << " (type: " << type
+              << " (type: " << type.name()
               << ", operation: " << operation << ")" << std::endl;
 
     if(isDTypeComplexFloat(Pothos::DType(type)))
@@ -196,7 +196,7 @@ static void testScalarComparatorBlockForTypeAndOperation(
         Pothos::Object scalar;
         Pothos::BufferChunk output;
         getScalarTestValues(
-            type,
+            type.name(),
             operation,
             &input,
             &scalar,
@@ -235,11 +235,11 @@ static void testScalarComparatorBlockForTypeAndOperation(
 }
 
 static void testArrayComparatorBlockForTypeAndOperation(
-    const std::string& type,
+    const Pothos::DType& type,
     const std::string& operation)
 {
     std::cout << "Testing " << arrayBlockRegistryPath
-              << " (type: " << type
+              << " (type: " << type.name()
               << ", operation: " << operation << ")" << std::endl;
 
     if(isDTypeComplexFloat(Pothos::DType(type)))
@@ -273,7 +273,7 @@ static void testArrayComparatorBlockForTypeAndOperation(
         Pothos::BufferChunk input1;
         Pothos::BufferChunk output;
         getArrayTestValues(
-            type,
+            type.name(),
             operation,
             &input0,
             &input1,
@@ -313,7 +313,7 @@ static void testArrayComparatorBlockForTypeAndOperation(
     }
 }
 
-static void testComparatorBlocksForType(const std::string& type)
+static void testComparatorBlocksForType(const Pothos::DType& type)
 {
     static const std::vector<std::string> operations{"<","<=",">",">=","==","!="};
     for(const std::string& operation: operations)
@@ -327,7 +327,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_comparators)
 {
     GPUTests::setupTestEnv();
 
-    for(const auto& type: GPUTests::getAllDTypeNames())
+    for(const auto& type: GPUTests::getAllDTypes())
     {
         testComparatorBlocksForType(type);
     }

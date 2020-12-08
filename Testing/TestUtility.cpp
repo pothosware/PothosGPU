@@ -168,26 +168,6 @@ Pothos::Object getSingleTestInput(const std::string& type)
     return Pothos::Object();
 }
 
-const std::vector<std::string>& getAllDTypeNames()
-{
-    static const std::vector<std::string> AllTypes =
-    {
-        "int16",
-        "int32",
-        "int64",
-        "uint8",
-        "uint16",
-        "uint32",
-        "uint64",
-        "float32",
-        "float64",
-        // ArrayFire doesn't support complex integral types
-        "complex_float32",
-        "complex_float64"
-    };
-    return AllTypes;
-}
-
 const std::vector<Pothos::DType>& getAllDTypes()
 {
     static const std::vector<Pothos::DType> AllDTypes =

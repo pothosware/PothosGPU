@@ -88,13 +88,13 @@ static void testClampBlockOutput(
     // This block has no complex implementation.
 }
 
-void testClampBlockForType(const std::string& type)
+void testClampBlockForType(const Pothos::DType& type)
 {
     std::cout << "Testing " << blockRegistryPath
-              << " (type: " << type << ")" << std::endl;
+              << " (type: " << type.name() << ")" << std::endl;
 
     Pothos::Object minObject, maxObject;
-    getMinMaxObjects(type, &minObject, &maxObject);
+    getMinMaxObjects(type.name(), &minObject, &maxObject);
 
     Pothos::DType dtype(type);
     if(isDTypeComplexFloat(dtype))
@@ -117,7 +117,7 @@ void testClampBlockForType(const std::string& type)
                          minObject,
                          maxObject);
 
-        auto testInputs = GPUTests::getTestInputs(type);
+        auto testInputs = GPUTests::getTestInputs(type.name());
 
         auto feederSource = Pothos::BlockRegistry::make(
                                 "/blocks/feeder_source",
@@ -150,7 +150,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_clamp)
 {
     GPUTests::setupTestEnv();
 
-    for(const auto& type: GPUTests::getAllDTypeNames())
+    for(const auto& type: GPUTests::getAllDTypes())
     {
         testClampBlockForType(type);
     }
