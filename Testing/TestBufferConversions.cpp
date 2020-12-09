@@ -29,7 +29,7 @@ static void test1DArrayConversion(
     std::cout << " * Testing " << dtypeName << "..." << std::endl;
 
     auto afArray = af::randu(ArrDim, afDType);
-    addMinMaxToAfArray<T>(afArray);
+    addMinMaxToAfArray(afArray);
 
     auto convertedBufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
     compareAfArrayToBufferChunk(
@@ -53,7 +53,7 @@ static void test2DArrayConversion(
     std::cout << " * Testing " << dtypeName << "..." << std::endl;
 
     auto afArray = af::randu(ArrDim1, ArrDim2, afDType);
-    addMinMaxToAfArray<T>(afArray);
+    addMinMaxToAfArray(afArray);
 
     for(dim_t row = 0; row < ArrDim1; ++row)
     {

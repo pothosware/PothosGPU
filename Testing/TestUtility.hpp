@@ -110,34 +110,6 @@ static Pothos::BufferChunk stdVectorToBufferChunk(const std::vector<T>& vectorIn
     return ret;
 }
 
-template <typename In, typename Out>
-static std::vector<Out> staticCastVector(const std::vector<In>& vectorIn)
-{
-    std::vector<Out> vectorOut;
-    vectorOut.reserve(vectorIn.size());
-    std::transform(
-        vectorIn.begin(),
-        vectorIn.end(),
-        std::back_inserter(vectorOut),
-        [](In val){return static_cast<Out>(val);});
-
-    return vectorOut;
-}
-
-template <typename In, typename Out>
-static std::vector<Out> reinterpretCastVector(const std::vector<In>& vectorIn)
-{
-    static_assert(sizeof(In) == sizeof(Out), "sizeof(In) != sizeof(Out)");
-
-    std::vector<Out> vectorOut(vectorIn.size());
-    std::memcpy(
-        vectorOut.data(),
-        vectorIn.data(),
-        vectorIn.size() * sizeof(In));
-
-    return vectorOut;
-}
-
 // Assumption: vectorIn is an even size
 template <typename T>
 static std::vector<std::complex<T>> toComplexVector(const std::vector<T>& vectorIn)
@@ -266,42 +238,7 @@ static void compareAfArrayToBufferChunk(
         bufferChunk);
 }
 
-template <typename T>
-static EnableIfNotComplex<T, void> addMinMaxToAfArray(af::array& rAfArray)
-{
-    if(1 == rAfArray.numdims())
-    {
-        rAfArray(0) = std::numeric_limits<T>::min();
-        rAfArray(1) = std::numeric_limits<T>::max();
-    }
-    else
-    {
-        rAfArray(0,0) = std::numeric_limits<T>::min();
-        rAfArray(0,1) = std::numeric_limits<T>::max();
-    }
-}
-
-template <typename T>
-static EnableIfComplex<T, void> addMinMaxToAfArray(af::array& rAfArray)
-{
-    using Scalar = typename T::value_type;
-
-    if(1 == rAfArray.numdims())
-    {
-        rAfArray(0) = typename PothosToAF<T>::type(
-                                   std::numeric_limits<Scalar>::min(),
-                                   std::numeric_limits<Scalar>::max());
-    }
-    else
-    {
-        rAfArray(0,0) = typename PothosToAF<T>::type(
-                                     std::numeric_limits<Scalar>::min(),
-                                     std::numeric_limits<Scalar>::max());
-    }
-}
-
-// To enable doing this in non-templated functions.
-void addMinMaxToAfArray(af::array& rAfArray, const std::string& type);
+void addMinMaxToAfArray(af::array& rAfArray);
 
 //
 // Getting random inputs
@@ -443,26 +380,4 @@ std::vector<Pothos::BufferChunk> convert2DAfArrayToBufferChunks(const af::array&
 
 af::array convertBufferChunksTo2DAfArray(const std::vector<Pothos::BufferChunk>& bufferChunks);
 
-}
-
-//
-// For debugging purposes
-//
-
-template <typename T>
-std::string bufferChunkToString(const Pothos::BufferChunk& bufferChunk)
-{
-    std::ostringstream ostream;
-
-    const T* buff = bufferChunk.as<const T*>();
-    for(size_t i = 0; i < bufferChunk.elements(); ++i)
-    {
-        if(0 != i)
-        {
-            ostream << " ";
-        }
-        ostream << (ssize_t)buff[i];
-    }
-
-    return ostream.str();
 }

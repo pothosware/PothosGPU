@@ -202,12 +202,8 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_file_source)
         auto oneDimArray = af::randu(numElements, afDType);
         auto twoDimArray = af::randu(numChannels, numElements, afDType);
 
-        GPUTests::addMinMaxToAfArray(
-            oneDimArray,
-            type);
-        GPUTests::addMinMaxToAfArray(
-            twoDimArray,
-            type);
+        GPUTests::addMinMaxToAfArray(oneDimArray);
+        GPUTests::addMinMaxToAfArray(twoDimArray);
         TestData testData{
             Pothos::DType(type),
             ("1d_" + type),

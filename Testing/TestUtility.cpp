@@ -108,27 +108,61 @@ void testBufferChunk(
     IfTypeThenCompare("complex_float64", std::complex<double>)
 }
 
-void addMinMaxToAfArray(af::array& rAfArray, const std::string& type)
+template <typename T>
+static EnableIfNotComplex<T, void> addMinMaxToAfArray(af::array& rAfArray)
 {
-    #define IfTypeThenAdd(typeStr, ctype) \
-        if(typeStr == type) \
+    if(1 == rAfArray.numdims())
+    {
+        rAfArray(0) = std::numeric_limits<T>::min();
+        rAfArray(1) = std::numeric_limits<T>::max();
+    }
+    else
+    {
+        rAfArray(0,0) = std::numeric_limits<T>::min();
+        rAfArray(0,1) = std::numeric_limits<T>::max();
+    }
+}
+
+template <typename T>
+static EnableIfComplex<T, void> addMinMaxToAfArray(af::array& rAfArray)
+{
+    using Scalar = typename T::value_type;
+
+    if(1 == rAfArray.numdims())
+    {
+        rAfArray(0) = typename PothosToAF<T>::type(
+                                   std::numeric_limits<Scalar>::min(),
+                                   std::numeric_limits<Scalar>::max());
+    }
+    else
+    {
+        rAfArray(0,0) = typename PothosToAF<T>::type(
+                                     std::numeric_limits<Scalar>::min(),
+                                     std::numeric_limits<Scalar>::max());
+    }
+}
+
+void addMinMaxToAfArray(af::array& rAfArray)
+{
+    #define IfTypeThenAdd(typeEnum, cType) \
+        if(rAfArray.type() == typeEnum) \
         { \
-            addMinMaxToAfArray<ctype>(rAfArray); \
+            addMinMaxToAfArray<cType>(rAfArray); \
             return; \
         }
 
-    IfTypeThenAdd("int8", std::int8_t)
-    IfTypeThenAdd("int16", std::int16_t)
-    IfTypeThenAdd("int32", std::int32_t)
-    IfTypeThenAdd("int64", std::int64_t)
-    IfTypeThenAdd("uint8", std::uint8_t)
-    IfTypeThenAdd("uint16", std::uint16_t)
-    IfTypeThenAdd("uint32", std::uint32_t)
-    IfTypeThenAdd("uint64", std::uint64_t)
-    IfTypeThenAdd("float32", float)
-    IfTypeThenAdd("float64", double)
-    IfTypeThenAdd("complex_float32", std::complex<float>)
-    IfTypeThenAdd("complex_float64", std::complex<double>)
+    IfTypeThenAdd(::b8, std::int8_t)
+    IfTypeThenAdd(::s16, std::int16_t)
+    IfTypeThenAdd(::s32, std::int32_t)
+    IfTypeThenAdd(::s64, std::int64_t)
+    IfTypeThenAdd(::u8, std::uint8_t)
+    IfTypeThenAdd(::u16, std::uint16_t)
+    IfTypeThenAdd(::u32, std::uint32_t)
+    IfTypeThenAdd(::u64, std::uint64_t)
+    IfTypeThenAdd(::f32, float)
+    IfTypeThenAdd(::f64, double)
+    IfTypeThenAdd(::c32, std::complex<float>)
+    IfTypeThenAdd(::c64, std::complex<double>)
 }
 
 #define RETURN_BUFFERCHUNK(typeStr, cType) \
@@ -138,8 +172,6 @@ void addMinMaxToAfArray(af::array& rAfArray, const std::string& type)
 Pothos::BufferChunk getTestInputs(const std::string& type)
 {
     const auto afDType = Pothos::Object(Pothos::DType(type)).convert<af::dtype>();
-
-    af::setSeed(Poco::Random().next());
 
     return Pothos::Object(af::randu(TestInputLength, afDType)).convert<Pothos::BufferChunk>();
 }
@@ -218,6 +250,11 @@ af::array convertBufferChunksTo2DAfArray(const std::vector<Pothos::BufferChunk>&
     }
 
     return afArray;
+}
+
+pothos_static_block(pothosGPUSeedRandom)
+{
+    af::setSeed(Poco::Random().next());
 }
 
 }
