@@ -50,7 +50,7 @@ static void testOneToOneBlockCommon(const Pothos::Proxy& block)
     auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
     POTHOS_TEST_EQUAL(
         testInputs.elements(),
-        static_cast<size_t>(output.elements()));
+        output.elements());
 }
 
 template <typename T>

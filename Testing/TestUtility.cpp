@@ -165,10 +165,6 @@ void addMinMaxToAfArray(af::array& rAfArray)
     IfTypeThenAdd(::c64, std::complex<double>)
 }
 
-#define RETURN_BUFFERCHUNK(typeStr, cType) \
-    if(type == typeStr) \
-        return stdVectorToBufferChunk(getTestInputs<cType>());
-
 Pothos::BufferChunk getTestInputs(const std::string& type)
 {
     const auto afDType = Pothos::Object(Pothos::DType(type)).convert<af::dtype>();

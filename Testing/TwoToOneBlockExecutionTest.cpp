@@ -17,6 +17,7 @@
 namespace GPUTests
 {
 
+// TODO: some of this can likely be consolidated with NToOne
 template <typename In, typename Out>
 void testTwoToOneBlockCommon(
     const Pothos::Proxy& block,
@@ -27,45 +28,38 @@ void testTwoToOneBlockCommon(
 
     static constexpr size_t numInputChannels = 2;
 
-    std::vector<std::vector<In>> testInputs(numInputChannels);
+    std::vector<Pothos::BufferChunk> testInputs(numInputChannels);
     std::vector<Pothos::Proxy> feederSources(numInputChannels);
     Pothos::Proxy collectorSink;
 
     for(size_t chan = 0; chan < numInputChannels; ++chan)
     {
-        testInputs[chan] = getTestInputs<In>();
+        testInputs[chan] = getTestInputs(inputDType.toString());
 
         feederSources[chan] = Pothos::BlockRegistry::make(
                                   "/blocks/feeder_source",
                                   inputDType);
     }
 
-    // If specified, remove any zeros from the second buffer, which
-    // ends up being a denominator. Resize the numerator to match.
+    // If specified, remove any zeros from the second buffer.
     if(removeZerosInBuffer1)
     {
         static const In Zero(0);
+        static const In One(1);
 
         auto& denom = testInputs[1];
-        if(denom.end() != std::find(std::begin(denom), std::end(denom), Zero))
+        In* denomBuffer = denom.as<In*>();
+        for(size_t i = 0; i < denom.elements(); ++i)
         {
-            testInputs[1].erase(
-                std::remove(
-                    std::begin(denom),
-                    std::end(denom),
-                    Zero));
-            testInputs[0].resize(denom.size());
+            if(denomBuffer[i] == Zero) denomBuffer[i] = One;
         }
     }
-
-    POTHOS_TEST_FALSE(testInputs[0].empty());
-    POTHOS_TEST_EQUAL(testInputs[0].size(), testInputs[1].size());
 
     for(size_t chan = 0; chan < numInputChannels; ++chan)
     {
         feederSources[chan].call(
             "feedBuffer",
-            stdVectorToBufferChunk<In>(testInputs[chan]));
+            testInputs[chan]);
     }
 
     collectorSink = Pothos::BlockRegistry::make(
@@ -97,7 +91,7 @@ void testTwoToOneBlockCommon(
     // Make sure the block outputs data.
     auto output = collectorSink.call<Pothos::BufferChunk>("getBuffer");
     POTHOS_TEST_EQUAL(
-        testInputs[0].size(),
+        testInputs[0].elements(),
         output.elements());
 }
 

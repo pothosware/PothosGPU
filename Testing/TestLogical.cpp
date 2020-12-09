@@ -12,32 +12,6 @@
 #include <vector>
 
 //
-// Utility code
-//
-
-static constexpr size_t bufferLen = 4096;
-
-template <typename T>
-static Pothos::BufferChunk getTestInputs()
-{
-    Pothos::BufferChunk bufferChunk(typeid(T), bufferLen);
-    Poco::RandomBuf randomBuf;
-    randomBuf.readFromDevice(bufferChunk, bufferChunk.length);
-
-    return bufferChunk;
-}
-
-template <typename T>
-static T getRandomValue()
-{
-    T constant;
-    Poco::RandomBuf randomBuf;
-    randomBuf.readFromDevice((char*)&constant, sizeof(constant));
-
-    return constant;
-}
-
-//
 // Test implementations
 //
 
@@ -50,11 +24,13 @@ static void testLogicalArray()
     std::cout << "Testing " << dtype.name() << "..." << std::endl;
 
     std::vector<Pothos::BufferChunk> inputs;
-    for (size_t i = 0; i < numInputs; ++i) inputs.emplace_back(getTestInputs<T>());
+    for (size_t i = 0; i < numInputs; ++i) inputs.emplace_back(GPUTests::getTestInputs(dtype.name()));
+
+    const auto bufferLen = inputs[0].elements();
 
     Pothos::BufferChunk expectedAndOutput("int8", bufferLen);
     Pothos::BufferChunk expectedOrOutput("int8", bufferLen);
-    Pothos::BufferChunk expectedXOrOutput("int8", bufferLen);
+    Pothos::BufferChunk expectedXOrOutput("int8", bufferLen); // TODO: test
 
     for (size_t elem = 0; elem < bufferLen; ++elem)
     {
@@ -123,8 +99,9 @@ static void testLogicalScalar()
 
     std::cout << "Testing " << dtype.name() << "..." << std::endl;
 
-    auto input = getTestInputs<T>();
-    const auto scalar = getRandomValue<T>();
+    auto input = GPUTests::getTestInputs(dtype.name());
+    const auto bufferLen = input.elements();
+    const auto scalar = GPUTests::getSingleTestInput(dtype.name()).convert<T>();
 
     Pothos::BufferChunk expectedAndOutput("int8", bufferLen);
     Pothos::BufferChunk expectedOrOutput("int8", bufferLen);

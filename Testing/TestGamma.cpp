@@ -11,7 +11,7 @@
 #include <vector>
 
 template <typename T>
-static void getTestInputs(
+static void getGammaTestValues(
     Pothos::BufferChunk* pInput,
     Pothos::BufferChunk* pGammaOutput,
     Pothos::BufferChunk* pLGammaOutput)
@@ -99,7 +99,7 @@ static void testGamma()
     std::cout << "Testing " << dtype.toString() << "..." << std::endl;
 
     Pothos::BufferChunk input, tGammaOutput, lGammaOutput;
-    getTestInputs<T>(&input, &tGammaOutput, &lGammaOutput);
+    getGammaTestValues<T>(&input, &tGammaOutput, &lGammaOutput);
 
     auto feeder = Pothos::BlockRegistry::make("/blocks/feeder_source", dtype);
     feeder.call("feedBuffer", input);
