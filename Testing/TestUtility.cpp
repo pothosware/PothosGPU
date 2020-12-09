@@ -11,6 +11,8 @@
 #include <Pothos/Proxy.hpp>
 #include <Pothos/Testing.hpp>
 
+#include <algorithm>
+
 namespace GPUTests
 {
 

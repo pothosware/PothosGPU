@@ -144,6 +144,7 @@ POTHOS_MODULE_UTIL(
         Testing/TestNumericConversions.cpp
         Testing/TestPowRoot.cpp
         Testing/TestRSqrt.cpp
+        Testing/TestSetUnion.cpp
         Testing/TestSinc.cpp
         Testing/TestStatistics.cpp
         Testing/TestTrigonometric.cpp
