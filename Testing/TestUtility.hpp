@@ -139,22 +139,6 @@ static std::vector<T> linspace(T a, T b, size_t N)
 }
 
 template <typename T>
-static std::vector<T> getIntTestParams(T a, T step, size_t N)
-{
-    std::vector<T> ret;
-    ret.reserve(N);
-
-    for(size_t i = 0; i < N; ++i)
-    {
-        // Skip 0 to avoid crashes
-        if((a + (T(i)*step)) >= 0) ret.emplace_back(a + (T(i+1)*step));
-        else                       ret.emplace_back(a + (T(i)*step));
-    }
-
-    return ret;
-}
-
-template <typename T>
 static EnableIfFloat<T, void> testBufferChunk(
     const Pothos::BufferChunk& bufferChunk,
     const std::vector<T>& expectedOutputs,
