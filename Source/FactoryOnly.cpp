@@ -97,7 +97,8 @@ static Pothos::BlockRegistry registerSetUnion(
     "/gpu/algorithm/set_union",
     Pothos::Callable(&NToOneBlock::makeCallable)
         .bind(Pothos::Callable(af::setUnion).bind(false, 2), 1)
-        .bind<DTypeSupport>({true,true,true,false}, 4));
+        .bind<DTypeSupport>({true,true,true,false}, 4)
+        .bind<bool>(true, 5));
 
 static Pothos::BlockRegistry registerFlip(
     "/gpu/data/flip",

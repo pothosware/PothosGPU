@@ -25,14 +25,16 @@ class NToOneBlock: public ArrayFireBlock
             const NToOneFunc& func,
             const Pothos::DType& dtype,
             size_t numChannels,
-            const DTypeSupport& supportedTypes);
+            const DTypeSupport& supportedTypes,
+            bool shouldPostBuffer);
 
         static Pothos::Block* makeCallable(
             const std::string& device,
             const Pothos::Callable& func,
             const Pothos::DType& dtype,
             size_t numChannels,
-            const DTypeSupport& supportedTypes);
+            const DTypeSupport& supportedTypes,
+            bool shouldPostBuffer);
 
         //
         // Class implementation
@@ -42,13 +44,15 @@ class NToOneBlock: public ArrayFireBlock
             const std::string& device,
             const NToOneFunc& func,
             const Pothos::DType& dtype,
-            size_t numChannels);
+            size_t numChannels,
+            bool shouldPostBuffer);
 
         NToOneBlock(
             const std::string& device,
             const Pothos::Callable& func,
             const Pothos::DType& dtype,
-            size_t numChannels);
+            size_t numChannels,
+            bool shouldPostBuffer);
 
         virtual ~NToOneBlock();
 
@@ -57,6 +61,8 @@ class NToOneBlock: public ArrayFireBlock
     private:
         Pothos::Callable _func;
         size_t _nchans;
+
+        bool _postBuffer;
 };
 
 #define AF_ARRAY_OP_N_TO_ONE_FUNC(op) \

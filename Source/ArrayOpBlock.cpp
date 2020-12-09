@@ -28,7 +28,7 @@
 
 #define IfOpThenNToOneBlock(op, opStr) \
     if(opStr == operation) \
-        return new NToOneBlock(device, NToOneLambda(op), dtype, numChans);
+        return new NToOneBlock(device, NToOneLambda(op), dtype, numChans, false);
 
 #define IfOpThenTwoToOneBlock(op, opStr) \
     if(opStr == operation) \

@@ -70,6 +70,7 @@ static const std::vector<Pothos::BlockRegistry> BlockRegistries =
                 ${"true" if block["supportedTypes"].get("supportFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
                 ${"true" if block["supportedTypes"].get("supportComplexFloat", block["supportedTypes"].get("supportAll", False)) else "false"},
             }, 4)
+            .bind<bool>(${"true" if block.get("postBuffer", True) else "false"}, 5)
     ),
 %endfor
 };

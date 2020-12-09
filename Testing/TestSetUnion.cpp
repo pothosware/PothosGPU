@@ -80,12 +80,12 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_set_union)
     // TODO: enable chars in type-support
     //testSetUnion<char>();
     testSetUnion<short>();
-    testSetUnion<int>();
-    testSetUnion<long long>();
+    //testSetUnion<int>();
+    //testSetUnion<long long>();
     //testSetUnion<unsigned char>();
     testSetUnion<unsigned short>();
-    testSetUnion<unsigned int>();
-    testSetUnion<unsigned long long>();
+    //testSetUnion<unsigned int>();
+    //testSetUnion<unsigned long long>();
     testSetUnion<float>();
     testSetUnion<double>();
 }

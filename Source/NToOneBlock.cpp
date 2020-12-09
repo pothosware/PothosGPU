@@ -24,7 +24,8 @@ Pothos::Block* NToOneBlock::make(
     const NToOneFunc& func,
     const Pothos::DType& dtype,
     size_t numChannels,
-    const DTypeSupport& supportedTypes)
+    const DTypeSupport& supportedTypes,
+    bool shouldPostBuffer)
 {
     validateDType(dtype, supportedTypes);
 
@@ -32,7 +33,8 @@ Pothos::Block* NToOneBlock::make(
                    device,
                    func,
                    dtype,
-                   numChannels);
+                   numChannels,
+                   shouldPostBuffer);
 }
 
 Pothos::Block* NToOneBlock::makeCallable(
@@ -40,7 +42,8 @@ Pothos::Block* NToOneBlock::makeCallable(
     const Pothos::Callable& func,
     const Pothos::DType& dtype,
     size_t numChannels,
-    const DTypeSupport& supportedTypes)
+    const DTypeSupport& supportedTypes,
+    bool shouldPostBuffer)
 {
     validateDType(dtype, supportedTypes);
 
@@ -48,7 +51,8 @@ Pothos::Block* NToOneBlock::makeCallable(
                    device,
                    func,
                    dtype,
-                   numChannels);
+                   numChannels,
+                   shouldPostBuffer);
 }
 
 //
@@ -59,12 +63,14 @@ NToOneBlock::NToOneBlock(
     const std::string& device,
     const NToOneFunc& func,
     const Pothos::DType& dtype,
-    size_t numChannels
+    size_t numChannels,
+    bool shouldPostBuffer
 ): NToOneBlock(
        device,
        Pothos::Callable(func),
        dtype,
-       numChannels)
+       numChannels,
+       shouldPostBuffer)
 {
 }
 
@@ -72,10 +78,12 @@ NToOneBlock::NToOneBlock(
     const std::string& device,
     const Pothos::Callable& func,
     const Pothos::DType& dtype,
-    size_t numChannels
+    size_t numChannels,
+    bool shouldPostBuffer
 ): ArrayFireBlock(device),
    _func(func),
-   _nchans(0)
+   _nchans(0),
+    _postBuffer(shouldPostBuffer)
 {
     if(numChannels < 2)
     {
@@ -109,5 +117,7 @@ void NToOneBlock::work()
         afArray = this->getInputPortAsAfArray(chan);
         outputAfArray = _func.call(outputAfArray, afArray).template extract<af::array>();
     }
-    this->produceFromAfArray(0, outputAfArray);
+
+    if(_postBuffer) this->postAfArray(0, outputAfArray);
+    else            this->produceFromAfArray(0, outputAfArray);
 }

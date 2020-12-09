@@ -393,6 +393,7 @@ NToOneBlocks:
           header: algorithm
           description: Outputs the union of all input buffers, sorted in ascending order.
           testOnly: true
+          postBuffer: true
           supportedTypes:
                   supportInt: true
                   supportUInt: true
