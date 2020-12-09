@@ -12,32 +12,6 @@
 #include <vector>
 
 //
-// Utility code
-//
-
-static constexpr size_t bufferLen = 4096;
-
-template <typename T>
-static Pothos::BufferChunk getTestInputs()
-{
-    Pothos::BufferChunk bufferChunk(typeid(T), bufferLen);
-    Poco::RandomBuf randomBuf;
-    randomBuf.readFromDevice(bufferChunk, bufferChunk.length);
-
-    return bufferChunk;
-}
-
-template <typename T>
-static T getRandomValue()
-{
-    T constant;
-    Poco::RandomBuf randomBuf;
-    randomBuf.readFromDevice((char*)&constant, sizeof(constant));
-
-    return constant;
-}
-
-//
 // Test implementations
 //
 
@@ -46,9 +20,11 @@ static void testBitwiseNot()
 {
     const Pothos::DType dtype(typeid(T));
 
-    auto input = getTestInputs<T>();
-    Pothos::BufferChunk expectedOutput(typeid(T), input.elements());
-    for (size_t elem = 0; elem < expectedOutput.elements(); ++elem)
+    auto input = GPUTests::getTestInputs(dtype.name());
+    const auto bufferLen = input.elements();
+    Pothos::BufferChunk expectedOutput(typeid(T), bufferLen);
+
+    for (size_t elem = 0; elem < bufferLen; ++elem)
     {
         expectedOutput.template as<T*>()[elem] = ~input.template as<const T*>()[elem];
     }
@@ -86,7 +62,8 @@ static void testBitwiseArray()
     testBitwiseNot<T>();
 
     std::vector<Pothos::BufferChunk> inputs;
-    for (size_t i = 0; i < numInputs; ++i) inputs.emplace_back(getTestInputs<T>());
+    for (size_t i = 0; i < numInputs; ++i) inputs.emplace_back(GPUTests::getTestInputs(dtype.name()));
+    const auto bufferLen = inputs[0].elements();
 
     Pothos::BufferChunk expectedAndOutput(dtype, bufferLen);
     Pothos::BufferChunk expectedOrOutput(dtype, bufferLen);
@@ -170,8 +147,9 @@ static void testBitwiseScalar()
 
     std::cout << "Testing " << dtype.name() << "..." << std::endl;
 
-    auto input = getTestInputs<T>();
-    const auto scalar = getRandomValue<T>();
+    auto input = GPUTests::getTestInputs(dtype.name());
+    const auto scalar = GPUTests::getRandomValue(input).convert<T>();
+    const auto bufferLen = input.elements();
 
     Pothos::BufferChunk expectedAndOutput(dtype, bufferLen);
     Pothos::BufferChunk expectedOrOutput(dtype, bufferLen);
@@ -259,7 +237,8 @@ static void testBitShift()
 
     std::cout << "Testing " << dtype.name() << "..." << std::endl;
 
-    auto input = getTestInputs<T>();
+    auto input = GPUTests::getTestInputs(dtype.name());
+    const auto bufferLen = input.elements();
     constexpr size_t leftShiftSize = ((sizeof(T) * 8) / 2);
     constexpr size_t rightShiftSize = ((sizeof(T) * 8) - 1);
 

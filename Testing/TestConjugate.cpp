@@ -15,21 +15,19 @@
 // Common
 //
 
-constexpr size_t bufferLen = 4096;
-
 template <typename Type>
-static void getTestValues(
+static void getConjugateTestValues(
     Pothos::BufferChunk* pInputs,
     Pothos::BufferChunk* pExpectedOutputs)
 {
     using ComplexType = std::complex<Type>;
+    const auto dtype = Pothos::DType(typeid(ComplexType));
 
-    (*pInputs) = Pothos::BufferChunk(typeid(ComplexType), bufferLen);
-    (*pExpectedOutputs) = Pothos::BufferChunk(typeid(ComplexType), bufferLen);
+    (*pInputs) = GPUTests::getTestInputs(dtype.name());
+    (*pExpectedOutputs) = Pothos::BufferChunk(typeid(ComplexType), pInputs->elements());
 
-    for (size_t elem = 0; elem < bufferLen; ++elem)
+    for (size_t elem = 0; elem < pInputs->elements(); ++elem)
     {
-        pInputs->as<ComplexType*>()[elem] = ComplexType(Type(rand() % 100), Type(rand() % 100));
         pExpectedOutputs->as<ComplexType*>()[elem] = std::conj(pInputs->as<ComplexType*>()[elem]);
     }
 }
@@ -41,7 +39,7 @@ static void testConjugate()
 
     Pothos::BufferChunk inputs;
     Pothos::BufferChunk expectedOutputs;
-    getTestValues<Type>(&inputs, &expectedOutputs);
+    getConjugateTestValues<Type>(&inputs, &expectedOutputs);
 
     const auto dtype = Pothos::DType(typeid(ComplexType));
 

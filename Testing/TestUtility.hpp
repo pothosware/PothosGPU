@@ -87,9 +87,10 @@ template <typename T>
 static std::vector<T> bufferChunkToStdVector(const Pothos::BufferChunk& bufferChunkIn)
 {
     std::vector<T> ret(bufferChunkIn.elements());
+    POTHOS_TEST_EQUAL((ret.size() * sizeof(T)), bufferChunkIn.length);
     std::memcpy(
         ret.data(),
-        reinterpret_cast<void*>(bufferChunkIn.address),
+        bufferChunkIn.as<const void*>(),
         bufferChunkIn.length);
 
     return ret;
@@ -246,91 +247,11 @@ void addMinMaxToAfArray(af::array& rAfArray);
 
 static constexpr size_t TestInputLength = 4096;
 
-// Templateless for the case where templates would make the binary size
-// explode
 Pothos::BufferChunk getTestInputs(const std::string& type);
 
+Pothos::Object getRandomValue(const Pothos::BufferChunk& bufferChunk);
+
 Pothos::Object getSingleTestInput(const std::string& type);
-
-template <typename T>
-static EnableIfInteger<T, std::vector<T>> getTestInputs(bool shuffle = true)
-{
-    static std::random_device rd;
-    static std::mt19937 g(rd());
-
-    static constexpr T minValue = std::is_same<T, std::int8_t>::value ? T(-5) : T(-25);
-    static constexpr size_t numInputs = std::is_same<T, std::int8_t>::value ? 11 : 51;
-
-    auto testParams = getIntTestParams<T>(minValue, T(1), numInputs);
-    if(shuffle)
-    {
-        std::shuffle(testParams.begin(), testParams.end(), g);
-    }
-
-    return testParams;
-}
-
-template <typename T>
-static EnableIfUnsignedInt<T, std::vector<T>> getTestInputs(bool shuffle = true)
-{
-    static std::random_device rd;
-    static std::mt19937 g(rd());
-
-    static constexpr T minValue = std::is_same<T, std::uint8_t>::value ? T(5) : T(25);
-    static constexpr size_t numInputs = std::is_same<T, std::uint8_t>::value ? 9 : 76;
-
-    auto testParams = getIntTestParams<T>(minValue, T(1), numInputs);
-    if(shuffle)
-    {
-        std::shuffle(testParams.begin(), testParams.end(), g);
-    }
-
-    return testParams;
-}
-
-template <typename T>
-static EnableIfFloat<T, std::vector<T>> getTestInputs(bool shuffle = true)
-{
-    static std::random_device rd;
-    static std::mt19937 g(rd());
-
-    // To not have nice even numbers
-    static constexpr size_t numInputs = 123;
-
-    auto testParams = linspace<T>(10.0f, 20.0f, numInputs);
-    if(shuffle)
-    {
-        std::shuffle(testParams.begin(), testParams.end(), g);
-    }
-
-    return testParams;
-}
-
-template <typename T>
-static EnableIfComplex<T, std::vector<T>> getTestInputs(bool shuffle = true)
-{
-    using Scalar = typename T::value_type;
-
-    static std::random_device rd;
-    static std::mt19937 g(rd());
-
-    // To not have nice even numbers
-    static constexpr size_t numInputs = 246;
-
-    auto testParams = toComplexVector(linspace<Scalar>(10.0f, 20.0f, numInputs));
-    if(shuffle)
-    {
-        std::shuffle(testParams.begin(), testParams.end(), g);
-    }
-
-    return testParams;
-}
-
-template <typename T>
-static inline T getSingleTestInput()
-{
-    return getTestInputs<T>()[0];
-}
 
 //
 // Only test against blocks that exist

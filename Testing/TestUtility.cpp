@@ -172,25 +172,49 @@ Pothos::BufferChunk getTestInputs(const std::string& type)
     return Pothos::Object(af::randu(TestInputLength, afDType)).convert<Pothos::BufferChunk>();
 }
 
-#define RETURN_OBJECT(typeStr, cType) \
-    if(type == typeStr) \
-        return Pothos::Object(getSingleTestInput<cType>());
+Pothos::Object getRandomValue(const Pothos::BufferChunk& bufferChunk)
+{
+    #define GET_RANDOM_VALUE_OF_TYPE(typeStr, cType) \
+        if(bufferChunk.dtype.name() == typeStr) \
+        { \
+            return Pothos::Object(bufferChunk.as<const cType*>()[Poco::Random().next(Poco::UInt32(bufferChunk.elements()))]); \
+        }
+
+    GET_RANDOM_VALUE_OF_TYPE("int8",            char)
+    GET_RANDOM_VALUE_OF_TYPE("int16",           short)
+    GET_RANDOM_VALUE_OF_TYPE("int32",           int)
+    GET_RANDOM_VALUE_OF_TYPE("int64",           long long)
+    GET_RANDOM_VALUE_OF_TYPE("uint8",           unsigned char)
+    GET_RANDOM_VALUE_OF_TYPE("uint16",          unsigned short)
+    GET_RANDOM_VALUE_OF_TYPE("uint32",          unsigned)
+    GET_RANDOM_VALUE_OF_TYPE("uint64",          unsigned long long)
+    GET_RANDOM_VALUE_OF_TYPE("float32",         float)
+    GET_RANDOM_VALUE_OF_TYPE("float64",         double)
+    GET_RANDOM_VALUE_OF_TYPE("complex_float32", std::complex<float>)
+    GET_RANDOM_VALUE_OF_TYPE("complex_float64", std::complex<double>)
+
+    // Should never happen
+    return Pothos::Object();
+}
+
+#define RETURN_OBJECT(typeStr) \
+    if(type == typeStr) return getRandomValue(getTestInputs(typeStr));
 
 Pothos::Object getSingleTestInput(const std::string& type)
 {
     // ArrayFire doesn't support int8
-    RETURN_OBJECT("int16", std::int16_t)
-    RETURN_OBJECT("int32", std::int32_t)
-    RETURN_OBJECT("int64", std::int64_t)
-    RETURN_OBJECT("uint8", std::uint8_t)
-    RETURN_OBJECT("uint16", std::uint16_t)
-    RETURN_OBJECT("uint32", std::uint32_t)
-    RETURN_OBJECT("uint64", std::uint64_t)
-    RETURN_OBJECT("float32", float)
-    RETURN_OBJECT("float64", double)
+    RETURN_OBJECT("int16")
+    RETURN_OBJECT("int32")
+    RETURN_OBJECT("int64")
+    RETURN_OBJECT("uint8")
+    RETURN_OBJECT("uint16")
+    RETURN_OBJECT("uint32")
+    RETURN_OBJECT("uint64")
+    RETURN_OBJECT("float32")
+    RETURN_OBJECT("float64")
     // ArrayFire doesn't support any integral complex type
-    RETURN_OBJECT("complex_float32", std::complex<float>)
-    RETURN_OBJECT("complex_float64", std::complex<double>)
+    RETURN_OBJECT("complex_float32")
+    RETURN_OBJECT("complex_float64")
 
     // Should never happen
     return Pothos::Object();

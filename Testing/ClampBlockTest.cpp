@@ -22,17 +22,17 @@ static constexpr const char* blockRegistryPath = "/gpu/arith/clamp";
 static constexpr const char* pluginPath = "/blocks/gpu/arith/clamp";
 
 #define GET_MINMAX_OBJECTS(typeStr, cType) \
-    if(type == typeStr) \
+    if(inputs.dtype.name() == typeStr) \
     { \
-        const auto sortedInputs = GPUTests::getTestInputs<cType>(false /*shuffle*/); \
-        POTHOS_TEST_GE(sortedInputs.size(), 6); \
+        auto inputsCopy = GPUTests::bufferChunkToStdVector<cType>(inputs); \
+        std::sort(inputsCopy.begin(), inputsCopy.end()); \
  \
-        (*pMinObjectOut) = Pothos::Object(sortedInputs[2]); \
-        (*pMaxObjectOut) = Pothos::Object(sortedInputs[sortedInputs.size()-3]); \
+        (*pMinObjectOut) = Pothos::Object(inputsCopy[static_cast<size_t>(inputsCopy.size() * 0.25)]); \
+        (*pMaxObjectOut) = Pothos::Object(inputsCopy[static_cast<size_t>(inputsCopy.size() * 0.75)]); \
     }
 
 static void getMinMaxObjects(
-    const std::string& type,
+    const Pothos::BufferChunk& inputs,
     Pothos::Object* pMinObjectOut,
     Pothos::Object* pMaxObjectOut)
 {
@@ -93,8 +93,8 @@ void testClampBlockForType(const std::string& type)
     std::cout << "Testing " << blockRegistryPath
               << " (type: " << type << ")" << std::endl;
 
-    Pothos::Object minObject, maxObject;
-    getMinMaxObjects(type, &minObject, &maxObject);
+    Pothos::Object minObject(0);
+    Pothos::Object maxObject(0);
 
     Pothos::DType dtype(type);
     if(isDTypeComplexFloat(dtype))
@@ -118,6 +118,10 @@ void testClampBlockForType(const std::string& type)
                          maxObject);
 
         auto testInputs = GPUTests::getTestInputs(type);
+        getMinMaxObjects(testInputs, &minObject, &maxObject);
+
+        block.call("setMaxValue", maxObject);
+        block.call("setMinValue", minObject);
 
         auto feederSource = Pothos::BlockRegistry::make(
                                 "/blocks/feeder_source",

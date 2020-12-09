@@ -63,7 +63,7 @@ struct TestValues
 };
 
 template <typename Type>
-static std::vector<TestValues<Type>> getTestValues()
+static std::vector<TestValues<Type>> getPowRootTestValues()
 {
     const auto inputs = linspace<Type>(-10, 10, Type(0.1));
     POTHOS_TEST_FALSE(inputs.empty());
@@ -138,7 +138,7 @@ static void testPowRoot()
 
     std::cout << "Testing " << dtype.toString() << "..." << std::endl;
 
-    auto allTestValues = getTestValues<Type>();
+    auto allTestValues = getPowRootTestValues<Type>();
 
     for (const auto& testValues : allTestValues)
     {

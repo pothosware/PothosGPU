@@ -117,7 +117,7 @@ void testScalarOpBlock(
     T scalar;
     do
     {
-        scalar = getSingleTestInput<T>();
+        scalar = getSingleTestInput(dtype.name()).convert<T>();
     } while(!allowZeroScalar && (scalar == zero));
 
     auto block = Pothos::BlockRegistry::make(

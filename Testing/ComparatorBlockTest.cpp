@@ -25,40 +25,48 @@ static constexpr const char* scalarBlockRegistryPath = "/gpu/scalar/comparator";
 template <typename T, typename ComparatorFcn>
 static void getScalarTestValues(
     ComparatorFcn comparatorFcn,
-    std::vector<T>* pInput,
-    T* pScalar,
-    std::vector<std::int8_t>* pOutput)
+    Pothos::BufferChunk* pInput,
+    Pothos::Object* pScalar,
+    Pothos::BufferChunk* pOutput)
 {
-    (*pInput) = GPUTests::getTestInputs<T>(true /*shuffle*/);
-    (*pScalar) = GPUTests::getSingleTestInput<T>();
+    const auto dtype = Pothos::DType(typeid(T));
 
-    std::transform(
-        pInput->begin(),
-        pInput->end(),
-        std::back_inserter(*pOutput),
-        [&](T input)
-        {
-            return comparatorFcn(input, (*pScalar)) ? 1 : 0;
-        });
-    POTHOS_TEST_EQUAL(pOutput->size(), pInput->size());
+    (*pInput) = GPUTests::getTestInputs(dtype.name());
+    (*pScalar) = GPUTests::getRandomValue(*pInput);
+    (*pOutput) = Pothos::BufferChunk("int8", pInput->elements());
+
+    const T* inputBuffer = pInput->as<const T*>();
+    const T& scalar = pScalar->extract<T>();
+    char* outputBuffer = pOutput->as<char*>();
+
+    for(size_t i = 0; i < pInput->elements(); ++i)
+    {
+        outputBuffer[i] = comparatorFcn(inputBuffer[i], scalar) ? 1 : 0;
+    }
 }
 
 template <typename T, typename ComparatorFcn>
 static void getArrayTestValues(
     ComparatorFcn comparatorFcn,
-    std::vector<T>* pInput0,
-    std::vector<T>* pInput1,
-    std::vector<std::int8_t>* pOutput)
+    Pothos::BufferChunk* pInput0,
+    Pothos::BufferChunk* pInput1,
+    Pothos::BufferChunk* pOutput)
 {
-    (*pInput0) = GPUTests::getTestInputs<T>(true /*shuffle*/);
-    (*pInput1) = GPUTests::getTestInputs<T>(true /*shuffle*/);
-    POTHOS_TEST_EQUAL(pInput0->size(), pInput1->size());
+    const auto dtype = Pothos::DType(typeid(T));
 
-    for(size_t i = 0; i < pInput0->size(); ++i)
+    (*pInput0) = GPUTests::getTestInputs(dtype.name());
+    (*pInput1) = GPUTests::getTestInputs(dtype.name());
+    POTHOS_TEST_EQUAL(pInput0->elements(), pInput1->elements());
+    (*pOutput) = Pothos::BufferChunk("int8", pInput0->elements());
+
+    const T* inputBuffer0 = pInput0->as<const T*>();
+    const T* inputBuffer1 = pInput1->as<const T*>();
+    char* outputBuffer = pOutput->as<char*>();
+
+    for(size_t i = 0; i < pInput0->elements(); ++i)
     {
-        pOutput->emplace_back(comparatorFcn(pInput0->at(i), pInput1->at(i)) ? 1 : 0);
+        outputBuffer[i] = comparatorFcn(inputBuffer0[i], inputBuffer1[i]) ? 1 : 0;
     }
-    POTHOS_TEST_EQUAL(pOutput->size(), pInput0->size());
 }
 
 static void getScalarTestValues(
@@ -72,29 +80,23 @@ static void getScalarTestValues(
 
     const Pothos::DType dtype(type);
 
-#define GET_SCALAR_TEST_VALUES_FOR_OP(op, func) \
+#define GET_SCALAR_TEST_VALUES_FOR_OP(op, cType, func) \
     if(operation == op) \
     { \
-        getScalarTestValues(func, &input, &scalar, &output); \
+        getScalarTestValues<cType>(func, pInput, pScalar, pOutput); \
     } \
 
 #define GET_SCALAR_TEST_VALUES(typeStr, cType) \
     if(type == typeStr) \
     { \
-        std::vector<cType> input; \
-        cType scalar(0); \
-        std::vector<std::int8_t> output; \
  \
-        GET_SCALAR_TEST_VALUES_FOR_OP(">",  std::greater<cType>()); \
-        GET_SCALAR_TEST_VALUES_FOR_OP(">=", std::greater_equal<cType>()); \
-        GET_SCALAR_TEST_VALUES_FOR_OP("<",  std::less<cType>()); \
-        GET_SCALAR_TEST_VALUES_FOR_OP("<=", std::less_equal<cType>()); \
-        GET_SCALAR_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
-        GET_SCALAR_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP(">",  cType, std::greater<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP(">=", cType, std::greater_equal<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP("<",  cType, std::less<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP("<=", cType, std::less_equal<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP("==", cType, std::equal_to<cType>()); \
+        GET_SCALAR_TEST_VALUES_FOR_OP("!=", cType, std::not_equal_to<cType>()); \
  \
-        (*pInput) = GPUTests::stdVectorToBufferChunk(input); \
-        (*pScalar) = Pothos::Object(scalar); \
-        (*pOutput) = GPUTests::stdVectorToBufferChunk(output); \
         return; \
     }
 
@@ -120,28 +122,23 @@ static void getArrayTestValues(
 
     const Pothos::DType dtype(type);
 
-#define GET_ARRAY_TEST_VALUES_FOR_OP(op, func) \
+#define GET_ARRAY_TEST_VALUES_FOR_OP(op, cType, func) \
     if(operation == op) \
     { \
-        getArrayTestValues(func, &input0, &input1, &output); \
+        getArrayTestValues<cType>(func, pInput0, pInput1, pOutput); \
     } \
 
 #define GET_ARRAY_TEST_VALUES(typeStr, cType) \
     if(type == typeStr) \
     { \
-        std::vector<cType> input0, input1; \
-        std::vector<std::int8_t> output; \
  \
-        GET_ARRAY_TEST_VALUES_FOR_OP(">",  std::greater<cType>()); \
-        GET_ARRAY_TEST_VALUES_FOR_OP(">=", std::greater_equal<cType>()); \
-        GET_ARRAY_TEST_VALUES_FOR_OP("<",  std::less<cType>()); \
-        GET_ARRAY_TEST_VALUES_FOR_OP("<=", std::less_equal<cType>()); \
-        GET_ARRAY_TEST_VALUES_FOR_OP("==", std::equal_to<cType>()); \
-        GET_ARRAY_TEST_VALUES_FOR_OP("!=", std::not_equal_to<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP(">",  cType, std::greater<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP(">=", cType, std::greater_equal<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP("<",  cType, std::less<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP("<=", cType, std::less_equal<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP("==", cType, std::equal_to<cType>()); \
+        GET_ARRAY_TEST_VALUES_FOR_OP("!=", cType, std::not_equal_to<cType>()); \
  \
-        (*pInput0) = GPUTests::stdVectorToBufferChunk(input0); \
-        (*pInput1) = GPUTests::stdVectorToBufferChunk(input1); \
-        (*pOutput) = GPUTests::stdVectorToBufferChunk(output); \
         return; \
     }
 

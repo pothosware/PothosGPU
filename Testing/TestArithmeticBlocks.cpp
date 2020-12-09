@@ -344,7 +344,7 @@ static inline EnableIfComplex<T, T> getTestScalar()
 }
 
 template <typename T>
-static void getTestValues(
+static void getScalarArithmeticTestValues(
     ScalarArithmeticTestValues* pAddTestValues,
     ScalarArithmeticTestValues* pSubtractTestValues,
     ScalarArithmeticTestValues* pMultiplyTestValues,
@@ -425,7 +425,7 @@ static void testScalarArithmetic()
     ScalarArithmeticTestValues multiplyTestValues;
     ScalarArithmeticTestValues divideTestValues;
 
-    getTestValues<T>(
+    getScalarArithmeticTestValues<T>(
         &addTestValues,
         &subtractTestValues,
         &multiplyTestValues,
