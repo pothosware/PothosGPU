@@ -229,7 +229,7 @@ void addMinMaxToAfArray(af::array& rAfArray);
 // Getting random inputs
 //
 
-static constexpr size_t TestInputLength = 4096;
+static constexpr size_t TestInputLength = 1024;
 
 Pothos::BufferChunk getTestInputs(const std::string& type);
 

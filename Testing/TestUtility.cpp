@@ -5,6 +5,7 @@
 #include "TestUtility.hpp"
 
 #include <Poco/Random.h>
+#include <Poco/Timestamp.h>
 
 #include <Pothos/Framework.hpp>
 #include <Pothos/Plugin.hpp>
@@ -274,9 +275,10 @@ af::array convertBufferChunksTo2DAfArray(const std::vector<Pothos::BufferChunk>&
     return afArray;
 }
 
+// TODO: reseed for each test, this doesn't work for some reason
 pothos_static_block(pothosGPUSeedRandom)
 {
-    af::setSeed(Poco::Random().next());
+    af::setSeed(Poco::Timestamp().utcTime());
 }
 
 }
