@@ -392,7 +392,8 @@ NToOneBlocks:
           category: Stream
           header: algorithm
           description: Outputs the union of all input buffers, sorted in ascending order.
-          testOnly: true
+          testOnly: true # TODO: better field name
+          skipTest: true
           postBuffer: true
           supportedTypes:
                   supportInt: true

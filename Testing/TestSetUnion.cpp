@@ -10,14 +10,47 @@
 #include <algorithm>
 #include <iostream>
 #include <set>
+#include <type_traits>
 #include <vector>
+
+//
+// Utility code
+//
+
+template <typename T>
+struct FuzzyLess
+{
+    bool operator()(T lhs, T rhs)
+    {
+        static const T epsilon(1e-6);
+        return ((rhs - lhs) > epsilon);
+    }
+};
+
+template <typename T>
+struct TestSet
+{
+    using type = std::set<T>;
+};
+
+template <>
+struct TestSet<float>
+{
+    using type = std::set<float, FuzzyLess<float>>;
+};
+
+template <>
+struct TestSet<double>
+{
+    using type = std::set<double, FuzzyLess<double>>;
+};
 
 template <typename T>
 static Pothos::BufferChunk getBufferChunkSetUnion(const std::vector<Pothos::BufferChunk>& bufferChunks)
 {
     POTHOS_TEST_FALSE(bufferChunks.empty());
 
-    std::set<T> setUnion;
+    typename TestSet<T>::type setUnion;
     for(const auto& bufferChunk: bufferChunks)
     {
         std::copy(
@@ -34,6 +67,10 @@ static Pothos::BufferChunk getBufferChunkSetUnion(const std::vector<Pothos::Buff
 
     return GPUTests::stdVectorToBufferChunk(setUnionVec);
 }
+
+//
+// Test implementation
+//
 
 template <typename T>
 static void testSetUnion()
