@@ -19,6 +19,7 @@ OneToOneBlocks:
 
         - func: round
           header: arith
+          autoTest: true
           description: Round to nearest integer.
           supportedTypes:
                   supportFloat: true
@@ -26,18 +27,21 @@ OneToOneBlocks:
         - func: trunc
           niceName: Truncate
           header: arith
+          autoTest: true
           description: Truncate to nearest integer towards zero.
           supportedTypes:
                   supportFloat: true
 
         - func: floor
           header: arith
+          autoTest: true
           description: Round to nearest lower integer.
           supportedTypes:
                   supportFloat: true
 
         - func: ceil
           header: arith
+          autoTest: true
           description: Round to nearest higher integer.
           supportedTypes:
                   supportFloat: true
@@ -147,36 +151,42 @@ OneToOneBlocks:
         - func: sigmoid
           niceName: Sigmoid
           header: arith
+          autoTest: true
           supportedTypes:
                   supportFloat: true
 
         - func: exp
           niceName: Exponential
           header: arith
+          autoTest: true
           supportedTypes:
                   supportFloat: true
 
         - func: expm1
           niceName: exp(x) - 1
           header: arith
+          autoTest: true
           supportedTypes:
                   supportFloat: true
 
         - func: erf
           niceName: Error Function
           header: arith
+          autoTest: true
           supportedTypes:
                   supportFloat: true
 
         - func: erfc
           niceName: Complementary Error Function
           header: arith
+          autoTest: true
           supportedTypes:
                   supportFloat: true
 
         - func: log1p
           niceName: log(1 + x)
           header: arith
+          autoTest: true
           description: Calculate <b>log(1+x)</b>. Most useful for small inputs.
           supportedTypes:
                   supportFloat: true
@@ -191,6 +201,7 @@ OneToOneBlocks:
 
         - func: factorial
           header: arith
+          autoTest: true
           description: For all positive integers, returns <b>x * (x-1) * ... * 1</b>.
           supportedTypes:
                   supportFloat: true
@@ -346,12 +357,14 @@ TwoToOneBlocks:
         - func: hypot
           niceName: Hypotenuse
           header: arith
+          autoTest: true
           supportedTypes:
                   supportFloat: true
 
         - func: rem
           niceName: Remainder
           header: arith
+          autoTest: true
           description: For each element in inputs <b>0</b> and <b>1</b>, returns the remainder of <b>port0 / port1</b>. Will throw if <b>port1</b> includes a 0.
           allowZeroInBuffer1: false
           supportedTypes:
@@ -362,6 +375,7 @@ TwoToOneBlocks:
         - func: atan2
           niceName: Arc Tangent
           header: arith
+          autoTest: true
           description: <b>atan2(y,x)</b> returns the angle between the ray to the point <b>(x, y)</b> and the positive <b>x</b> axis.
           supportedTypes:
                   supportFloat: true
@@ -393,7 +407,6 @@ NToOneBlocks:
           header: algorithm
           description: Outputs the union of all input buffers, sorted in ascending order.
           testOnly: true # TODO: better field name
-          skipTest: true
           postBuffer: true
           supportedTypes:
                   supportInt: true

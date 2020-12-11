@@ -19,7 +19,7 @@ static EnableIf${k}<T, void> blockExecutionTest()
     %endif
 
     %for block in oneToOneBlocks:
-        %if ("supportedTypes" in block) and ("skipTest" not in block):
+        %if ("supportedTypes" in block) and ("autoTest" in block):
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
     testOneToOneBlock<T>("/gpu/${block["header"]}/${block["blockName"]}");
             %endif
@@ -27,7 +27,7 @@ static EnableIf${k}<T, void> blockExecutionTest()
     %endfor
 
     %for block in twoToOneBlocks:
-        %if "skipTest" in block:
+        %if "autoTest" not in block:
 
         %elif (block.get("pattern", "") == "FloatToComplex") and (k == "Float"):
     testTwoToOneBlockF2C<T>(
@@ -43,7 +43,7 @@ static EnableIf${k}<T, void> blockExecutionTest()
     %endfor
 
     %for block in NToOneBlocks:
-        %if ("supportedTypes" in block) and ("skipTest" not in block):
+        %if ("supportedTypes" in block) and ("autoTest" in block):
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
     testNToOneBlock<T>("/gpu/${block["header"]}/${block["blockName"]}", 2);
     testNToOneBlock<T>("/gpu/${block["header"]}/${block["blockName"]}", 5);
