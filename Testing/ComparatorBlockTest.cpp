@@ -102,11 +102,11 @@ static void getScalarTestValues(
 
     GET_SCALAR_TEST_VALUES("int16",   std::int16_t)
     GET_SCALAR_TEST_VALUES("int32",   std::int32_t)
-    GET_SCALAR_TEST_VALUES("int64",   std::int64_t)
+    GET_SCALAR_TEST_VALUES("int64",   long long)
     GET_SCALAR_TEST_VALUES("uint8",   std::uint8_t)
     GET_SCALAR_TEST_VALUES("uint16",  std::uint16_t)
     GET_SCALAR_TEST_VALUES("uint32",  std::uint32_t)
-    GET_SCALAR_TEST_VALUES("uint64",  std::uint64_t)
+    GET_SCALAR_TEST_VALUES("uint64",  unsigned long long)
     GET_SCALAR_TEST_VALUES("float32", float)
     GET_SCALAR_TEST_VALUES("float64", double)
 }
@@ -144,11 +144,11 @@ static void getArrayTestValues(
 
     GET_ARRAY_TEST_VALUES("int16",   std::int16_t)
     GET_ARRAY_TEST_VALUES("int32",   std::int32_t)
-    GET_ARRAY_TEST_VALUES("int64",   std::int64_t)
+    GET_ARRAY_TEST_VALUES("int64",   long long)
     GET_ARRAY_TEST_VALUES("uint8",   std::uint8_t)
     GET_ARRAY_TEST_VALUES("uint16",  std::uint16_t)
     GET_ARRAY_TEST_VALUES("uint32",  std::uint32_t)
-    GET_ARRAY_TEST_VALUES("uint64",  std::uint64_t)
+    GET_ARRAY_TEST_VALUES("uint64",  unsigned long long)
     GET_ARRAY_TEST_VALUES("float32", float)
     GET_ARRAY_TEST_VALUES("float64", double)
 }
