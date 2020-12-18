@@ -10,26 +10,27 @@
 #include <Pothos/Object.hpp>
 #include <Pothos/Testing.hpp>
 
+#include <Poco/Types.h>
+
 #include <arrayfire.h>
 
 #include <iostream>
 #include <string>
+#include <type_traits>
 #include <typeinfo>
 
 namespace GPUTests
 {
 
-template <typename T>
-static void test1DArrayConversion(
-    const std::string& dtypeName,
-    af::dtype afDType)
+static void test1DArrayConversion(const Pothos::DType& dtype)
 {
-    static constexpr dim_t ArrDim = 128;
+    constexpr dim_t ArrDim = 128;
+    const auto afDType = Pothos::Object(dtype).convert<af::dtype>();
 
-    std::cout << " * Testing " << dtypeName << "..." << std::endl;
+    std::cout << " * Testing " << dtype.name() << "..." << std::endl;
 
     auto afArray = af::randu(ArrDim, afDType);
-    addMinMaxToAfArray<T>(afArray);
+    addMinMaxToAfArray(afArray, dtype.name());
 
     auto convertedBufferChunk = Pothos::Object(afArray).convert<Pothos::BufferChunk>();
     compareAfArrayToBufferChunk(
@@ -42,18 +43,16 @@ static void test1DArrayConversion(
         convertedBufferChunk);
 }
 
-template <typename T>
-static void test2DArrayConversion(
-    const std::string& dtypeName,
-    af::dtype afDType)
+static void test2DArrayConversion(const Pothos::DType& dtype)
 {
-    static constexpr dim_t ArrDim1 = 16;
-    static constexpr dim_t ArrDim2 = 32;
+    constexpr dim_t ArrDim1 = 16;
+    constexpr dim_t ArrDim2 = 32;
+    const auto afDType = Pothos::Object(dtype).convert<af::dtype>();
 
-    std::cout << " * Testing " << dtypeName << "..." << std::endl;
+    std::cout << " * Testing " << dtype.name() << "..." << std::endl;
 
     auto afArray = af::randu(ArrDim1, ArrDim2, afDType);
-    addMinMaxToAfArray<T>(afArray);
+    addMinMaxToAfArray(afArray, dtype.name());
 
     for(dim_t row = 0; row < ArrDim1; ++row)
     {
@@ -94,6 +93,8 @@ static void testStdVectorToAfArrayConversion(af::dtype expectedAfDType)
         stdVector2);
 }
 
+}
+
 POTHOS_TEST_BLOCK("/gpu/tests", test_af_array_conversion)
 {
     using namespace GPUTests;
@@ -103,20 +104,11 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_af_array_conversion)
         af::setBackend(backend);
         std::cout << "Backend: " << Pothos::Object(backend).convert<std::string>() << std::endl;
 
-        test1DArrayConversion<char>("int8", ::b8);
-        test1DArrayConversion<short>("int16", ::s16);
-        test1DArrayConversion<int>("int32", ::s32);
-        test1DArrayConversion<long long>("int64", ::s64);
-        test1DArrayConversion<unsigned short>("uint16", ::u16);
-        test1DArrayConversion<unsigned>("uint32", ::u32);
-        test1DArrayConversion<unsigned long long>("uint64", ::u64);
-        test1DArrayConversion<float>("float32", ::f32);
-        test1DArrayConversion<double>("float64", ::f64);
-        test1DArrayConversion<std::complex<float>>("complex_float32", ::c32);
-        test1DArrayConversion<std::complex<double>>("complex_float64", ::c64);
+        for(const auto& dtype: getAllDTypes())
+        {
+            test1DArrayConversion(dtype);
+        }
     }
-}
-
 }
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_af_arrayproxy_conversion)
@@ -128,17 +120,10 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_af_arrayproxy_conversion)
         af::setBackend(backend);
         std::cout << "Backend: " << Pothos::Object(backend).convert<std::string>() << std::endl;
 
-        test2DArrayConversion<char>("int8", ::b8);
-        test2DArrayConversion<short>("int16", ::s16);
-        test2DArrayConversion<int>("int32", ::s32);
-        test2DArrayConversion<long long>("int64", ::s64);
-        test2DArrayConversion<unsigned short>("uint16", ::u16);
-        test2DArrayConversion<unsigned>("uint32", ::u32);
-        test2DArrayConversion<unsigned long long>("uint64", ::u64);
-        test2DArrayConversion<float>("float32", ::f32);
-        test2DArrayConversion<double>("float64", ::f64);
-        test2DArrayConversion<std::complex<float>>("complex_float32", ::c32);
-        test2DArrayConversion<std::complex<double>>("complex_float64", ::c64);
+        for(const auto& dtype: getAllDTypes())
+        {
+            test2DArrayConversion(dtype);
+        }
     }
 }
 
