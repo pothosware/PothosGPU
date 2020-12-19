@@ -115,6 +115,7 @@ POTHOS_MODULE_UTIL(
         Source/TwoToOneBlock.cpp
         Source/Utility.cpp
 
+        # TODO: test constant
         Testing/BlockValueComparisonTests.cpp
         Testing/CastBlockTest.cpp
         Testing/ClampBlockTest.cpp

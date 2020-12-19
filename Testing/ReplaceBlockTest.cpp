@@ -174,11 +174,14 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_replace)
 {
     srand(0ULL);
 
-    testReplace<std::int16_t>();
-    testReplace<std::int32_t>();
-    testReplace<std::uint8_t>();
-    testReplace<std::uint16_t>();
-    testReplace<std::uint32_t>();
+    testReplace<char>();
+    testReplace<short>();
+    testReplace<int>();
+    testReplace<long long>();
+    testReplace<unsigned char>();
+    testReplace<unsigned short>();
+    testReplace<unsigned>();
+    testReplace<unsigned long long>();
     testReplace<float>();
     testReplace<double>();
     testReplace<std::complex<float>>();

@@ -100,12 +100,13 @@ static void getScalarTestValues(
         return; \
     }
 
-    GET_SCALAR_TEST_VALUES("int16",   std::int16_t)
-    GET_SCALAR_TEST_VALUES("int32",   std::int32_t)
+    GET_SCALAR_TEST_VALUES("int8",    char)
+    GET_SCALAR_TEST_VALUES("int16",   short)
+    GET_SCALAR_TEST_VALUES("int32",   int)
     GET_SCALAR_TEST_VALUES("int64",   long long)
-    GET_SCALAR_TEST_VALUES("uint8",   std::uint8_t)
-    GET_SCALAR_TEST_VALUES("uint16",  std::uint16_t)
-    GET_SCALAR_TEST_VALUES("uint32",  std::uint32_t)
+    GET_SCALAR_TEST_VALUES("uint8",   unsigned char)
+    GET_SCALAR_TEST_VALUES("uint16",  unsigned short)
+    GET_SCALAR_TEST_VALUES("uint32",  unsigned)
     GET_SCALAR_TEST_VALUES("uint64",  unsigned long long)
     GET_SCALAR_TEST_VALUES("float32", float)
     GET_SCALAR_TEST_VALUES("float64", double)
@@ -142,23 +143,24 @@ static void getArrayTestValues(
         return; \
     }
 
-    GET_ARRAY_TEST_VALUES("int16",   std::int16_t)
-    GET_ARRAY_TEST_VALUES("int32",   std::int32_t)
+    GET_ARRAY_TEST_VALUES("int8",    char)
+    GET_ARRAY_TEST_VALUES("int16",   short)
+    GET_ARRAY_TEST_VALUES("int32",   int)
     GET_ARRAY_TEST_VALUES("int64",   long long)
-    GET_ARRAY_TEST_VALUES("uint8",   std::uint8_t)
-    GET_ARRAY_TEST_VALUES("uint16",  std::uint16_t)
-    GET_ARRAY_TEST_VALUES("uint32",  std::uint32_t)
+    GET_ARRAY_TEST_VALUES("uint8",   unsigned char)
+    GET_ARRAY_TEST_VALUES("uint16",  unsigned short)
+    GET_ARRAY_TEST_VALUES("uint32",  unsigned)
     GET_ARRAY_TEST_VALUES("uint64",  unsigned long long)
     GET_ARRAY_TEST_VALUES("float32", float)
     GET_ARRAY_TEST_VALUES("float64", double)
 }
 
 static void testScalarComparatorBlockForTypeAndOperation(
-    const std::string& type,
+    const Pothos::DType& type,
     const std::string& operation)
 {
     std::cout << "Testing " << scalarBlockRegistryPath
-              << " (type: " << type
+              << " (type: " << type.name()
               << ", operation: " << operation << ")" << std::endl;
 
     if(isDTypeComplexFloat(Pothos::DType(type)))
@@ -191,7 +193,7 @@ static void testScalarComparatorBlockForTypeAndOperation(
         Pothos::Object scalar;
         Pothos::BufferChunk output;
         getScalarTestValues(
-            type,
+            type.name(),
             operation,
             &input,
             &scalar,
@@ -230,11 +232,11 @@ static void testScalarComparatorBlockForTypeAndOperation(
 }
 
 static void testArrayComparatorBlockForTypeAndOperation(
-    const std::string& type,
+    const Pothos::DType& type,
     const std::string& operation)
 {
     std::cout << "Testing " << arrayBlockRegistryPath
-              << " (type: " << type
+              << " (type: " << type.name()
               << ", operation: " << operation << ")" << std::endl;
 
     if(isDTypeComplexFloat(Pothos::DType(type)))
@@ -268,7 +270,7 @@ static void testArrayComparatorBlockForTypeAndOperation(
         Pothos::BufferChunk input1;
         Pothos::BufferChunk output;
         getArrayTestValues(
-            type,
+            type.name(),
             operation,
             &input0,
             &input1,
@@ -308,7 +310,7 @@ static void testArrayComparatorBlockForTypeAndOperation(
     }
 }
 
-static void testComparatorBlocksForType(const std::string& type)
+static void testComparatorBlocksForType(const Pothos::DType& type)
 {
     static const std::vector<std::string> operations{"<","<=",">",">=","==","!="};
     for(const std::string& operation: operations)
@@ -322,7 +324,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_comparators)
 {
     GPUTests::setupTestEnv();
 
-    for(const auto& type: GPUTests::getAllDTypeNames())
+    for(const auto& type: GPUTests::getAllDTypes())
     {
         testComparatorBlocksForType(type);
     }

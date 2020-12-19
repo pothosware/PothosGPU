@@ -30,7 +30,6 @@ void validateDType(
     // Specific error for types not supported by any block
     static const std::vector<std::string> globalUnsupportedTypes =
     {
-        "int8",
         "complex_int8",
         "complex_int16",
         "complex_int32",
@@ -82,12 +81,13 @@ Pothos::Object getArrayValueOfUnknownTypeAtIndex(
 
     switch(afArray.type())
     {
-        SwitchCase(::s16, std::int16_t)
-        SwitchCase(::s32, std::int32_t)
+        SwitchCase(::b8,  char)
+        SwitchCase(::s16, short)
+        SwitchCase(::s32, int)
         SwitchCase(::s64, long long)
-        SwitchCase(::u8,  std::uint8_t)
-        SwitchCase(::u16, std::uint16_t)
-        SwitchCase(::u32, std::uint32_t)
+        SwitchCase(::u8,  unsigned char)
+        SwitchCase(::u16, unsigned short)
+        SwitchCase(::u32, unsigned)
         SwitchCase(::u64, unsigned long long)
         SwitchCase(::f32, float)
         SwitchCase(::f64, double)
@@ -123,12 +123,13 @@ ssize_t findValueOfUnknownTypeInArray(
 
     switch(afArray.type())
     {
-        SwitchCase(::s16, std::int16_t)
-        SwitchCase(::s32, std::int32_t)
+        SwitchCase(::b8,  char)
+        SwitchCase(::s16, short)
+        SwitchCase(::s32, int)
         SwitchCase(::s64, long long)
-        SwitchCase(::u8,  std::uint8_t)
-        SwitchCase(::u16, std::uint16_t)
-        SwitchCase(::u32, std::uint32_t)
+        SwitchCase(::u8,  unsigned char)
+        SwitchCase(::u16, unsigned short)
+        SwitchCase(::u32, unsigned)
         SwitchCase(::u64, unsigned long long)
         SwitchCase(::f32, float)
         SwitchCase(::f64, double)
@@ -156,12 +157,13 @@ af::array getArrayFromSingleElement(
 
     switch(afArray.type())
     {
-        SwitchCase(::s16, std::int16_t)
-        SwitchCase(::s32, std::int32_t)
+        SwitchCase(::b8,  char)
+        SwitchCase(::s16, short)
+        SwitchCase(::s32, int)
         SwitchCase(::s64, long long)
-        SwitchCase(::u8,  std::uint8_t)
-        SwitchCase(::u16, std::uint16_t)
-        SwitchCase(::u32, std::uint32_t)
+        SwitchCase(::u8,  unsigned char)
+        SwitchCase(::u16, unsigned short)
+        SwitchCase(::u32, unsigned)
         SwitchCase(::u64, unsigned long long)
         SwitchCase(::f32, float)
         SwitchCase(::f64, double)
@@ -192,12 +194,13 @@ Pothos::Object afArrayToStdVector(const af::array& afArray)
 
     switch(afArray.type())
     {
-        SwitchCase(::s16, std::int16_t)
-        SwitchCase(::s32, std::int32_t)
+        SwitchCase(::b8,  char)
+        SwitchCase(::s16, short)
+        SwitchCase(::s32, int)
         SwitchCase(::s64, long long)
-        SwitchCase(::u8,  std::uint8_t)
-        SwitchCase(::u16, std::uint16_t)
-        SwitchCase(::u32, std::uint32_t)
+        SwitchCase(::u8,  unsigned char)
+        SwitchCase(::u16, unsigned short)
+        SwitchCase(::u32, unsigned)
         SwitchCase(::u64, unsigned long long)
         SwitchCase(::f32, float)
         SwitchCase(::f64, double)

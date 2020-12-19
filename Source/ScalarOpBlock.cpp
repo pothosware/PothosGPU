@@ -159,13 +159,14 @@ static Pothos::Block* makeScalarOpBlock(
                            allowZeroScalar); \
         }
 
-    IfTypeDeclareFactory(std::int16_t)
-    IfTypeDeclareFactory(std::int32_t)
-    IfTypeDeclareFactory(std::int64_t)
-    IfTypeDeclareFactory(std::uint8_t)
-    IfTypeDeclareFactory(std::uint16_t)
-    IfTypeDeclareFactory(std::uint32_t)
-    IfTypeDeclareFactory(std::uint64_t)
+    IfTypeDeclareFactory(char)
+    IfTypeDeclareFactory(short)
+    IfTypeDeclareFactory(int)
+    IfTypeDeclareFactory(long long)
+    IfTypeDeclareFactory(unsigned char)
+    IfTypeDeclareFactory(unsigned short)
+    IfTypeDeclareFactory(unsigned)
+    IfTypeDeclareFactory(unsigned long long)
 
     if((ScalarBlockType::ARITHMETIC == blockType) || (ScalarBlockType::COMPARATOR == blockType))
     {

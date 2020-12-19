@@ -98,13 +98,13 @@ void testBufferChunk(
             return; \
         }
 
-    IfTypeThenCompare("int16", std::int16_t)
-    IfTypeThenCompare("int32", std::int32_t)
-    IfTypeThenCompare("int64", std::int64_t)
-    IfTypeThenCompare("uint8", std::uint8_t)
-    IfTypeThenCompare("uint16", std::uint16_t)
-    IfTypeThenCompare("uint32", std::uint32_t)
-    IfTypeThenCompare("uint64", std::uint64_t)
+    IfTypeThenCompare("int16", short)
+    IfTypeThenCompare("int32", int)
+    IfTypeThenCompare("int64", long long)
+    IfTypeThenCompare("uint8", unsigned char)
+    IfTypeThenCompare("uint16", unsigned short)
+    IfTypeThenCompare("uint32", unsigned)
+    IfTypeThenCompare("uint64", unsigned long long)
     IfTypeThenCompare("float32", float)
     IfTypeThenCompare("float64", double)
     IfTypeThenCompare("complex_float32", std::complex<float>)
@@ -205,7 +205,7 @@ Pothos::Object getRandomValue(const Pothos::BufferChunk& bufferChunk)
 
 Pothos::Object getSingleTestInput(const std::string& type)
 {
-    // ArrayFire doesn't support int8
+    RETURN_OBJECT("int8")
     RETURN_OBJECT("int16")
     RETURN_OBJECT("int32")
     RETURN_OBJECT("int64")
@@ -223,25 +223,26 @@ Pothos::Object getSingleTestInput(const std::string& type)
     return Pothos::Object();
 }
 
-const std::vector<std::string>& getAllDTypeNames()
+const std::vector<Pothos::DType>& getAllDTypes()
 {
-    static const std::vector<std::string> AllTypes =
+    static const std::vector<Pothos::DType> AllDTypes =
     {
-        // ArrayFire doesn't support int8
-        "int16",
-        "int32",
-        "int64",
-        "uint8",
-        "uint16",
-        "uint32",
-        "uint64",
-        "float32",
-        "float64",
-        // ArrayFire doesn't support complex integral types
-        "complex_float32",
-        "complex_float64"
+        typeid(char),
+        typeid(short),
+        typeid(int),
+        typeid(long),
+        typeid(long long),
+        typeid(unsigned char),
+        typeid(unsigned short),
+        typeid(unsigned int),
+        typeid(unsigned long),
+        typeid(unsigned long long),
+        typeid(float),
+        typeid(double),
+        typeid(std::complex<float>),
+        typeid(std::complex<double>),
     };
-    return AllTypes;
+    return AllDTypes;
 }
 
 std::vector<Pothos::BufferChunk> convert2DAfArrayToBufferChunks(const af::array& afArray)

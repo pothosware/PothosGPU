@@ -156,14 +156,14 @@ static Pothos::Block* replaceFactory(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new Replace<T>(device, findValue.convert<T>(), replaceValue.convert<T>(), dtype.dimension());
 
-    // ArrayFire has no implementation for std::int8_t.
-    ifTypeDeclareFactory(std::int16_t)
-    ifTypeDeclareFactory(std::int32_t)
-    ifTypeDeclareFactory(std::uint8_t)
-    // This function does not support 64-bit integral numbers.
-    ifTypeDeclareFactory(std::uint16_t)
-    ifTypeDeclareFactory(std::uint32_t)
-    // This function does not support 64-bit integral numbers.
+    ifTypeDeclareFactory(char)
+    ifTypeDeclareFactory(short)
+    ifTypeDeclareFactory(int)
+    ifTypeDeclareFactory(long long)
+    ifTypeDeclareFactory(unsigned char)
+    ifTypeDeclareFactory(unsigned short)
+    ifTypeDeclareFactory(unsigned)
+    ifTypeDeclareFactory(unsigned long long)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     // ArrayFire does not support any integral complex numbers.
@@ -191,7 +191,7 @@ static Pothos::Block* replaceFactory(
  * |default "Auto"
  *
  * |param dtype[Data Type] The block data type.
- * |widget DTypeChooser(int16=1,int32=1,uint16=1,uint32=1,float=1,cfloat=1,dim=1)
+ * |widget DTypeChooser(int=1,uint=1,float=1,cfloat=1,dim=1)
  * |default "float64"
  * |preview disable
  *

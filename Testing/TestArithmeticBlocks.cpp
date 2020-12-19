@@ -22,7 +22,7 @@
 constexpr size_t bufferLen = 4096;
 
 //
-// /gpu/array/arithmetic
+// Test code
 //
 
 struct ArithmeticTestValues
@@ -278,21 +278,6 @@ static void testArithmetic()
     // TODO: modulus
 }
 
-POTHOS_TEST_BLOCK("/gpu/tests", test_array_arithmetic)
-{
-    testArithmetic<std::int16_t>();
-    testArithmetic<std::int32_t>();
-    testArithmetic<std::int64_t>();
-    testArithmetic<std::uint8_t>();
-    testArithmetic<std::uint16_t>();
-    testArithmetic<std::uint32_t>();
-    testArithmetic<std::uint64_t>();
-    testArithmetic<float>();
-    testArithmetic<double>();
-    testArithmetic<std::complex<float>>();
-    testArithmetic<std::complex<double>>();
-}
-
 //
 // /gpu/scalar/arithmetic
 //
@@ -438,15 +423,36 @@ static void testScalarArithmetic()
     // TODO: modulus
 }
 
+//
+// Tests
+//
+
+POTHOS_TEST_BLOCK("/gpu/tests", test_array_arithmetic)
+{
+    testArithmetic<char>();
+    testArithmetic<short>();
+    testArithmetic<int>();
+    testArithmetic<long long>();
+    testArithmetic<unsigned char>();
+    testArithmetic<unsigned short>();
+    testArithmetic<unsigned>();
+    testArithmetic<unsigned long long>();
+    testArithmetic<float>();
+    testArithmetic<double>();
+    testArithmetic<std::complex<float>>();
+    testArithmetic<std::complex<double>>();
+}
+
 POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_arithmetic)
 {
-    testScalarArithmetic<std::int16_t>();
-    testScalarArithmetic<std::int32_t>();
-    testScalarArithmetic<std::int64_t>();
-    testScalarArithmetic<std::uint8_t>();
-    testScalarArithmetic<std::uint16_t>();
-    testScalarArithmetic<std::uint32_t>();
-    testScalarArithmetic<std::uint64_t>();
+    testScalarArithmetic<char>();
+    testScalarArithmetic<short>();
+    testScalarArithmetic<int>();
+    testScalarArithmetic<long long>();
+    testScalarArithmetic<unsigned char>();
+    testScalarArithmetic<unsigned short>();
+    testScalarArithmetic<unsigned>();
+    testScalarArithmetic<unsigned long long>();
     testScalarArithmetic<float>();
     testScalarArithmetic<double>();
     testScalarArithmetic<std::complex<float>>();

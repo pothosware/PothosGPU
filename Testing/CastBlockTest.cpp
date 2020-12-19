@@ -17,13 +17,13 @@
 #include <vector>
 
 static void addCornerCases(
-    const std::string& type1,
-    const std::string& type2,
+    const Pothos::DType& type1,
+    const Pothos::DType& type2,
     Pothos::BufferChunk& inputBuffer)
 {
     POTHOS_TEST_GE(inputBuffer.elements(), 9);
 
-    if((("float32" == type1) || ("complex_float32" == type1)) && Pothos::DType(type2).isFloat())
+    if((("float32" == type1.name()) || ("complex_float32" == type1.name())) && type2.isFloat())
     {
         inputBuffer.as<float*>()[0] = std::numeric_limits<float>::min();
         inputBuffer.as<float*>()[1] = std::numeric_limits<float>::max();
@@ -35,7 +35,7 @@ static void addCornerCases(
         inputBuffer.as<float*>()[7] = std::nexttoward(std::numeric_limits<float>::max(), 0.0f);
         inputBuffer.as<float*>()[8] = std::numeric_limits<float>::denorm_min();
     }
-    else if(("float64" == type1) && ("complex_float64" == type2))
+    else if(("float64" == type1.name()) && ("complex_float64" == type2.name()))
     {
         inputBuffer.as<double*>()[0] = std::numeric_limits<double>::min();
         inputBuffer.as<double*>()[1] = std::numeric_limits<double>::max();
@@ -50,18 +50,15 @@ static void addCornerCases(
 }
 
 static void testCastBlock(
-    const std::string& type1,
-    const std::string& type2)
+    const Pothos::DType& type1,
+    const Pothos::DType& type2)
 {
     static constexpr const char* afCastRegistryPath = "/gpu/array/cast";
 
     std::cout << "Testing " << afCastRegistryPath
-              << " (types: " << type1 << " -> " << type2 << ")" << std::endl;
+              << " (types: " << type1.name() << " -> " << type2.name() << ")" << std::endl;
 
-    Pothos::DType inputDType(type1);
-    Pothos::DType outputDType(type2);
-
-    if(isDTypeComplexFloat(inputDType) && !outputDType.isComplex())
+    if(isDTypeComplexFloat(type1) && !type2.isComplex())
     {
         POTHOS_TEST_THROWS(
             Pothos::BlockRegistry::make(
@@ -81,22 +78,22 @@ static void testCastBlock(
 
         auto pothosConverter = Pothos::BlockRegistry::make(
                                    "/blocks/converter",
-                                   outputDType);
+                                   type2);
 
-        auto testInputs = GPUTests::getTestInputs(inputDType.name());
+        auto testInputs = GPUTests::getTestInputs(type1.name());
         addCornerCases(type1, type2, testInputs);
 
         auto feederSource = Pothos::BlockRegistry::make(
                                 "/blocks/feeder_source",
-                                inputDType);
+                                type1);
         feederSource.call("feedBuffer", testInputs);
 
         auto afCollectorSink = Pothos::BlockRegistry::make(
                                    "/blocks/collector_sink",
-                                   outputDType);
+                                   type2);
         auto pothosCollectorSink = Pothos::BlockRegistry::make(
                                        "/blocks/collector_sink",
-                                       outputDType);
+                                       type2);
 
         // Execute the topology.
         {
@@ -128,11 +125,11 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_cast)
 {
     GPUTests::setupTestEnv();
 
-    const auto& dtypeNames = GPUTests::getAllDTypeNames();
+    const auto& dtypes = GPUTests::getAllDTypes();
 
-    for(const auto& inputType: dtypeNames)
+    for(const auto& inputType: dtypes)
     {
-        for(const auto& outputType: dtypeNames)
+        for(const auto& outputType: dtypes)
         {
             testCastBlock(inputType, outputType);
         }

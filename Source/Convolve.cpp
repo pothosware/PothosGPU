@@ -184,13 +184,13 @@ static Pothos::Block* makeConvolve(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new ConvolveBlock<T>(device, dtype.dimension());
 
-    ifTypeDeclareFactory(std::int16_t)
-    ifTypeDeclareFactory(std::int32_t)
-    ifTypeDeclareFactory(std::int64_t)
-    ifTypeDeclareFactory(std::uint8_t)
-    ifTypeDeclareFactory(std::uint16_t)
-    ifTypeDeclareFactory(std::uint32_t)
-    ifTypeDeclareFactory(std::uint64_t)
+    ifTypeDeclareFactory(short)
+    ifTypeDeclareFactory(int)
+    ifTypeDeclareFactory(long long)
+    ifTypeDeclareFactory(unsigned char)
+    ifTypeDeclareFactory(unsigned short)
+    ifTypeDeclareFactory(unsigned)
+    ifTypeDeclareFactory(unsigned long long)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     ifTypeDeclareFactory(std::complex<float>)
@@ -212,13 +212,13 @@ static Pothos::Block* makeFFTConvolve(
         if(Pothos::DType::fromDType(dtype, 1) == Pothos::DType(typeid(T))) \
             return new FFTConvolveBlock<T>(device, dtype.dimension(), callableFFTConvolve);
 
-    ifTypeDeclareFactory(std::int16_t)
-    ifTypeDeclareFactory(std::int32_t)
-    ifTypeDeclareFactory(std::int64_t)
-    ifTypeDeclareFactory(std::uint8_t)
-    ifTypeDeclareFactory(std::uint16_t)
-    ifTypeDeclareFactory(std::uint32_t)
-    ifTypeDeclareFactory(std::uint64_t)
+    ifTypeDeclareFactory(short)
+    ifTypeDeclareFactory(int)
+    ifTypeDeclareFactory(long long)
+    ifTypeDeclareFactory(unsigned char)
+    ifTypeDeclareFactory(unsigned short)
+    ifTypeDeclareFactory(unsigned)
+    ifTypeDeclareFactory(unsigned long long)
     ifTypeDeclareFactory(float)
     ifTypeDeclareFactory(double)
     ifTypeDeclareFactory(std::complex<float>)

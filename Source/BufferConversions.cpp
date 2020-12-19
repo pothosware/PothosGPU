@@ -68,8 +68,8 @@ static af::array bufferChunkToAfArray(const Pothos::BufferChunk& bufferChunk)
     af::array ret(
         bufferChunk.elements(),
         Pothos::Object(bufferChunk.dtype).convert<af::dtype>());
-    ret.write<std::uint8_t>(
-        reinterpret_cast<const std::uint8_t*>(bufferChunk.address),
+    ret.write<unsigned char>(
+        reinterpret_cast<const unsigned char*>(bufferChunk.address),
         bufferChunk.length,
         ::afHost);
 
