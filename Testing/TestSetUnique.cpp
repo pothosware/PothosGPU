@@ -100,13 +100,11 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_set_unique)
 {
     af::setSeed(Poco::Timestamp().utcTime());
 
-    // TODO: reenable char
-    //testSetUnique<char>();
+    testSetUnique<char>();
+    testSetUnique<signed char>();
     testSetUnique<short>();
     testSetUnique<int>();
-    //testSetUnique<long long>();
     testSetUnique<unsigned char>();
     testSetUnique<unsigned short>();
-    testSetUnique<unsigned int>();
-    //testSetUnique<unsigned long long>();
+    testSetUnique<unsigned>();
 }

@@ -15,6 +15,8 @@
 #include <set>
 #include <vector>
 
+constexpr size_t numChannels = 3;
+
 template <typename T>
 static Pothos::BufferChunk getBufferChunkSetUnion(const std::vector<Pothos::BufferChunk>& bufferChunks)
 {
@@ -39,30 +41,62 @@ static Pothos::BufferChunk getBufferChunkSetUnion(const std::vector<Pothos::Buff
 }
 
 template <typename T>
+static void getSetUnionTestValues(
+    std::vector<Pothos::BufferChunk>* pInputs,
+    Pothos::BufferChunk* pOutput)
+{
+    const auto dtype = Pothos::DType(typeid(T));
+
+    for(size_t chan = 0; chan < numChannels; ++chan)
+    {
+        pInputs->emplace_back(GPUTests::getTestInputs(dtype.name()));
+    }
+
+    // Duplicate some values from each buffer in all the others.
+    constexpr size_t maxNumRepeats = 10;
+    for(size_t srcChan = 0; srcChan < numChannels; ++srcChan)
+    {
+        const T* srcBuffer = pInputs->at(srcChan);
+
+        for(size_t dstChan = 0; dstChan < numChannels; ++dstChan)
+        {
+            if(srcChan == dstChan) continue;
+
+            const auto srcIndex = Poco::Random().next(GPUTests::TestInputLength);
+            const auto repeatCount = Poco::Random().next(maxNumRepeats)+1;
+            T* dstBuffer = pInputs->at(dstChan);
+
+            for(size_t rep = 0; rep < repeatCount; ++rep)
+            {
+                const auto dstIndex = Poco::Random().next(GPUTests::TestInputLength);
+                dstBuffer[dstIndex] = srcBuffer[srcIndex];
+            }
+        }
+    }
+
+    auto setUnion = getBufferChunkSetUnion<T>(*pInputs);
+    POTHOS_TEST_LT(setUnion.elements(), (pInputs->size() * pInputs->at(0).elements()));
+
+    (*pOutput) = std::move(setUnion);
+}
+
+template <typename T>
 static void testSetUnion()
 {
     const auto dtype = Pothos::DType(typeid(T));
 
     std::cout << "Testing " << dtype.name() << "..." << std::endl;
 
-    constexpr size_t numChannels = 3;
     std::vector<Pothos::BufferChunk> inputs;
-    std::vector<Pothos::Proxy> sources;
+    Pothos::BufferChunk expectedOutput;
+    getSetUnionTestValues<T>(&inputs, &expectedOutput);
+
+    std::vector<Pothos::Proxy> sources(numChannels);
     for(size_t i = 0; i < numChannels; ++i)
     {
-        inputs.emplace_back(GPUTests::getTestInputs(dtype.name()));
-
-        sources.emplace_back(Pothos::BlockRegistry::make("/blocks/feeder_source", dtype));
-        sources.back().call("feedBuffer", inputs.back());
+        sources[i] = Pothos::BlockRegistry::make("/blocks/feeder_source", dtype);
+        sources[i].call("feedBuffer", inputs[i]);
     }
-
-    // Make sure we're actually testing the block behavior.
-    Pothos::BufferChunk expectedOutput;
-    do
-    {
-        expectedOutput = getBufferChunkSetUnion<T>(inputs);
-    }
-    while(expectedOutput.elements() >= (inputs.size() * inputs[0].elements()));
 
     auto setUnion = Pothos::BlockRegistry::make("/gpu/algorithm/set_union", "Auto", dtype, numChannels);
     auto sink = Pothos::BlockRegistry::make("/blocks/collector_sink", dtype);
@@ -88,19 +122,17 @@ static void testSetUnion()
 // Note: not testing floats due to differences in precision
 // between different ArrayFire backends. Assumption is that
 // integral types are enough to test.
-//
-// TODO: figure out 32/64-bit integral issues
 POTHOS_TEST_BLOCK("/gpu/tests", test_set_union)
 {
     af::setSeed(Poco::Timestamp().utcTime());
 
-    // TODO: enable chars in type-support
-    //testSetUnion<char>();
+    testSetUnion<char>();
+    testSetUnion<signed char>();
     testSetUnion<short>();
-    //testSetUnion<int>();
-    //testSetUnion<long long>();
+    testSetUnion<int>();
+    testSetUnion<long long>();
     testSetUnion<unsigned char>();
     testSetUnion<unsigned short>();
-    //testSetUnion<unsigned int>();
-    //testSetUnion<unsigned long long>();
+    testSetUnion<unsigned>();
+    testSetUnion<unsigned long long>();
 }
