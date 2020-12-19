@@ -138,62 +138,6 @@ static std::vector<T> linspace(T a, T b, size_t N)
     return xs;
 }
 
-template <typename T>
-static EnableIfFloat<T, void> testBufferChunk(
-    const Pothos::BufferChunk& bufferChunk,
-    const std::vector<T>& expectedOutputs,
-    T epsilon = 1e-6)
-{
-    POTHOS_TEST_GT(bufferChunk.elements(), 0);
-    auto pOut = bufferChunk.as<const T*>();
-    for (size_t i = 0; i < bufferChunk.elements(); i++)
-    {
-        POTHOS_TEST_CLOSE(
-            expectedOutputs[i],
-            pOut[i],
-            epsilon);
-    }
-}
-
-template <typename T>
-static EnableIfAnyInt<T, void> testBufferChunk(
-    const Pothos::BufferChunk& bufferChunk,
-    const std::vector<T>& expectedOutputs,
-    T epsilon = T(0))
-{
-    (void)epsilon;
-
-    POTHOS_TEST_GT(bufferChunk.elements(), 0);
-    auto pOut = bufferChunk.as<const T*>();
-    for (size_t i = 0; i < bufferChunk.elements(); i++)
-    {
-        POTHOS_TEST_EQUAL(
-            expectedOutputs[i],
-            pOut[i]);
-    }
-}
-
-// Pass in a "complex" epsilon so the template works
-template <typename T>
-static EnableIfComplex<T, void> testBufferChunk(
-    const Pothos::BufferChunk& bufferChunk,
-    const std::vector<T>& expectedOutputs,
-    T epsilon = T{1e-6,1e-6})
-{
-    auto pOut = bufferChunk.as<const T*>();
-    for (size_t i = 0; i < bufferChunk.elements(); i++)
-    {
-        POTHOS_TEST_CLOSE(
-            expectedOutputs[i].real(),
-            pOut[i].real(),
-            epsilon.real());
-        POTHOS_TEST_CLOSE(
-            expectedOutputs[i].imag(),
-            pOut[i].imag(),
-            epsilon.real());
-    }
-}
-
 template <typename ReturnType, typename... ArgsType>
 ReturnType getAndCallPlugin(
     const std::string& proxyPath,

@@ -74,7 +74,7 @@ static void testIsX(
 
     GPUTests::testBufferChunk(
         collectorSink.call("getBuffer"),
-        expectedOutput);
+        GPUTests::stdVectorToBufferChunk(expectedOutput));
 }
 
 template <typename T>

@@ -245,9 +245,9 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_statistics)
         std::cout << "Testing " << blockName << "..." << std::endl;
 
         // Make sure the buffer was forwarded as expected.
-        testBufferChunk<double>(
+        testBufferChunk(
             collectorSinks[blockIndex].call<Pothos::BufferChunk>("getBuffer"),
-            inputs);
+            stdVectorToBufferChunk(inputs));
 
         const auto messages = collectorSinks[blockIndex].call<Pothos::ObjectVector>("getMessages");
         POTHOS_TEST_EQUAL(1, messages.size());
