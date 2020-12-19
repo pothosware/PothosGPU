@@ -147,6 +147,7 @@ void testScalarOpBlock(
     void testOneToOneBlockC2F<T>(const std::string&);
 
 SPECIALIZE_TEMPLATE_TEST(char)
+SPECIALIZE_TEMPLATE_TEST(signed char)
 SPECIALIZE_TEMPLATE_TEST(short)
 SPECIALIZE_TEMPLATE_TEST(int)
 SPECIALIZE_TEMPLATE_TEST(long long)

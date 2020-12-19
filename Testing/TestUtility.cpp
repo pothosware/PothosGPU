@@ -228,6 +228,7 @@ const std::vector<Pothos::DType>& getAllDTypes()
     static const std::vector<Pothos::DType> AllDTypes =
     {
         typeid(char),
+        typeid(signed char),
         typeid(short),
         typeid(int),
         typeid(long),
