@@ -19,7 +19,6 @@ OneToOneBlocks:
 
         - func: round
           header: arith
-          autoTest: true
           description: Round to nearest integer.
           supportedTypes:
                   supportFloat: true
@@ -27,21 +26,18 @@ OneToOneBlocks:
         - func: trunc
           niceName: Truncate
           header: arith
-          autoTest: true
           description: Truncate to nearest integer towards zero.
           supportedTypes:
                   supportFloat: true
 
         - func: floor
           header: arith
-          autoTest: true
           description: Round to nearest lower integer.
           supportedTypes:
                   supportFloat: true
 
         - func: ceil
           header: arith
-          autoTest: true
           description: Round to nearest higher integer.
           supportedTypes:
                   supportFloat: true
