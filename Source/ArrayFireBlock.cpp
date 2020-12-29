@@ -67,12 +67,14 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
                                    deviceCache.end(),
                                    [&device](const DeviceCacheEntry& entry)
                                    {
-                                       return (entry.name == device);
+                                       return (entry.name == device) ||
+                                              (Poco::format("%s:%d", entry.platform, entry.afDeviceIndex) == device);
                                    });
         if(deviceCache.end() != deviceCacheIter)
         {
             _afBackend = deviceCacheIter->afBackendEnum;
             _afDevice = deviceCacheIter->afDeviceIndex;
+            _afDeviceName = deviceCacheIter->name;
         }
         else
         {
