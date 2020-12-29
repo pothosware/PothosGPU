@@ -17,6 +17,13 @@ static constexpr size_t NUM_POINTS = 12;
 
 // Make it easier to templatize
 template <typename Type>
+static double log1pTmpl(Type input)
+{
+    return std::log1p(input);
+}
+
+// Make it easier to templatize
+template <typename Type>
 static double logNTmpl(Type input, Type base)
 {
     return std::log(input) / std::log(base);
@@ -28,6 +35,47 @@ static double logNTmpl(Type input, Type base)
 
 template <typename Type>
 using LogTmplFcn = double(*)(Type);
+
+template <typename Type>
+static void testLog1PImpl()
+{
+    static const auto dtype = Pothos::DType(typeid(Type));
+    std::cout << "Testing " << dtype.toString() << "..." << std::endl;
+
+    auto feeder = Pothos::BlockRegistry::make("/blocks/feeder_source", dtype);
+    auto log1p = Pothos::BlockRegistry::make("/gpu/arith/log1p", "Auto", dtype);
+    auto collector = Pothos::BlockRegistry::make("/blocks/collector_sink", dtype);
+
+    Pothos::BufferChunk abuffOut = collector.call("getBuffer");
+    // Load the feeder
+    auto buffIn = Pothos::BufferChunk(typeid(Type), NUM_POINTS);
+    auto pIn = buffIn.as<Type *>();
+    for (size_t i = 0; i < buffIn.elements(); i++)
+    {
+        pIn[i] = Type(10*(i+1));
+    }
+    feeder.call("feedBuffer", buffIn);
+
+    // Run the topology
+    {
+        Pothos::Topology topology;
+        topology.connect(feeder, 0, log1p, 0);
+        topology.connect(log1p , 0, collector, 0);
+        topology.commit();
+        POTHOS_TEST_TRUE(topology.waitInactive(0.01));
+    }
+
+    // Check the collector
+    Pothos::BufferChunk buffOut = collector.call("getBuffer");
+    POTHOS_TEST_EQUAL(buffOut.elements(), buffIn.elements());
+    auto pOut = buffOut.as<const Type *>();
+    for (size_t i = 0; i < buffOut.elements(); i++)
+    {
+        const auto expected = std::log1p(pIn[i]);
+        // Allow up to an error of 1 because of fixed point truncation rounding
+        POTHOS_TEST_CLOSE(pOut[i], expected, 1);
+    }
+}
 
 template <typename Type>
 static void testLogNImpl(Type base)
@@ -80,4 +128,10 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_log)
         testLogNImpl<float>(float(base));
         testLogNImpl<double>(double(base));
     }
+}
+
+POTHOS_TEST_BLOCK("/gpu/tests", test_log1p)
+{
+    testLog1PImpl<float>();
+    testLog1PImpl<double>();
 }
