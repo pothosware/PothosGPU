@@ -4,6 +4,7 @@
 
 #include "BufferConversions.hpp"
 #include "DeviceCache.hpp"
+#include "SharedBufferAllocator.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Exception.hpp>
@@ -43,15 +44,8 @@ public:
         _readyBuffs = Pothos::Util::OrderedQueue<Pothos::ManagedBuffer>(args.numBuffers);
 
         //allocate one large continuous slab
-        const size_t totalSize = args.bufferSize*args.numBuffers;
-        
-        auto afPinnedMemSPtr = std::make_shared<AfPinnedMemRAII>(
-                                  _backend,
-                                  totalSize);
-        auto commonSlab = Pothos::SharedBuffer(
-                              reinterpret_cast<size_t>(afPinnedMemSPtr->get()),
-                              totalSize,
-                              afPinnedMemSPtr);
+        auto allocator = getSharedBufferAllocator(_backend);
+        auto commonSlab = allocator(args);
 
         //create managed buffers based on chunks from the slab
         std::vector<Pothos::ManagedBuffer> managedBuffers(args.numBuffers);

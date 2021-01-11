@@ -67,91 +67,102 @@ include_directories(
     ${JSON_HPP_INCLUDE_DIR}
     ${ArrayFire_INCLUDE_DIRS})
 
+set(sources
+    ${relativeAutogenOutputs}
+
+    Source/ArrayFireBlock.cpp
+    Source/ArrayOpBlock.cpp
+    Source/BitShift.cpp
+    Source/BitwiseNot.cpp
+    Source/BufferConversions.cpp
+    Source/Cast.cpp
+    Source/Clamp.cpp
+    Source/Complex.cpp
+    Source/Constant.cpp
+    Source/Convolve.cpp
+    Source/CorrCoef.cpp
+    Source/Covariance.cpp
+    Source/DeviceCache.cpp
+    Source/EnumConversions.cpp
+    Source/FactoryOnly.cpp
+    Source/Fallback.cpp
+    Source/FFT.cpp
+    Source/FileSink.cpp
+    Source/FileSource.cpp
+    Source/Filter.cpp
+    Source/IsX.cpp
+    Source/LogN.cpp
+    Source/MinMax.cpp
+    Source/ModuleInfo.cpp
+    Source/NToOneBlock.cpp
+    Source/NumericConversions.cpp
+    Source/ObjectFunctions.cpp
+    Source/OneToOneBlock.cpp
+    Source/PinnedBufferManager.cpp
+    Source/Pow.cpp
+    Source/PowersOfN.cpp
+    Source/Random.cpp
+    Source/ReducedBlock.cpp
+    Source/Replace.cpp
+    Source/Root.cpp
+    Source/ScalarOpBlock.cpp
+    Source/SharedBufferAllocator.cpp
+    Source/Sort.cpp
+    Source/Statistics.cpp
+    Source/TopK.cpp
+    Source/TwoToOneBlock.cpp
+    Source/Utility.cpp
+
+    # TODO: test constant
+    Testing/BlockValueComparisonTests.cpp
+    Testing/CastBlockTest.cpp
+    Testing/ClampBlockTest.cpp
+    Testing/ComparatorBlockTest.cpp
+    Testing/ComplexBlockTest.cpp
+    Testing/IsXBlockTest.cpp
+    Testing/ReplaceBlockTest.cpp
+    Testing/NToOneBlockExecutionTest.cpp
+    Testing/TestObjectFunctions.cpp
+    Testing/OneToOneBlockExecutionTest.cpp
+    Testing/TwoToOneBlockExecutionTest.cpp
+    Testing/TestArithmeticBlocks.cpp
+    Testing/TestBitwise.cpp
+    Testing/TestBufferCombos.cpp
+    Testing/TestBufferConversions.cpp
+    Testing/TestConjugate.cpp
+    Testing/TestEnumConversions.cpp
+    Testing/TestFFT.cpp
+    Testing/TestFileSink.cpp
+    Testing/TestFileSource.cpp
+    Testing/TestGamma.cpp
+    Testing/TestGPUConfig.cpp
+    Testing/TestLog.cpp
+    Testing/TestLogical.cpp
+    Testing/TestManagedDeviceCache.cpp
+    Testing/TestMinMax.cpp
+    Testing/TestNumericConversions.cpp
+    Testing/TestPowRoot.cpp
+    Testing/TestRoundBlocks.cpp
+    Testing/TestRSqrt.cpp
+    Testing/TestSetUnion.cpp
+    Testing/TestSetUnique.cpp
+    Testing/TestSinc.cpp
+    Testing/TestStatistics.cpp
+    Testing/TestTrigonometric.cpp
+    Testing/TestUtility.cpp)
+
+if(POTHOS_ABI_VERSION STRLESS "0.7-2")
+    list(APPEND sources
+        Source/PinnedBufferManager.cpp)
+
+    add_definitions(-DPOTHOSGPU_LEGACY_BUFFER_MANAGER)
+endif()
+
 include(PothosUtil)
 POTHOS_MODULE_UTIL(
     TARGET GPUBlocks
     SOURCES
-        ${relativeAutogenOutputs}
-
-        Source/ArrayFireBlock.cpp
-        Source/ArrayOpBlock.cpp
-        Source/BitShift.cpp
-        Source/BitwiseNot.cpp
-        Source/BufferConversions.cpp
-        Source/Cast.cpp
-        Source/Clamp.cpp
-        Source/Complex.cpp
-        Source/Constant.cpp
-        Source/Convolve.cpp
-        Source/CorrCoef.cpp
-        Source/Covariance.cpp
-        Source/DeviceCache.cpp
-        Source/EnumConversions.cpp
-        Source/FactoryOnly.cpp
-        Source/Fallback.cpp
-        Source/FFT.cpp
-        Source/FileSink.cpp
-        Source/FileSource.cpp
-        Source/Filter.cpp
-        Source/IsX.cpp
-        Source/LogN.cpp
-        Source/MinMax.cpp
-        Source/ModuleInfo.cpp
-        Source/NToOneBlock.cpp
-        Source/NumericConversions.cpp
-        Source/ObjectFunctions.cpp
-        Source/OneToOneBlock.cpp
-        Source/PinnedBufferManager.cpp
-        Source/Pow.cpp
-        Source/PowersOfN.cpp
-        Source/Random.cpp
-        Source/ReducedBlock.cpp
-        Source/Replace.cpp
-        Source/Root.cpp
-        Source/ScalarOpBlock.cpp
-        Source/Sort.cpp
-        Source/Statistics.cpp
-        Source/TopK.cpp
-        Source/TwoToOneBlock.cpp
-        Source/Utility.cpp
-
-        # TODO: test constant
-        Testing/BlockValueComparisonTests.cpp
-        Testing/CastBlockTest.cpp
-        Testing/ClampBlockTest.cpp
-        Testing/ComparatorBlockTest.cpp
-        Testing/ComplexBlockTest.cpp
-        Testing/IsXBlockTest.cpp
-        Testing/ReplaceBlockTest.cpp
-        Testing/NToOneBlockExecutionTest.cpp
-        Testing/TestObjectFunctions.cpp
-        Testing/OneToOneBlockExecutionTest.cpp
-        Testing/TwoToOneBlockExecutionTest.cpp
-        Testing/TestArithmeticBlocks.cpp
-        Testing/TestBitwise.cpp
-        Testing/TestBufferCombos.cpp
-        Testing/TestBufferConversions.cpp
-        Testing/TestConjugate.cpp
-        Testing/TestEnumConversions.cpp
-        Testing/TestFFT.cpp
-        Testing/TestFileSink.cpp
-        Testing/TestFileSource.cpp
-        Testing/TestGamma.cpp
-        Testing/TestGPUConfig.cpp
-        Testing/TestLog.cpp
-        Testing/TestLogical.cpp
-        Testing/TestManagedDeviceCache.cpp
-        Testing/TestMinMax.cpp
-        Testing/TestNumericConversions.cpp
-        Testing/TestPowRoot.cpp
-        Testing/TestRoundBlocks.cpp
-        Testing/TestRSqrt.cpp
-        Testing/TestSetUnion.cpp
-        Testing/TestSetUnique.cpp
-        Testing/TestSinc.cpp
-        Testing/TestStatistics.cpp
-        Testing/TestTrigonometric.cpp
-        Testing/TestUtility.cpp
+        ${sources}
     LIBRARIES
         ArrayFire::af
     DESTINATION gpu

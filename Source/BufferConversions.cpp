@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BufferConversions.hpp"
+#include "SharedBufferAllocator.hpp"
 #include "Utility.hpp"
 
 #include <Pothos/Exception.hpp>
@@ -19,44 +20,17 @@
 #include <vector>
 
 //
-// Minimal wrapper class to ensure allocation and deallocation are done
-// with the same backend.
-//
-
-AfPinnedMemRAII::AfPinnedMemRAII(af::Backend backend, size_t allocSize):
-    _backend(backend),
-    _pinnedMem(nullptr)
-{
-    af::setBackend(_backend);
-    _pinnedMem = af::pinned(allocSize, ::u8);
-}
-
-AfPinnedMemRAII::~AfPinnedMemRAII()
-{
-    try
-    {
-        af::setBackend(_backend);
-        af::freePinned(_pinnedMem);
-    }
-    catch(...){}
-}
-
-//
 // Pothos::BufferChunk <-> af::array
 //
 
 template <typename AfArrayType>
 Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 {
-    auto afPinnedMemSPtr = std::make_shared<AfPinnedMemRAII>(
-                               af::getBackendId(afArray),
-                               afArray.bytes());
-    afArray.host(afPinnedMemSPtr->get());
+    auto sharedBuffer = allocateSharedBuffer(
+                            af::getBackendId(afArray),
+                            afArray.bytes());
+    afArray.host(reinterpret_cast<void*>(sharedBuffer.getAddress()));
 
-    auto sharedBuffer = Pothos::SharedBuffer(
-                            reinterpret_cast<size_t>(afPinnedMemSPtr->get()),
-                            afArray.bytes(),
-                            afPinnedMemSPtr);
     auto bufferChunk = Pothos::BufferChunk(sharedBuffer);
     bufferChunk.dtype = Pothos::Object(afArray.type()).convert<Pothos::DType>();
 

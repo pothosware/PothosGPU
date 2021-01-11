@@ -4,6 +4,7 @@
 #include "ArrayFireBlock.hpp"
 #include "BufferConversions.hpp"
 #include "DeviceCache.hpp"
+#include "SharedBufferAllocator.hpp"
 #include "Utility.hpp"
 
 #include <nlohmann/json.hpp>
@@ -101,7 +102,17 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getInputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
-    if(domain.empty())         return makePinnedBufferManager(_afBackend);
+    if(domain.empty())
+    {
+        Pothos::BufferManager::Sptr bufferManager;
+#ifdef POTHOSGPU_LEGACY_BUFFER_MANAGER
+        bufferManager = makePinnedBufferManager(_afBackend);
+#else
+        bufferManager = Pothos::BufferManager::make("generic");
+        bufferManager->setAllocateFunction(getSharedBufferAllocator(_afBackend));
+#endif
+        return bufferManager;
+    }
     else if(domain == _domain) return Pothos::BufferManager::Sptr();
     else throw Pothos::PortDomainError(domain);
 }
@@ -110,8 +121,18 @@ Pothos::BufferManager::Sptr ArrayFireBlock::getOutputBufferManager(
     const std::string& /*name*/,
     const std::string& domain)
 {
-    if(domain.empty() || (domain == _domain)) return makePinnedBufferManager(_afBackend);
-    else                                      throw Pothos::PortDomainError(domain);
+    if(domain.empty() || (domain == _domain))
+    {
+        Pothos::BufferManager::Sptr bufferManager;
+#ifdef POTHOSGPU_LEGACY_BUFFER_MANAGER
+        bufferManager = makePinnedBufferManager(_afBackend);
+#else
+        bufferManager = Pothos::BufferManager::make("generic");
+        bufferManager->setAllocateFunction(getSharedBufferAllocator(_afBackend));
+#endif
+        return bufferManager;
+    }
+    else throw Pothos::PortDomainError(domain);
 }
 
 void ArrayFireBlock::activate()
