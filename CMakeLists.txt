@@ -98,7 +98,6 @@ set(sources
     Source/NumericConversions.cpp
     Source/ObjectFunctions.cpp
     Source/OneToOneBlock.cpp
-    Source/PinnedBufferManager.cpp
     Source/Pow.cpp
     Source/PowersOfN.cpp
     Source/Random.cpp
