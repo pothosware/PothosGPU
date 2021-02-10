@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -86,7 +86,7 @@ ArrayFireBlock::ArrayFireBlock(const std::string& device):
         }
     }
 
-    _domain = Poco::format("ArrayFire_%s_%s", this->backend(), this->device());
+    _domain = "ArrayFire_" + this->backend();
 
     this->configArrayFire();
     this->registerCall(this, POTHOS_FCN_TUPLE(ArrayFireBlock, backend));
