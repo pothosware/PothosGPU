@@ -21,6 +21,10 @@
 #include <algorithm>
 #include <string>
 
+#ifdef POTHOSGPU_LEGACY_BUFFER_MANAGER
+Pothos::BufferManager::Sptr makePinnedBufferManager(af::Backend backend);
+#endif
+
 static void checkVersion()
 {
     static constexpr size_t buildAPIVersion = AF_API_VERSION_CURRENT;
