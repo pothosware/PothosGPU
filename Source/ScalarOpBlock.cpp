@@ -143,6 +143,7 @@ static Pothos::Block* makeScalarOpBlock(
                 case ScalarBlockType::LOGICAL: \
                     IfTypeThenLambda(&&, "And", operation, cType, func) \
                     else IfTypeThenLambda(||, "Or", operation, cType, func) \
+                    else IfTypeThenLambda(^, "XOr", operation, cType, func) \
                     else throw Pothos::InvalidArgumentException("Invalid operation", operation); \
                     break; \
                 default: \
@@ -330,6 +331,7 @@ static Pothos::BlockRegistry registerScalarBitwise(
  * |widget ComboBox(editable=false)
  * |option [And] "And"
  * |option [Or] "Or"
+ * |option [XOr] "XOr"
  * |default "And"
  * |preview enable
  *
