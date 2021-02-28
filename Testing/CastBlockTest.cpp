@@ -62,7 +62,7 @@ static void testCastBlock(
     std::cout << "Testing " << afCastRegistryPath
               << " (types: " << type1.name() << " -> " << type2.name() << ")" << std::endl;
 
-    if(isDTypeComplexFloat(type1) && !type2.isComplex())
+    if(PothosGPU::isDTypeComplexFloat(type1) && !type2.isComplex())
     {
         POTHOS_TEST_THROWS(
             Pothos::BlockRegistry::make(

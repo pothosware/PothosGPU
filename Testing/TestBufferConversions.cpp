@@ -99,7 +99,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_af_array_conversion)
 {
     using namespace GPUTests;
 
-    for(const auto& backend: getAvailableBackends())
+    for(const auto& backend: PothosGPU::getAvailableBackends())
     {
         af::setBackend(backend);
         std::cout << "Backend: " << Pothos::Object(backend).convert<std::string>() << std::endl;
@@ -115,7 +115,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_af_arrayproxy_conversion)
 {
     using namespace GPUTests;
 
-    for(const auto& backend: getAvailableBackends())
+    for(const auto& backend: PothosGPU::getAvailableBackends())
     {
         af::setBackend(backend);
         std::cout << "Backend: " << Pothos::Object(backend).convert<std::string>() << std::endl;
@@ -131,7 +131,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_std_vector_conversion)
 {
     using namespace GPUTests;
 
-    for(const auto& backend: getAvailableBackends())
+    for(const auto& backend: PothosGPU::getAvailableBackends())
     {
         af::setBackend(backend);
         std::cout << "Backend: " << Pothos::Object(backend).convert<std::string>() << std::endl;

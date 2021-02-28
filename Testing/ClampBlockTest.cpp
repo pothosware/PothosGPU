@@ -101,7 +101,7 @@ void testClampBlockForType(const Pothos::DType& type)
     Pothos::Object maxObject(0);
 
     Pothos::DType dtype(type);
-    if(isDTypeComplexFloat(dtype))
+    if(PothosGPU::isDTypeComplexFloat(dtype))
     {
         POTHOS_TEST_THROWS(
             Pothos::BlockRegistry::make(

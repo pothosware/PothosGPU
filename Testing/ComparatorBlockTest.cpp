@@ -167,7 +167,7 @@ static void testScalarComparatorBlockForTypeAndOperation(
               << " (type: " << type.name()
               << ", operation: " << operation << ")" << std::endl;
 
-    if(isDTypeComplexFloat(Pothos::DType(type)))
+    if(PothosGPU::isDTypeComplexFloat(Pothos::DType(type)))
     {
         POTHOS_TEST_THROWS(
             Pothos::BlockRegistry::make(
@@ -243,7 +243,7 @@ static void testArrayComparatorBlockForTypeAndOperation(
               << " (type: " << type.name()
               << ", operation: " << operation << ")" << std::endl;
 
-    if(isDTypeComplexFloat(Pothos::DType(type)))
+    if(PothosGPU::isDTypeComplexFloat(Pothos::DType(type)))
     {
         POTHOS_TEST_THROWS(
             Pothos::BlockRegistry::make(

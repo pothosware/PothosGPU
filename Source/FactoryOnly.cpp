@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -8,6 +8,8 @@
 #include "Functions.hpp"
 
 #include <Pothos/Framework.hpp>
+
+using namespace PothosGPU;
 
 static Pothos::BlockRegistry registerSec(
     "/gpu/arith/sec",

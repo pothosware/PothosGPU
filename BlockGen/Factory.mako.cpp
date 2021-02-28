@@ -12,6 +12,9 @@
 
 #include <vector>
 
+namespace PothosGPU
+{
+
 static const std::vector<Pothos::BlockRegistry> BlockRegistries =
 {
 %for block in oneToOneBlocks:
@@ -80,4 +83,6 @@ pothos_static_block(register_pothos_gpu_docs)
 %for doc in docs:
     ${doc}
 %endfor
+}
+
 }

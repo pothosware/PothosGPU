@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "DeviceCache.hpp"
@@ -15,6 +15,9 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+
+namespace PothosGPU
+{
 
 // TODO: take in string to give context on what block is unsupported
 void validateDType(
@@ -288,3 +291,5 @@ bool isCPUIDSupported() {return false;}
 std::string getProcessorName() {return "";}
 
 #endif
+
+}

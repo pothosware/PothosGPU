@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "NToOneBlock.hpp"
@@ -14,6 +14,8 @@
 #include <string>
 #include <typeinfo>
 
+namespace PothosGPU
+{
 
 //
 // Factories
@@ -120,4 +122,6 @@ void NToOneBlock::work()
 
     if(_postBuffer) this->postAfArray(0, outputAfArray);
     else            this->produceFromAfArray(0, outputAfArray);
+}
+
 }

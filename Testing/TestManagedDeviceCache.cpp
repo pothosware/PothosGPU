@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "DeviceCache.hpp"
@@ -13,7 +13,7 @@
 POTHOS_TEST_BLOCK("/gpu/tests", test_managed_device_cache)
 {
     // Compare the managed interface to the actual class.
-    const auto& nativeDeviceCache = getDeviceCache();
+    const auto& nativeDeviceCache = PothosGPU::getDeviceCache();
 
     auto env = Pothos::ProxyEnvironment::make("managed");
     auto deviceCache = env->findProxy("GPU/DeviceCache")();
@@ -29,7 +29,7 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_managed_device_cache)
         auto& nativeDeviceCacheEntry = nativeDeviceCache[deviceIndex];
         auto deviceCacheEntry = deviceCache.call("getEntry", deviceIndex);
         POTHOS_TEST_EQUAL(
-            "DeviceCacheEntry",
+            "PothosGPU::DeviceCacheEntry",
             deviceCacheEntry.getClassName());
 
         POTHOS_TEST_EQUAL(

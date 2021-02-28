@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BufferConversions.hpp"
@@ -18,6 +18,9 @@
 #include <cstring>
 #include <string>
 #include <typeinfo>
+
+namespace PothosGPU
+{
 
 //
 // Factories
@@ -142,4 +145,6 @@ void OneToOneBlock::work()
     }
 
     this->produceFromAfArray(0, afOutput);
+}
+
 }

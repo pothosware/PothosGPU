@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TwoToOneBlock.hpp"
@@ -13,6 +13,9 @@
 #include <cassert>
 #include <string>
 #include <typeinfo>
+
+namespace PothosGPU
+{
 
 //
 // Factories
@@ -115,4 +118,6 @@ void TwoToOneBlock::work()
 
     auto outputAfArray = _func(inputAfArray0, inputAfArray1);
     this->produceFromAfArray(0, outputAfArray);
+}
+
 }

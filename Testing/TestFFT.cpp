@@ -21,7 +21,7 @@ namespace
     std::mt19937 g(rd());
 
     template <typename T>
-    EnableIfFloat<T, std::vector<T>> getFFTInputs()
+    static GPUTests::EnableIfFloat<T, std::vector<T>> getFFTInputs()
     {
         auto inputs = GPUTests::linspace<T>(-30.f, 20.f, numBins);
         std::shuffle(inputs.begin(), inputs.end(), g);
@@ -30,7 +30,7 @@ namespace
     }
 
     template <typename T>
-    EnableIfComplex<T, std::vector<T>> getFFTInputs()
+    static GPUTests::EnableIfComplex<T, std::vector<T>> getFFTInputs()
     {
         using Scalar = typename T::value_type;
 
@@ -40,7 +40,7 @@ namespace
         return inputs;
     }
 
-    Pothos::BufferChunk getFFTInputs(const std::string& type)
+    static Pothos::BufferChunk getFFTInputs(const std::string& type)
     {
         #define IfTypeGetFFTInputs(typeStr, cType) \
             if(typeStr == type) return GPUTests::stdVectorToBufferChunk(getFFTInputs<cType>());

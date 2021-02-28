@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "DeviceCache.hpp"
@@ -14,6 +14,9 @@
 
 #include <algorithm>
 #include <sstream>
+
+namespace PothosGPU
+{
 
 static Poco::Logger& getLogger()
 {
@@ -285,3 +288,5 @@ static auto managedDeviceCache = Pothos::ManagedClass()
     .registerMethod("getEntry", &getEntry)
     .registerMethod(POTHOS_FCN_TUPLE(DeviceCache, size))
     .commit("GPU/DeviceCache");
+
+}

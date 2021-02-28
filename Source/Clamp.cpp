@@ -17,6 +17,8 @@
 #include <iostream>
 #include <typeinfo>
 
+using namespace PothosGPU;
+
 // To avoid collisions
 namespace
 {

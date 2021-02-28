@@ -19,7 +19,7 @@ namespace GPUTests
 
 void setupTestEnv()
 {
-    af::setBackend(getAvailableBackends()[0]);
+    af::setBackend(PothosGPU::getAvailableBackends()[0]);
 }
 
 template <typename T>
@@ -133,13 +133,13 @@ static EnableIfComplex<T, void> addMinMaxToAfArray(af::array& rAfArray)
 
     if(1 == rAfArray.numdims())
     {
-        rAfArray(0) = typename PothosToAF<T>::type(
+        rAfArray(0) = typename PothosGPU::PothosToAF<T>::type(
                                    std::numeric_limits<Scalar>::min(),
                                    std::numeric_limits<Scalar>::max());
     }
     else
     {
-        rAfArray(0,0) = typename PothosToAF<T>::type(
+        rAfArray(0,0) = typename PothosGPU::PothosToAF<T>::type(
                                      std::numeric_limits<Scalar>::min(),
                                      std::numeric_limits<Scalar>::max());
     }

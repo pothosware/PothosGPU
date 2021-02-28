@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ReducedBlock.hpp"
@@ -16,6 +16,9 @@
 #include <cassert>
 #include <string>
 #include <typeinfo>
+
+namespace PothosGPU
+{
 
 ReducedBlock::ReducedBlock(
     const std::string& device,
@@ -97,4 +100,6 @@ void ReducedBlock::work()
     }
 
     this->produceFromAfArray(0, afOutput);
+}
+
 }

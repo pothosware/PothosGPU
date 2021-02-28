@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -8,6 +8,9 @@
 #include <arrayfire.h>
 
 #include <string>
+
+namespace PothosGPU
+{
 
 class ArrayFireBlock: public Pothos::Block
 {
@@ -99,3 +102,5 @@ class ArrayFireBlock: public Pothos::Block
             const PortIdType& portId,
             const AfArrayType& afArray);
 };
+
+}

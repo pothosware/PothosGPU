@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -12,6 +12,9 @@
 #include <arrayfire.h>
 
 #include <string>
+
+namespace PothosGPU
+{
 
 using OneToOneFunc = af::array(*)(const af::array&);
 
@@ -71,3 +74,5 @@ class OneToOneBlock: public ArrayFireBlock
         // We need to store this since ArrayFire may change the output type.
         af::dtype _afOutputDType;
 };
+
+}
