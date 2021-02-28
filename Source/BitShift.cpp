@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -13,6 +13,10 @@
 #include <complex>
 #include <cstring>
 #include <functional>
+
+// To avoid collisions
+namespace
+{
 
 //
 // Utility function getters
@@ -171,3 +175,5 @@ static Pothos::Block* makeBitShift(
 static Pothos::BlockRegistry registerBitShift(
     "/gpu/scalar/bitshift",
     Pothos::Callable(&makeBitShift));
+
+}

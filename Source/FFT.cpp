@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -17,6 +17,10 @@
 #include <functional>
 #include <string>
 #include <typeinfo>
+
+// To avoid collisions
+namespace
+{
 
 //
 // Misc
@@ -326,3 +330,5 @@ static Pothos::Block* makeFFT(
 static Pothos::BlockRegistry registerFFT(
     fftBlockPath,
     Pothos::Callable(&makeFFT));
+
+}

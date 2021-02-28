@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -11,6 +11,10 @@
 #include <arrayfire.h>
 
 #include <numeric>
+
+// To avoid collisions
+namespace
+{
 
 #if AF_API_VERSION >= 38
 
@@ -99,3 +103,5 @@ static Pothos::BlockRegistry registerBitwiseNot(
             false,
         }, 3)
 );
+
+}

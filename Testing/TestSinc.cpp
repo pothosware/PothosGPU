@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -10,10 +10,14 @@
 #include <iostream>
 #include <vector>
 
+// To avoid collisions
+namespace
+{
+
 static constexpr size_t numRepetitions = 100;
 
 template <typename Type>
-void testSincTmpl()
+static void testSincTmpl()
 {
     /*
      * Note: NumPy's sinc is normalized, so we need to divide by Pi to get the
@@ -71,4 +75,6 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_sinc)
 {
     testSincTmpl<float>();
     testSincTmpl<double>();
+}
+
 }

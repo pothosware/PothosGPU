@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "SharedBufferAllocator.hpp"
@@ -8,6 +8,10 @@
 #include <arrayfire.h>
 
 #include <memory>
+
+// To avoid collisions
+namespace
+{
 
 //
 // Minimal wrapper class to ensure allocation and deallocation are done
@@ -46,6 +50,8 @@ class AfPinnedMemRAII
         af::Backend _backend;
         void* _pinnedMem;
 };
+
+}
 
 //
 // Transparent RAII SharedBuffer

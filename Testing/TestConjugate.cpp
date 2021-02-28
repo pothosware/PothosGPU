@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -10,6 +10,10 @@
 #include <complex>
 #include <iostream>
 #include <random>
+
+// To avoid collisions
+namespace
+{
 
 //
 // Common
@@ -68,4 +72,6 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_conjugate)
 {
     testConjugate<float>();
     testConjugate<double>();
+}
+
 }

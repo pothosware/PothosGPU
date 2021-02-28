@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -12,6 +12,10 @@
 
 #include <cstdint>
 #include <typeinfo>
+
+// To avoid collisions
+namespace
+{
 
 using MinMaxFunction = void(*)(af::array&, af::array&, const af::array&, const int);
 
@@ -145,3 +149,5 @@ static Pothos::BlockRegistry registerMin(
 static Pothos::BlockRegistry registerMax(
     "/gpu/algorithm/max",
     Pothos::Callable(&minMaxFactory<false>));
+
+}

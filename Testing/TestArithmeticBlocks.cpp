@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2016 Josh Blum
-//                    2020 Nicholas Corgan
+//               2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -14,6 +14,10 @@
 #include <iostream>
 #include <type_traits>
 #include <vector>
+
+// To avoid collisions
+namespace
+{
 
 //
 // Common
@@ -457,4 +461,6 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_scalar_arithmetic)
     testScalarArithmetic<double>();
     testScalarArithmetic<std::complex<float>>();
     testScalarArithmetic<std::complex<double>>();
+}
+
 }

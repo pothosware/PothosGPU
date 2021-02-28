@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -21,6 +21,7 @@
 #include <typeinfo>
 #include <vector>
 
+// To avoid collisions
 namespace
 {
 
@@ -50,7 +51,7 @@ inline Pothos::BufferChunk getPhaseInputs(const std::string& type)
 }
 
 // Since multiple kernels are involved, we'll be more forgiving for floating-point errors.
-void testBufferChunksEqual(
+static void testBufferChunksEqual(
     const Pothos::BufferChunk& expectedBufferChunk,
     const Pothos::BufferChunk& actualBufferChunk)
 {
@@ -119,7 +120,7 @@ void testBufferChunksEqual(
     }
 }
 
-void testScalarToComplexToScalar(
+static void testScalarToComplexToScalar(
     const std::string& scalarToComplexRegistryPath,
     const std::string& complexToScalarRegistryPath,
     const std::string& port0Name,
@@ -194,7 +195,7 @@ void testScalarToComplexToScalar(
         port1CollectorSink.call("getBuffer"));
 }
 
-void testComplexToScalarToComplex(
+static void testComplexToScalarToComplex(
     const std::string& scalarToComplexRegistryPath,
     const std::string& complexToScalarRegistryPath,
     const std::string& port0Name,
@@ -255,7 +256,7 @@ void testComplexToScalarToComplex(
         collectorSink.call("getBuffer"));
 }
 
-void testCombineToSplit(const std::string& type)
+static void testCombineToSplit(const std::string& type)
 {
     testScalarToComplexToScalar(
         combineRegistryPath,
@@ -265,7 +266,7 @@ void testCombineToSplit(const std::string& type)
         type);
 }
 
-void testSplitToCombine(const std::string& type)
+static void testSplitToCombine(const std::string& type)
 {
     testComplexToScalarToComplex(
         combineRegistryPath,
@@ -275,7 +276,7 @@ void testSplitToCombine(const std::string& type)
         type);
 }
 
-void testPolarToComplexToPolar(const std::string& type)
+static void testPolarToComplexToPolar(const std::string& type)
 {
     testScalarToComplexToScalar(
         polarToComplexRegistryPath,
@@ -285,7 +286,7 @@ void testPolarToComplexToPolar(const std::string& type)
         type);
 }
 
-void testComplexToPolarToComplex(const std::string& type)
+static void testComplexToPolarToComplex(const std::string& type)
 {
     testComplexToScalarToComplex(
         polarToComplexRegistryPath,
@@ -293,8 +294,6 @@ void testComplexToPolarToComplex(const std::string& type)
         "mag",
         "phase",
         type);
-}
-
 }
 
 POTHOS_TEST_BLOCK("/gpu/tests", test_complex_blocks)
@@ -310,4 +309,6 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_complex_blocks)
         testPolarToComplexToPolar(type);
         testComplexToPolarToComplex(type);
     }
+}
+
 }

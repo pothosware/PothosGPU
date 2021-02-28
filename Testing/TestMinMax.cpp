@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -11,6 +11,10 @@
 #include <iostream>
 #include <limits>
 #include <vector>
+
+// To avoid collisions
+namespace
+{
 
 static constexpr size_t numInputs = 3;
 static constexpr size_t numRepetitions = 100;
@@ -126,4 +130,6 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_min_max)
     testMinMax<unsigned long long>();
     testMinMax<float>();
     testMinMax<double>();
+}
+
 }

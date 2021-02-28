@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -11,6 +11,10 @@
 #include <arrayfire.h>
 
 #include <vector>
+
+// To avoid collisions
+namespace
+{
 
 // To disambiguate
 using SortFcn = af::array(*)(const af::array&, const unsigned, const bool);
@@ -90,3 +94,5 @@ class Sort: public OneToOneBlock
 static Pothos::BlockRegistry registerSort(
     "/gpu/algorithm/sort",
     Pothos::Callable(&Sort::make));
+
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -17,6 +17,10 @@
 #include <iostream>
 #include <typeinfo>
 #include <vector>
+
+// To avoid collisions
+namespace
+{
 
 //
 // Utility
@@ -451,3 +455,5 @@ static Pothos::BlockRegistry registerMedAbsDev(
     Pothos::Callable(&OneArrayStatsBlock::makeFromFuncPtr)
         .bind<OneArrayStatsFuncPtr>(&afMedAbsDev, 1)
         .bind<DTypeSupport>(DTypeSupport({true,true,true,false}), 2));
+
+}

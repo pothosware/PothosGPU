@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSL-1.0
 
 #include "TestUtility.hpp"
@@ -9,6 +9,10 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+
+// To avoid collisions
+namespace
+{
 
 template <typename T>
 static void getTestValues(
@@ -120,4 +124,6 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_round_blocks)
 {
     testRoundBlocks<float>();
     testRoundBlocks<double>();
+}
+
 }

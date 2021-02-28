@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "Functions.hpp"
@@ -15,6 +15,10 @@
 
 #include <cstdint>
 #include <typeinfo>
+
+// To avoid collisions
+namespace
+{
 
 //
 // Test classes
@@ -357,3 +361,5 @@ static Pothos::BlockRegistry registerPolarToComplex(
 static Pothos::BlockRegistry registerComplexToPolar(
     "/gpu/arith/complex_to_polar",
     Pothos::Callable(&complexToPolarFactory));
+
+}

@@ -1,5 +1,5 @@
 // Copyright (c) 2013-2016 Josh Blum
-//                    2020 Nicholas Corgan
+//               2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BufferConversions.hpp"
@@ -16,6 +16,10 @@
 
 #include <cassert>
 #include <iostream>
+
+// To avoid collisions
+namespace
+{
 
 /************************************************************************
  * Identical to Pothos::GenericBufferManager but uses page-locked memory
@@ -103,6 +107,8 @@ private:
     size_t _bytesPopped;
     Pothos::Util::OrderedQueue<Pothos::ManagedBuffer> _readyBuffs;
 };
+
+}
 
 /***********************************************************************
  * Factory

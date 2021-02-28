@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -14,6 +14,10 @@
 #include <arrayfire.h>
 
 #include <vector>
+
+// To avoid collisions
+namespace
+{
 
 //
 // Block classes
@@ -381,3 +385,5 @@ static Pothos::BlockRegistry registerFIR(
 static Pothos::BlockRegistry registerIIR(
     "/gpu/signal/iir_filter",
     Pothos::Callable(&makeIIR));
+
+}

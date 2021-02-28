@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -17,6 +17,10 @@
 #include <iostream>
 #include <typeinfo>
 #include <vector>
+
+// To avoid collisions
+namespace
+{
 
 class TopK: public ArrayFireBlock
 {
@@ -147,3 +151,5 @@ class TopK: public ArrayFireBlock
 static Pothos::BlockRegistry registerTopK(
     "/gpu/statistics/topk",
     Pothos::Callable(&TopK::make));
+
+}

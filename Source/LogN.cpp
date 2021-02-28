@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "Functions.hpp"
@@ -12,6 +12,10 @@
 #include <arrayfire.h>
 
 #include <vector>
+
+// To avoid collisions
+namespace
+{
 
 class Log: public OneToOneBlock
 {
@@ -107,3 +111,5 @@ class Log: public OneToOneBlock
 static Pothos::BlockRegistry registerLogN(
     "/gpu/arith/log",
     Pothos::Callable(&Log::make));
+
+}

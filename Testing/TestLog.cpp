@@ -1,5 +1,5 @@
 // Copyright (c) 2019 Nick Foster
-//               2020 Nicholas Corgan
+//               2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include <Pothos/Testing.hpp>
@@ -8,6 +8,10 @@
 #include <cstdint>
 #include <cmath>
 #include <iostream>
+
+// To avoid collisions
+namespace
+{
 
 static constexpr size_t NUM_POINTS = 12;
 
@@ -134,4 +138,6 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_log1p)
 {
     testLog1PImpl<float>();
     testLog1PImpl<double>();
+}
+
 }

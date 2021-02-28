@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+// To avoid collisions
 namespace
 {
     constexpr size_t numBins = 2 << 16;
