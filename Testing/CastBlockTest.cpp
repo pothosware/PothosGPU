@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -15,10 +15,6 @@
 #include <string>
 #include <typeinfo>
 #include <vector>
-
-// To avoid collisions
-namespace
-{
 
 static void addCornerCases(
     const Pothos::DType& type1,
@@ -138,6 +134,4 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_cast)
             testCastBlock(inputType, outputType);
         }
     }
-}
-
 }

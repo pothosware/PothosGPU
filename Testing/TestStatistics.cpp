@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -16,10 +16,6 @@
 #include <numeric>
 #include <random>
 #include <vector>
-
-// To avoid collisions
-namespace
-{
 
 //
 // Get expected values for the labels.
@@ -274,6 +270,4 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_statistics)
             outputDouble,
             isStdOrVar ? 1.0 : 1e-6);
     }
-}
-
 }

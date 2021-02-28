@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -17,10 +17,6 @@
 #include <string>
 #include <typeinfo>
 #include <vector>
-
-// To avoid collisions
-namespace
-{
 
 static constexpr const char* blockRegistryPath = "/gpu/arith/clamp";
 static constexpr const char* pluginPath = "/blocks/gpu/arith/clamp";
@@ -162,6 +158,4 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_clamp)
     {
         testClampBlockForType(type);
     }
-}
-
 }

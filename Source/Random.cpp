@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -15,10 +15,6 @@
 #include <cassert>
 #include <string>
 #include <typeinfo>
-
-// To avoid collisions
-namespace
-{
 
 using AfRandomFunc = af::array(*)(const af::dim4&, const af::dtype, af::randomEngine&);
 
@@ -190,5 +186,3 @@ class RandomBlock: public ArrayFireBlock
 static Pothos::BlockRegistry registerRandomSource(
     "/gpu/random/source",
     Pothos::Callable(&RandomBlock::make));
-
-}

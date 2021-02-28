@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Nicholas Corgan
+// Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -11,10 +11,6 @@
 #include <arrayfire.h>
 
 #include <vector>
-
-// To avoid collisions
-namespace
-{
 
 class Root: public OneToOneBlock
 {
@@ -113,5 +109,3 @@ class Root: public OneToOneBlock
 static Pothos::BlockRegistry registerRoot(
     "/gpu/arith/root",
     Pothos::Callable(&Root::make));
-
-}

@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Nicholas Corgan
+// Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -14,10 +14,6 @@
 #include <iostream>
 #include <set>
 #include <vector>
-
-// To avoid collisions
-namespace
-{
 
 template <typename T>
 static void getSetUniqueTestValues(
@@ -111,6 +107,4 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_set_unique)
     testSetUnique<unsigned char>();
     testSetUnique<unsigned short>();
     testSetUnique<unsigned>();
-}
-
 }

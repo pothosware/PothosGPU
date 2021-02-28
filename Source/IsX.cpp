@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Nicholas Corgan
+// Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -11,10 +11,6 @@
 #include <arrayfire.h>
 
 #include <vector>
-
-// To avoid collisions
-namespace
-{
 
 static Pothos::Block* makeIsX(
     const std::string& device,
@@ -132,5 +128,3 @@ static Pothos::BlockRegistry registerArithSign(
     Pothos::Callable(&makeIsX)
         .bind<DTypeSupport>({true,false,true,false}, 2)
         .bind<OneToOneFunc>(&af::sign, 3));
-
-}

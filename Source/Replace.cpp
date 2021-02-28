@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Nicholas Corgan
+// Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -12,10 +12,6 @@
 
 #include <cstdint>
 #include <typeinfo>
-
-// To avoid collisions
-namespace
-{
 
 //
 // Utility code
@@ -212,5 +208,3 @@ static Pothos::Block* replaceFactory(
 static Pothos::BlockRegistry registerReplace(
     "/gpu/data/replace",
     Pothos::Callable(&replaceFactory));
-
-}

@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Nicholas Corgan
+// Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -20,10 +20,6 @@
 #include <string>
 #include <typeinfo>
 #include <vector>
-
-// To avoid collisions
-namespace
-{
 
 using namespace GPUTests;
 
@@ -265,6 +261,4 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_chaining_multiple_backends)
     {
         std::cout << "Skipping test. Only one ArrayFire device available." << std::endl;
     }
-}
-
 }

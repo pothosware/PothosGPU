@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Nicholas Corgan
+// Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -10,10 +10,6 @@
 #include <vector>
 
 #include <cmath>
-
-// To avoid collisions
-namespace
-{
 
 //
 // Utility code
@@ -27,7 +23,7 @@ constexpr size_t bufferLen = 4096;
 // ----------------|   |----------------
 //
 template <typename T>
-static std::vector<T> linspaceOutsideRange(T leftMin, T leftMax, T rightMin, T rightMax, size_t N)
+std::vector<T> linspaceOutsideRange(T leftMin, T leftMax, T rightMin, T rightMax, size_t N)
 {
     auto output = GPUTests::linspace<T>(leftMin, leftMax, N / 2);
     auto rightLinSpace = GPUTests::linspace<T>(rightMin, rightMax, N / 2);
@@ -194,6 +190,4 @@ POTHOS_TEST_BLOCK("/gpu/tests", test_trigonometric)
 {
     testTrigonmetricBlocksForType<float>();
     testTrigonmetricBlocksForType<double>();
-}
-
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -19,10 +19,6 @@
 #include <cstring>
 #include <string>
 #include <typeinfo>
-
-// To avoid collisions
-namespace
-{
 
 static const std::string blockRegistryPath = "/gpu/array/file_source";
 
@@ -232,5 +228,3 @@ class FileSourceBlock: public ArrayFireBlock
 static Pothos::BlockRegistry registerFileSource(
     blockRegistryPath,
     Pothos::Callable(&FileSourceBlock::make));
-
-}

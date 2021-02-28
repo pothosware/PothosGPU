@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -12,10 +12,6 @@
 
 #include <cstdint>
 #include <typeinfo>
-
-// To avoid collisions
-namespace
-{
 
 template <typename T>
 class Constant: public ArrayFireBlock
@@ -135,5 +131,3 @@ static Pothos::Block* constantFactory(
 static Pothos::BlockRegistry registerConstant(
     "/gpu/data/constant",
     Pothos::Callable(&constantFactory));
-
-}

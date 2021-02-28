@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -21,10 +21,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
-// To avoid collisions
-namespace
-{
 
 class FileSinkBlock: public ArrayFireBlock
 {
@@ -290,5 +286,3 @@ class FileSinkBlock: public ArrayFireBlock
 static Pothos::BlockRegistry registerFileSink(
     "/gpu/array/file_sink",
     Pothos::Callable(&FileSinkBlock::make));
-
-}

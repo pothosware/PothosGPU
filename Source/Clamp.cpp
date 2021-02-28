@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -16,10 +16,6 @@
 #include <cstdint>
 #include <iostream>
 #include <typeinfo>
-
-// To avoid collisions
-namespace
-{
 
 template <typename T>
 class Clamp: public OneToOneBlock
@@ -206,5 +202,3 @@ static Pothos::Block* clampFactory(
 static Pothos::BlockRegistry registerClamp(
     "/gpu/arith/clamp",
     Pothos::Callable(&clampFactory));
-
-}
