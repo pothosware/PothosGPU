@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Nicholas Corgan
+// Copyright (c) 2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "NToOneBlock.hpp"
@@ -14,8 +14,6 @@
 #include <string>
 #include <typeinfo>
 #include <unordered_map>
-
-using namespace PothosGPU;
 
 #define NToOneLambda(op) \
     [](const af::array& a, const af::array& b){return a op b;}

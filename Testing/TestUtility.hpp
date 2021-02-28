@@ -23,13 +23,6 @@
 namespace GPUTests
 {
 
-using PothosGPU::EnableIfAnyInt;
-using PothosGPU::EnableIfComplex;
-using PothosGPU::EnableIfFloat;
-using PothosGPU::EnableIfInteger;
-using PothosGPU::EnableIfUnsignedInt;
-using PothosGPU::IsComplex;
-
 //
 // Useful typedefs
 //

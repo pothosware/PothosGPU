@@ -57,9 +57,6 @@ class AfPinnedMemRAII
 // Transparent RAII SharedBuffer
 //
 
-namespace PothosGPU
-{
-
 Pothos::SharedBuffer allocateSharedBuffer(af::Backend backend, size_t size)
 {
     auto afPinnedMemSPtr = std::make_shared<AfPinnedMemRAII>(
@@ -80,6 +77,4 @@ Pothos::BufferManager::AllocateFcn getSharedBufferAllocator(af::Backend backend)
     };
 
     return impl;
-}
-
 }

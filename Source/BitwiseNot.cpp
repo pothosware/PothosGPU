@@ -12,8 +12,6 @@
 
 #include <numeric>
 
-using namespace PothosGPU;
-
 // To avoid collisions
 namespace
 {

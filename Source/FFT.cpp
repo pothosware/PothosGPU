@@ -18,8 +18,6 @@
 #include <string>
 #include <typeinfo>
 
-using namespace PothosGPU;
-
 // To avoid collisions
 namespace
 {

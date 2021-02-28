@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "Utility.hpp"
@@ -10,8 +10,6 @@
 
 #include <string>
 #include <unordered_map>
-
-using namespace PothosGPU;
 
 static const std::unordered_map<std::string, af::Backend> BackendEnumMap =
 {

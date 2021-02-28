@@ -14,8 +14,6 @@
 #include <cstring>
 #include <functional>
 
-using namespace PothosGPU;
-
 // To avoid collisions
 namespace
 {

@@ -10,8 +10,6 @@
 
 #include <arrayfire.h>
 
-using namespace PothosGPU;
-
 // To avoid collisions
 namespace
 {

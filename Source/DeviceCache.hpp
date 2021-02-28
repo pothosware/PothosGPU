@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -7,9 +7,6 @@
 
 #include <string>
 #include <vector>
-
-namespace PothosGPU
-{
 
 struct DeviceCacheEntry
 {
@@ -31,5 +28,3 @@ const std::vector<DeviceCacheEntry>& getDeviceCache();
 std::string getAnyDeviceWithBackend(af::Backend backend);
 
 std::string getCPUOrBestDevice();
-
-}

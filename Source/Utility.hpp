@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -15,9 +15,6 @@
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
-
-namespace PothosGPU
-{
 
 //
 // Useful typedefs
@@ -274,6 +271,4 @@ std::string stdVectorToString(const std::vector<T>& vec)
     }
 
     return ostream.str();
-}
-
 }

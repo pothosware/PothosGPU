@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "DeviceCache.hpp"
@@ -15,8 +15,6 @@
 #include <algorithm>
 #include <iostream>
 #include <set>
-
-using namespace PothosGPU;
 
 using json = nlohmann::json;
 

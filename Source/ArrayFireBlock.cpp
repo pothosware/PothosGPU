@@ -21,9 +21,6 @@
 #include <algorithm>
 #include <string>
 
-namespace PothosGPU
-{
-
 #ifdef POTHOSGPU_LEGACY_BUFFER_MANAGER
 Pothos::BufferManager::Sptr makePinnedBufferManager(af::Backend backend);
 #endif
@@ -316,6 +313,4 @@ void ArrayFireBlock::_postAfArray(
                 "Port: "+Pothos::Object(portId).convert<std::string>());
     }
     this->output(portId)->postBuffer(Pothos::Object(afArray).convert<Pothos::BufferChunk>());
-}
-
 }

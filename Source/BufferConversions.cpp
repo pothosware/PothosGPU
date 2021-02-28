@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "BufferConversions.hpp"
@@ -19,14 +19,12 @@
 #include <memory>
 #include <vector>
 
-using namespace PothosGPU;
-
 //
 // Pothos::BufferChunk <-> af::array
 //
 
 template <typename AfArrayType>
-Pothos::BufferChunk PothosGPU::afArrayTypeToBufferChunk(const AfArrayType& afArray)
+Pothos::BufferChunk afArrayTypeToBufferChunk(const AfArrayType& afArray)
 {
     auto sharedBuffer = allocateSharedBuffer(
                             af::getBackendId(afArray),
@@ -117,10 +115,10 @@ pothos_static_block(registerArrayFireBufferConversions)
 {
     Pothos::PluginRegistry::add(
         "/object/convert/gpu/afarray_to_bufferchunk",
-        Pothos::Callable(&PothosGPU::afArrayTypeToBufferChunk<af::array>));
+        Pothos::Callable(&afArrayTypeToBufferChunk<af::array>));
     Pothos::PluginRegistry::add(
         "/object/convert/gpu/afarrayproxy_to_bufferchunk",
-        Pothos::Callable(&PothosGPU::afArrayTypeToBufferChunk<af::array::array_proxy>));
+        Pothos::Callable(&afArrayTypeToBufferChunk<af::array::array_proxy>));
     Pothos::PluginRegistry::add(
         "/object/convert/gpu/bufferchunk_to_afarray",
         Pothos::Callable(&bufferChunkToAfArray));

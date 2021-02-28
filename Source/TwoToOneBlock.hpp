@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -9,9 +9,6 @@
 #include <Pothos/Framework.hpp>
 
 #include <arrayfire.h>
-
-namespace PothosGPU
-{
 
 using TwoToOneFunc = af::array(*)(const af::array&, const af::array&);
 
@@ -67,5 +64,3 @@ class TwoToOneBlock: public ArrayFireBlock
     { \
         return (arr1 op arr2); \
     }
-
-}

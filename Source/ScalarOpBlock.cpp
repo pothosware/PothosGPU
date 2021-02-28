@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -15,12 +15,6 @@
 #include <cstring>
 #include <string>
 #include <typeinfo>
-
-using namespace PothosGPU;
-
-// To avoid collisions
-namespace
-{
 
 template <typename T>
 using AfArrayScalarOp = af::array(*)(
@@ -354,5 +348,3 @@ static Pothos::BlockRegistry registerScalarBitwise(
 static Pothos::BlockRegistry registerScalarLogical(
     "/gpu/scalar/logical",
     Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::LOGICAL, 0));
-
-}

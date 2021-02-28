@@ -13,8 +13,6 @@
 #include <string>
 #include <vector>
 
-using namespace PothosGPU;
-
 // To avoid collisions
 namespace
 {
