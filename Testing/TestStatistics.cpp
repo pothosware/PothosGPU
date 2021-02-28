@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -62,7 +62,7 @@ static T stddev(const std::vector<T>& inputs)
         inputs.begin(),
         inputs.end(),
         std::back_inserter(diffs),
-        [&inputMean, &size](T input)
+        [&inputMean](T input)
         {
             return std::pow((input - inputMean), T(2));
         });

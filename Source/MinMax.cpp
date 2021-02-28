@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -67,7 +67,6 @@ class MinMax: public ArrayFireBlock
         af::dtype _afDType;
 
         MinMaxFunction _func;
-        size_t _nchans;
 
         Pothos::Object _lastValue;
 };

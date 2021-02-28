@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -9,8 +9,6 @@
 
 #include <iostream>
 #include <vector>
-
-static constexpr size_t numRepetitions = 100;
 
 template <typename Type>
 void testSincTmpl()

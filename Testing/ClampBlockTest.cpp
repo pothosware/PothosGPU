@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -19,7 +19,6 @@
 #include <vector>
 
 static constexpr const char* blockRegistryPath = "/gpu/arith/clamp";
-static constexpr const char* pluginPath = "/blocks/gpu/arith/clamp";
 
 #define GET_MINMAX_OBJECTS(typeStr, cType) \
     if(inputs.dtype.name() == typeStr) \

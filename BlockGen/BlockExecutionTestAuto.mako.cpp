@@ -14,10 +14,6 @@ using namespace GPUTests;
 template <typename T>
 static EnableIf${k}<T, void> blockExecutionTest()
 {
-    %if k == "Complex":
-    using Scalar = typename T::value_type;
-    %endif
-
     %for block in oneToOneBlocks:
         %if ("supportedTypes" in block) and ("autoTest" in block):
             %if block["supportedTypes"].get("support{0}".format(v), block["supportedTypes"].get("supportAll", False)):
