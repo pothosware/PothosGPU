@@ -1,11 +1,9 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
 
 #include <arrayfire.h>
-
-#include <Pothos/Config.hpp>
 
 #include <string>
 #include <vector>
@@ -23,10 +21,10 @@ struct DeviceCacheEntry
 };
 using DeviceCache = std::vector<DeviceCacheEntry>;
 
-POTHOS_LOCAL const std::vector<af::Backend>& getAvailableBackends();
+const std::vector<af::Backend>& getAvailableBackends();
 
-POTHOS_LOCAL const std::vector<DeviceCacheEntry>& getDeviceCache();
+const std::vector<DeviceCacheEntry>& getDeviceCache();
 
-POTHOS_LOCAL std::string getAnyDeviceWithBackend(af::Backend backend);
+std::string getAnyDeviceWithBackend(af::Backend backend);
 
-POTHOS_LOCAL std::string getCPUOrBestDevice();
+std::string getCPUOrBestDevice();

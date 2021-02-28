@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -7,14 +7,13 @@
 #include "Utility.hpp"
 
 #include <Pothos/Callable.hpp>
-#include <Pothos/Config.hpp>
 #include <Pothos/Framework.hpp>
 
 #include <arrayfire.h>
 
 using NToOneFunc = af::array(*)(const af::array&, const af::array&);
 
-class POTHOS_LOCAL NToOneBlock: public ArrayFireBlock
+class NToOneBlock: public ArrayFireBlock
 {
     public:
         //

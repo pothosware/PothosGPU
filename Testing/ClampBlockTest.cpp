@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "TestUtility.hpp"
@@ -88,7 +88,7 @@ static void testClampBlockOutput(
     // This block has no complex implementation.
 }
 
-static void testClampBlockForType(const Pothos::DType& type)
+void testClampBlockForType(const Pothos::DType& type)
 {
     std::cout << "Testing " << blockRegistryPath
               << " (type: " << type.name() << ")" << std::endl;

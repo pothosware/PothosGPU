@@ -1,12 +1,11 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
 
-#include <Pothos/Config.hpp>
 #include <Pothos/Exception.hpp>
-#include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
+#include <Pothos/Framework.hpp>
 
 #include <arrayfire.h>
 
@@ -100,11 +99,11 @@ struct DTypeSupport
     bool supportComplexFloat;
 };
 
-POTHOS_LOCAL void validateDType(
+void validateDType(
     const Pothos::DType& dtype,
     const DTypeSupport& supportedTypes);
 
-POTHOS_LOCAL bool isSupportedFileSinkType(const Pothos::DType& dtype);
+bool isSupportedFileSinkType(const Pothos::DType& dtype);
 
 //
 // Pothos <-> ArrayFire type conversion
@@ -158,19 +157,19 @@ struct PothosToAF<std::complex<double>>
     }
 };
 
-POTHOS_LOCAL Pothos::Object getArrayValueOfUnknownTypeAtIndex(
+Pothos::Object getArrayValueOfUnknownTypeAtIndex(
     const af::array& afArray,
     dim_t index);
 
-POTHOS_LOCAL ssize_t findValueOfUnknownTypeInArray(
+ssize_t findValueOfUnknownTypeInArray(
     const af::array& afArray,
     const Pothos::Object& value);
 
-POTHOS_LOCAL af::array getArrayFromSingleElement(
+af::array getArrayFromSingleElement(
     const af::array& afArray,
     size_t newArraySize);
 
-POTHOS_LOCAL Pothos::Object afArrayToStdVector(const af::array& afArray);
+Pothos::Object afArrayToStdVector(const af::array& afArray);
 
 //
 // ArrayFire requires taps to be specific types for different inputs.
@@ -242,9 +241,9 @@ static inline bool isDTypeComplexFloat(const Pothos::DType& dtype)
     return (dtype.isFloat() && dtype.isComplex());
 }
 
-POTHOS_LOCAL bool isCPUIDSupported();
+bool isCPUIDSupported();
 
-POTHOS_LOCAL std::string getProcessorName();
+std::string getProcessorName();
 
 #if AF_API_VERSION >= 38
 constexpr af::varBias getVarBias(bool isBiased)
@@ -252,3 +251,24 @@ constexpr af::varBias getVarBias(bool isBiased)
     return isBiased ? ::AF_VARIANCE_SAMPLE : ::AF_VARIANCE_POPULATION;
 }
 #endif
+
+
+//
+// Formatting
+//
+
+template <typename T>
+std::string stdVectorToString(const std::vector<T>& vec)
+{
+    std::ostringstream ostream;
+    for(const T& val: vec)
+    {
+        if(&val != &vec[0])
+        {
+            ostream << " ";
+        }
+        ostream << val;
+    }
+
+    return ostream.str();
+}
