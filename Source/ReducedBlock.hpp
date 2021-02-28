@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -6,6 +6,7 @@
 #include "ArrayFireBlock.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Config.hpp>
 #include <Pothos/Framework.hpp>
 
 #include <arrayfire.h>
@@ -14,7 +15,7 @@
 
 using ReducedFunc = af::array(*)(const af::array&, const int);
 
-class ReducedBlock: public ArrayFireBlock
+class POTHOS_LOCAL ReducedBlock: public ArrayFireBlock
 {
     public:
         ReducedBlock(

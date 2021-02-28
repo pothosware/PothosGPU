@@ -1,9 +1,10 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Config.hpp>
 #include <Pothos/Exception.hpp>
 #include <Pothos/Framework.hpp>
 #include <Pothos/Object.hpp>
@@ -18,7 +19,7 @@
 #include <typeinfo>
 
 template <typename T>
-class Clamp: public OneToOneBlock
+class POTHOS_LOCAL Clamp: public OneToOneBlock
 {
     public:
         using Class = Clamp<T>;

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -6,6 +6,7 @@
 #include "ArrayFireBlock.hpp"
 #include "Utility.hpp"
 
+#include <Pothos/Config.hpp>
 #include <Pothos/Framework.hpp>
 
 #include <arrayfire.h>
@@ -13,7 +14,7 @@
 using TwoToOneFunc = af::array(*)(const af::array&, const af::array&);
 
 // Assumption: input types match
-class TwoToOneBlock: public ArrayFireBlock
+class POTHOS_LOCAL TwoToOneBlock: public ArrayFireBlock
 {
     public:
         //

@@ -1,10 +1,11 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
 
 #include "Utility.hpp"
 
+#include <Pothos/Config.hpp>
 #include <Pothos/Framework.hpp>
 #include <Pothos/Plugin.hpp>
 #include <Pothos/Proxy.hpp>
@@ -58,7 +59,7 @@ using EnableIfTypeSizeIsLT = typename std::enable_if<sizeof(T) < size, Ret>::typ
 // Should be called at the beginning of each test
 //
 
-void setupTestEnv();
+POTHOS_LOCAL void setupTestEnv();
 
 //
 // Utility functions
@@ -149,7 +150,7 @@ ReturnType getAndCallPlugin(
     return getter.call<ReturnType>(args...);
 }
 
-void testBufferChunk(
+POTHOS_LOCAL void testBufferChunk(
     const Pothos::BufferChunk& expectedBufferChunk,
     const Pothos::BufferChunk& actualBufferChunk);
 
@@ -167,7 +168,7 @@ static void compareAfArrayToBufferChunk(
         bufferChunk);
 }
 
-void addMinMaxToAfArray(af::array& rAfArray);
+POTHOS_LOCAL void addMinMaxToAfArray(af::array& rAfArray);
 
 //
 // Getting random inputs
@@ -175,11 +176,11 @@ void addMinMaxToAfArray(af::array& rAfArray);
 
 static constexpr size_t TestInputLength = 1024;
 
-Pothos::BufferChunk getTestInputs(const std::string& type);
+POTHOS_LOCAL Pothos::BufferChunk getTestInputs(const std::string& type);
 
-Pothos::Object getRandomValue(const Pothos::BufferChunk& bufferChunk);
+POTHOS_LOCAL Pothos::Object getRandomValue(const Pothos::BufferChunk& bufferChunk);
 
-Pothos::Object getSingleTestInput(const std::string& type);
+POTHOS_LOCAL Pothos::Object getSingleTestInput(const std::string& type);
 
 //
 // Only test against blocks that exist
@@ -223,10 +224,10 @@ static T medAbsDev(const std::vector<T>& inputs)
 // Misc
 //
 
-const std::vector<Pothos::DType>& getAllDTypes();
+POTHOS_LOCAL const std::vector<Pothos::DType>& getAllDTypes();
 
-std::vector<Pothos::BufferChunk> convert2DAfArrayToBufferChunks(const af::array& afArray);
+POTHOS_LOCAL std::vector<Pothos::BufferChunk> convert2DAfArrayToBufferChunks(const af::array& afArray);
 
-af::array convertBufferChunksTo2DAfArray(const std::vector<Pothos::BufferChunk>& bufferChunks);
+POTHOS_LOCAL af::array convertBufferChunksTo2DAfArray(const std::vector<Pothos::BufferChunk>& bufferChunks);
 
 }
