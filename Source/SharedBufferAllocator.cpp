@@ -62,7 +62,7 @@ Pothos::SharedBuffer allocateSharedBuffer(af::Backend backend, size_t size)
               afPinnedMemSPtr);
 }
 
-Pothos::BufferManager::AllocateFcn getSharedBufferAllocator(af::Backend backend)
+BufferAllocateFcn getSharedBufferAllocator(af::Backend backend)
 {
     auto impl = [backend](const Pothos::BufferManagerArgs& args)
     {

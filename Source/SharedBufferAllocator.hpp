@@ -7,6 +7,12 @@
 
 #include <arrayfire.h>
 
+#ifdef POTHOSGPU_LEGACY_BUFFER_MANAGER
+using BufferAllocateFcn = std::function<Pothos::SharedBuffer(const Pothos::BufferManagerArgs&)>;
+#else
+using BufferAllocateFcn = Pothos::BufferManager::AllocateFcn;
+#endif
+
 Pothos::SharedBuffer allocateSharedBuffer(af::Backend backend, size_t size);
 
-Pothos::BufferManager::AllocateFcn getSharedBufferAllocator(af::Backend backend);
+BufferAllocateFcn getSharedBufferAllocator(af::Backend backend);
