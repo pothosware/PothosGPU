@@ -93,6 +93,7 @@ set(sources
     Source/IsX.cpp
     Source/LogN.cpp
     Source/MinMax.cpp
+    Source/ModF.cpp
     Source/ModuleInfo.cpp
     Source/NToOneBlock.cpp
     Source/NumericConversions.cpp
@@ -139,6 +140,7 @@ set(sources
     Testing/TestLogical.cpp
     Testing/TestManagedDeviceCache.cpp
     Testing/TestMinMax.cpp
+    Testing/TestModF.cpp
     Testing/TestNumericConversions.cpp
     Testing/TestPowRoot.cpp
     Testing/TestRoundBlocks.cpp
