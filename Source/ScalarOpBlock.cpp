@@ -197,7 +197,7 @@ static Pothos::Block* makeScalarOpBlock(
 //
 
 /*
- * |PothosDoc Scalar Arithmetic
+ * |PothosDoc Scalar Arithmetic (GPU)
  *
  * Perform the specified arithmetic operation on the input stream, using
  * the specified scalar value as the second operand. The result is returned
@@ -236,7 +236,7 @@ static Pothos::BlockRegistry registerScalarArithmetic(
     Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::ARITHMETIC, 0));
 
 /*
- * |PothosDoc Scalar Comparator
+ * |PothosDoc Scalar Comparator (GPU)
  *
  * Perform the specified comparison between each element in the input stream
  * and the given scalar, returning the result in an output stream of type <b>int8</b>,
@@ -276,7 +276,7 @@ static Pothos::BlockRegistry registerScalarComparator(
     Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::COMPARATOR, 0));
 
 /*
- * |PothosDoc Scalar Bitwise
+ * |PothosDoc Scalar Bitwise (GPU)
  *
  * Perform the specified bitwise operation between each element in the input stream
  * and the given scalar, returning the result in an output stream.
@@ -313,7 +313,7 @@ static Pothos::BlockRegistry registerScalarBitwise(
     Pothos::Callable(&makeScalarOpBlock).bind(ScalarBlockType::BITWISE, 0));
 
 /*
- * |PothosDoc Scalar Logical
+ * |PothosDoc Scalar Logical (GPU)
  *
  * Perform the specified logical operation between each element in the input stream
  * and the given scalar, returning the result in an output stream of type <b>int8</b>,

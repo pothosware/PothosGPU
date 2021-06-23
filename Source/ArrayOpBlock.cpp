@@ -116,7 +116,7 @@ static Pothos::Block* makeArrayLogical(
 //
 
 /*
- * |PothosDoc Arithmetic
+ * |PothosDoc Arithmetic (GPU)
  *
  * Perform the specified arithmetic operation on all given inputs, resulting
  * in a single output stream.
@@ -153,7 +153,7 @@ static Pothos::BlockRegistry registerArrayArithmetic(
     Pothos::Callable(&makeArrayArithmetic));
 
 /*
- * |PothosDoc Comparator
+ * |PothosDoc Comparator (GPU)
  *
  * Perform the specified comparison, using port <b>0</b> for the first
  * operand and port <b>1</b> for the second operand, resulting in
@@ -188,7 +188,7 @@ static Pothos::BlockRegistry registerComparator(
     Pothos::Callable(&makeComparator));
 
 /*
- * |PothosDoc Bitwise
+ * |PothosDoc Bitwise (GPU)
  *
  * Perform the specified bitwise operation on all given inputs, resulting
  * in a single output stream.
@@ -223,7 +223,7 @@ static Pothos::BlockRegistry registerArrayBitwise(
     Pothos::Callable(&makeArrayBitwise));
 
 /*
- * |PothosDoc Logical
+ * |PothosDoc Logical (GPU)
  *
  * Perform the specified logical operation on all given inputs, resulting
  * in a single output stream of type <b>int8</b>, where <b>0</b> corresponds
