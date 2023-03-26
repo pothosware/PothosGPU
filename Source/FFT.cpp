@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -274,6 +274,7 @@ static Pothos::Block* makeFFT(
  * Calculates the FFT of the input stream, with an optional normalization factor.
  *
  * |category /GPU/Signal
+ * |category /FFT
  * |keywords array signal fft ifft fourier
  * |factory /gpu/signal/fft(device,inputDType,outputDType,numBins,norm,inverse)
  * |setter setNormalizationFactor(norm)

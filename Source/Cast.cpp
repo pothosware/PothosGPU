@@ -73,6 +73,8 @@ class CastBlock: public OneToOneBlock
  * Calls <b>af::array::as</b> on all inputs to cast to a given type.
  *
  * |category /GPU/Convert
+ * |category /Stream
+ * |category /Convert
  * |keywords array cast
  * |factory /gpu/array/cast(device,inputDType,outputDType)
  *

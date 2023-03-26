@@ -111,6 +111,8 @@ static Pothos::Block* constantFactory(
  * Calls <b>af::constant</b> to fill all outgoing buffers with a given value.
  *
  * |category /GPU/Sources
+ * |category /Testers
+ * |category /Sources
  * |keywords data constant
  * |factory /gpu/data/constant(device,dtype,constant)
  * |setter setConstant(constant)

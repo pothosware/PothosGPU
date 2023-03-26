@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2021 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -301,6 +301,7 @@ static Pothos::Block* makeIIR(
  * block to <b>"setTaps"</b>.
  *
  * |category /GPU/Signal
+ * |category /Filter
  * |keywords array tap taps fir
  * |factory /gpu/signal/fir_filter(device,dtype)
  * |setter setTaps(taps)
@@ -341,6 +342,7 @@ static Pothos::BlockRegistry registerFIR(
  * coefficients simultaneously.
  *
  * |category /GPU/Signal
+ * |category /Filter
  * |keywords array tap taps iir
  * |factory /gpu/signal/iir_filter(device,dtype)
  * |setter setFeedForwardCoeffs(feedForwardCoeffs)
