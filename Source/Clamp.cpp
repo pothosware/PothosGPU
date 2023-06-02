@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2021,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -151,7 +151,7 @@ void Clamp<double>::work()
  * Calls <b>af::clamp</b> on all inputs with given minimum and maximum values.
  *
  * |category /GPU/Arith
- * |category /Stream
+ * |category /Stream/GPU
  * |keywords array arith clamp min max
  * |factory /gpu/arith/clamp(device,dtype,minValue,maxValue)
  * |setter setMinValue(minValue)

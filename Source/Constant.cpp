@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -111,8 +111,8 @@ static Pothos::Block* constantFactory(
  * Calls <b>af::constant</b> to fill all outgoing buffers with a given value.
  *
  * |category /GPU/Sources
- * |category /Testers
- * |category /Sources
+ * |category /Testers/GPU
+ * |category /Sources/GPU
  * |keywords data constant
  * |factory /gpu/data/constant(device,dtype,constant)
  * |setter setConstant(constant)

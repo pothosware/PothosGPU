@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -155,6 +155,7 @@ class RandomBlock: public ArrayFireBlock
  * most purposes, leaving this value as its default will be fine.
  *
  * |category /GPU/Sources
+ * |category /Sources/GPU
  * |keywords array random uniform normal philox threefry mersenne source
  * |factory /gpu/random/source(device,dtype,distribution)
  * |setter setDistribution(distribution)

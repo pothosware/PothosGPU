@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -242,6 +242,7 @@ static Pothos::Block* makeFFTConvolve(
  * block to <b>"setTaps"</b>.
  *
  * |category /GPU/Signal
+ * |category /Filter/GPU
  * |keywords array tap taps convolution
  * |factory /gpu/signal/convolve(device,dtype)
  * |setter setTaps(taps)
@@ -304,6 +305,7 @@ static Pothos::BlockRegistry registerConvolve(
  * block to <b>"setTaps"</b>.
  *
  * |category /GPU/Signal
+ * |category /Filter/GPU
  * |keywords array tap taps convolution
  * |factory /gpu/signal/fftconvolve(device,dtype)
  * |setter setTaps(taps)

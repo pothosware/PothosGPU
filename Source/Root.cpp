@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -89,6 +89,7 @@ class Root: public OneToOneBlock
  * their given root values.
  *
  * |category /GPU/Arith
+ * |category /Math/GPU
  * |keywords exponent power
  * |factory /gpu/arith/root(device,dtype,root)
  * |setter setRoot(root)

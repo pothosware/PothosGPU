@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Nicholas Corgan
+// Copyright (c) 2020-2021,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -37,7 +37,7 @@ static Pothos::Block* makeIsX(
  * or not the associated element is infinite.
  *
  * |category /GPU/Arith
- * |category /Stream
+ * |category /Stream/GPU
  * |keywords array infinite infinity
  * |factory /gpu/arith/isinf(device,dtype)
  *
@@ -63,7 +63,7 @@ static Pothos::BlockRegistry registerArithIsInf(
  * or not the associated element is NaN (not a number).
  *
  * |category /GPU/Arith
- * |category /Stream
+ * |category /Stream/GPU
  * |keywords array infinite infinity
  * |factory /gpu/arith/isnan(device,dtype)
  *
@@ -89,7 +89,7 @@ static Pothos::BlockRegistry registerArithIsNaN(
  * or not the associated element is zero.
  *
  * |category /GPU/Arith
- * |category /Stream
+ * |category /Stream/GPU
  * |keywords array infinite infinity
  * |factory /gpu/arith/iszero(device,dtype)
  *
@@ -115,6 +115,7 @@ static Pothos::BlockRegistry registerArithIsZero(
  * or not the associated element is negative.
  *
  * |category /GPU/Arith
+ * |category /Stream/GPU
  * |keywords array minus negative
  * |factory /gpu/arith/sign(device,dtype)
  *

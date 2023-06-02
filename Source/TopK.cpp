@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -118,6 +118,7 @@ class TopK: public ArrayFireBlock
  * |PothosDoc Top K (GPU)
  *
  * |category /GPU/Statistics
+ * |category /Stream/GPU
  * |keywords top min max k
  * |factory /gpu/statistics/topk(device,dtype)
  * |setter setK(K)

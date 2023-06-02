@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2021,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -342,7 +342,7 @@ static Pothos::BlockRegistry registerFIR(
  * coefficients simultaneously.
  *
  * |category /GPU/Signal
- * |category /Filter
+ * |category /Filter/GPU
  * |keywords array tap taps iir
  * |factory /gpu/signal/iir_filter(device,dtype)
  * |setter setFeedForwardCoeffs(feedForwardCoeffs)

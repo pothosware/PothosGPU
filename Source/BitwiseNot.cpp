@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Nicholas Corgan
+// Copyright (c) 2020-2021,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -78,7 +78,7 @@ static af::array afNot(const af::array& afArray)
  * the outputs in the output stream.
  *
  * |category /GPU/Array Operations
- * |category /Digital
+ * |category /Digital/GPU
  * |factory /gpu/array/bitwise_not(device,dtype)
  *
  * |param device[Device] Device to use for processing.

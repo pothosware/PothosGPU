@@ -249,8 +249,8 @@ class FileSinkBlock: public ArrayFireBlock
  * </ul>
  *
  * |category /GPU/File IO
- * |category /File IO
- * |category /Sinks
+ * |category /File IO/GPU
+ * |category /Sinks/GPU
  * |keywords array file sink io
  * |factory /gpu/array/file_sink(filepath,key,dtype,numChannels,append)
  *

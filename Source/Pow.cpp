@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -76,6 +76,7 @@ class Pow: public OneToOneBlock
  * to the given scalar power value.
  *
  * |category /GPU/Arith
+ * |category /Math/GPU
  * |keywords exponent power
  * |factory /gpu/arith/pow(device,dtype,power)
  * |setter setPower(power)

@@ -206,8 +206,8 @@ class FileSourceBlock: public ArrayFireBlock
  * of the given array.
  *
  * |category /GPU/File IO
- * |category /File IO
- * |category /Sources
+ * |category /File IO/GPU
+ * |category /Sources/GPU
  * |keywords array file source io
  * |factory /gpu/array/file_source(filepath,key,repeat)
  *

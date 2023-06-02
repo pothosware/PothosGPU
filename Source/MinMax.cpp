@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Nicholas Corgan
+// Copyright (c) 2019-2021,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -107,6 +107,7 @@ static Pothos::Block* minMaxFactory(
  * The most recent minimum value can be queried using the "lastValue" probe.
  *
  * |category /GPU/Statistics
+ * |category /Stream/GPU
  * |keywords algorithm min
  * |factory /gpu/algorithm/min(device,dtype)
  *
@@ -130,6 +131,7 @@ static Pothos::BlockRegistry registerMin(
  * The most recent minimum value can be queried using the "lastValue" probe.
  *
  * |category /GPU/Statistics
+ * |category /Stream/GPU
  * |keywords algorithm max
  * |factory /gpu/algorithm/max(device,dtype)
  *

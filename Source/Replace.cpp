@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -182,6 +182,7 @@ static Pothos::Block* replaceFactory(
  * a given value with another value.
  *
  * |category /GPU/Stream
+ * |category /Stream/GPU
  * |keywords data find
  * |factory /gpu/data/replace(device,dtype,findValue,replaceValue)
  * |setter setFindValue(findValue)

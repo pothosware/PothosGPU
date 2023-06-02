@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -71,6 +71,7 @@ class Sort: public OneToOneBlock
  * |PothosDoc Sort (GPU)
  *
  * |category /GPU/Stream
+ * |category /Stream/GPU
  * |factory /gpu/algorithm/sort(device,dtype)
  * |setter setIsAscending(isAscending)
  *

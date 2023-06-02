@@ -144,7 +144,7 @@ static Pothos::Block* makeBitShift(
  * Perform a bitwise operation on the given input buffer.
  *
  * |category /GPU/Scalar Operations
- * |category /Digital
+ * |category /Digital/GPU
  * |keywords left right
  *
  * |param device[Device] Device to use for processing.

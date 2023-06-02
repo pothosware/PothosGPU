@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "Functions.hpp"
@@ -277,8 +277,8 @@ static Pothos::Block* complexToPolarFactory(
  * and outputs the combined results.
  *
  * |category /GPU/Convert
- * |category /Utility
- * |category /Convert
+ * |category /Utility/GPU
+ * |category /Convert/GPU
  * |keywords arith complex real imag imaginary
  * |factory /gpu/arith/combine_complex(device,dtype)
  *
@@ -301,8 +301,8 @@ static Pothos::BlockRegistry registerCombineComplex(
  * in "re" and "im" output channels.
  *
  * |category /GPU/Convert
- * |category /Utility
- * |category /Convert
+ * |category /Utility/GPU
+ * |category /Convert/GPU
  * |keywords arith complex real imag imaginary
  * |factory /gpu/arith/split_complex(device,dtype)
  *
@@ -325,8 +325,8 @@ static Pothos::BlockRegistry registerSplitComplex(
  * them to a complex number.
  *
  * |category /GPU/Convert
- * |category /Utility
- * |category /Convert
+ * |category /Utility/GPU
+ * |category /Convert/GPU
  * |keywords arith complex real imag imaginary magnitude phase rho theta
  * |factory /gpu/arith/polar_to_complex(device,dtype)
  *
@@ -349,8 +349,8 @@ static Pothos::BlockRegistry registerPolarToComplex(
  * in "mag" and "phase" output channels.
  *
  * |category /GPU/Convert
- * |category /Utility
- * |category /Convert
+ * |category /Utility/GPU
+ * |category /Convert/GPU
  * |keywords arith complex real imag imaginary magnitude phase rho theta
  * |factory /gpu/arith/complex_to_polar(device,dtype)
  *

@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -303,6 +303,7 @@ class VarianceBlock: public OneArrayStatsBlock
  * can be queried with the <b>lastValue</b> probe.
  *
  * |category /GPU/Statistics
+ * |category /Stream/GPU
  * |keywords statistics stats mean average
  * |factory /gpu/statistics/mean(device,dtype)
  *
@@ -328,6 +329,7 @@ static Pothos::BlockRegistry registerMean(
  * can be queried with the <b>lastValue</b> probe.
  *
  * |category /GPU/Statistics
+ * |category /Stream/GPU
  * |keywords statistics stats
  * |factory /gpu/statistics/median(device,dtype)
  *
@@ -353,6 +355,7 @@ static Pothos::BlockRegistry registerMedian(
  * <b>lastValue</b> probe.
  *
  * |category /GPU/Statistics
+ * |category /Stream/GPU
  * |keywords statistics stats root mean square
  * |factory /gpu/statistics/rms(device,dtype)
  *
@@ -378,6 +381,7 @@ static Pothos::BlockRegistry registerRMS(
  * can be queried with the <b>lastValue</b> probe.
  *
  * |category /GPU/Statistics
+ * |category /Stream/GPU
  * |keywords statistics stats root mean square
  * |factory /gpu/statistics/var(device,dtype,isBiased)
  * |setter setIsBiased(isBiased)
@@ -406,6 +410,7 @@ static Pothos::BlockRegistry registerVar(
  * can be queried with the <b>lastValue</b> probe.
  *
  * |category /GPU/Statistics
+ * |category /Stream/GPU
  * |keywords statistics stats stddev
  * |factory /gpu/statistics/stdev(device,dtype)
  * |setter setIsBiased(isBiased)
@@ -435,6 +440,7 @@ static Pothos::BlockRegistry registerStdev(
  * <b>lastValue</b> probe.
  *
  * |category /GPU/Statistics
+ * |category /Stream/GPU
  * |keywords statistics stats mad
  * |factory /gpu/statistics/medabsdev(device,dtype)
  *

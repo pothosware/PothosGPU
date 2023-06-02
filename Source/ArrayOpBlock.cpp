@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "NToOneBlock.hpp"
@@ -122,6 +122,7 @@ static Pothos::Block* makeArrayLogical(
  * in a single output stream.
  *
  * |category /GPU/Array Operations
+ * |category /Math/GPU
  * |keywords array add subtract multiply divide modulus
  * |factory /gpu/array/arithmetic(device,operation,dtype,nchans)
  *
@@ -161,6 +162,7 @@ static Pothos::BlockRegistry registerArrayArithmetic(
  * corresponds to false and <b>1</b> corresponds to true.
  *
  * |category /GPU/Array Operations
+ * |category /Math/GPU
  * |keywords array less greater equal
  * |factory /gpu/array/comparator(device,operation,dtype,dim=1)
  *
@@ -194,6 +196,7 @@ static Pothos::BlockRegistry registerComparator(
  * in a single output stream.
  *
  * |category /GPU/Array Operations
+ * |category /Digital/GPU
  * |keywords array and or xor
  * |factory /gpu/array/bitwise(device,operation,dtype,nchans)
  *
@@ -230,6 +233,7 @@ static Pothos::BlockRegistry registerArrayBitwise(
  * to false and <b>1</b> corresponds to true.
  *
  * |category /GPU/Array Operations
+ * |category /Digital/GPU
  * |keywords array and or xor
  * |factory /gpu/array/logical(device,operation,dtype,nchans)
  *

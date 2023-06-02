@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -85,6 +85,7 @@ class PowN: public OneToOneBlock
  * <b>base = 2</b>.
  *
  * |category /GPU/Arith
+ * |category /Math/GPU
  * |keywords exponent base pow2
  * |factory /gpu/arith/powN(device,dtype,base)
  * |setter setBase(base)

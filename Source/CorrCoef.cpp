@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -79,6 +79,7 @@ class CorrCoefBlock: public ArrayFireBlock
  * probe.
  *
  * |category /GPU/Statistics
+ * |category /Filter/GPU
  * |keywords array coefficient
  * |factory /gpu/statistics/corrcoef(device,dtype)
  *

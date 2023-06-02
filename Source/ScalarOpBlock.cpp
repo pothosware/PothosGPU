@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Nicholas Corgan
+// Copyright (c) 2019-2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "OneToOneBlock.hpp"
@@ -204,6 +204,7 @@ static Pothos::Block* makeScalarOpBlock(
  * in the output stream.
  *
  * |category /GPU/Scalar Operations
+ * |category /Math/GPU
  * |keywords scalar add subtract multiply divide modulus
  * |factory /gpu/scalar/arithmetic(device,operation,dtype,scalar)
  * |setter setScalar(scalar)
@@ -243,6 +244,7 @@ static Pothos::BlockRegistry registerScalarArithmetic(
  * where <b>0</b> corresponds to false and <b>1</b> corresponds to true.
  *
  * |category /GPU/Scalar Operations
+ * |category /Math/GPU
  * |keywords scalar less greater not equal
  * |factory /gpu/scalar/comparator(device,operation,dtype,scalar,dim=1)
  * |setter setScalar(scalar)
@@ -282,6 +284,7 @@ static Pothos::BlockRegistry registerScalarComparator(
  * and the given scalar, returning the result in an output stream.
  *
  * |category /GPU/Scalar Operations
+ * |category /Digital/GPU
  * |keywords scalar and or left right shift
  * |factory /gpu/scalar/bitwise(device,operation,dtype,scalar)
  * |setter setScalar(scalar)
@@ -320,6 +323,7 @@ static Pothos::BlockRegistry registerScalarBitwise(
  * where <b>0</b> corresponds to false and <b>1</b> corresponds to true.
  *
  * |category /GPU/Scalar Operations
+ * |category /Digital/GPU
  * |keywords scalar and or
  * |factory /gpu/scalar/logical(device,operation,dtype,scalar)
  * |setter setScalar(scalar)

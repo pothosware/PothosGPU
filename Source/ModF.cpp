@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Nicholas Corgan
+// Copyright (c) 2021,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "ArrayFireBlock.hpp"
@@ -72,6 +72,7 @@ const std::string ModF::FracPortName = "frac";
  * input element.
  *
  * |category /GPU/Arith
+ * |category /Math/GPU
  * |keywords math/fractional
  * |factory /gpu/arith/modf(device,dtype)
  *

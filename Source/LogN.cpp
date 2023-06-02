@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Nicholas Corgan
+// Copyright (c) 2020,2023 Nicholas Corgan
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "Functions.hpp"
@@ -87,6 +87,7 @@ class Log: public OneToOneBlock
  * to optimize the log-2 and log-10 cases.
  *
  * |category /GPU/Arith
+ * |category /Math/GPU
  * |keywords exponent power
  * |factory /gpu/arith/log(device,dtype,base)
  * |setter setBase(base)
