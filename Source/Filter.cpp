@@ -301,7 +301,7 @@ static Pothos::Block* makeIIR(
  * block to <b>"setTaps"</b>.
  *
  * |category /GPU/Signal
- * |category /Filter
+ * |category /Filter/GPU
  * |keywords array tap taps fir
  * |factory /gpu/signal/fir_filter(device,dtype)
  * |setter setTaps(taps)
